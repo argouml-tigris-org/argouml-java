@@ -90,8 +90,8 @@ engineering of Java code and support for built-in types and standard libraries.
     <property name="images.dir" value="org/argouml/Images/"/>
     <property name="profile.file" value="org/argouml/language/java/profile/default-java.xmi"/>
 
-    <property name="argo.root.dir" value="${basedir}/../argouml/src/app"/>
-    <property name="argo.build.dir" value="${argo.root.dir}/build"/>
+    <property name="argo.root.dir" value="${basedir}/../argouml/src/argouml-app"/>
+    <property name="argo.build.dir" value="${basedir}/../argouml/src/argouml-build/build"/>
     <property name="argo.lib.dir" value="${argo.root.dir}/lib"/>
     <property name="argo.build.dest" value="${argo.build.dir}/classes"/>
     <property name="argo.jarfile" value="${argo.build.dir}/argouml.jar"/>
@@ -115,7 +115,7 @@ engineering of Java code and support for built-in types and standard libraries.
     <property file="${argo.src.dir}/default.properties"/>
    
     <echo message="${argo.root.dir} ${argo.src.dir} ${junit.jar.path} ${ant.home}"/>
-    <property name="developer.lib.dir" value="${basedir}/../argouml/build"/>
+    <property name="developer.lib.dir" value="${basedir}/../argouml/src/argouml-build/build"/>
 
     <property name="debug" value="on"/>
     <property name="optimize" value="on"/>

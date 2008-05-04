@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>argouml-module-cpp</name>
+	<name>argouml-module-java</name>
 	<comment></comment>
 	<projects>
 		<project>argouml</project>
@@ -12,7 +12,7 @@
 			<arguments>
 				<dictionary>
 					<key>LaunchConfigHandle</key>
-					<value>&lt;project&gt;/.externalToolBuilders/argouml cpp generate.launch</value>
+					<value>&lt;project&gt;/.externalToolBuilders/argouml java generate.launch</value>
 				</dictionary>
 			</arguments>
 		</buildCommand>
