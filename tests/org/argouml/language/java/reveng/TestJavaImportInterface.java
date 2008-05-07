@@ -26,19 +26,17 @@ package org.argouml.language.java.reveng;
 
 import java.util.Collection;
 import java.util.Iterator;
-import java.io.StringReader;
+
 import junit.framework.TestCase;
 
 import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
 
-import org.argouml.model.InitializeModel;
+import static org.argouml.Helper.newModel;
+
 import org.argouml.model.Model;
 import org.argouml.profile.init.InitProfileSubsystem;
-import org.argouml.language.java.reveng.JavaLexer;
-import org.argouml.language.java.reveng.JavaParser;
-import org.argouml.language.java.reveng.Modeller;
 
 /**
  * Test case to test the import of a Java source file. The content of the Java
@@ -59,7 +57,7 @@ public class TestJavaImportInterface extends TestCase {
      */
     public TestJavaImportInterface(String str) {
         super(str);
-        InitializeModel.initializeDefault();
+        newModel();
     }
 
     /*
@@ -71,8 +69,8 @@ public class TestJavaImportInterface extends TestCase {
             return;
         }
 
-        JavaLexer lex = new JavaLexer(new ANTLRStringStream(PARSERINPUT));
-       	CommonTokenStream tokens = new CommonTokenStream(lex);
+        JavaLexer lexer = new JavaLexer(new ANTLRStringStream(PARSERINPUT));
+       	CommonTokenStream tokens = new CommonTokenStream(lexer);
 
         JavaParser parser = new JavaParser(tokens);
         assertNotNull("Creation of parser failed.", parser);
@@ -89,7 +87,7 @@ public class TestJavaImportInterface extends TestCase {
         assertNotNull("Creation of Modeller instance failed.", modeller);
 
         try {
-            parser.compilationUnit(modeller);
+            parser.compilationUnit(modeller, lexer);
             isParsed = true;
         } catch (RecognitionException e) {
             fail("Parsing of Java source failed." + e);

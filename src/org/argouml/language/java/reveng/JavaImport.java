@@ -177,7 +177,7 @@ public class JavaImport implements ImportInterface {
 
             try {
                 // start parsing at the compilationUnit rule
-                parser.compilationUnit(modeller);
+                parser.compilationUnit(modeller, lexer);
             } catch (Exception e) {
                 String errorString = buildErrorString(f);
                 LOG.error(e.getClass().getName()

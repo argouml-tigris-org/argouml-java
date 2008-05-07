@@ -502,9 +502,10 @@ package org.argouml.language.java.reveng;
 // rule for this parser in most modes
 /* The annotations are separated out to make parsing faster, but must be associated with
    a packageDeclaration or a typeDeclaration (and not an empty one). */
-compilationUnit[Modeller modeller]
+compilationUnit[Modeller modeller, JavaLexer lexer]
     @init{
         setModeller(modeller);
+        _lexer = lexer;
         if ( backtracking == 0 ) {
             getModeller().addComponent();
         }
