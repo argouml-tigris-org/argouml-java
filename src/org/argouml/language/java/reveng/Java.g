@@ -335,17 +335,11 @@ package org.argouml.language.java.reveng;
      * set last method body
      */
     void setBody(String body) {
-        _methodBody = body + '\n';
+        _methodBody = body;
     }
-
-    // A flag to indicate if we track the tokens for a expression.
-    private boolean      _trackExpression  = false;    
 
     // A flag to indicate if we are inside a compoundStatement
     private boolean      _inCompoundStatement  = false;    
-
-    // A string buffer for the current expression.
-    private StringBuffer _expressionBuffer = new StringBuffer();   
 
     /**
      * set if we are inside a compoundStatement
@@ -359,33 +353,6 @@ package org.argouml.language.java.reveng;
      */
     boolean isInCompoundStatement() {
         return _inCompoundStatement;
-    }
-
-    /**
-     * Activate the tracking of expressions.
-     */
-    void activateExpressionTracking() {
-        _trackExpression = true;
-    }
-
-    /**
-     * Deactivate the tracking of expressions.
-     */
-    void deactivateExpressionTracking() {
-        _trackExpression = false;
-    }
-
-    /**
-     * Get a tracked expression.
-     *
-     * @return the tracked expression.
-     */
-    public String getExpression() {
-        String result = _expressionBuffer.toString();
-
-        _expressionBuffer = new StringBuffer();
-
-        return result;
     }
 
     /**
@@ -412,29 +379,6 @@ package org.argouml.language.java.reveng;
         sb.append(id);
         getModeller().addCall(sb.toString());
     }
-
-    /**
-     * Appends to a tracked expression. (used to restore it)
-     */
-    public void appendExpression(String expr) {
-        _expressionBuffer.append(expr);
-    }      
-
-    /**
-     * Matches a token (from Antlr). The reason why we need to override the
-     * Antlr match method is: white spaces are stripped from the token stream,
-     * but needed to be restored for code fragments and comments that need to
-     * be stored in the model.
-     */
-    public void match(TokenStream inp, int t, BitSet bs) throws RecognitionException {
-        String text = _lexer.getWhitespaceBuffer() + inp.LT(1).getText();
-
-        super.match(inp, t, bs);
-
-        // '== 0' to avoid the following when backtracking
-        if(_trackExpression && backtracking == 0)
-            appendExpression(text);
-    }     
 }
 
 @lexer::header {
@@ -444,30 +388,6 @@ package org.argouml.language.java.reveng;
 @lexer::members {
     protected boolean enumIsKeyword = true;
     protected boolean assertIsKeyword = true;
-
-    private StringBuffer whitespaceBuffer = new StringBuffer();
-
-    /**
-     * This method adds a whitespace string to the whitespace buffer
-     *
-     * @param ws The whitespace to add to the buffer
-     */
-    public void addWhitespace( String ws) {
-        whitespaceBuffer.append( ws);
-    }
-
-    /**
-     * This method returns the current whitespace buffer as a string
-     * and reinitializes it.
-     *
-     * @return the current whitespace buffer as a string.
-     */
-    public String getWhitespaceBuffer() {
-        String result = whitespaceBuffer.toString();
-
-        whitespaceBuffer = new StringBuffer();
-        return result;
-    }
 
     /**
      * A buffer to hold the last parsed javadoc comment.
@@ -905,7 +825,7 @@ constructorDeclaratorRest[String name, short modifiers]
         {
             if (isOutestCompStat && level > 0) {
                 getModeller().addBodyToOperation(getMethod(),
-                    level>1?getBody():"");
+                    level > 1 ? getBody() : "");
                 setMethod(null);
                 setBody(null);
             }
@@ -930,7 +850,6 @@ variableDeclarator[String javadoc, short modifiers, String t]
         String b = "";
         String id = null;
         int ix;
-        String trackedSoFar = null;
         String init = null;
     }
     :   vdi=variableDeclaratorId
@@ -949,22 +868,9 @@ variableDeclarator[String javadoc, short modifiers, String t]
                     createdObjectVarName = input.LT(0).getText();
                 }
             }
-            '='
+            eqvi = equalsVariableInitializer
             {
-                trackedSoFar=getExpression();
-                if (!isInCompoundStatement())
-                    activateExpressionTracking();
-            }
-            vi=variableInitializer
-            {
-                init=getExpression();
-                if (isInCompoundStatement()) {
-                    activateExpressionTracking();
-                    appendExpression(trackedSoFar);
-                    appendExpression(init);
-                } else {
-                    deactivateExpressionTracking();
-                }
+                init = $eqvi.text.substring(1);
                 createdObjectVarName = null;
             }
         )?
@@ -997,22 +903,9 @@ constantDeclaratorRest[String javadoc, String name, short modifiers, String t]
                 createdObjectVarName = input.LT(0).getText();
             }
         }
-        '='
+        eqvi = equalsVariableInitializer
         {
-            trackedSoFar=getExpression();
-            if (!isInCompoundStatement())
-                activateExpressionTracking();
-        }
-        vi=variableInitializer
-        {
-            init=getExpression();
-            if (isInCompoundStatement()) {
-                activateExpressionTracking();
-                appendExpression(trackedSoFar);
-                appendExpression(init);
-            } else {
-                deactivateExpressionTracking();
-            }
+            init = $eqvi.text.substring(1);
             createdObjectVarName = null;
             if (!isInCompoundStatement() && level > 0) {
                 getModeller().addAttribute(modifiers, sb.toString(), name,
@@ -1026,6 +919,11 @@ constantDeclaratorRest[String javadoc, String name, short modifiers, String t]
 
 variableDeclaratorId
     :   Identifier ('[' ']')*
+    ;
+
+equalsVariableInitializer
+    :   
+        '=' variableInitializer
     ;
 
 variableInitializer
@@ -1170,22 +1068,23 @@ constructorBody
     @init{
         boolean isOutestCompStat = !isInCompoundStatement();
     }
-    :   '{'
-        {
+    :   {
             if (isOutestCompStat) {
                 setIsInCompoundStatement(true);
-                activateExpressionTracking();
             }
         }
-        explicitConstructorInvocation? blockStatement*
+        '{' explicitConstructorInvocation? blockStatement* '}'
         {
             if (isOutestCompStat) {
-                setBody(getExpression());
-                deactivateExpressionTracking();
+                String b = $text;
+                // the body is everything between { and }, but for
+                // compatibility reasons the last ws's get stripped off
+                // and a newline is added
+                b = b.substring(0, b.length() - 1).trim();
+                setBody(b.substring(1) + '\n');
                 setIsInCompoundStatement(false);
             }
         }
-        '}'
     ;
 
 explicitConstructorInvocation
@@ -1305,22 +1204,23 @@ block
     @init{
         boolean isOutestCompStat = !isInCompoundStatement();
     }
-    :   '{'
-        {
+    :   {
             if (isOutestCompStat) {
                 setIsInCompoundStatement(true);
-                activateExpressionTracking();
             }
         }
-        blockStatement*
+        '{' blockStatement* '}'
         {
             if (isOutestCompStat) {
-                setBody(getExpression());
-                deactivateExpressionTracking();
+                String b = $text;
+                // the body is everything between { and }, but for
+                // compatibility reasons the last ws's get stripped off
+                // and a newline is added
+                b = b.substring(0, b.length() - 1).trim();
+                setBody(b.substring(1) + '\n');
                 setIsInCompoundStatement(false);
             }
         }
-        '}'
     ;
     
 blockStatement
@@ -1705,7 +1605,7 @@ Identifier
     :   Letter (Letter|JavaIDDigit)*
     ;
 
-/**I found this char range in JavaCC's grammar, but Letter and Digit overlap.
+/* I found this char range in JavaCC's grammar, but Letter and Digit overlap.
    Still works, but...
  */
 fragment
@@ -1746,23 +1646,39 @@ JavaIDDigit
 
 WS  :   (' '|'\r'|'\t'|'\u000C'|'\n')
         {
-            addWhitespace($text);
             $channel=HIDDEN;
         }
     ;
 
-COMMENT
-    :   '/*' ( options {greedy=false;} : . )* '*/'
+// Empty comment block needs to be distinguished from Javadoc
+EMPTY_COMMENT
+    :    '/**/'
         {
-            addWhitespace($text);
             $channel=HIDDEN;
         }
     ;
 
+// javadoc comments
+JAVADOC
+    :   '/**' ( options {greedy=false;} : . )* '*/'
+        {
+            setJavadocComment($text);
+            $channel=HIDDEN;
+        }
+    ;
+
+// multiple-line comments
+COMMENT
+    :   '/*' ~'*' ( options {greedy=false;} : . )* '*/'
+        {
+            $channel=HIDDEN;
+        }
+    ;
+
+// single-line comments
 LINE_COMMENT
     :   '//' ~('\n'|'\r')* '\r'? '\n'
         {
-            addWhitespace($text);
             $channel=HIDDEN;
         }
     ;
