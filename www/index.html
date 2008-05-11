@@ -1,106 +1,80 @@
 <html>
 <head>
  <style type="text/css">
-/* <![CDATA[ */ 
-@import "http://www.tigris.org/branding/css/tigris.css"; 
-@import "http://www.tigris.org/branding/css/inst.css"; 
+/* <![CDATA[ */
+@import "http://www.tigris.org/branding/css/tigris.css";
+@import "http://www.tigris.org/branding/css/inst.css";
 /*  ]]> */
  </style>
   <link rel="stylesheet" type="text/css" href="http://www.tigris.org/branding/css/print.css" media="print" />
 <script src="http://www.tigris.org/branding/scripts/tigris.js" type="text/javascript">
 </script>
- <title>Project Overview</title>
+ <title>ArgoUML Java</title>
 </head>
 <body>
 
-<p>This is the initial web content for your project.  Please customize
-this to fit your project.  You don't need to answer all these questions
-or follow this exact format, but we do like to see this kind of
-information before we approve projects for public viewing.
+<div class="h2">
+<h2>Description</h2>
+
+<p>
+This is the ArgoUML Java project.
+The purpose is to provide the ability to import Java source code (.java files)
+and binaries (.class and .jar files) into ArgoUML, use Java notation for
+modeling inside ArgoUML, and generate Java source code from the model within
+ArgoUML.
+</p>
+<p>
+Currently, Java support is integrated in ArgoUML by default. This project aims
+for take over, enhance and further develop this functionality, so that it can
+be removed in the core ArgoUML application and substituted by the module
+developed here.
 </p>
 
-<p>Until your project is approved, only you can view it and work on
-it.
-</p>
+<div class="h3">
+<h3>If you want to contribute to the project</h3>
+<ol>
+<li>Join the project.
+<li><a href="mailto:dev-subscribe&#064;argouml-java.tigris.org?body=Send this to join the list.">Join</A>
+    the mailing list for the developers of this project found among
+    <A HREF="/servlets/ProjectMailingListList">the mailing lists of this project</A>
+<li>Get acquainted with the current status of the project.
+<li>Announce your intentions on the dev mailing list.
+<li>Get in contact with one of the registered developer of this project
+    so that you can get your work commited.
+</ol>
 
-<ul>
-<li>This index.html will be used if and only if you have the "Use
-Project Home Page" option checked on the "Administer Project" page
-(click the "Admin" tab).</li>
+</div>
 
-<li>To edit this file, check out your project via CVS and edit www/index.html.
+<div class="h3">
 
-<li>You can 'cvs add' and commit other files under the project's "www"
-directory and they will published to your project web site.</li>
-
-<li>Also, consider starting a thread in the "dev" mailing list to get
-these discussion started.  A good one is an "introduction" thread where
-people post messages about themselves and their interest in the
-project.</li>
-
-<li>You can add a "Highlights:" line to the top of all web pages by adding a file www/project_highlights.html </li>
-</ul>
-
-
-<h3>Mission</h3>
-
-<p>What is the goal of this project?
-</p>
-
-<p>What is the scope of this project?
-</p>
-
-<p>For example:</p>
-
-<ul>
-<li>Develop just enough functionality to scratch a particular itch</li>
-<li>Build a tool just like XYZ, but less broken</li>
-<li>Build the best XYZ-tool ever!</li>
-</ul>
-
-
-<p>What are high-level features you are sure to build?
-</p>
-<ul>
-
-<li>What would you write on a billboard about your project? Users
-might only look for a few seconds.</li>
-
-<li>Use the issue tracker to track features and enhancement
-requests. It is not just for bugs, pre-populate it with feature
-descriptions so that potential contributors know what you would like them
-to work on.</li>
-</ul>
-
-<p>What are the high-level assumptions or ground rules for the project?
-</p>
-
-<p>For example:
-</p>
-
-<ul>
-<li> we will use programming language X on operating system Y for now.
-
-<li>We will, or will not, consider certain functional areas like
-internationalization, high security, concurrency, etc.  The list of
-functional areas will depend on what you are trying to do.
-
-<li>Try to keep this part short.
-</ul>
-
-
-<h3>Related resources</h3>
-
-<ul>
-<li>Link to other stuff that you know about.  It will help you
-research requirements and provide a useful resource to potential
-contributors.</li>
-
-<li>Why reinvent the wheel? What is better about this wheel?  Is there
-any existing project that you can partner with or reuse?</li>
-
-<li>Where would you go to try to find potential contibutors?</li>
-</ul>
+<h3>Upcoming Milestones</h3>
+<ol>
+  <li>
+  Make available a first version of the module, which only includes the Java
+  sources import and integrates in the ArgoUML import sources dialog. The
+  Java parser is based on <a href="http://www.antlr.org">Antlr 3</a>,
+  independently of the Antlr 2.7.7 lib shipped with ArgoUML. See issue
+  <a href="http://argouml.tigris.org/issues/show_bug.cgi?id=5019">5019</a>
+  in the ArgoUML project.
+  </li>
+  <li>
+  Integrate the Java classfile import from the
+  <a href="http://argouml-classfile.tigris.org/">argouml-classfile</a> project.
+  </li>
+  <li>
+  Enhance the parsing support, e.g. Java5 and Java6 features. See issue
+  <a href="http://argouml.tigris.org/issues/show_bug.cgi?id=3385">3385</a>
+  in the ArgoUML project.
+  </li>
+  <li>
+  Integrate code generation and Java notation, so that Java support in the
+  core ArgoUML can be discontinued..
+  </li>
+  <li>
+  Add more documentation and proposals here.
+  </li>
+</ol>
+</div>
 
 </body>
 </html>
