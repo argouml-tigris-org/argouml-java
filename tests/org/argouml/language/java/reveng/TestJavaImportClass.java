@@ -24,22 +24,19 @@
 
 package org.argouml.language.java.reveng;
 
+import static org.argouml.Helper.newModel;
+
 import java.util.Collection;
 import java.util.Iterator;
-import java.io.StringReader;
+
 import junit.framework.TestCase;
 
 import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
-
-import static org.argouml.Helper.newModel;
-
+import org.argouml.application.api.Argo;
 import org.argouml.model.Model;
 import org.argouml.profile.init.InitProfileSubsystem;
-import org.argouml.language.java.reveng.JavaLexer;
-import org.argouml.language.java.reveng.JavaParser;
-import org.argouml.language.java.reveng.Modeller;
 
 /**
  * Test case to test the import of a Java source file. The content of the Java
@@ -387,7 +384,6 @@ public class TestJavaImportClass extends TestCase {
         Object operation = null;
         Object operationForTestClass = null;
         Object operationForupdate = null;
-        Object operationForgetString = null;
         Object operationForx = null;
         Iterator iter = operations.iterator();
         while (iter.hasNext()) {
@@ -433,6 +429,38 @@ public class TestJavaImportClass extends TestCase {
     }
 
     /**
+     * Test if the Javadoc was imported correctly.
+     */
+    public void testJavadoc() {
+        if (parsedClass == null) {
+            parsedClass =
+                Model.getFacade().lookupIn(parsedPackage, "TestClass");
+            assertNotNull("No class \"TestClass\" found.", parsedClass);
+        }
+    	String doc = Model.getFacade().getTaggedValueValue(parsedClass,
+            Argo.DOCUMENTATION_TAG);
+        //assertEquals("The class has the wrong documentation.", JAVADOC1, doc);
+        if (operationForgetString == null) {
+            Collection operations = Model.getFacade()
+                .getOperations(parsedClass);
+            assertNotNull("No operations found in class.", operations);
+            Object operation = null;
+            Iterator iter = operations.iterator();
+            while (iter.hasNext()) {
+                operation = iter.next();
+                if ("getString".equals(
+                        Model.getFacade().getName(operation))) {
+                    operationForgetString = operation;
+                }
+            }
+        }
+    	doc = Model.getFacade().getTaggedValueValue(operationForgetString,
+            Argo.DOCUMENTATION_TAG);
+        assertEquals("The operation getString has the wrong documentation.",
+            JAVADOC2, doc);
+    }
+
+    /**
      * Gets the (first) body of an operation.
      *
      * @param operation The operation.
@@ -460,6 +488,13 @@ public class TestJavaImportClass extends TestCase {
     private static Object parsedModel;
     private static Object parsedPackage;
     private static Object parsedClass;
+    private static Object operationForgetString;
+
+    private static final String JAVADOC1 =
+        "/** A Javadoc comment */";
+
+    private static final String JAVADOC2 =
+        "/** Another Javadoc comment */";
 
     private static final String BODY1 =
         "\n        if (arg instanceof TestClass) testClass = (TestClass)arg;\n";
@@ -478,7 +513,7 @@ public class TestJavaImportClass extends TestCase {
     private static final String PARSERINPUT =
               "package testpackage;\n"
             + "import java.util.Observer;\n"
-            + "/** A Javadoc comment */\n"
+            + JAVADOC1 + '\n'
             + "public abstract class TestClass "
             + "extends Object implements Observer {\n"
             + "    private int n = 0;\n"
@@ -490,7 +525,7 @@ public class TestJavaImportClass extends TestCase {
             + "    public void update(java.util.Observable o, Object arg) {"
             + BODY1
             + "    }\n"
-            + "    /** Another Javadoc comment */\n"
+            + "    " + JAVADOC2 + '\n'
             + "    private static String getString() {"
             + BODY3
             + "    }\n"
