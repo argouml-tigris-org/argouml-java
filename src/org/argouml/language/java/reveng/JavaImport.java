@@ -221,7 +221,7 @@ public class JavaImport implements ImportInterface {
      * @see org.argouml.moduleloader.ModuleInterface#getName()
      */
     public String getName() {
-	return "Java";
+	return "Java (module)";
     }
 
     /*
