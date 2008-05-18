@@ -42,7 +42,6 @@ import org.argouml.model.CoreFactory;
 import org.argouml.model.Facade;
 import org.argouml.model.Model;
 import org.argouml.ocl.OCLUtil;
-import org.argouml.uml.reveng.DiagramInterface;
 import org.argouml.uml.reveng.ImportCommon;
 import org.argouml.uml.reveng.ImportInterface;
 import org.argouml.uml.reveng.ImportSettings;
@@ -73,11 +72,6 @@ public class Modeller {
      * Current working model.
      */
     private Object model;
-
-    // TODO: This can be removed when we are sure there are no external users
-    // of the functionality.  Diagram creation has moved to ImportCommon where
-    // a single implementation is shared by all importers. - tfm 20061209
-    private DiagramInterface diagram;
 
     /**
      * Current import settings.
@@ -254,23 +248,14 @@ public class Modeller {
      * @param name The name of the package.
      */
     public void addPackage(String name) {
-	// Add a package figure for this package to the owner's class
-	// diagram, if it's not in the diagram yet. I do this for all
-	// the class diagrams up to the top level, since I need
-	// diagrams for all the packages.
+        // We used to add diagrams to the project here for each package
+        // but diagram creation is handled in the common code for all
+        // reverse engineering modules now
+        
+	// Find the top level package
 	String ownerPackageName, currentName = name;
         ownerPackageName = getPackageName(currentName);
 	while (!"".equals(ownerPackageName)) {
-	    if (diagram != null
-	            && importSession != null
-	            && importSession.isCreateDiagramsSelected()
-	            && diagram.isDiagramInProject(ownerPackageName)) {
-
-	        diagram.selectClassDiagram(getPackage(ownerPackageName),
-	                ownerPackageName);
-	        diagram.addPackage(getPackage(currentName));
-
-	    }
 	    currentName = ownerPackageName;
             ownerPackageName = getPackageName(currentName);
 	}
@@ -288,14 +273,10 @@ public class Modeller {
 
 	// Find or create a Package model element for this package.
 	mPackage = getPackage(name);
-        currentPackageName = name;
 
 	// Set the current package for the following source code.
 	currentPackage = mPackage;
 	parseState.addPackageContext(mPackage);
-
-        // Delay diagram creation until any classifier (class or
-        // interface) will be found
 
         //set the namespace of the component
         // check to see if there is already a component defined:
@@ -949,31 +930,6 @@ public class Modeller {
        Called from the parser when a classifier is completely parsed.
     */
     public void popClassifier() {
-        // now create diagram if it doesn't exists in project
-	if (diagram != null
-                && importSession != null
-                && importSession.isCreateDiagramsSelected()) {
-
-	    if (currentPackageName != null) {
-	        diagram.selectClassDiagram(currentPackage,
-	                currentPackageName);
-	    }
-	    // The class is in a source file
-	    // with no package declaration
-	    else {
-	        // create new diagram in root for classifier without package
-	        diagram.createRootClassDiagram();
-	    }
-	    // add the current classifier to the diagram.
-	    Object classifier = parseState.getClassifier();
-	    if (Model.getFacade().isAInterface(classifier)) {
-	        diagram.addInterface(classifier,
-	                importSession.isMinimizeFigsSelected());
-	    } else if (Model.getFacade().isAClass(classifier)) {
-	        diagram.addClass(classifier,
-	                importSession.isMinimizeFigsSelected());
-	    }
-	}
 
         // Remove operations and attributes not in source
         parseState.removeObsoleteFeatures();
@@ -1467,9 +1423,10 @@ public class Modeller {
 	if (mPackage == null) {
 	    mPackage =
 		Model.getModelManagementFactory()
-		    .buildPackage(getRelativePackageName(name), name);
+		    .buildPackage(getRelativePackageName(name));
             newElements.add(mPackage);
-            // TODO: This is redundant - tfm
+            
+            // TODO: This is redundant with addOwnedElement code below - tfm
 	    Model.getCoreHelper().setNamespace(mPackage, model);
 
 	    // Find the owner for this package.
@@ -1751,21 +1708,16 @@ public class Modeller {
             return "";
         }
         String pkgName = name.substring(0, lastDot);
-        return pkgName;
-
-        // TODO: Fix handling of inner classes along the lines of the following...
 
         // If the last element begins with an uppercase character, assume
-        // that we've really got a class, not a package.  A better strategy
-        // would be to defer until we can disambiguate, but this should be
-        // better than what we have now for the more common case of inner
-        // classes.
-//        if (Character.isUpperCase(
-//                getRelativePackageName(pkgName).charAt(0))) {
-//            return getPackageName(pkgName);
-//        } else {
-//            return pkgName;
-//        }
+        // that we've really got a class, not a package.  
+        // TODO: A better strategy would be to defer until we can disambiguate
+        if (Character.isUpperCase(
+                getRelativePackageName(pkgName).charAt(0))) {
+            return getPackageName(pkgName);
+        } else {
+            return pkgName;
+        }
     }
 
     /**
@@ -1781,6 +1733,11 @@ public class Modeller {
 	// Since the relative package name corresponds
 	// to the classifier name of a fully qualified
 	// classifier, we simply use this method.
+
+        // TODO: This won't correctly identify the package for an inner class
+        // e.g. package.Foo.Bar, but getPackageName() makes an attempt to
+        // guess correctly
+        
 	return getClassifierName(packageName);
     }
 
