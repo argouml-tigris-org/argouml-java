@@ -92,10 +92,20 @@ engineering of Java code and support for built-in types and standard libraries.
     <property name="images.dir" value="org/argouml/Images/"/>
     <property name="profile.file" value="org/argouml/language/java/profile/default-java.xmi"/>
 
-    <property name="argo.basedir" value="${basedir}/../argouml"/>
-    <property name="argo.root.dir" value="${argo.basedir}/src/argouml-app"/>
-    <property name="argo.build.dir" value="${argo.basedir}/src/argouml-build/build"/>
-    <property name="argo.lib.dir" value="${argo.root.dir}/lib"/>
+    <property name="argo.root.dir" value="${basedir}/.."/>
+    <property name="argo.app.dir" value="${argo.root.dir}/argouml-app"/>
+
+    <!-- Try to figure out where main ArgoUML tools directory is -->
+    <property name="tool.test.file" value="checkstyle/java.header"/>
+    <available file="${argo.root.dir}/argouml-core-tools/${tool.test.file}" 
+    	type="file" property="argo.tools.dir" value="${argo.root.dir}/argouml-core-tools"/>
+    <available file="../../tools/${tool.test.file}" 
+    	type="file" property="argo.tools.dir" value="../../tools"/>
+ 
+    <!-- TODO: This probably needs to reference the packaging directory -->
+    <property name="argo.build.dir" value="${argo.root.dir}/argouml-build/build"/>
+
+    <property name="argo.lib.dir" value="${argo.app.dir}/lib"/>
     <property name="argo.build.dest" value="${argo.build.dir}/classes"/>
     <property name="argo.jarfile" value="${argo.build.dir}/argouml.jar"/>
     <property name="module.jarfile.name" value="${argo.module.jarfile}.jar"/>
@@ -108,11 +118,12 @@ engineering of Java code and support for built-in types and standard libraries.
     <property file="${override.build.properties}"/>
 
     <!-- If not set by the override file we still need this one for antlr. -->
-    <property name="argo.src.dir" value="${argo.root.dir}/src"/>
-    <property name="argo.tools.dir" value="${argo.basedir}/tools"/>
-    <property name="junit.jar.path" value="${argo.tools.dir}/junit-3.8.2/junit.jar"/>    
+    <property name="argo.src.dir" value="${argo.app.dir}/src"/>
+    <property name="junit.jar.path" value="${argo.tools.dir}/junit-3.8.2/junit.jar"/>
+ 
+    <!-- Why do we need the toolbar for a reverse engineering module? -->
     <property name="toolbar.jar.path" 
-	      value="${argo.basedir}/src/app/lib/toolbar-1.4.1-20071227.jar"/>
+	      value="${argo.build.dir}/toolbar-1.4.1-20071227.jar"/>
     <property name="log4j.jar.path" 
 	      value="{argo.build.dir}/log4j.jar"/>
     <property file="${argo.src.dir}/default.properties"/>
@@ -268,11 +279,9 @@ engineering of Java code and support for built-in types and standard libraries.
            deprecation="${deprecation}"
            optimize="${optimize}"
            source="1.5"
-           target="1.5">
-    	<sourcepath>
-    		<fileset dir="${module.src.dir}" excludes="*.txt,*.bat,*.xml,*.sh"/>
-    		<fileset dir="${module.src_generated.dir}" includes="*.java"/>
-    	</sourcepath>
+           target="1.5" >
+    	<src path="${module.src.dir}"/>
+        <src path="${module.src_generated.dir}"/>
         <classpath>
             <path refid="module.compile.classpath"/>
         </classpath>
