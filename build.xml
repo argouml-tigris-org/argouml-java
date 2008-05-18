@@ -71,6 +71,7 @@ engineering of Java code and support for built-in types and standard libraries.
 
     <property name="module.root" value="${basedir}"/>
     <property name="module.src.dir" value="${module.root}/src"/>
+    <property name="module.src_generated.dir" value="${module.root}/src_generated"/>
     <property name="module.tests.src" value="${module.root}/tests"/>
 
     <property name="module.lib.dir" value="${module.root}/lib"/>
@@ -220,7 +221,7 @@ engineering of Java code and support for built-in types and standard libraries.
   <target name="generateparser" depends="prepare" 
           description="Generates the parser and lexer classes">
     <uptodate property="parser.is.current"
-      targetfile="${module.src.dir}/org/argouml/language/java/reveng/Java.tokens">
+      targetfile="${module.src_generated.dir}/org/argouml/language/java/reveng/Java.tokens">
       <srcfiles dir="${module.src.dir}/org/argouml/language/java/reveng">
         <include name="Java.g"/>
       </srcfiles>
@@ -235,14 +236,14 @@ engineering of Java code and support for built-in types and standard libraries.
       <!-- For debugging the parser or lexer you may want to use the options 
       -traceParser or / and -traceLexer. -->
       <arg value="-o"/>
-      <arg file="${module.src.dir}/org/argouml/language/java/reveng"/>
+      <arg file="${module.src_generated.dir}/org/argouml/language/java/reveng"/>
       <arg file="${module.src.dir}/org/argouml/language/java/reveng/Java.g"/>
     </java>
   </target>
   
   <target name="cleanparser" depends="init">
     <delete>
-    	<fileset dir="${module.src.dir}/org/argouml/language/java/reveng">
+    	<fileset dir="${module.src_generated.dir}/org/argouml/language/java/reveng">
         <include name="Java.tokens"/>
         <include name="Java__.g"/>
         <include name="JavaLexer.java"/>
@@ -261,14 +262,16 @@ engineering of Java code and support for built-in types and standard libraries.
     <fail unless="argo.is.packaged" 
       message="You must package ArgoUML first, e.g., argouml/src> build package"/>
 
-    <javac srcdir="${module.src.dir}"
-           destdir="${module.build.dest}"
-           excludes="*.txt,*.bat,*.xml,*.sh"
+    <javac destdir="${module.build.dest}"
            debug="${debug}"
            deprecation="${deprecation}"
            optimize="${optimize}"
            source="1.5"
            target="1.5">
+    	<sourcepath>
+    		<fileset dir="${module.src.dir}" excludes="*.txt,*.bat,*.xml,*.sh"/>
+    		<fileset dir="${module.src_generated.dir}" include="*.java"/>
+    	</sourcepath>
         <classpath>
             <path refid="module.compile.classpath"/>
         </classpath>
