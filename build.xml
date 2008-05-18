@@ -101,11 +101,14 @@ engineering of Java code and support for built-in types and standard libraries.
     	type="file" property="argo.tools.dir" value="${argo.root.dir}/argouml-core-tools"/>
     <available file="../../tools/${tool.test.file}" 
     	type="file" property="argo.tools.dir" value="../../tools"/>
- 
-    <!-- TODO: This probably needs to reference the packaging directory -->
-    <property name="argo.build.dir" value="${argo.root.dir}/argouml-build/build"/>
 
-    <property name="argo.lib.dir" value="${argo.app.dir}/lib"/>
+    <!-- figure out where main ArgoUML build directory is -->
+    <!-- TODO: This probably needs to reference the packaging directory -->
+    <available file="${basedir}/../argouml-build/build" 
+    	type="dir" property="argo.build.dir" value="${basedir}/../argouml-build/build"/>
+    <available file="${basedir}/../argouml/src/argouml-build/build" 
+    	type="dir" property="argo.build.dir" value="${basedir}/../argouml/src/argouml-build/build"/>
+
     <property name="argo.build.dest" value="${argo.build.dir}/classes"/>
     <property name="argo.jarfile" value="${argo.build.dir}/argouml.jar"/>
     <property name="module.jarfile.name" value="${argo.module.jarfile}.jar"/>
