@@ -247,7 +247,7 @@ engineering of Java code and support for built-in types and standard libraries.
   <target name="generateparser_internal" unless="parser.is.current" 
           depends="prepare">
   	<echo message="Running antlr from ${antlrall.jar.path}"/>
-    <java classname="org.antlr.Tool" fork="yes" maxmemory="64M" classpath="${antlrall.jar.path}">
+    <java classname="org.antlr.Tool" fork="yes" maxmemory="128M" classpath="${antlrall.jar.path}">
       <!-- For debugging the parser or lexer you may want to use the options 
       -traceParser or / and -traceLexer. -->
       <arg value="-o"/>
