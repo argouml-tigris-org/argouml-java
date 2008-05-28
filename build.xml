@@ -92,15 +92,15 @@ engineering of Java code and support for built-in types and standard libraries.
     <property name="images.dir" value="org/argouml/Images/"/>
     <property name="profile.file" value="org/argouml/language/java/profile/default-java.xmi"/>
 
-    <property name="argo.root.dir" value="${basedir}/.."/>
+    <property name="argo.root.dir" value="${basedir}/../argouml"/>
     <property name="argo.app.dir" value="${argo.root.dir}/argouml-app"/>
 
     <!-- Try to figure out where main ArgoUML tools directory is -->
     <property name="tool.test.file" value="checkstyle/java.header"/>
     <available file="${argo.root.dir}/argouml-core-tools/${tool.test.file}" 
     	type="file" property="argo.tools.dir" value="${argo.root.dir}/argouml-core-tools"/>
-    <available file="../../tools/${tool.test.file}" 
-    	type="file" property="argo.tools.dir" value="../../tools"/>
+    <available file="${argo.root.dir}/tools/${tool.test.file}" 
+    	type="file" property="argo.tools.dir" value="${argo.root.dir}/tools"/>
 
     <!-- figure out where main ArgoUML build directory is -->
     <!-- TODO: This probably needs to reference the packaging directory -->
