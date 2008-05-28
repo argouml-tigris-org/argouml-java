@@ -74,20 +74,23 @@ public class JavaImport implements ImportInterface {
 
         newElements = new HashSet();
         monitor.updateMainTask(Translator.localize("dialog.import.pass1"));
-        if (settings.getImportLevel() == ImportSettings.DETAIL_CLASSIFIER_FEATURE
-                || settings.getImportLevel() == ImportSettings.DETAIL_FULL) {
-            monitor.setMaximumProgress(files.size() * 2);
-            doImportPass(p, files, settings, monitor, 0, 1);
-            if (!monitor.isCanceled()) {
-                monitor.updateMainTask(
-                        Translator.localize("dialog.import.pass2"));
-                doImportPass(p, files, settings, monitor, files.size(), 2);
+        try {
+            if (settings.getImportLevel() == ImportSettings.DETAIL_CLASSIFIER_FEATURE
+                    || settings.getImportLevel() == ImportSettings.DETAIL_FULL) {
+                monitor.setMaximumProgress(files.size() * 2);
+                doImportPass(p, files, settings, monitor, 0, 0);
+                if (!monitor.isCanceled()) {
+                    monitor.updateMainTask(Translator
+                            .localize("dialog.import.pass2"));
+                    doImportPass(p, files, settings, monitor, files.size(), 1);
+                }
+            } else {
+                monitor.setMaximumProgress(files.size() * 2);
+                doImportPass(p, files, settings, monitor, 0, 0);
             }
-        } else {
-            monitor.setMaximumProgress(files.size() * 2);
-            doImportPass(p, files, settings, monitor, 0, 0);
+        } finally {
+            monitor.close();
         }
-        monitor.close();
         return newElements;
     }
 
@@ -107,15 +110,15 @@ public class JavaImport implements ImportInterface {
             if (file instanceof File) {
                 try {
                     parseFile(p, (File) file, settings, pass);
-                } catch (ImportException e) {
+                } catch (Exception e) {
                     StringWriter sw = new StringWriter();
                     PrintWriter pw = new java.io.PrintWriter(sw);
                     e.printStackTrace(pw);
                     monitor.notifyMessage(
+                        Translator.localize(
+                            "dialog.title.import-problems"), //$NON-NLS-1$
                             Translator.localize(
-                            "dialog.title.import-problems"), 
-                            Translator.localize(
-                            "label.import-problems"),
+                            "label.import-problems"),        //$NON-NLS-1$
                             sw.toString());
                     if (monitor.isCanceled()) {
                         break;
@@ -170,9 +173,9 @@ public class JavaImport implements ImportInterface {
             int parserMode =
                     JavaParser.MODE_IMPORT_PASS1
                             | JavaParser.MODE_IMPORT_PASS2;
-            if (pass == 1) {
+            if (pass == 0) {
                 parserMode = JavaParser.MODE_IMPORT_PASS1;
-            } else if (pass == 2) {
+            } else if (pass == 1) {
                 parserMode = JavaParser.MODE_IMPORT_PASS2;
             }
             parser.setParserMode(parserMode);
