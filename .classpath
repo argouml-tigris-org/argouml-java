@@ -8,5 +8,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3.8.1"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="lib" path="lib/antlrworks-1.1.7.jar"/>
+	<classpathentry kind="lib" path="D:/Privat/argouml/src/argouml-build/build/argouml-mdr.jar"/>
 	<classpathentry kind="output" path="build-eclipse"/>
 </classpath>
