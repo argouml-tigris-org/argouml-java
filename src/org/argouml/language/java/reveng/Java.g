@@ -1,3 +1,4 @@
+// $Id$
 /*
  [The "BSD licence"]
  Copyright (c) 2007-2008 Terence Parr
@@ -282,15 +283,38 @@ package org.argouml.language.java.reveng;
      * comments), we store a reference to it.
      */
     private JavaLexer _lexer = null;
-    
+
     /**
-     * Get the last parsed javadoc comment from the lexer.
+     * A buffer to hold the last parsed javadoc comment.
      */
-    private String getJavadocComment() {
-        return _lexer.getJavadocComment();
+    String _javadocComment = null;
+
+    /**
+     * Return (and consume) the last available Javadoc Comment.
+     *
+     * @return The last parsed javadoc comment.
+     */
+    protected String getJavadocComment() {
+        String result = _javadocComment;
+        _javadocComment = null;  // Since we consume the comment, the buffer is reset.
+        return result;
+    }
+
+    /**
+     * Updates the last parsed javadoc comment.
+     */
+    private void updateJavadocComment() {
+        Token t = null;
+        int i = input.index();
+        do {
+            t = (Token)input.get(--i);
+        } while (i >= 0 && t.getType()== _lexer.WS);
+        if (t.getType() == _lexer.JAVADOC) {
+            _javadocComment = t.getText();
+        }
     }
     
-        private Modeller _modeller;
+    private Modeller _modeller;
 
     public Modeller getModeller() {
         return _modeller;
@@ -388,33 +412,6 @@ package org.argouml.language.java.reveng;
 @lexer::members {
     protected boolean enumIsKeyword = true;
     protected boolean assertIsKeyword = true;
-
-    /**
-     * A buffer to hold the last parsed javadoc comment.
-     */
-    String _javadocComment = null;
-
-    /**
-     * Store a parsed javadoc comment.
-     *
-     * @param comment The parsed javadoc comment.
-     */
-    protected void setJavadocComment(String comment) {
-    _javadocComment = comment;
-    }
-
-    /**
-     * Return (and consume) the last available Javadoc Comment.
-     *
-     * @return The last parsed javadoc comment.
-     */
-    protected String getJavadocComment() {
-    String result = _javadocComment;
-
-    _javadocComment = null;  // Since we consume the comment, the buffer is reset.
-
-    return result;
-    }
 }
 
 
@@ -468,7 +465,10 @@ classOrInterfaceDeclaration
     ;
     
 classOrInterfaceModifiers returns [short m = 0]
-    :   (   sub_m=classOrInterfaceModifier
+    :   {
+            updateJavadocComment();
+        }
+        (   sub_m=classOrInterfaceModifier
             {
                 m |= sub_m;
             }
@@ -487,7 +487,10 @@ classOrInterfaceModifier returns [short m = 0]
     ;
 
 modifiers returns [short m = 0]
-    :   (   sub_m=modifier
+    :   {
+            updateJavadocComment();
+        }
+        (   sub_m=modifier
             {
                 m |= sub_m;
             }
@@ -1662,7 +1665,6 @@ EMPTY_COMMENT
 JAVADOC
     :   '/**' ( options {greedy=false;} : . )* '*/'
         {
-            setJavadocComment($text);
             $channel=HIDDEN;
         }
     ;
