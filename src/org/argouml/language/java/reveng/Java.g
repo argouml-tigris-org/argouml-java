@@ -506,8 +506,8 @@ classDeclaration[String javadoc, short modifiers]
 normalClassDeclaration[String javadoc, short modifiers]
     @init{
         String superClassName = null;
-        List<String> ic = null;
-        List<String> tparam=null;
+        List<String> ic = new ArrayList<String>();
+        List<String> tparam = new ArrayList<String>();
     }
     :   'class' className=Identifier
         (tp=typeParameters { tparam = tp; } )?
@@ -572,7 +572,7 @@ typeBound returns [String type = null]
 // Declaration of a Java enum
 enumDeclaration[String javadoc, short modifiers]
     @init{
-        List<String> ic = null;
+        List<String> ic = new ArrayList<String>();
     }
     :   ENUM enumName=Identifier ('implements' tl=typeList { ic = tl; } )?
         {
@@ -620,7 +620,7 @@ interfaceDeclaration[String javadoc, short modifiers]
 
 normalInterfaceDeclaration[String javadoc, short modifiers]
     @init{
-        List<String> names = null;
+        List<String> names = new ArrayList<String>();
     }
     :   'interface' interfaceName=Identifier (tparam=typeParameters)?
         ('extends' ie=typeList { names = ie; } )?
