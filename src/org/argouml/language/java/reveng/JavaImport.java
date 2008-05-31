@@ -41,8 +41,10 @@ import org.antlr.runtime.CommonTokenStream;
 import org.apache.log4j.Logger;
 import org.argouml.i18n.Translator;
 import org.argouml.kernel.Project;
+import org.argouml.language.java.reveng.ui.ImportClasspathDialog;
 import org.argouml.taskmgmt.ProgressMonitor;
 import org.argouml.uml.reveng.FileImportUtils;
+import org.argouml.uml.reveng.Import;
 import org.argouml.uml.reveng.ImportInterface;
 import org.argouml.uml.reveng.ImportSettings;
 import org.argouml.uml.reveng.ImporterManager;
@@ -226,6 +228,21 @@ public class JavaImport implements ImportInterface {
     public SuffixFilter[] getSuffixFilters() {
 	SuffixFilter[] result = {FileFilters.JAVA_FILE_FILTER};
 	return result;
+    }
+
+    /*
+     * @see org.argouml.uml.reveng.ImportInterface#initializeImport(Import)
+     */
+    public void initializeImport(Import importer) {
+        new ImportClasspathDialog(importer);
+    }
+
+    /*
+     * @see org.argouml.uml.reveng.ImportInterface#isApprovedImport(Import)
+     */
+    public boolean isApprovedImport(Import importer) {
+        new ImportClasspathDialog(importer);
+        return false;
     }
 
     /*
