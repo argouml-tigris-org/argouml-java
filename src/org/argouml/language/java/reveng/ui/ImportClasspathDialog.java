@@ -1,6 +1,7 @@
 package org.argouml.language.java.reveng.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
@@ -24,6 +25,7 @@ import org.argouml.configuration.Configuration;
 import org.argouml.i18n.Translator;
 import org.argouml.uml.reveng.Import;
 import org.argouml.uml.reveng.ImportClassLoader;
+import org.argouml.uml.reveng.ImportCommandInterface;
 import org.tigris.gef.base.Globals;
 
 /**
@@ -47,7 +49,9 @@ public class ImportClasspathDialog extends JDialog {
 
     private JButton ok;
 
-    private Import importer;
+    private Component parent;
+
+    private ImportCommandInterface importCmd;
 
     /**
      * Construct a dialog to allow the user to set up the classpath for the
@@ -55,12 +59,14 @@ public class ImportClasspathDialog extends JDialog {
      *
      * @param importProcess1
      */
-    public ImportClasspathDialog(Import imp) {
+    public ImportClasspathDialog(Component comp,
+            ImportCommandInterface impCmd) {
 
         super();
         importClasspathDialog = this;
         setTitle(Translator.localize("dialog.import.classpath.title"));
-        importer = imp;
+        parent = comp;
+        importCmd = impCmd;
 
         Dimension scrSize = Toolkit.getDefaultToolkit().getScreenSize();
         getContentPane().setLayout(new BorderLayout(0, 0));
@@ -150,7 +156,7 @@ public class ImportClasspathDialog extends JDialog {
                 setVisible(false);
                 setModal(false);
                 dispose();
-                importer.doFile();
+                importCmd.execute();
             } finally {
                 setVisible(false);
                 setModal(false);
@@ -221,7 +227,7 @@ public class ImportClasspathDialog extends JDialog {
                 }
             });
 
-            chooser.showOpenDialog(importer.getFrame());
+            chooser.showOpenDialog(parent);
         }
     }
 

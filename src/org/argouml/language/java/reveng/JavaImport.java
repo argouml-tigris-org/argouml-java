@@ -24,6 +24,7 @@
 
 package org.argouml.language.java.reveng;
 
+import java.awt.Component;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -43,9 +44,10 @@ import org.argouml.i18n.Translator;
 import org.argouml.kernel.Project;
 import org.argouml.language.java.reveng.ui.ImportClasspathDialog;
 import org.argouml.taskmgmt.ProgressMonitor;
+import org.argouml.uml.reveng.ExtendedImportInterface;
 import org.argouml.uml.reveng.FileImportUtils;
 import org.argouml.uml.reveng.Import;
-import org.argouml.uml.reveng.ImportInterface;
+import org.argouml.uml.reveng.ImportCommandInterface;
 import org.argouml.uml.reveng.ImportSettings;
 import org.argouml.uml.reveng.ImporterManager;
 import org.argouml.util.FileFilters;
@@ -57,7 +59,7 @@ import org.argouml.util.SuffixFilter;
  *
  * @author Andreas Rueckert <a_rueckert@gmx.net>
  */
-public class JavaImport implements ImportInterface {
+public class JavaImport implements ExtendedImportInterface {
 
     /** logger */
     private static final Logger LOG = Logger.getLogger(JavaImport.class);
@@ -230,19 +232,12 @@ public class JavaImport implements ImportInterface {
 	return result;
     }
 
-    /*
-     * @see org.argouml.uml.reveng.ImportInterface#initializeImport(Import)
+    /**
+     * @see org.argouml.uml.reveng.ExtendedImportInterface#invokeImport(java.awt.Component, org.argouml.uml.reveng.ImportCommandInterface)
      */
-    public void initializeImport(Import importer) {
-        new ImportClasspathDialog(importer);
-    }
-
-    /*
-     * @see org.argouml.uml.reveng.ImportInterface#isApprovedImport(Import)
-     */
-    public boolean isApprovedImport(Import importer) {
-        new ImportClasspathDialog(importer);
-        return false;
+    public void invokeImport(Component component,
+            ImportCommandInterface importCmd) {
+        new ImportClasspathDialog(component, importCmd);
     }
 
     /*
