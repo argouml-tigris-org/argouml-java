@@ -24,7 +24,6 @@
 
 package org.argouml.language.java.reveng;
 
-import java.awt.Component;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -46,7 +45,6 @@ import org.argouml.language.java.reveng.ui.ImportClasspathDialog;
 import org.argouml.taskmgmt.ProgressMonitor;
 import org.argouml.uml.reveng.ExtendedImportInterface;
 import org.argouml.uml.reveng.FileImportUtils;
-import org.argouml.uml.reveng.Import;
 import org.argouml.uml.reveng.ImportCommandInterface;
 import org.argouml.uml.reveng.ImportSettings;
 import org.argouml.uml.reveng.ImporterManager;
@@ -233,11 +231,10 @@ public class JavaImport implements ExtendedImportInterface {
     }
 
     /**
-     * @see org.argouml.uml.reveng.ExtendedImportInterface#invokeImport(java.awt.Component, org.argouml.uml.reveng.ImportCommandInterface)
+     * @see org.argouml.uml.reveng.ExtendedImportInterface#invokeImport(org.argouml.uml.reveng.ImportCommandInterface)
      */
-    public void invokeImport(Component component,
-            ImportCommandInterface importCmd) {
-        new ImportClasspathDialog(component, importCmd);
+    public void invokeImport(ImportCommandInterface importCmd) {
+        new ImportClasspathDialog(importCmd);
     }
 
     /*
