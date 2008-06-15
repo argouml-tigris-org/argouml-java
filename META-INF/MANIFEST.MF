@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: org.argouml.module.java
 Bundle-Version: 0.25.5
-Bundle-ClassPath: argouml-module-java.jar,
+Bundle-ClassPath: lib/antlr-runtime-3.0.1.jar,
  lib/commons-io-1.0.jar,
  lib/easymock-1.1.jar
 Bundle-Localization: plugin
