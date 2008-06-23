@@ -24,7 +24,8 @@
 
 package org.argouml.language.java.reveng;
 
-import java.io.StringReader;
+import static org.argouml.Helper.newModel;
+
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -33,14 +34,8 @@ import junit.framework.TestCase;
 import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
-
-import static org.argouml.Helper.newModel;
-
 import org.argouml.model.Model;
 import org.argouml.profile.init.InitProfileSubsystem;
-import org.argouml.language.java.reveng.JavaLexer;
-import org.argouml.language.java.reveng.JavaParser;
-import org.argouml.language.java.reveng.Modeller;
 
 /**
  * Test case to test the import of a Java source file containing a Java 5 enum.
@@ -81,8 +76,8 @@ public class TestJavaImportEnumeration extends TestCase {
         Model.getModelManagementFactory().setRootModel(parsedModel);
         new InitProfileSubsystem().init();
 
-        Modeller modeller = new Modeller(parsedModel,
-                new DummyImportSettings(), "TestClass.java");
+        Modeller modeller = new Modeller(parsedModel, false, false,
+                "TestClass.java");
         assertNotNull("Creation of Modeller instance failed.", modeller);
 
         try {

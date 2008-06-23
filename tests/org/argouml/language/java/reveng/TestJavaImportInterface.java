@@ -24,6 +24,8 @@
 
 package org.argouml.language.java.reveng;
 
+import static org.argouml.Helper.newModel;
+
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -32,9 +34,6 @@ import junit.framework.TestCase;
 import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
-
-import static org.argouml.Helper.newModel;
-
 import org.argouml.model.Model;
 import org.argouml.profile.init.InitProfileSubsystem;
 
@@ -82,8 +81,7 @@ public class TestJavaImportInterface extends TestCase {
         new InitProfileSubsystem().init();
 
         Modeller modeller =
-                new Modeller(parsedModel, new DummyImportSettings(),
-                    "TestInterface.java");
+                new Modeller(parsedModel, false, false, "TestInterface.java");
         assertNotNull("Creation of Modeller instance failed.", modeller);
 
         try {

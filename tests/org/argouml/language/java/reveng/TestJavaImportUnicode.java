@@ -24,24 +24,20 @@
 
 package org.argouml.language.java.reveng;
 
+import static org.argouml.Helper.newModel;
+
 import java.util.Collection;
 import java.util.Iterator;
-import java.io.StringReader;
+
 import junit.framework.TestCase;
 
 import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
-
-import static org.argouml.Helper.newModel;
-
 import org.argouml.kernel.Project;
 import org.argouml.kernel.ProjectManager;
 import org.argouml.model.Model;
 import org.argouml.profile.init.InitProfileSubsystem;
-import org.argouml.language.java.reveng.JavaLexer;
-import org.argouml.language.java.reveng.JavaParser;
-import org.argouml.language.java.reveng.Modeller;
 
 /**
  * Test the import of Java sources which have Unicode characters in
@@ -93,8 +89,7 @@ public class TestJavaImportUnicode extends TestCase {
                 parsedModel);
 
         Modeller modeller =
-            new Modeller(parsedModel, new DummyImportSettings(),
-                "TestClass.java");
+            new Modeller(parsedModel, false, false, "TestClass.java");
         assertNotNull("Creation of Modeller instance failed.", modeller);
 
         try {
