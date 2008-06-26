@@ -54,7 +54,6 @@ import org.argouml.uml.reveng.ImportSettings;
 import org.argouml.uml.reveng.ImporterManager;
 import org.argouml.uml.reveng.Setting;
 import org.argouml.uml.reveng.SettingsTypes;
-import org.argouml.util.FileFilters;
 import org.argouml.util.SuffixFilter;
 
 /**
@@ -296,7 +295,11 @@ public class JavaImport implements ImportInterface {
      * @see org.argouml.uml.reveng.ImportInterface#getSuffixFilters()
      */
     public SuffixFilter[] getSuffixFilters() {
-	SuffixFilter[] result = {FileFilters.JAVA_FILE_FILTER};
+	SuffixFilter[] result = {
+            // TODO: I18N
+	    new SuffixFilter("java", 
+	            Translator.localize("combobox.filefilter.java")),
+	};
 	return result;
     }
 
