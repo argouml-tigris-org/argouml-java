@@ -423,7 +423,7 @@ compilationUnit[Modeller modeller, JavaLexer lexer]
     @init{
         setModeller(modeller);
         _lexer = lexer;
-        if ( backtracking == 0 ) {
+        if (backtracking == 0) {
             getModeller().addComponent();
         }
     }
@@ -1161,11 +1161,12 @@ elementValueArrayInitializer
 
 annotationTypeDeclaration[String javadoc, short modifiers]
     :   '@' 'interface' name=Identifier
-         {
-             getModeller().addAnnotationDefinition(name.getText(), modifiers,
-                 javadoc, (parserMode == MODE_IMPORT_PASS2));
-         }
-         annotationTypeBody
+        {
+            getModeller().addAnnotationDefinition(name.getText(), modifiers,
+                javadoc, (parserMode == MODE_IMPORT_PASS2));
+        }
+        annotationTypeBody
+        // TODO: need a popClassifier or perhaps endAnnotationDefinintion here
     ;
 
 annotationTypeBody
@@ -1328,6 +1329,7 @@ expressionList
 
 statementExpression
     :   expression
+        //TODO: addCall somewhere, please!
     ;
     
 constantExpression
