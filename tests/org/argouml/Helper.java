@@ -44,12 +44,14 @@ import org.argouml.profile.init.InitProfileSubsystem;
 public class Helper {
 
     public static Object getModel() {
+        // TODO: This is making assumptions about the ordering of models which
+        // may not be true! - tfm
         return ProjectManager.getManager().getCurrentProject().
-            getModels().iterator().next();
+            getUserDefinedModelList().iterator().next();
     }
 
     public static Collection<Object> getModels() {
-        return ProjectManager.getManager().getCurrentProject().getModels();
+        return ProjectManager.getManager().getCurrentProject().getUserDefinedModelList();
     }
 
     public static void newModel() {
