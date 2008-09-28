@@ -141,9 +141,12 @@ public class Modeller {
 
     /**
      * Create a new modeller.
-     *
+     * 
      * @param theModel The model to work with.
-     * @param settings the settings to use for this import
+     * @param attributeSelected true if associations should be modeled as
+     *                attributes
+     * @param datatypeSelected true if arrays should be modeled as datatypes
+     *                instead of instead of using UML multiplicities
      * @param theFileName the current file name
      */
     public Modeller(Object theModel, boolean attributeSelected,
@@ -1821,6 +1824,7 @@ public class Modeller {
     */
     private Context getContext(String name) {
         Context context = parseState.getContext();
+        //TODO: the context need not be a package, so here is a bug!
         String packageName = getPackageName(name);
         if (!"".equals(packageName)) {
             context = new PackageContext(context, getPackage(packageName));

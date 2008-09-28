@@ -260,8 +260,17 @@ public class JavaImport implements ImportInterface {
             // exceptions to the file.
             LOG.info("Parsing " + f.getAbsolutePath());
 
-            modeller.setAttribute("level",
-                    Integer.valueOf(pass));
+            // Calculate the import level
+            int level = 0;
+            int importlevel = settings.getImportLevel();
+            if (importlevel == ImportSettings.DETAIL_CLASSIFIER_FEATURE) {
+                level = 1;
+            } else if (importlevel == ImportSettings.DETAIL_FULL) {
+                // full level only needed for the second pass
+                level = (pass == 0) ? 0 : 2;
+            }
+            modeller.setAttribute("level", 
+                    Integer.valueOf(level));
 
             try {
                 // start parsing at the compilationUnit rule
@@ -296,7 +305,6 @@ public class JavaImport implements ImportInterface {
      */
     public SuffixFilter[] getSuffixFilters() {
 	SuffixFilter[] result = {
-            // TODO: I18N
 	    new SuffixFilter("java", 
 	            Translator.localize("combobox.filefilter.java")),
 	};
@@ -366,7 +374,7 @@ public class JavaImport implements ImportInterface {
 
         int selected;
         String modelattr = Configuration
-                .getString(KEY_IMPORT_EXTENDED_MODEL_ATTR);
+                .getString(KEY_IMPORT_EXTENDED_MODEL_ATTR, "0");
         selected = Integer.parseInt(modelattr);
 
         attributeSetting = new Setting.UniqueSelection(Translator
@@ -381,7 +389,7 @@ public class JavaImport implements ImportInterface {
                 .localize("action.import-java-array-model-multi"));
 
         String modelarrays = Configuration
-                .getString(KEY_IMPORT_EXTENDED_MODEL_ARRAYS);
+                .getString(KEY_IMPORT_EXTENDED_MODEL_ARRAYS, "0");
         selected = Integer.parseInt(modelarrays);
 
         datatypeSetting = new Setting.UniqueSelection(Translator
