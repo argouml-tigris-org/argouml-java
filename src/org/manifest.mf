@@ -8,5 +8,5 @@ Specification-Title: ArgoUML Dynamic Load Module
 Specification-Version: 0.19.2
 Specification-Vendor: University of California
 Implementation-Vendor: Thomas Neustupny
-Implementation-Version: 0.25.5
-Implementation-Title: ArgoUML Java reverse engineering module
+Implementation-Version: 0.27.1
+Implementation-Title: ArgoUML Java module
