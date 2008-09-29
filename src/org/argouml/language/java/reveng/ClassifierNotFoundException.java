@@ -1,5 +1,5 @@
 // $Id$
-// Copyright (c) 2003-2007 The Regents of the University of California. All
+// Copyright (c) 2003-2008 The Regents of the University of California. All
 // Rights Reserved. Permission to use, copy, modify, and distribute this
 // software and its documentation without fee, and without a written
 // agreement is hereby granted, provided that the above copyright notice
@@ -29,24 +29,36 @@ package org.argouml.language.java.reveng;
    via the classpath.
 */
 class ClassifierNotFoundException extends Exception {
+
+    private static final long serialVersionUID = -231176308360959368L;
+
     public ClassifierNotFoundException(String name) {
 	super("classifier not found: " + name);
     }
 }
 
 class JavaParseException extends RuntimeException {
+
+    private static final long serialVersionUID = -1159994473124124149L;
+
     public JavaParseException(String error) {
         super(error);
     }
 }
 
 class ParseStateException extends JavaParseException {
+
+    private static final long serialVersionUID = 7248901734154537707L;
+
     public ParseStateException(String error) {
         super("Unexpected parser state : " + error);
     }
 }
 
 class UnsupportedJavaFeatureException extends JavaParseException {
+
+    private static final long serialVersionUID = 1845906633100572401L;
+
     public UnsupportedJavaFeatureException(String feature, String name) {
         super("Unsupported Java parser feature " + feature + " - identifier: "
                 + name);

@@ -1,5 +1,5 @@
 // $Id$
-// Copyright (c) 1996-2007 The Regents of the University of California. All
+// Copyright (c) 1996-2008 The Regents of the University of California. All
 // Rights Reserved. Permission to use, copy, modify, and distribute this
 // software and its documentation without fee, and without a written
 // agreement is hereby granted, provided that the above copyright notice
@@ -23,76 +23,67 @@
 // UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 /*
-  JavaRE - Code generation and reverse engineering for UML and Java
-  Copyright (C) 2000 Marcus Andersson andersson@users.sourceforge.net
-*/
+ JavaRE - Code generation and reverse engineering for UML and Java
+ Copyright (C) 2000 Marcus Andersson andersson@users.sourceforge.net
+ */
 
 package org.argouml.language.java.reveng;
 
 import org.argouml.model.Model;
 
 /**
-   This context is a specific classifier.
-*/
-class ClassifierContext extends Context
-{
+ * This context is a specific classifier.
+ */
+class ClassifierContext extends Context {
     /** The classifier this context represents. */
     private Object mClassifier;
 
     /**
-       Create a new context from a classifier.
-
-       @param base Based on this context.
-       @param classifier Represents this classifier.
-    */
-    public ClassifierContext(Context base, Object classifier)
-    {
-	super(base);
-	this.mClassifier = classifier;
+     * Create a new context from a classifier.
+     * 
+     * @param base Based on this context.
+     * @param classifier Represents this classifier.
+     */
+    public ClassifierContext(Context base, Object classifier) {
+        super(base);
+        this.mClassifier = classifier;
     }
 
-    public Object getInterface(String name)
-	throws ClassifierNotFoundException
-    {
+    public Object getInterface(String name) throws ClassifierNotFoundException {
         return get(name, true);
     }
 
     /**
      * Get the classifier for a given name
-     *
+     * 
      * @param classifierName The name of the classifier to retrieve.
      * @return A classifier for the name.
      */
     public Object get(String classifierName)
-    throws ClassifierNotFoundException {
+        throws ClassifierNotFoundException {
         return get(classifierName, false);
     }
 
     /**
      * Get the classifier for a given name
-     *
-     * @param classifierName
-     *            The name of the classifier to retrieve.
+     * 
+     * @param classifierName The name of the classifier to retrieve.
      * @return A classifier for the name.
      */
     public Object get(String classifierName, boolean interfacesOnly)
-	throws ClassifierNotFoundException
-    {
-	// Check if it is this classifier
-	if (classifierName.equals(Model.getFacade().getName(mClassifier))
+        throws ClassifierNotFoundException {
+        // Check if it is this classifier
+        if (classifierName.equals(Model.getFacade().getName(mClassifier))
                 && (!interfacesOnly || Model.getFacade().isAInterface(
                         mClassifier))) {
-	    return mClassifier;
-	}
-	else {
-	    // Continue the search through the rest of the model
-	    if (getContext() != null) {
-		return getContext().get(classifierName, interfacesOnly);
-	    }
-	    else {
-		return null;
-	    }
-	}
+            return mClassifier;
+        } else {
+            // Continue the search through the rest of the model
+            if (getContext() != null) {
+                return getContext().get(classifierName, interfacesOnly);
+            } else {
+                return null;
+            }
+        }
     }
 }
-
