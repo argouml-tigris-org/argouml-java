@@ -1,5 +1,5 @@
 // $Id$
-// Copyright (c) 1996-2007 The Regents of the University of California. All
+// Copyright (c) 1996-2008 The Regents of the University of California. All
 // Rights Reserved. Permission to use, copy, modify, and distribute this
 // software and its documentation without fee, and without a written
 // agreement is hereby granted, provided that the above copyright notice
@@ -26,7 +26,6 @@ package org.argouml.language.java.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -43,7 +42,6 @@ import javax.swing.SpinnerNumberModel;
 import org.apache.log4j.Logger;
 import org.argouml.application.api.GUISettingsTabInterface;
 import org.argouml.i18n.Translator;
-//import org.argouml.language.java.generator.GeneratorJava;
 import org.argouml.moduleloader.ModuleInterface;
 import org.argouml.ui.GUI;
 
@@ -62,10 +60,8 @@ public class SettingsTabJava implements ModuleInterface, GUISettingsTabInterface
     private JSpinner indent;
     private JCheckBox verboseDocs;
     private JCheckBox lfBeforeCurly;
-    private JComboBox useSect;
     private JCheckBox headerGuardUpperCase;
     private JCheckBox headerGuardGUID;
-    private JComboBox defaultInline;
 
     /*
      * Build the panel to be used for our settings tab.
@@ -138,10 +134,8 @@ public class SettingsTabJava implements ModuleInterface, GUISettingsTabInterface
         gen.setIndent(indWidth);
         gen.setLfBeforeCurly(lfBeforeCurly.isSelected());
         gen.setVerboseDocs(verboseDocs.isSelected());
-        gen.setUseSect(useSect.getSelectedIndex());
         gen.setHeaderGuardUpperCase(headerGuardUpperCase.isSelected());
         gen.setHeaderGuardGUID(headerGuardGUID.isSelected());
-        gen.setDefaultInlineStyle(defaultInline.getSelectedIndex());
         */
     }
 
@@ -160,10 +154,8 @@ public class SettingsTabJava implements ModuleInterface, GUISettingsTabInterface
         lfBeforeCurly.setSelected(gen.isLfBeforeCurly());
         verboseDocs.setSelected(gen.isVerboseDocs());
         indent.setValue(Integer.valueOf(gen.getIndent()));
-        useSect.setSelectedIndex(gen.getUseSect());
         headerGuardUpperCase.setSelected(gen.isHeaderGuardUpperCase());
         headerGuardGUID.setSelected(gen.isHeaderGuardGUID());
-        defaultInline.setSelectedIndex(gen.getDefaultInlineStyle());
         */
     }
 
@@ -204,7 +196,7 @@ public class SettingsTabJava implements ModuleInterface, GUISettingsTabInterface
     public String getInfo(int type) {
         switch (type) {
         case ModuleInterface.AUTHOR:
-            return "Daniele Tamino"; //$NON-NLS-1$
+            return "Thomas Neustupny"; //$NON-NLS-1$
         case ModuleInterface.DESCRIPTION:
             // TODO: i18n
             return "Java Settings";
