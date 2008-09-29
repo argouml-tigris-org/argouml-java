@@ -381,7 +381,7 @@ package org.argouml.language.java.reveng;
 
     /**
      * Add a call that appears after a dot. This is needed for the RE of
-     * sequence diagrams and is currently not used. Should be calles in the
+     * sequence diagrams and is currently not used. Should be called in the
      * identifierSuffix rule.
      */
     private void addDotCall(String id, String thisOrSuper, boolean parenths) {
@@ -1464,12 +1464,31 @@ castExpression
     ;
 
 primary
+    @init{
+        String name = null;
+        boolean parenths = false; //LA(1) == LPAREN;
+    }
     :   parExpression
-    |   'this' ('.' Identifier)* (identifierSuffix)?
+    |   'this' ('.' id=Identifier { name = $id.text; } )*
+        (identifierSuffix { parenths = true; } )?
+        { if ((parserMode & MODE_REVENG_SEQUENCE) != 0) {
+              addDotCall(name, "this.", parenths);
+          }
+        }
     |   'super' superSuffix
+        { if ((parserMode & MODE_REVENG_SEQUENCE) != 0) {
+              addDotCall(name, "super.", true);
+          }
+        }
     |   literal
     |   'new' creator
-    |   Identifier ('.' Identifier)* (identifierSuffix)?
+    |   id=Identifier  { name = $id.text; }
+        ('.' id=Identifier { name = $id.text; } )*
+        (identifierSuffix { parenths = true; } )?
+        { if ((parserMode & MODE_REVENG_SEQUENCE) != 0) {
+              addDotCall(name, null, parenths);
+          }
+        }
     |   primitiveType ('[' ']')* '.' 'class'
     |   'void' '.' 'class'
     ;
@@ -1508,6 +1527,15 @@ arrayCreatorRest
 
 classCreatorRest[String t]
     :   arguments
+        { if ((parserMode & MODE_REVENG_SEQUENCE) != 0) {
+            StringBuffer sb = new StringBuffer();
+            if (";".equals(input.LT(1).getText()) && createdObjectVarName != null) {
+              sb.append(createdObjectVarName).append('=');
+            }
+            sb.append("new ").append(t);
+            getModeller().addCall(sb.toString());
+          }
+        }
         (
             {
                 getModeller().addAnonymousClass(t,
