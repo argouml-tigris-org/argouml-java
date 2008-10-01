@@ -41,6 +41,8 @@ public class TestGeneratorJava extends TestCase {
     private Object innerClass;
 
     private Object inter1;
+    
+    private GeneratorJava generator;
 
     /**
      * Constructor for TestGeneratorJava.
@@ -64,7 +66,7 @@ public class TestGeneratorJava extends TestCase {
         class1 = Model.getCoreFactory().buildClass("Class1", namespace);
         innerClass = Model.getCoreFactory().buildClass("InnerClass", class1);
         inter1 = Model.getCoreFactory().buildInterface("Inter1", namespace);
-
+        generator = new GeneratorJava();
     }
 
     /**
@@ -76,7 +78,7 @@ public class TestGeneratorJava extends TestCase {
 
         Model.getCoreHelper().setVisibility(class1,
                 Model.getVisibilityKind().getPublic());
-        result = GeneratorJava.getInstance().generateClassifierStart(class1);
+        result = generator.generateClassifierStart(class1);
         assertTrue(Model.getFacade().isAPackage(
                 Model.getFacade().getNamespace(class1)));
         assertTrue("A class should have public in its specification", result
@@ -86,7 +88,7 @@ public class TestGeneratorJava extends TestCase {
                 Model.getVisibilityKind().getProtected());
         assertTrue(Model.getFacade().isAPackage(
                 Model.getFacade().getNamespace(class1)));
-        result = GeneratorJava.getInstance().generateClassifierStart(class1);
+        result = generator.generateClassifierStart(class1);
         assertTrue("A class should not have protected in its specification",
                 result.indexOf("protected") == -1);
 
@@ -94,7 +96,7 @@ public class TestGeneratorJava extends TestCase {
                 Model.getVisibilityKind().getPackage());
         assertTrue(Model.getFacade().isAPackage(
                 Model.getFacade().getNamespace(class1)));
-        result = GeneratorJava.getInstance().generateClassifierStart(class1);
+        result = generator.generateClassifierStart(class1);
         assertTrue("A class with default visibility should not have "
                 + "public in its specification",
                 result.indexOf("public") == -1);
@@ -112,7 +114,7 @@ public class TestGeneratorJava extends TestCase {
 
         Model.getCoreHelper().setVisibility(inter1,
                 Model.getVisibilityKind().getPublic());
-        result = GeneratorJava.getInstance().generateClassifierStart(inter1);
+        result = generator.generateClassifierStart(inter1);
         assertTrue(Model.getFacade().isAPackage(
                 Model.getFacade().getNamespace(inter1)));
         assertTrue("A interface should have public in its specification",
@@ -120,7 +122,7 @@ public class TestGeneratorJava extends TestCase {
 
         Model.getCoreHelper().setVisibility(inter1,
                 Model.getVisibilityKind().getProtected());
-        result = GeneratorJava.getInstance().generateClassifierStart(inter1);
+        result = generator.generateClassifierStart(inter1);
         assertTrue(Model.getFacade().isAPackage(
                 Model.getFacade().getNamespace(inter1)));
         assertTrue(
@@ -129,7 +131,7 @@ public class TestGeneratorJava extends TestCase {
 
         Model.getCoreHelper().setVisibility(inter1,
                 Model.getVisibilityKind().getPackage());
-        result = GeneratorJava.getInstance().generateClassifierStart(inter1);
+        result = generator.generateClassifierStart(inter1);
         assertTrue(Model.getFacade().isAPackage(
                 Model.getFacade().getNamespace(inter1)));
         assertTrue(
@@ -152,7 +154,7 @@ public class TestGeneratorJava extends TestCase {
         Model.getCoreHelper().setVisibility(innerClass,
                 Model.getVisibilityKind().getPublic());
         result =
-            GeneratorJava.getInstance()
+            generator
                 .generateClassifierStart(innerClass);
         assertTrue(Model.getFacade().isAClass(
                 Model.getFacade().getNamespace(innerClass)));
@@ -164,7 +166,7 @@ public class TestGeneratorJava extends TestCase {
         assertTrue(Model.getFacade().isAClass(
                 Model.getFacade().getNamespace(innerClass)));
         result =
-            GeneratorJava.getInstance()
+            generator
                 .generateClassifierStart(innerClass);
         assertTrue("A class should have protected in its specification",
                 result.indexOf("protected") == 0);
@@ -174,7 +176,7 @@ public class TestGeneratorJava extends TestCase {
         assertTrue(Model.getFacade().isAClass(
                 Model.getFacade().getNamespace(innerClass)));
         result =
-            GeneratorJava.getInstance()
+            generator
                 .generateClassifierStart(innerClass);
         assertTrue("A inner class with package (default) visibility should not"
                 + " have protected in its specification",

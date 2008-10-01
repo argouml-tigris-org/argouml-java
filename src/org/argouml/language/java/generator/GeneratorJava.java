@@ -62,8 +62,6 @@ import tudresden.ocl.parser.node.AConstraintBody;
 /**
  * FileGenerator implementing class to generate Java for display in diagrams
  * and in text fields in the ArgoUML user interface.
- *
- * @stereotype singleton
  */
 public class GeneratorJava implements CodeGenerator, ModuleInterface {
 
@@ -107,33 +105,16 @@ public class GeneratorJava implements CodeGenerator, ModuleInterface {
     private static boolean isInUpdateMode;
 
     /**
-     * The instance.
-     */
-    private static final GeneratorJava SINGLETON = new GeneratorJava();
-
-    /**
      * Two spaces used for indenting code in classes.
      */
     private static final String INDENT = "  ";
 
     /**
-     * Get the generator.
-     *
-     * @return The singleton.
+     * The Language instance.
      */
-    public static GeneratorJava getInstance() {
-        return SINGLETON;
-    }
-
-    /**
-     * Constructor.
-     */
-    protected GeneratorJava() {
-        Language java = GeneratorHelper.makeLanguage(
-                "Java", "Java", 
-                ResourceLoaderWrapper.lookupIconResource("JavaNotation"));
-        GeneratorManager.getInstance().addGenerator(java, this);
-    }
+    private static Language java = GeneratorHelper.makeLanguage(
+        "Java", "Java", 
+        ResourceLoaderWrapper.lookupIconResource("JavaNotation"));
 
     /**
      * Generates a file for the classifier.
@@ -198,8 +179,8 @@ public class GeneratorJava implements CodeGenerator, ModuleInterface {
         LOG.info("Generating " + f.getPath());
         isFileGeneration = true;
         String header =
-	    SINGLETON.generateHeader(classifier, pathname, packagePath);
-        String src = SINGLETON.generateClassifier(classifier);
+	    generateHeader(classifier, pathname, packagePath);
+        String src = generateClassifier(classifier);
         BufferedWriter fos = null;
         try {
 	    if (Configuration.getString(Argo.KEY_INPUT_SOURCE_ENCODING) == null
@@ -1842,20 +1823,18 @@ public class GeneratorJava implements CodeGenerator, ModuleInterface {
      * @see org.argouml.moduleloader.ModuleInterface#enable()
      */
     public boolean enable() {
-//        GeneratorManager.getInstance()
-//                .addGenerator(myLang, new JavaGenerator());
-        GeneratorJava.getInstance();
+        GeneratorManager.getInstance().addGenerator(java, this);
         return true;
     }
 
     /*
-     * Not supported.  Always returns false.
+     * Disable the Java code generator.
      * 
      * @see org.argouml.moduleloader.ModuleInterface#disable()
      */
     public boolean disable() {
-//        GeneratorManager.getInstance().removeGenerator(myLang);
-        return false;
+        GeneratorManager.getInstance().removeGenerator(java);
+        return true;
     }
 
     /**
