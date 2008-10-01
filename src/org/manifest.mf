@@ -2,11 +2,38 @@ Manifest-Version: 2.0
 Class-Path: argouml.jar antlr-runtime-3.0.1.jar antlr-2.7.7.jar
 Created-By: 1.3.1 (Sun Microsystems Inc.) 
 
+Name: org/argouml/language/java/cognitive/critics/InitJavaCritics.class
+Extension-name: module.language.java.cognitive.critics
+Specification-Title: ArgoUML Dynamic Load Module
+Specification-Version: 0.27.1
+Specification-Vendor: University of California
+Implementation-Vendor: ArgoUML project
+Implementation-Version: 0.27.1
+Implementation-Title: ArgoUML Java critics module
+
+Name: org/argouml/language/java/generator/GeneratorJava.class
+Extension-name: module.language.java.generator
+Specification-Title: ArgoUML Dynamic Load Module
+Specification-Version: 0.27.1
+Specification-Vendor: University of California
+Implementation-Vendor: ArgoUML project
+Implementation-Version: 0.27.1
+Implementation-Title: ArgoUML Java source generation module
+
 Name: org/argouml/language/java/reveng/JavaImport.class
 Extension-name: module.language.java.reveng
 Specification-Title: ArgoUML Dynamic Load Module
-Specification-Version: 0.19.2
+Specification-Version: 0.27.1
 Specification-Vendor: University of California
-Implementation-Vendor: Thomas Neustupny, Andreas Rueckert
+Implementation-Vendor: ArgoUML project
 Implementation-Version: 0.27.1
-Implementation-Title: ArgoUML Java module
+Implementation-Title: ArgoUML Java source import module
+
+Name: org/argouml/language/java/reveng/classfile/ClassfileImport.class
+Extension-name: module.language.java.reveng.classfile
+Specification-Title: ArgoUML Dynamic Load Module
+Specification-Version: 0.27.1
+Specification-Vendor: University of California
+Implementation-Vendor: ArgoUML project
+Implementation-Version: 0.27.1
+Implementation-Title: ArgoUML Java classfile import module
