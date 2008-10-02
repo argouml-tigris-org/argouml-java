@@ -109,8 +109,8 @@ engineering of Java code and support for built-in types and standard libraries.
     <!-- TODO: This probably needs to reference the packaging directory -->
     <available file="${basedir}/../argouml-build/build" 
     	type="dir" property="argo.build.dir" value="${basedir}/../argouml-build/build"/>
-    <available file="${basedir}/../argouml/src/argouml-build/build" 
-    	type="dir" property="argo.build.dir" value="${basedir}/../argouml/src/argouml-build/build"/>
+    <available file="${basedir}/../argouml/build" 
+    	type="dir" property="argo.build.dir" value="${basedir}/../argouml/build"/>
 
     <property name="argo.build.dest" value="${argo.build.dir}/classes"/>
     <property name="argo.jarfile" value="${argo.build.dir}/argouml.jar"/>
