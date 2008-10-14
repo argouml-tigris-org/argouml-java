@@ -1,6 +1,6 @@
-#Sat Jul 12 13:02:16 EDT 2008
+#Sun Oct 12 18:44:33 CEST 2008
 filenames.properties=/argouml-core-tools/checkstyle/checkstyle.properties
-file_filter=in\:\\.java$\nin\:\\.properties$\nex\:JavaParser.java\nex\:JavaLexer.java\n
 enabled=true
+file_filter=in\:\\.java$\nin\:\\.properties$\nex\:JavaParser.java\nex\:JavaLexer.java\nex\:ClassfileTreeParser\nex\:ClassfileParser\n
 projectclassloader=true
 filenames.config=/argouml-core-tools/checkstyle/checkstyle_argouml.xml
