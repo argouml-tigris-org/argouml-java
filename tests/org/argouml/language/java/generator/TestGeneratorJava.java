@@ -24,10 +24,11 @@
 
 package org.argouml.language.java.generator;
 
+import static org.argouml.Helper.newModel;
+
 import org.argouml.model.Model;
 
 import junit.framework.TestCase;
-import org.argouml.model.InitializeModel;
 
 /**
  * @author MarkusK
@@ -51,6 +52,7 @@ public class TestGeneratorJava extends TestCase {
      */
     public TestGeneratorJava(String name) {
         super(name);
+        newModel();
     }
 
     /*
@@ -58,7 +60,6 @@ public class TestGeneratorJava extends TestCase {
      */
     protected void setUp() throws Exception {
         super.setUp();
-        InitializeModel.initializeDefault();
         Object mmodel = Model.getModelManagementFactory().createModel();
         Model.getCoreHelper().setName(mmodel, "untitledModel");
         Model.getModelManagementFactory().setRootModel(mmodel);
