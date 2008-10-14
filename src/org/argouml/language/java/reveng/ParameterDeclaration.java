@@ -32,9 +32,9 @@ package org.argouml.language.java.reveng;
  */
 public class ParameterDeclaration {
 
-    private final short modifiers;
-    private final String type;
-    private final String name;
+    private final short theModifiers;
+    private final String theType;
+    private final String theName;
 
     /**
      * Construct a new parameter declaration object.
@@ -48,29 +48,29 @@ public class ParameterDeclaration {
      */
     public ParameterDeclaration(final short modifiers, final String type,
             final String name) {
-        this.modifiers = modifiers;
-        this.type = type;
-        this.name = name;
+        theModifiers = modifiers;
+        theType = type;
+        theName = name;
     }
 
     /**
      * @return a bitfield containing the modifiers for the parameter.
      */
     public short getModifiers() {
-        return modifiers;
+        return theModifiers;
     }
 
     /**
      * @return the type of the parameter in string form.
      */
     public String getType() {
-        return type;
+        return theType;
     }
 
     /**
      * @return the name of the parameter.
      */
     public String getName() {
-        return name;
+        return theName;
     }
 }

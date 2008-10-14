@@ -77,7 +77,7 @@ public class GeneratorJava implements CodeGenerator, ModuleInterface {
 	System.getProperty("line.separator");
     private static final String LANG_PACKAGE = "java.lang";
 
-    private static final Set JAVA_TYPES;
+    private static final Set<String> JAVA_TYPES;
     static {
 	Set<String> types = new HashSet<String>();
 	types.add("void");
@@ -1389,8 +1389,7 @@ public class GeneratorJava implements CodeGenerator, ModuleInterface {
         StringBuffer sb = new StringBuffer(80);
         sb.append(generateVisibility(Model.getFacade().getVisibility(ae)));
 
-        if (Model.getScopeKind().getClassifier().equals(
-                Model.getFacade().getTargetScope(ae))) {
+        if (Model.getFacade().isStatic(ae)) {
             sb.append("static ");
         }
         //     String n = ae.getName();

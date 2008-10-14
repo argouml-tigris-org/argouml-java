@@ -252,7 +252,8 @@ public class JavaImport implements ImportInterface {
             parser.setParserMode(parserMode);
 
             // Create a modeller for the parser
-            Modeller modeller = new Modeller(p.getModel(),
+            Modeller modeller = new Modeller(
+                    p.getUserDefinedModelList().get(0),
                     isAttributeSelected(), isDatatypeSelected(),
                     f.getName());
 

@@ -128,7 +128,8 @@ public class RESequenceDiagramDialog
 
     private final List<String> calls = new ArrayList<String>();
     private final List<String> calldata = new ArrayList<String>();
-    private final Hashtable types = new Hashtable();
+    private final Hashtable<String, String> types
+        = new Hashtable<String, String>();
 
     private final ArgoDiagram diagram;
 
@@ -148,10 +149,11 @@ public class RESequenceDiagramDialog
      * Constructor. A new sequence diagram will be created and the work
      * happens in that new sequence diagram.
      *
+     * @param aProject The project this dialog is acting within
      * @param oper The operation that should be reverse engineered.
      */
-    public RESequenceDiagramDialog(Project project, Object oper) {
-        this(project, oper, null, null);
+    public RESequenceDiagramDialog(Project aProject, Object oper) {
+        this(aProject, oper, null, null);
     }
 
     /**
@@ -159,16 +161,16 @@ public class RESequenceDiagramDialog
      * the actual diagram is a sequence diagram, so no new one is created and
      * the work happens in the actual sequence diagram.
      *
-     * @param project The project this dialog is acting within
+     * @param aProject The project this dialog is acting within
      * @param oper The operation that should be reverse engineered.
      * @param figMessage the message figure where the result will be drawn to
-     * @param diagram the diagram to draw to or null is a new diagram required
+     * @param aDiagram the diagram to draw to or null is a new diagram required
      */
     public RESequenceDiagramDialog(
-            final Project project,
+            final Project aProject,
             final Object oper,
             final FigMessage figMessage,
-            final ArgoDiagram diagram) {
+            final ArgoDiagram aDiagram) {
         // TODO: don't depend on a Fig (but it is needed to extend an existing
         // sequence diagram, i.e. to perform an action on a FigMessage!)
         super(
@@ -181,10 +183,10 @@ public class RESequenceDiagramDialog
                 ArgoDialog.OK_CANCEL_OPTION,
                 true);
         setResizable(false);
-        this.project = project;
+        project = aProject;
 
         operation = oper;
-        model = project.getModel();
+        model = project.getUserDefinedModelList().get(0);
         try {
             // TODO: must not depend on the Java modeller, but the needed one
             // must be either derived from the method's notation, or chosen by
@@ -199,14 +201,15 @@ public class RESequenceDiagramDialog
 
         classifier = Model.getFacade().getOwner(operation);
         if (figMessage != null) {
-            this.diagram = diagram;
+            diagram = aDiagram;
             isNewSequenceDiagram = false;
             figClassifierRole = getFigClassifierRole(classifier, "obj");
             // TODO: There is only a single port on new implementation of SD
             // so how do we resolve this?
-            SequenceDiagramLayer layer = (SequenceDiagramLayer) diagram.getLayer();
-            portCnt =
-                layer.getNodeIndex(
+            SequenceDiagramLayer layer
+                = (SequenceDiagramLayer) diagram.getLayer();
+            portCnt
+                = layer.getNodeIndex(
                     figMessage.getDestMessageNode().getFigMessagePort().getY());
             Iterator<Fig> it = diagram.getFigIterator();
             while (it.hasNext()) {
@@ -315,11 +318,11 @@ public class RESequenceDiagramDialog
                 if (project.getDiagramList().size() > 1) {
                     newTarget = project.getDiagramList().get(1);
                 } else {
-                    newTarget = project.getRoot();
+                    newTarget = project.getRoots().iterator().next();
                 }
             }
         } else {
-            newTarget = project.getRoot();
+            newTarget = project.getRoots().iterator().next();
         }
         return newTarget;
     }
@@ -556,9 +559,10 @@ public class RESequenceDiagramDialog
             } else {
                 // TODO: I don't think it's normal to generate model element
                 // names
-                Model.getCoreHelper().setName(newClassifierRole, "anon" + (++anonCnt));
+                Model.getCoreHelper().setName(newClassifierRole,
+                        "anon" + (++anonCnt));
             }
-            coll = new ArrayList();
+            coll = new ArrayList<Object>();
             coll.add(theClassifier);
             Model.getCollaborationsHelper().setBases(newClassifierRole, coll);
             crFig = new FigClassifierRole(newClassifierRole);
@@ -728,10 +732,10 @@ public class RESequenceDiagramDialog
         Fig destPortFig = endFig.getPortFig(foundPort);
         Object messageType = Model.getMetaTypes().getMessage();
 
-        // TODO: This has a bad smell. I don't think we should be using Modes here.
-        // Modes are for user interactions. Find a better way to do this.
+        // TODO: This has a bad smell. I don't think we should be using Modes
+        // here. Modes are for user interactions. Find a better way to do this.
         Editor ce = Globals.curEditor();
-        Hashtable args = new Hashtable();
+        Hashtable<String, Object> args = new Hashtable<String, Object>();
         args.put("action", callType);
         Mode mode = ce.getModeManager().top();
         mode.setArgs(args);
@@ -881,7 +885,7 @@ public class RESequenceDiagramDialog
         Iterator iter1 = cdeps != null ? cdeps.iterator() : null;
         while (theClassifier == null && iter1 != null && iter1.hasNext()) {
             Object perm = iter1.next();
-            if (Model.getFacade().isAPermission(perm)) {
+            if (Model.getFacade().isAPackageImport(perm)) {
                 Collection suppliers = Model.getFacade().getSuppliers(perm);
                 // TODO: Do we really need to test for null here?
                 // We should get empty collections.

@@ -260,9 +260,9 @@ public class Modeller {
         if (importSession != null && importSession.getSrcPath() != null
             && Model.getFacade().getTaggedValue(mPackage,
                         ImportInterface.SOURCE_PATH_TAG) == null) {
-            Model.getCoreHelper()
-                    .setTaggedValue(mPackage, ImportInterface.SOURCE_PATH_TAG,
-                            importSession.getSrcPath());
+            String[] srcPaths = {importSession.getSrcPath()};
+            buildTaggedValue(
+                mPackage, ImportInterface.SOURCE_PATH_TAG, srcPaths);
         }
 
         // Find or create a Package model element for this package.
@@ -370,7 +370,7 @@ public class Modeller {
         Collection dependencies = Model.getCoreHelper().getDependencies(
                 element, srcFile);
         for (Object dependency : dependencies) {
-            if (Model.getFacade().isAPermission(dependency)) {
+            if (Model.getFacade().isAPackageImport(dependency)) {
                 return dependency;
             }
         }
@@ -391,10 +391,6 @@ public class Modeller {
     private String makeAssociationName(Object from, Object to) {
         return makeFromToName(from, to);
     }
-    
-    private String makeGeneralizationName(Object child, Object parent) {
-        return makeFromToName(child, parent);
-    }    
 
     private String makePermissionName(Object from, Object to) {
         return makeFromToName(from, to);
@@ -1003,8 +999,7 @@ public class Modeller {
                     Model.getConcurrencyKind().getSequential());
         }
 
-        Collection c = new ArrayList(Model.getFacade()
-                .getParameters(mOperation));
+        Object[] c = Model.getFacade().getParameters(mOperation).toArray();
         for (Object parameter : c) {
             Model.getCoreHelper().removeParameter(mOperation, parameter);
         }
@@ -1318,7 +1313,8 @@ public class Modeller {
         else {
 
             Object mAssociationEnd = getAssociationEnd(name, mClassifier);
-            setTargetScope(mAssociationEnd, modifiers);
+            Model.getCoreHelper().setStatic(
+                    mAssociationEnd, (modifiers & JavaParser.ACC_STATIC) > 0);
             setVisibility(mAssociationEnd, modifiers);
             Model.getCoreHelper().setMultiplicity(
                     mAssociationEnd,
@@ -1357,8 +1353,7 @@ public class Modeller {
         if (mGeneralization == null) {
             mGeneralization =
                     Model.getCoreFactory().buildGeneralization(
-                            child, parent,
-                            makeGeneralizationName(child, parent));
+                            child, parent);
             newElements.add(mGeneralization);
         }
         if (mGeneralization != null) {
@@ -1666,9 +1661,9 @@ public class Modeller {
     private Object getTaggedValue(Object element, String name) {
         Object tv = Model.getFacade().getTaggedValue(element, name);
         if (tv == null) {
-            tv = Model.getExtensionMechanismsFactory().buildTaggedValue(name,
-                    "");
-            Model.getExtensionMechanismsHelper().addTaggedValue(element, tv);
+            String[] empties = {""};
+            buildTaggedValue(element, name, empties);
+            tv = Model.getFacade().getTaggedValue(element, name);
         }
         return tv;
     }
@@ -1796,27 +1791,6 @@ public class Modeller {
     }
 
     /**
-       Set the target scope for an association end.
-
-       @param mAssociationEnd The end.
-       @param modifiers A sequence of modifiers which may contain
-       'static'.
-    */
-    private void setTargetScope(Object mAssociationEnd, short modifiers) {
-        // TODO: Review what this is trying to do and what it should
-        // be replaced by.  Target Scope is gone in UML 2.x - tfm 20070529
-        if ((modifiers & JavaParser.ACC_STATIC) > 0) {
-            Model.getCoreHelper().setTargetScope(
-                    mAssociationEnd,
-                    Model.getScopeKind().getClassifier());
-        } else {
-            Model.getCoreHelper().setTargetScope(
-                    mAssociationEnd,
-                    Model.getScopeKind().getInstance());
-        }
-    }
-
-    /**
        Get the context for a classifier name that may or may not be
        fully qualified.
 
@@ -1845,15 +1819,19 @@ public class Modeller {
      */
     private void addJavadocTagContents(Object me,
                                        String sTagName,
-                                       String sTagData) {
-        int colonPos = (sTagData != null) ? sTagData.indexOf(':') : -1;
+                                       String[] sTagData) {
+        if (sTagData.length == 0 || sTagData[0] == null) {
+            LOG.debug("Called addJavadocTagContents with no tag data!");
+            return;
+        }
+        int colonPos = (sTagData != null) ? sTagData[0].indexOf(':') : -1;
         if (colonPos != -1 && (("invariant".equals(sTagName))
             || ("pre-condition".equals(sTagName))
             || ("post-condition".equals(sTagName)))) {
 
             // add as OCL constraint
             String sContext = OCLUtil.getContextString(me);
-            String name = sTagData.substring(0, colonPos);
+            String name = sTagData[0].substring(0, colonPos);
             String body = null;
             if (sTagName.equals ("invariant")) {
                 // add as invariant constraint Note that no checking
@@ -1887,38 +1865,45 @@ public class Modeller {
                 if (tv != null) {
                     String sStereotype = Model.getFacade().getValueOfTag(tv);
                     if (sStereotype != null && sStereotype.length() > 0) {
-                        sTagData = sStereotype + ',' + sTagData;
+                        sTagData[0] = sStereotype + ',' + sTagData[0];
                     }
                 }
                 // now eliminate multiple entries in that comma separated list
                 HashSet<String> stSet = new HashSet<String>();
-                StringTokenizer st = new StringTokenizer(sTagData, ", ");
+                StringTokenizer st = new StringTokenizer(sTagData[0], ", ");
                 while (st.hasMoreTokens()) {
                     stSet.add(st.nextToken().trim());
                 }
                 StringBuffer sb = new StringBuffer();
-                Iterator iter = stSet.iterator();
+                Iterator<String> iter = stSet.iterator();
                 while (iter.hasNext()) {
                     if (sb.length() > 0) {
                         sb.append(',');
                     }
                     sb.append(iter.next());
                 }
-                sTagData = sb.toString();
+                sTagData[0] = sb.toString();
 
             }
-            
-            Object tv = Model.getFacade().getTaggedValue(me, sTagName);
-            if (tv == null) {
-                Model.getExtensionMechanismsHelper().addTaggedValue(
-                        me,
-                        Model.getExtensionMechanismsFactory().buildTaggedValue(
-                                sTagName, sTagData));
-            } else {
-                Model.getExtensionMechanismsHelper()
-                        .setValueOfTag(tv, sTagData);
-            }
+            buildTaggedValue(me, sTagName, sTagData);
+        }
+    }
 
+    private void buildTaggedValue(
+            Object me, String sTagName, String[] sTagData) {
+        Object tv = Model.getFacade().getTaggedValue(me, sTagName);
+        if (tv == null) {
+            // using deprecated buildTaggedValue here, because getting the tag
+            // definition from a tag name is the critical step, and this is
+            // implemented in ExtensionMechanismsFactory in a central place,
+            // but not as a public method:
+            Model.getExtensionMechanismsHelper().addTaggedValue(
+                    me,
+                    Model.getExtensionMechanismsFactory().buildTaggedValue(
+                            sTagName, sTagData[0]));
+        } else {
+            Model.getExtensionMechanismsHelper()
+                    .setDataValues(tv, sTagData);
         }
     }
 
@@ -1930,7 +1915,7 @@ public class Modeller {
      * Added 2001-10-05 STEFFEN ZSCHALER.
      *
      * @param modelElement the model element to which to add the documentation
-     * @param sJavaDocs the documentation comment to add ("" or null
+     * @param sJavaDocs the documentation comments to add ("" or null
      * if no java docs)
      */
     private void addDocumentationTag(Object modelElement, String sJavaDocs) {
@@ -1938,7 +1923,7 @@ public class Modeller {
             && (sJavaDocs.trim().length() >= 5)) {
             StringBuffer sbPureDocs = new StringBuffer(80);
             String sCurrentTagName = null;
-            String sCurrentTagData = null;
+            String[] sCurrentTagData = {null};
             int nStartPos = 3; // skip the leading /**
             boolean fHadAsterisk = true;
 
@@ -1997,7 +1982,7 @@ public class Modeller {
                             } else {
                                 nTemp1++;
                             }
-                            sCurrentTagData =
+                            sCurrentTagData[0] =
                                 sJavaDocs.substring (nTemp, nTemp1);
                             nStartPos = nTemp1;
                         } else {
@@ -2011,7 +1996,7 @@ public class Modeller {
                             if (sCurrentTagName != null) {
                                 sbPureDocs.append(sJavaDocs.substring(nStartPos,
                                                                       nTemp));
-                                sCurrentTagData +=
+                                sCurrentTagData[0] +=
                                     " "
                                     + sJavaDocs.substring (nStartPos, nTemp);
                             } else {
@@ -2035,16 +2020,14 @@ public class Modeller {
 
             // handle last tag, if any (strip trailing slash there too)
             if (sCurrentTagName != null) {
-                sCurrentTagData = removeTrailingSlash(sCurrentTagData);
+                sCurrentTagData[0] = removeTrailingSlash(sCurrentTagData[0]);
                 addJavadocTagContents (modelElement, sCurrentTagName,
                                        sCurrentTagData);
             }
 
             // Now store documentation text in a tagged value
-            Model.getExtensionMechanismsHelper().addTaggedValue(
-                    modelElement,
-                    Model.getExtensionMechanismsFactory().buildTaggedValue(
-                            Argo.DOCUMENTATION_TAG, sJavaDocs));
+            String[] javadocs = {sJavaDocs};
+            buildTaggedValue(modelElement, Argo.DOCUMENTATION_TAG, javadocs);
             addStereotypes(modelElement);
         }
     }
@@ -2127,9 +2110,9 @@ public class Modeller {
     /**
      * Return the collected set of local variable declarations.
      *
-     * @return hashtable containing all local variable declarations.
+     * @return hash table containing all local variable declarations.
      */
-    public Hashtable getLocalVariableDeclarations() {
+    public Hashtable<String, String> getLocalVariableDeclarations() {
         return localVariables;
     }
 
@@ -2145,7 +2128,7 @@ public class Modeller {
      * 
      * @return the collection of elements
      */
-    public Collection getNewElements() {
+    public Collection<Object> getNewElements() {
         return newElements;
     }
 
