@@ -95,20 +95,20 @@ engineering of Java code and support for built-in types and standard libraries.
     <property name="images.dir" value="org/argouml/Images/"/>
     <property name="profile.file" value="org/argouml/language/java/profile/default-java.xmi"/>
 
-    <property name="argo.root.dir" value="${basedir}/../argouml"/>
+    <property name="argo.root.dir" value="${basedir}/../argouml/src"/>
     <property name="argo.app.dir" value="${argo.root.dir}/argouml-app"/>
 
     <!-- Try to figure out where main ArgoUML tools directory is -->
     <property name="tool.test.file" value="checkstyle/java.header"/>
     <available file="${argo.root.dir}/argouml-core-tools/${tool.test.file}" 
     	type="file" property="argo.tools.dir" value="${argo.root.dir}/argouml-core-tools"/>
-    <available file="${argo.root.dir}/tools/${tool.test.file}" 
-    	type="file" property="argo.tools.dir" value="${argo.root.dir}/tools"/>
+    <available file="${argo.root.dir}/../tools/${tool.test.file}" 
+    	type="file" property="argo.tools.dir" value="${argo.root.dir}/../tools"/>
 
     <!-- figure out where main ArgoUML build directory is -->
     <!-- TODO: This probably needs to reference the packaging directory -->
-    <available file="${basedir}/../argouml-build/build" 
-    	type="dir" property="argo.build.dir" value="${basedir}/../argouml-build/build"/>
+    <available file="${argo.root.dir}/argouml-build/build" 
+    	type="dir" property="argo.build.dir" value="${argo.root.dir}/argouml-build/build"/>
     <available file="${basedir}/../argouml/build" 
     	type="dir" property="argo.build.dir" value="${basedir}/../argouml/build"/>
 
@@ -127,9 +127,6 @@ engineering of Java code and support for built-in types and standard libraries.
     <property name="argo.src.dir" value="${argo.app.dir}/src"/>
     <property name="junit.jar.path" value="${argo.tools.dir}/junit-3.8.2/junit.jar"/>
  
-    <!-- Why do we need the toolbar for a reverse engineering module? -->
-    <property name="toolbar.jar.path" 
-	      value="${argo.build.dir}/toolbar-1.4.1-20071227.jar"/>
     <property name="log4j.jar.path" 
 	      value="{argo.build.dir}/log4j.jar"/>
     <property file="${argo.src.dir}/default.properties"/>
@@ -152,7 +149,6 @@ engineering of Java code and support for built-in types and standard libraries.
         <pathelement location="${gef.jar.path}"/>
         <pathelement location="${log4j.jar.path}"/>
         <pathelement location="${swidgets.jar.path}"/>
-        <pathelement location="${toolbar.jar.path}"/>
         <pathelement location="${commons-logging.jar.path}"/>
         <pathelement location="${antlrall.jar.path}"/>
         <pathelement location="${antlr2.jar.path}"/>
