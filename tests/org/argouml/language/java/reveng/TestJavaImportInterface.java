@@ -208,9 +208,6 @@ public class TestJavaImportInterface extends TestCase {
             generalization = iter.next();
         }
         assertNotNull("No generalization found for interface.", generalization);
-        assertEquals("The generalization name is wrong.",
-            "TestInterface -> Observer",
-            Model.getFacade().getName(generalization));
         assertEquals("The child of the generalization should be the interface.",
             parsedInterface, Model.getFacade().getSpecific(generalization));
         assertEquals(

@@ -206,8 +206,6 @@ public class TestJavaImportClass extends TestCase {
             generalization = iter.next();
         }
         assertNotNull("No generalization found for class.", generalization);
-        assertEquals("The generalization name is wrong.",
-            "TestClass -> Object", Model.getFacade().getName(generalization));
         assertEquals("The child of the generalization should be the class.",
             parsedClass, Model.getFacade().getSpecific(generalization));
         assertEquals("The parent of the generalization should be \"Object\".",

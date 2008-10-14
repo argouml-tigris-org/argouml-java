@@ -134,8 +134,6 @@ public class TestJavaImportUnicode extends TestCase {
             generalization = iter.next();
         }
         assertNotNull("No generalization found for class.", generalization);
-        assertEquals("The generalization name is wrong.",
-            "TéstClass -> Object", Model.getFacade().getName(generalization));
 
         Collection dependencies =
             Model.getFacade().getClientDependencies(parsedClass);
