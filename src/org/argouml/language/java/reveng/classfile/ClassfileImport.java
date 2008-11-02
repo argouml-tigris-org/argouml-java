@@ -339,11 +339,11 @@ public class ClassfileImport implements ImportInterface {
 
         // start parsing at the classfile rule
         parser.classfile();
-
+        
         // Create a modeller for the parser
         Modeller modeller =
             new Modeller(
-                currentProject.getModel(),
+                currentProject.getUserDefinedModelList().get(0),
                 isAttributeSelected(),
                 isDatatypeSelected(),
                 fileName);
