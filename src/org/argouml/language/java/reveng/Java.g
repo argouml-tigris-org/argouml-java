@@ -306,6 +306,9 @@ package org.argouml.language.java.reveng;
     private void updateJavadocComment() {
         Token t = null;
         int i = input.index();
+        if (i == 0) {
+            return;
+        }
         do {
             t = (Token)input.get(--i);
         } while (i >= 0 && t.getType()== _lexer.WS);
