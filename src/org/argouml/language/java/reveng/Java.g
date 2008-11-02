@@ -447,11 +447,16 @@ packageDeclaration
 
 // Import statement: import followed by a package or class name
 importDeclaration
-    :   'import' 'static'? importName=qualifiedName ('.' '*')? ';'
-         {
-             getModeller().addImport($importName.text,
-                 (parserMode == MODE_IMPORT_PASS2));
-         }
+    @init{
+        StringBuffer sb = new StringBuffer(80);
+    }
+    :   'import' 'static'?
+        importName=qualifiedName { sb.append($importName.text); }
+        ('.' '*' { sb.append(".*"); } )? ';'
+        {
+            getModeller().addImport(sb.toString(),
+                (parserMode == MODE_IMPORT_PASS2));
+        }
     ;
 
 // A type declaration is either a class, interface, enum or annotation with possible additional semis.
