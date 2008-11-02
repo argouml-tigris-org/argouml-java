@@ -462,9 +462,12 @@ public class GeneratorJava implements CodeGenerator, ModuleInterface {
                 for (Object elem : Model.getFacade().getSuppliers(o)) {
                     Object ns = Model.getFacade().getNamespace(elem);
                     if (ns != null && !ns.equals(compNamespace)) {
+                        String packageName = getPackageName(ns);
                         ret.append("import ");
-                        ret.append(getPackageName(ns));
-                        ret.append('.');
+                        if (packageName != null && packageName.length() > 0) {
+                            ret.append(getPackageName(ns));
+                            ret.append('.');
+                        }
                         ret.append(Model.getFacade().getName(elem));
                         if (Model.getFacade().isAPackage(elem)) {
                             ret.append(".*");
