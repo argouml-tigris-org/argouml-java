@@ -46,6 +46,7 @@ import org.argouml.configuration.Configuration;
 import org.argouml.configuration.ConfigurationKey;
 import org.argouml.i18n.Translator;
 import org.argouml.kernel.Project;
+import org.argouml.profile.Profile;
 import org.argouml.taskmgmt.ProgressMonitor;
 import org.argouml.uml.reveng.FileImportUtils;
 import org.argouml.uml.reveng.ImportClassLoader;
@@ -67,7 +68,11 @@ public class JavaImport implements ImportInterface {
     /** logger */
     private static final Logger LOG = Logger.getLogger(JavaImport.class);
 
-    
+    /**
+     * Java profile model.
+     */
+    private Profile javaProfile = null;
+
     /**
      * Key for RE extended settings: model attributes as:
      * 0: attributes
@@ -141,6 +146,17 @@ public class JavaImport implements ImportInterface {
         updateImportClassloader();
         newElements = new HashSet();
         monitor.updateMainTask(Translator.localize("dialog.import.pass1"));
+
+        // get the Java profile from project, if available
+        if (javaProfile == null) {
+            for (Profile profile
+                    : p.getProfileConfiguration().getProfiles()) {
+                if ("Java".equals(profile.getDisplayName())) {
+                    javaProfile = profile;
+                }
+            }
+        }
+
         try {
             if (settings.getImportLevel() 
                         == ImportSettings.DETAIL_CLASSIFIER_FEATURE
@@ -251,9 +267,20 @@ public class JavaImport implements ImportInterface {
             }
             parser.setParserMode(parserMode);
 
+            // get the Java profile from project, if available
+            if (javaProfile == null) {
+                for (Profile profile
+                        : p.getProfileConfiguration().getProfiles()) {
+                    if ("Java".equals(profile.getDisplayName())) {
+                        javaProfile = profile;
+                    }
+                }
+            }
+
             // Create a modeller for the parser
             Modeller modeller = new Modeller(
                     p.getUserDefinedModelList().get(0),
+                    javaProfile,
                     isAttributeSelected(), isDatatypeSelected(),
                     f.getName());
 

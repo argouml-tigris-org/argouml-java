@@ -99,12 +99,18 @@ class PackageContext extends Context {
             }
             classifier = findClass(clazzName, interfacesOnly);
             if (classifier != null) {
-                if (classifier.isInterface()) {
-                    mClassifier = Model.getCoreFactory().buildInterface(name,
-                            mPackage);
-                } else {
-                    mClassifier = Model.getCoreFactory().buildClass(name,
-                            mPackage);
+                // we found it, but not in the model, so we try to create it
+                try {
+                    if (classifier.isInterface()) {
+                        mClassifier = Model.getCoreFactory().buildInterface(
+                            name, mPackage);
+                    } else {
+                        mClassifier = Model.getCoreFactory().buildClass(
+                            name, mPackage);
+                    }
+                } catch (Exception e) {
+                    // creation failed (e.g. mPackage is readOnly), so null:
+                    mClassifier = null;
                 }
                 if (mClassifier != null) {
                     setGeneratedTag(mClassifier);

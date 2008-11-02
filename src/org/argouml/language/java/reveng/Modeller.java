@@ -41,6 +41,7 @@ import org.argouml.model.CoreFactory;
 import org.argouml.model.Facade;
 import org.argouml.model.Model;
 import org.argouml.ocl.OCLUtil;
+import org.argouml.profile.Profile;
 import org.argouml.uml.reveng.ImportCommon;
 import org.argouml.uml.reveng.ImportInterface;
 
@@ -56,7 +57,7 @@ import org.argouml.uml.reveng.ImportInterface;
  * guessing about what a symbol represents (e.g. interface, class, or package)
  * so that the name can instantiated in a concrete form. - tfm 20070911
  * 
- * @author Marcus Andersson
+ * @author Marcus Andersson, Thomas Neustupny
  */
 public class Modeller {
 
@@ -70,6 +71,11 @@ public class Modeller {
      * Current working model.
      */
     private Object model;
+
+    /**
+     * Java profile model.
+     */
+    private Profile javaProfile;
 
     /**
      * Current import settings.
@@ -148,18 +154,42 @@ public class Modeller {
      * @param datatypeSelected true if arrays should be modeled as datatypes
      *                instead of instead of using UML multiplicities
      * @param theFileName the current file name
+     * @deprecated for 0.27.2 by thn. Use the other constructor.
      */
     public Modeller(Object theModel, boolean attributeSelected,
             boolean datatypeSelected,
             String theFileName) {
+        this(theModel, null, attributeSelected, datatypeSelected, theFileName);
+    }
+
+    /**
+     * Create a new modeller.
+     * 
+     * @param theModel The model to work with.
+     * @param theJavaProfile The Java profile.
+     * @param attributeSelected true if associations should be modeled as
+     *                attributes
+     * @param datatypeSelected true if arrays should be modeled as datatypes
+     *                instead of instead of using UML multiplicities
+     * @param theFileName the current file name
+     */
+    public Modeller(Object theModel, Profile theJavaProfile,
+            boolean attributeSelected,
+            boolean datatypeSelected,
+            String theFileName) {
         model = theModel;
+        javaProfile = theJavaProfile;
         noAssociations = attributeSelected;
         arraysAsDatatype = datatypeSelected;
         currentPackage = this.model;
         newElements = new HashSet<Object>();
-        parseState = new ParseState(this.model, getPackage(JAVA_PACKAGE));
+        parseState =
+            new ParseState(this.model, getPackage(JAVA_PACKAGE, true));
         parseStateStack = new Stack<ParseState>();
         fileName = theFileName;
+        if (javaProfile == null) {
+            LOG.warn("No Java profile activated for Java source import. Why?");
+        }
     }
     
     /**
@@ -253,10 +283,12 @@ public class Modeller {
             currentName = ownerPackageName;
             ownerPackageName = getPackageName(currentName);
         }
+        // here, getPackage must NOT use the Java profile, because
+        // the declared package need to be in the user model
+        Object mPackage = getPackage(currentName, false);
         // Save src_path in the upper package
         // TODO: Rework this so that we don't need importSession here.
         // perhaps move to the common import code. - tfm
-        Object mPackage = getPackage(currentName);
         if (importSession != null && importSession.getSrcPath() != null
             && Model.getFacade().getTaggedValue(mPackage,
                         ImportInterface.SOURCE_PATH_TAG) == null) {
@@ -265,8 +297,9 @@ public class Modeller {
                 mPackage, ImportInterface.SOURCE_PATH_TAG, srcPaths);
         }
 
-        // Find or create a Package model element for this package.
-        mPackage = getPackage(name);
+        // Find or create a Package model element for this package
+        // (in user model only, because a new package must be added).
+        mPackage = getPackage(name, false);
 
         // Set the current package for the following source code.
         currentPackage = mPackage;
@@ -320,7 +353,7 @@ public class Modeller {
         // qualified name with both outer and inner class names, or just the
         // outer class name
         String classifierName = getClassifierName(name);
-        Object mPackage = getPackage(packageName);
+        Object mPackage = getPackage(packageName, true);
 
         // import on demand
         if (classifierName.equals("*")) {
@@ -336,15 +369,25 @@ public class Modeller {
                     (new PackageContext(null, mPackage)).get(classifierName);
             } catch (ClassifierNotFoundException e) {
                 if (forceIt && classifierName != null && mPackage != null) {
-                    // we must guess if it's a class or an interface, so: class
-                    LOG.info("Modeller.java: " 
-                            + "forced creation of unknown classifier "
-                            + classifierName);
-                    // TODO: A better strategy would be to defer creating this
-                    // until we have enough information to determine what it is
-                    mClassifier = Model.getCoreFactory().buildClass(
-                            classifierName, mPackage);
-                    newElements.add(mClassifier);
+                    // call getPackage again WITHOUT Java profile, because
+                    // class creation is only allowed in the user model
+                    mPackage = (packageName.length() > 0) 
+                            ? getPackage(packageName, false)
+                            : model;
+                    // a last chance: maybe it's in this user model package:
+                    mClassifier = Model.getFacade().lookupIn(mPackage,
+                            classifierName);
+                    if (mClassifier == null) {
+                        // we must guess if it's a class/interface, so: class
+                        LOG.info("Modeller.java: " 
+                                + "forced creation of unknown classifier "
+                                + classifierName);
+                        // TODO: A better strategy would be to defer creating
+                        // this until we can determine what it is
+                        mClassifier = Model.getCoreFactory().buildClass(
+                                classifierName, mPackage);
+                        newElements.add(mClassifier);
+                    }
                 } else {
                     warnClassifierNotFound(classifierName,
                             "an imported classifier");
@@ -495,12 +538,19 @@ public class Modeller {
                             + superclassName);
                     String packageName = getPackageName(superclassName);
                     String classifierName = getClassifierName(superclassName);
+                    // here, getPackage must NOT use the Java profile, because
+                    // class creation is only allowed in the user model
                     Object mPackage = (packageName.length() > 0) 
-                            ? getPackage(packageName)
+                            ? getPackage(packageName, false)
                             : model;
-                    parentClass = Model.getCoreFactory().buildClass(
-                            classifierName, mPackage);
-                    newElements.add(parentClass);
+                    // a last chance: maybe it's in this user model package:
+                    parentClass = Model.getFacade().lookupIn(mPackage,
+                            classifierName);
+                    if (parentClass == null) {
+                        parentClass = Model.getCoreFactory().buildClass(
+                                classifierName, mPackage);
+                        newElements.add(parentClass);
+                    }
                     getGeneralization(currentPackage, parentClass, mClass);
                 } else {
                     warnClassifierNotFound(superclassName,
@@ -625,12 +675,19 @@ public class Modeller {
                             + interfaceName);
                     String packageName = getPackageName(interfaceName);
                     String classifierName = getClassifierName(interfaceName);
+                    // here, getPackage must NOT use the Java profile, because
+                    // interface creation is only allowed in the user model
                     Object mPackage = (packageName.length() > 0) 
-                            ? getPackage(packageName)
+                            ? getPackage(packageName, false)
                             : model;
-                    parentInterface = Model.getCoreFactory().buildInterface(
-                            classifierName, mPackage);
-                    newElements.add(parentInterface);
+                    // a last chance: maybe it's in this user model package:
+                    parentInterface = Model.getFacade().lookupIn(mPackage,
+                            classifierName);
+                    if (parentInterface == null) {
+                        parentInterface = Model.getCoreFactory().buildInterface(
+                                classifierName, mPackage);
+                        newElements.add(parentInterface);
+                    }
                     getGeneralization(currentPackage, parentInterface,
                             mInterface);
                 } else {
@@ -714,14 +771,21 @@ public class Modeller {
                     String packageName = getPackageName(interfaceName);
                     String classifierName =
                             getClassifierName(interfaceName);
+                    // here, getPackage must NOT use the Java profile, because
+                    // interface creation is only allowed in the user model
                     Object mPackage = 
                         (packageName.length() > 0) 
-                                    ? getPackage(packageName)
+                                    ? getPackage(packageName, false)
                                     : model;
+                    // a last chance: maybe it's in this user model package:
+                    mInterface = Model.getFacade().lookupIn(mPackage,
+                            classifierName);
+                    if (mInterface == null) {
                     mInterface =
                             Model.getCoreFactory().buildInterface(
                                     classifierName, mPackage);
                     newElements.add(mInterface);
+                    }
                 } else {
                     warnClassifierNotFound(interfaceName,
                             "an abstraction");
@@ -1028,12 +1092,19 @@ public class Modeller {
                             + returnType);
                     String packageName = getPackageName(returnType);
                     String classifierName = getClassifierName(returnType);
-                    Object mPackage =
-                            (packageName.length() > 0) ? getPackage(packageName)
-                                    : model;
-                    mClassifier = Model.getCoreFactory().buildClass(
-                            classifierName, mPackage);
-                    newElements.add(mClassifier);
+                    // here, getPackage must NOT use the Java profile, because
+                    // class creation is only allowed in the user model
+                    Object mPackage = (packageName.length() > 0)
+                            ? getPackage(packageName, false)
+                            : model;
+                    // a last chance: maybe it's in this user model package:
+                    mClassifier = Model.getFacade().lookupIn(mPackage,
+                            classifierName);
+                    if (mClassifier == null) {
+                        mClassifier = Model.getCoreFactory().buildClass(
+                                classifierName, mPackage);
+                        newElements.add(mClassifier);
+                    }
                 } else {
                     warnClassifierNotFound(returnType,
                             "operation return type");
@@ -1066,12 +1137,19 @@ public class Modeller {
                             + typeName);
                     String packageName = getPackageName(typeName);
                     String classifierName = getClassifierName(typeName);
-                    Object mPackage =
-                            (packageName.length() > 0) ? getPackage(packageName)
-                                    : model;
-                    mClassifier = Model.getCoreFactory().buildClass(
-                            classifierName, mPackage);
-                    newElements.add(mClassifier);
+                    // here, getPackage must NOT use the Java profile, because
+                    // class creation is only allowed in the user model
+                    Object mPackage = (packageName.length() > 0)
+                            ? getPackage(packageName, false)
+                            : model;
+                    // a last chance: maybe it's in this user model package:
+                    mClassifier = Model.getFacade().lookupIn(mPackage,
+                            classifierName);
+                    if (mClassifier == null) {
+                        mClassifier = Model.getCoreFactory().buildClass(
+                                classifierName, mPackage);
+                        newElements.add(mClassifier);
+                    }
                 } else {
                     warnClassifierNotFound(typeName,
                             "operation params");
@@ -1239,13 +1317,19 @@ public class Modeller {
                             + " unknown classifier " + typeSpec);
                     String packageName = getPackageName(typeSpec);
                     String classifierName = getClassifierName(typeSpec);
-                    Object mPackage =
-                            (packageName.length() > 0) ? getPackage(packageName)
+                    // here, getPackage must NOT use the Java profile, because
+                    // class creation is only allowed in the user model
+                    Object mPackage = (packageName.length() > 0)
+                            ? getPackage(packageName, false)
                             : model;
-                    mClassifier =
-                            Model.getCoreFactory().buildClass(
-                                    classifierName, mPackage);
-                    newElements.add(mClassifier);
+                    // a last chance: maybe it's in this user model package:
+                    mClassifier = Model.getFacade().lookupIn(mPackage,
+                            classifierName);
+                    if (mClassifier == null) {
+                        mClassifier = Model.getCoreFactory().buildClass(
+                                classifierName, mPackage);
+                        newElements.add(mClassifier);
+                    }
                 } else {
                     warnClassifierNotFound(typeSpec, "an attribute");
                 }
@@ -1261,7 +1345,7 @@ public class Modeller {
                 || noAssociations
                 || Model.getFacade().isADataType(mClassifier)
                 || (Model.getFacade().getNamespace(mClassifier) 
-                        == getPackage(JAVA_PACKAGE))) {
+                        == getPackage(JAVA_PACKAGE, true))) {
 
             Object mAttribute = parseState.getAttribute(name);
             if (mAttribute == null) {
@@ -1401,50 +1485,66 @@ public class Modeller {
     }
 
     /**
-     * Find a package in the model. If it does not exist, a new package is
-     * created.
+     * Find a package in the project. If it does not exist, a new package is
+     * created in the user model.
      * 
      * @param name The name of the package.
+     * @param useProfile also look in the Java profile if true 
      * @return The package found or created.
      */
-    private Object getPackage(String name) {
-        Object mPackage = searchPackageInModel(name);
+    private Object getPackage(String name, boolean useProfile) {
+        Object mPackage = searchPackageInModel(name, useProfile);
         if (mPackage == null) {
-            mPackage =
-                Model.getModelManagementFactory()
-                    .buildPackage(getRelativePackageName(name));
-            newElements.add(mPackage);
-            
-            // TODO: This is redundant with addOwnedElement code below - tfm
-            Model.getCoreHelper().setNamespace(mPackage, model);
-
-            // Find the owner for this package.
-            if ("".equals(getPackageName(name))) {
-                Model.getCoreHelper().addOwnedElement(model, mPackage);
-            } else {
-                Model.getCoreHelper().addOwnedElement(
-                        getPackage(getPackageName(name)),
-                        mPackage);
+            // whole or part of the package path need to be built in model:
+            Object currentNs = model;
+            StringTokenizer st = new StringTokenizer(name, ".");
+            while (st.hasMoreTokens()) {
+                String rname = st.nextToken();
+                mPackage = Model.getFacade().lookupIn(currentNs, rname);
+                // the actual package might already exist in the user model
+                if (mPackage == null
+                        || !Model.getFacade().isAPackage(mPackage)) {
+                    mPackage = Model.getModelManagementFactory()
+                        .buildPackage(getRelativePackageName(rname));
+                    // set the owner for this package.
+                    Model.getCoreHelper().addOwnedElement(currentNs, mPackage);
+                }
+                currentNs = mPackage;
             }
         }
         return mPackage;
     }
 
     /**
-     * Search recursively for nested packages in the model. So if you
+     * Search recursively for nested packages in the user model. So if you
      * pass a package org.argouml.kernel , this method searches for a package
      * kernel, that is owned by a package argouml, which is owned by a
      * package org. This method is required to nest the parsed packages.
+     * It optionally first searches in the Java profile.
      *
      * @param name The fully qualified package name of the package we
      * are searching for.
+     * @param useProfile first have a look in the Java profile if true
      * @return The found package or null, if it is not in the model.
      */
-    private Object searchPackageInModel(String name) {
+    private Object searchPackageInModel(String name, boolean useProfile) {
+        Object ret = null;
         if ("".equals(getPackageName(name))) {
-            return Model.getFacade().lookupIn(model, name);
+            if (useProfile && javaProfile != null) {
+                try {
+                    Object m = javaProfile.getProfilePackages()
+                        .iterator().next();
+                    ret = Model.getFacade().lookupIn(m, name);
+                } catch (Exception e) {
+                    ret = null;
+                }
+            }
+            if (ret == null) {
+                ret = Model.getFacade().lookupIn(model, name);
+            }
+            return ret;
         }
-        Object owner = searchPackageInModel(getPackageName(name));
+        Object owner = searchPackageInModel(getPackageName(name), useProfile);
         return owner == null
             ? null
             : Model.getFacade().lookupIn(owner, getRelativePackageName(name));
@@ -1791,17 +1891,20 @@ public class Modeller {
     }
 
     /**
-       Get the context for a classifier name that may or may not be
-       fully qualified.
-
-       @param name The classifier name.
+     * Get the context for a classifier name that may or may not be fully
+     * qualified. The context contains either the user model, or a package
+     * inside the user model, or a package in the Java profile.
+     *
+     * @param name the classifier name
+     * @return the context
     */
     private Context getContext(String name) {
         Context context = parseState.getContext();
         //TODO: the context need not be a package, so here is a bug!
         String packageName = getPackageName(name);
         if (!"".equals(packageName)) {
-            context = new PackageContext(context, getPackage(packageName));
+            context =
+                new PackageContext(context, getPackage(packageName, true));
         }
         return context;
     }

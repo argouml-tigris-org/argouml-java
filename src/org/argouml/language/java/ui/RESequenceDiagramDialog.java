@@ -61,6 +61,7 @@ import org.argouml.language.java.reveng.JavaLexer;
 import org.argouml.language.java.reveng.JavaParser;
 import org.argouml.language.java.reveng.Modeller;
 import org.argouml.model.Model;
+import org.argouml.profile.Profile;
 import org.argouml.ui.CheckboxTableModel;
 import org.argouml.ui.explorer.ExplorerEventAdaptor;
 import org.argouml.ui.targetmanager.TargetManager;
@@ -187,11 +188,21 @@ public class RESequenceDiagramDialog
 
         operation = oper;
         model = project.getUserDefinedModelList().get(0);
+
+        // get the Java profile from project, if available
+        Profile javaProfile = null;
+        for (Profile profile
+                : project.getProfileConfiguration().getProfiles()) {
+            if ("Java".equals(profile.getDisplayName())) {
+                javaProfile = profile;
+            }
+        }
+
         try {
             // TODO: must not depend on the Java modeller, but the needed one
             // must be either derived from the method's notation, or chosen by
             // the user from a list of available language importers
-            modeller = new Modeller(model, true, true, null);
+            modeller = new Modeller(model, javaProfile, true, true, null);
         } catch (Exception ex) {
             // the only chance we have is to finish the current operation
             LOG.warn("Modeller not ready, so no more generation of calls", ex);
