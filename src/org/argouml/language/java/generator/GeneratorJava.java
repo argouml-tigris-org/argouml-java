@@ -325,7 +325,27 @@ public class GeneratorJava implements CodeGenerator, ModuleInterface {
     }
 
     private String generateImports(Object cls, String packagePath) {
-        // TODO: check also generalizations
+        // If the model is built by the import of Java source code, then a
+        // component named after the filename was created, which manages the
+        // import statements for all included classes/interfaces. This
+        // component is now searched for cls in order to extract the imports.
+        Object ns = Model.getFacade().getNamespace(cls);
+        if (ns != null) {
+            for (Object oe : Model.getFacade().getOwnedElements(ns)) {
+                if (Model.getFacade().isAComponent(oe)) {
+                    for (Object re
+                        : Model.getFacade().getResidentElements(oe)) {
+                        Object r = Model.getFacade().getResident(re);
+                        if (r.equals(cls)) {
+                            return generateComponentImports(oe);
+                        }
+                    }
+                }
+            }
+        }
+        // We now have the situation that no component with package imports
+        // was found, so the import statements are guessed from the used model
+        // elements inside cls.
         StringBuffer sb = new StringBuffer(80);
         HashSet<String> importSet = new java.util.HashSet<String>();
 
@@ -371,9 +391,9 @@ public class GeneratorJava implements CodeGenerator, ModuleInterface {
                     }
                 }
             }
-
         }
 
+        // now check generalizations
         for (Object gen : Model.getFacade().getGeneralizations(cls)) {
             Object parent = Model.getFacade().getGeneral(gen);
             if (parent == cls) {
@@ -431,6 +451,35 @@ public class GeneratorJava implements CodeGenerator, ModuleInterface {
             sb.append(LINE_SEPARATOR);
         }
         return sb.toString();
+    }
+
+    private String generateComponentImports(Object component) {
+        StringBuffer ret = new StringBuffer();
+        Object compNamespace = Model.getFacade().getNamespace(component);
+        boolean found = false;
+        for (Object o : Model.getFacade().getClientDependencies(component)) {
+            if (Model.getFacade().isAPackageImport(o)) {
+                for (Object elem : Model.getFacade().getSuppliers(o)) {
+                    Object ns = Model.getFacade().getNamespace(elem);
+                    if (ns != null && !ns.equals(compNamespace)) {
+                        ret.append("import ");
+                        ret.append(getPackageName(ns));
+                        ret.append('.');
+                        ret.append(Model.getFacade().getName(elem));
+                        if (Model.getFacade().isAPackage(elem)) {
+                            ret.append(".*");
+                        }
+                        ret.append(";");
+                        ret.append(LINE_SEPARATOR);
+                        found = true;
+                    }
+                }
+            }
+        }
+        if (found) {
+            ret.append(LINE_SEPARATOR);
+        }
+        return ret.toString();
     }
 
     private String generateImportType(Object type, String exclude) {
