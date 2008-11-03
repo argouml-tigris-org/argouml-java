@@ -792,7 +792,7 @@ public class Modeller {
                 }
             }
             // TODO: This should use the Model API's buildAbstraction - tfm
-            if (mInterface != null) {
+            if (mInterface != null && mInterface != mClass) {
                 Object mAbstraction =
                     getAbstraction(mInterface, mClass);
                 if (Model.getFacade().getSuppliers(mAbstraction).size()
