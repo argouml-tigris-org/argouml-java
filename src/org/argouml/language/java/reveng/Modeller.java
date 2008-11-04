@@ -407,21 +407,24 @@ public class Modeller {
      * permission. Create a new one if not found.
      */
     private Object buildImport(Object element, Object srcFile) {
-        // TODO: This use of UML Permission is non-standard.
-        // Change it to a Dependency with a <<javaImport>> stereotype
-        // or something else - tfm - 20070802
+        // TODO: add <<javaImport>> stereotype to Java profile - thn
         Collection dependencies = Model.getCoreHelper().getDependencies(
                 element, srcFile);
-        for (Object dependency : dependencies) {
-            if (Model.getFacade().isAPackageImport(dependency)) {
-                return dependency;
+        for (Object dep : dependencies) {
+            for (Object stereotype : Model.getFacade().getStereotypes(dep)) {
+                if ("javaImport".equals(Model.getFacade()
+                        .getName(stereotype))) {
+                    return dep;
+                }
             }
         }
         
         // Didn't find it.  Let's create one.
-        Object pkgImport = Model.getCoreFactory().buildPermission(srcFile,
+        Object pkgImport = Model.getCoreFactory().buildDependency(srcFile,
                 element);
-        String newName = makePermissionName(srcFile, element);
+        Model.getCoreHelper().addStereotype(pkgImport,
+                getStereotype("javaImport"));
+        String newName = makeDependencyName(srcFile, element);
         Model.getCoreHelper().setName(pkgImport, newName);
         newElements.add(pkgImport);
         return pkgImport;
@@ -435,7 +438,7 @@ public class Modeller {
         return makeFromToName(from, to);
     }
 
-    private String makePermissionName(Object from, Object to) {
+    private String makeDependencyName(Object from, Object to) {
         return makeFromToName(from, to);
     }
     

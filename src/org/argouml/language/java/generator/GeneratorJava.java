@@ -458,7 +458,15 @@ public class GeneratorJava implements CodeGenerator, ModuleInterface {
         Object compNamespace = Model.getFacade().getNamespace(component);
         boolean found = false;
         for (Object o : Model.getFacade().getClientDependencies(component)) {
-            if (Model.getFacade().isAPackageImport(o)) {
+            boolean isJavaImport = false;
+            for (Object stereotype : Model.getFacade().getStereotypes(o)) {
+                if ("javaImport".equals(Model.getFacade()
+                        .getName(stereotype))) {
+                    isJavaImport = true;
+                    break;
+                }
+            }
+            if (isJavaImport) {
                 for (Object elem : Model.getFacade().getSuppliers(o)) {
                     Object ns = Model.getFacade().getNamespace(elem);
                     if (ns != null && !ns.equals(compNamespace)) {
