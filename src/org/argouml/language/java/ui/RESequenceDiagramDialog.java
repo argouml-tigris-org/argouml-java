@@ -75,7 +75,6 @@ import org.argouml.uml.diagram.sequence.ui.FigMessage;
 import org.argouml.uml.diagram.sequence.ui.SequenceDiagramLayer;
 import org.argouml.uml.ui.ActionDeleteModelElements;
 import org.argouml.util.ArgoDialog;
-import org.tigris.gef.base.Diagram;
 import org.tigris.gef.base.Editor;
 import org.tigris.gef.base.Globals;
 import org.tigris.gef.base.Mode;
@@ -321,8 +320,8 @@ public class RESequenceDiagramDialog
         if (Model.getFacade().isAModelElement(target)
                 && Model.getFacade().getNamespace(target) != null) {
             newTarget = Model.getFacade().getNamespace(target);
-        } else if (target instanceof Diagram) {
-            Diagram firstDiagram = (Diagram) project.getDiagramList().get(0);
+        } else if (target instanceof ArgoDiagram) {
+            ArgoDiagram firstDiagram = project.getDiagramList().get(0);
             if (target != firstDiagram) {
                 newTarget = firstDiagram;
             } else {
