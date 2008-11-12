@@ -40,6 +40,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
+import org.argouml.i18n.Translator;
 import org.argouml.kernel.Project;
 import org.argouml.language.java.reveng.JavaImport;
 import org.argouml.language.java.reveng.Modeller;
@@ -382,7 +383,7 @@ public class ClassfileImport implements ImportInterface {
      */
     public String getName() {
         // TODO: I18N
-        return "Java from classes";
+        return "Java classfiles";
     }
 
     /*
@@ -405,10 +406,13 @@ public class ClassfileImport implements ImportInterface {
      */
     public SuffixFilter[] getSuffixFilters() {
         SuffixFilter[] result = {
-            // TODO: I18N
-            new SuffixFilter(new String[] {"class", "jar"} , "Java files"),
-            new SuffixFilter("class", "Java class files"),
-            new SuffixFilter("jar", "Java JAR files"), };
+            new SuffixFilter(new String[] {"class", "jar"} ,
+                    Translator.localize("java.filefilter.classjar")),
+            new SuffixFilter("class",
+                    Translator.localize("java.filefilter.class")),
+            new SuffixFilter("jar",
+                    Translator.localize("java.filefilter.jar")),
+        };
 	return result;
     }
 

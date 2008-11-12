@@ -334,7 +334,7 @@ public class JavaImport implements ImportInterface {
     public SuffixFilter[] getSuffixFilters() {
 	SuffixFilter[] result = {
 	    new SuffixFilter("java", 
-	            Translator.localize("combobox.filefilter.java")),
+	            Translator.localize("java.filefilter.java")),
 	};
 	return result;
     }
