@@ -426,7 +426,7 @@ compilationUnit[Modeller modeller, JavaLexer lexer]
     @init{
         setModeller(modeller);
         _lexer = lexer;
-        if (backtracking == 0) {
+        if (state.backtracking == 0) {
             getModeller().addComponent();
         }
     }
