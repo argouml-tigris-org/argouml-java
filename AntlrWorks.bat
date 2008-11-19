@@ -1,1 +1,1 @@
-java -jar lib/antlrworks-1.1.7.jar
+java -jar lib/antlrworks-1.2.2.jar
