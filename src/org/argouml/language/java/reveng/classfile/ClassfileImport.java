@@ -24,7 +24,6 @@
 
 package org.argouml.language.java.reveng.classfile;
 
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -40,6 +39,8 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
+import org.antlr.runtime.CommonTokenStream;
+import org.apache.log4j.Logger;
 import org.argouml.i18n.Translator;
 import org.argouml.kernel.Project;
 import org.argouml.language.java.reveng.JavaImport;
@@ -52,11 +53,6 @@ import org.argouml.uml.reveng.ImporterManager;
 import org.argouml.uml.reveng.SettingsTypes;
 import org.argouml.util.SuffixFilter;
 
-import antlr.ANTLRException;
-import antlr.RecognitionException;
-import antlr.TokenStreamException;
-
-
 /**
  * This is the main class for the classfile import.  It shares some logic with
  * the Java source importer including the Modeler and the settings logic.
@@ -64,6 +60,9 @@ import antlr.TokenStreamException;
  * @author Andreas Rueckert <a_rueckert@gmx.net>
  */
 public class ClassfileImport implements ImportInterface {
+
+    /** logger */
+    private static final Logger LOG = Logger.getLogger(ClassfileImport.class);
 
     /** The files that needs a second RE pass. */
     private Collection secondPassFiles;
@@ -122,12 +121,10 @@ public class ClassfileImport implements ImportInterface {
                         if (monitor.isCanceled()) {
                             break;
                         }
-                        parseFile(fis, fileName);
+                        parseFile(fis, (int) nextFile.length(), fileName);
                         monitor.updateProgress(fileCount++);
                     }
-                } catch (ANTLRException e) {
-                    throw new ImportException(e);
-                } catch (IOException e) {
+                } catch (Exception e) {
                     throw new ImportException(e);
                 }
             }
@@ -211,8 +208,8 @@ public class ClassfileImport implements ImportInterface {
                 } catch (FileNotFoundException e) {
                     throw new ImportException(e);
                 }
-                parseFile(is, fileName);
-            } catch (ANTLRException e) {
+                parseFile(is, (int) f.length(), fileName);
+            } catch (Exception e) {
                 // TODO: Is this still needed/appropriate? It looks like
                 // Modeller has been changed so that it no longer throws
                 // exceptions... - tfm
@@ -260,9 +257,9 @@ public class ClassfileImport implements ImportInterface {
                     if (monitor.isCanceled()) {
                         break;
                     }
-		    parseFile(is, entryName);
+		    parseFile(is, (int) entry.getSize(), entryName);
 		    monitor.updateProgress(fileCount++);
-		} catch (ANTLRException e1) {
+		} catch (Exception e1) {
 		    if (jarSecondPassFiles.isEmpty()) {
 		        // If there are no files tagged for a second pass,
 		        // add the jar file as the 1st element.
@@ -291,12 +288,11 @@ public class ClassfileImport implements ImportInterface {
      *
      * @param secondPassBuffer A buffer, that holds the jarfile and the names of
      *                the entries to parse again.
-     * @throws TokenStreamException
-     * @throws RecognitionException
+     * @throws IOException
+     * @throws ImportException
      */
     private void do2ndJarPass(Collection secondPassBuffer,
-            ProgressMonitor monitor) throws IOException, RecognitionException,
-        TokenStreamException {
+            ProgressMonitor monitor) throws IOException, ImportException {
         if (!secondPassBuffer.isEmpty()) {
 	    Iterator iterator = secondPassBuffer.iterator();
 	    JarFile jarfile = new JarFile( (File) iterator.next());
@@ -308,8 +304,9 @@ public class ClassfileImport implements ImportInterface {
                 if (monitor.isCanceled()) {
                     break;
                 }
+                ZipEntry entry = jarfile.getEntry(filename);
 		parseFile(
-		        jarfile.getInputStream(jarfile.getEntry(filename)),
+		        jarfile.getInputStream(entry), (int) entry.getSize(),
 		        filename);
 		monitor.updateProgress(fileCount++);
 	    }
@@ -321,25 +318,25 @@ public class ClassfileImport implements ImportInterface {
      * This method parses 1 Java classfile.
      *
      * @param is The inputStream for the file to parse.
+     * @param size The size of the inputStream source.
      * @param fileName the name of the file to parse
-     * @throws RecognitionException ANTLR parser error
-     * @throws TokenStreamException ANTLR parser error
+     * @throws IOException
+     * @throws ImportException
      */
-
-    public void parseFile(InputStream is, String fileName)
-        throws RecognitionException, TokenStreamException {
+    private void parseFile(InputStream is, int size, String fileName)
+        throws IOException, ImportException {
 
         int lastSlash = fileName.lastIndexOf('/');
 	if (lastSlash != -1) {
 	    fileName = fileName.substring(lastSlash + 1);
 	}
 
-        ClassfileParser parser =
-                new ClassfileParser(new SimpleByteLexer(
-                        new BufferedInputStream(is)));
+        // Create a lexer that reads from the input stream
+	Classfile2Lexer lexer = new Classfile2Lexer(new ByteStream(is, size));
 
-        // start parsing at the classfile rule
-        parser.classfile();
+        // Create a parser that reads the token stream
+        Classfile2Parser parser =
+                new Classfile2Parser(new CommonTokenStream(lexer));
         
         // Create a modeller for the parser
         Modeller modeller =
@@ -349,10 +346,27 @@ public class ClassfileImport implements ImportInterface {
                 isDatatypeSelected(),
                 fileName);
 
+        // Print the name of the current file, so we can associate
+        // exceptions to the file.
+        LOG.info("Parsing " + fileName);
+
+        // start parsing at the classfile rule
+        try {
+            // start parsing at the compilationUnit rule
+            parser.classfile(modeller);
+        } catch (Exception e) {
+            String errorString = "Exception in file: " + fileName;
+            LOG.error(e.getClass().getName()
+                    + errorString, e);
+            throw new ImportException(errorString, e);
+        } finally {
+            //newElements.addAll(modeller.getNewElements());
+            is.close();
+        }
 
 	// do something with the tree
-	ClassfileTreeParser tparser = new ClassfileTreeParser();
-	tparser.classfile(parser.getAST(), modeller);
+	//ClassfileTreeParser tparser = new ClassfileTreeParser();
+	//tparser.classfile(parser.getAST(), modeller);
         newElements.addAll(modeller.getNewElements());
 
         // Was there an exception thrown during modelling?
@@ -367,7 +381,7 @@ public class ClassfileImport implements ImportInterface {
      */
     public boolean enable() {
         ImporterManager.getInstance().addImporter(this);
-        javaImporter = new JavaImport();
+        getJavaImporter();
         return true;
     }
 
@@ -427,17 +441,23 @@ public class ClassfileImport implements ImportInterface {
      * @see org.argouml.uml.reveng.ImportInterface#getImportSettings()
      */
     public List<SettingsTypes.Setting> getImportSettings() {
-        return javaImporter.getImportSettings();
+        return getJavaImporter().getImportSettings();
     }
 
     private boolean isAttributeSelected() {
-        return javaImporter.isAttributeSelected();
+        return getJavaImporter().isAttributeSelected();
     }
 
     private boolean isDatatypeSelected() {
-        return javaImporter.isDatatypeSelected();
+        return getJavaImporter().isDatatypeSelected();
     }
 
+    private JavaImport getJavaImporter() {
+        if (javaImporter == null) {
+            javaImporter = new JavaImport();
+        }
+        return javaImporter;
+    }
 }
 
 
