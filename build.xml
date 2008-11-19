@@ -241,7 +241,7 @@ engineering of Java code and support for built-in types and standard libraries.
     <uptodate property="classfileparser.is.current"
       targetfile="${module.src_generated.dir}/org/argouml/language/java/reveng/classfile/ClassfileTokenTypes.txt">
       <srcfiles dir="${module.src.dir}/org/argouml/language/java/reveng/classfile">
-        <include name="Classfile2.g"/>
+        <include name="Classfile.g"/>
       </srcfiles>
     </uptodate>
     <antcall target="generateparser_classfile"/>
@@ -263,7 +263,7 @@ engineering of Java code and support for built-in types and standard libraries.
     <java classname="org.antlr.Tool" fork="yes" maxmemory="128M" classpath="${antlrall.jar.path}">
       <arg value="-o"/>
       <arg file="${module.src_generated.dir}/org/argouml/language/java/reveng/classfile"/>
-      <arg file="${module.src.dir}/org/argouml/language/java/reveng/classfile/Classfile2.g"/>
+      <arg file="${module.src.dir}/org/argouml/language/java/reveng/classfile/Classfile.g"/>
     </java>
   </target>
   

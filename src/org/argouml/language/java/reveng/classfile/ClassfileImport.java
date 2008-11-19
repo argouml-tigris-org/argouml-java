@@ -332,12 +332,12 @@ public class ClassfileImport implements ImportInterface {
 	}
 
         // Create a lexer that reads from the input stream
-	Classfile2Lexer lexer = new Classfile2Lexer(new ByteStream(is, size));
+	ClassfileLexer lexer = new ClassfileLexer(new ByteStream(is, size));
 
         // Create a parser that reads the token stream
-        Classfile2Parser parser =
-                new Classfile2Parser(new CommonTokenStream(lexer));
-        
+        ClassfileParser parser =
+                new ClassfileParser(new CommonTokenStream(lexer));
+
         // Create a modeller for the parser
         Modeller modeller =
             new Modeller(

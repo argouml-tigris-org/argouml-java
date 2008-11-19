@@ -41,7 +41,7 @@
  * A parser for a Java classfile.
  ********************************/
 
-grammar Classfile2;
+grammar Classfile;
 options {k=2; backtrack=true; memoize=true;}
 
 //@rulecatch { }
