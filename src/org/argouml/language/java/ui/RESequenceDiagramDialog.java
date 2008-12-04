@@ -519,7 +519,7 @@ public class RESequenceDiagramDialog
                 Model.getFacade().getNamespace(theClassifier),
                 theClassifier);
         final ArgoDiagram newDiagram =
-            DiagramFactory.getInstance().create(
+            DiagramFactory.getInstance().createDiagram(
                 DiagramType.Sequence,
                 collaboration,
                 null);
