@@ -39,6 +39,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
+import org.antlr.runtime.ANTLRInputStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.apache.log4j.Logger;
 import org.argouml.i18n.Translator;
@@ -332,11 +333,12 @@ public class ClassfileImport implements ImportInterface {
 	}
 
         // Create a lexer that reads from the input stream
-	ClassfileLexer lexer = new ClassfileLexer(new ByteStream(is, size));
+	//ClassfileLexer lexer = new ClassfileLexer(new ANTLRInputStream(is));
+	//ClassfileLexer lexer = new ClassfileLexer(new ByteStream(is, size));
 
         // Create a parser that reads the token stream
         ClassfileParser parser =
-                new ClassfileParser(new CommonTokenStream(lexer));
+                new ClassfileParser(new ByteTokenStream(is, size));
 
         // Create a modeller for the parser
         Modeller modeller =
@@ -353,7 +355,7 @@ public class ClassfileImport implements ImportInterface {
         // start parsing at the classfile rule
         try {
             // start parsing at the compilationUnit rule
-            parser.classfile(modeller);
+            parser.classfile();
         } catch (Exception e) {
             String errorString = "Exception in file: " + fileName;
             LOG.error(e.getClass().getName()
