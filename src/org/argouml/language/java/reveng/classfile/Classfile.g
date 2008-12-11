@@ -42,9 +42,61 @@
  ********************************/
 
 grammar Classfile;
-options {k=2; backtrack=true; memoize=true;}
+options {k=1; output = AST;}
+//options {k=1; backtrack=true; memoize=true; output = AST;}
 
-//@rulecatch { }
+tokens {
+	// the token type values of the following 256 tokens are equal to the
+	// respective byte value plus 4 (See ByteTokenStream.LA(int))
+	X00; X01; X02; X03; X04; X05; X06; X07; X08; X09; X0A; X0B; X0C; X0D; X0E; X0F;
+	X10; X11; X12; X13; X14; X15; X16; X17; X18; X19; X1A; X1B; X1C; X1D; X1E; X1F;
+	X20; X21; X22; X23; X24; X25; X26; X27; X28; X29; X2A; X2B; X2C; X2D; X2E; X2F;
+	X30; X31; X32; X33; X34; X35; X36; X37; X38; X39; X3A; X3B; X3C; X3D; X3E; X3F;
+	X40; X41; X42; X43; X44; X45; X46; X47; X48; X49; X4A; X4B; X4C; X4D; X4E; X4F;
+	X50; X51; X52; X53; X54; X55; X56; X57; X58; X59; X5A; X5B; X5C; X5D; X5E; X5F;
+	X60; X61; X62; X63; X64; X65; X66; X67; X68; X69; X6A; X6B; X6C; X6D; X6E; X6F;
+	X70; X71; X72; X73; X74; X75; X76; X77; X78; X79; X7A; X7B; X7C; X7D; X7E; X7F;
+	X80; X81; X82; X83; X84; X85; X86; X87; X88; X89; X8A; X8B; X8C; X8D; X8E; X8F;
+	X90; X91; X92; X93; X94; X95; X96; X97; X98; X99; X9A; X9B; X9C; X9D; X9E; X9F;
+	XA0; XA1; XA2; XA3; XA4; XA5; XA6; XA7; XA8; XA9; XAA; XAB; XAC; XAD; XAE; XAF;
+	XB0; XB1; XB2; XB3; XB4; XB5; XB6; XB7; XB8; XB9; XBA; XBB; XBC; XBD; XBE; XBF;
+	XC0; XC1; XC2; XC3; XC4; XC5; XC6; XC7; XC8; XC9; XCA; XCB; XCC; XCD; XCE; XCF;
+	XD0; XD1; XD2; XD3; XD4; XD5; XD6; XD7; XD8; XD9; XDA; XDB; XDC; XDD; XDE; XDF;
+	XE0; XE1; XE2; XE3; XE4; XE5; XE6; XE7; XE8; XE9; XEA; XEB; XEC; XED; XEE; XEF;
+	XF0; XF1; XF2; XF3; XF4; XF5; XF6; XF7; XF8; XF9; XFA; XFB; XFC; XFD; XFE; XFF;
+	// now the remaining tokens:
+	ACCESS_MODIFIERS;
+	ATTRIBUTE_CONSTANT;
+	CLASS_DEF;
+	CONSTANT_CLASSINFO;
+	CONSTANT_DOUBLEINFO;
+	CONSTANT_FIELDINFO;
+	CONSTANT_FLOATINFO;
+	CONSTANT_INTEGERINFO;
+	CONSTANT_INTERFACE_METHODINFO;
+	CONSTANT_LONGINFO;
+	CONSTANT_METHODINFO;
+	CONSTANT_NAME_TYPE_INFO;
+	CONSTANT_STRINGINFO;
+	CONSTANT_UTF8STRING;
+	CTOR_DEF;
+	EXTENDS_CLAUSE;
+	IDENT;
+	IMPLEMENTS_CLAUSE;
+	INTERFACE_DEF;
+	MAGIC;
+	METHOD_DEF;
+	PARAMETERS;
+	PARAMETER_DEF; 
+	SOURCEFILE;
+	THROWS;
+	TYPE;
+	UNKNOWN_ATTRIBUTE;
+	VARIABLE_DEF;
+	VERSION; 
+}
+
+@rulecatch { }
 
 @header {
 package org.argouml.language.java.reveng.classfile;
@@ -249,39 +301,37 @@ import org.argouml.language.java.reveng.Modeller;
     }
 }
 
-@lexer::header {
-package org.argouml.language.java.reveng.classfile;
-}
-
 // The entire classfile
-classfile[Modeller modeller]
-    @init{
-        setModeller(modeller);
-    }
+classfile
 	: magic_number
-	/*
 	  version_number
+      /*
 	  constant_pool
 	  type_definition
 	  field_block
 	  method_block
 	  attribute_block
 	  */
-	  BYTE*
+	  .*
 	  EOF
 	;
 
 // The magic number 0xCAFEBABE, every classfile starts with
-magic_number
-	: '0xca' '0xfe' '0xba' '0xbe'
-	;
-/*
-// The version number.
-version_number
-	@init{ short minor=0,major=0; String verStr=null; }
-	: minor=u2 major=u2 { verStr = ""+major+"."+minor; #version_number = #[VERSION,verStr]; }
+magic_number!
+	: XCA XFE XBA XBE
 	;
 
+// The version number.
+version_number!
+	: minor=u2 major=u2
+	{
+		String verStr = major + "." + minor;
+		//#version_number = #[VERSION,verStr];
+	}
+	-> ^(VERSION $major $minor)
+	;
+
+/*
 // The constant pool.
 constant_pool
 	@init{ short poolSize=0; int index=1; }
@@ -817,27 +867,28 @@ innerClassTableEntry
 //////////////////////
 
 // A 1 byte int
-u1 returns [byte res=0]
-	: val=BYTE { res = ((ByteToken)val).getValue(); }
+u1! returns [byte res=0]
+	:	.
+		{
+		    $u1.res = (byte) input.LA(-1);
+		}
 	;
 
 // A 2 byte int
-u2 returns [short res=0]
-	: ( high=BYTE low=BYTE ) 
-	    { res = (short)(((ByteToken)high).getShortValue() << 8 | ((ByteToken)low).getShortValue()); }
+u2! returns [short res=0]
+	:	. .
+		{
+		    $u2.res = (short)(input.LA(-2) << 8 | input.LA(-1));
+		}
 	;
 
 // A 4 byte int
-u4 returns [int res=0]
-	: ( high1=BYTE high2=BYTE low1=BYTE low2=BYTE )  // Bytes are in highbyte 1st order!
-	  { 
-	    res = ((ByteToken)high1).getIntValue() << 24
-	          | ((ByteToken)high2).getIntValue() << 16 
-	          | ((ByteToken)low1).getIntValue() << 8
-	          | ((ByteToken)low2).getIntValue();
-	  }
-	;
-
-BYTE
-	: .
+u4! returns [int res=0]
+	:	. . . . // Bytes are in highbyte 1st order!
+		{
+			$u4.res = input.LA(-4) << 24
+				| input.LA(-3) << 16 
+				| input.LA(-2) << 8
+				| input.LA(-1);
+		}
 	;
