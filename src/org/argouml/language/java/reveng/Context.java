@@ -119,28 +119,17 @@ abstract class Context
     }
 
     protected Class<?> findClass(String name, boolean interfacesOnly) {
-        Class<?> clazz = null;
-        try {
-            // TODO: Do we ever want to look up things on our own classpath?
-            // This really should only be used for default Java types and even
-            // then probably should be done after searching the user classpath
-            clazz = Class.forName(name);
-        } catch (ClassNotFoundException e) {
-            clazz = findClassOnUserClasspath(name, interfacesOnly);
-        } catch (LinkageError e) {
-            // We found the class, but we couldn't load it for some reason
-            // most likely a missing dependency on the class path, but could
-            // be wrong class file version or something else
-            // TODO: Need to make this visible to the user
-            LOG.warn("Linkage error loading found class " + name, e);
-            // We'll continue the search, but this is probably the one we wanted
-            clazz = findClassOnUserClasspath(name, interfacesOnly);
-        }
-        // Got something, but it wasn't what we wanted.  Try again.
-        if (clazz != null && interfacesOnly && !clazz.isInterface()) {
-            clazz = findClassOnUserClasspath(name, interfacesOnly);
-        }
-        return clazz;
+        // Classpath lookup was inherited from the program JavaRE from Marcus
+        // Andersson, which was the basis for the Java RE in ArgoUML. JavaRE
+        // had no configurable user classpath and thus had to find the class
+        // or interface via Class.forName(name) (catching
+        // ClassNotFoundException and LinkageError, and the case that a class
+        // is returned but interfacesOnly==true, in all these cases the
+        // following method call is made anyway). For a very long time, the
+        // lookup in the ArgoUML classpath via Class.forName(name) was left
+        // in the code, but it was not needed because a user classpath can be
+        // configured, so only this is looked up, and all that remains is:
+        return findClassOnUserClasspath(name, interfacesOnly);
     }
 
     private Class<?> findClassOnUserClasspath(String name,
