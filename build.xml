@@ -76,7 +76,7 @@ engineering of Java code and support for built-in types and standard libraries.
 
     <property name="module.lib.dir" value="${module.root}/lib"/>
     
-    <property name="antlr-rt.jar" value="antlr-3.1.1-runtime.jar"/>
+    <property name="antlr-rt.jar" value="antlr-runtime-3.1.1.jar"/>
     <property name="antlrall.jar.path" value="${module.lib.dir}/antlrworks-1.2.2.jar"/>
     <property name="antlr-rt.jar.path" value="${module.lib.dir}/${antlr-rt.jar}"/>
 
