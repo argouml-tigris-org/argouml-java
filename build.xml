@@ -92,78 +92,55 @@ engineering of Java code and support for built-in types and standard libraries.
     <property name="images.dir" value="org/argouml/Images/"/>
     <property name="profile.file" value="org/argouml/language/java/profile/default-java.xmi"/>
 
-    <property name="argo.root.dir" value="${basedir}/../argouml/src"/>
-    <property name="argo.app.dir" value="${argo.root.dir}/argouml-app"/>
-
     <!-- Try to figure out where main ArgoUML tools directory is -->
     <property name="tool.test.file" value="checkstyle/java.header"/>
-    <available file="${argo.root.dir}/argouml-core-tools/${tool.test.file}" 
-    	type="file" property="argo.tools.dir" value="${argo.root.dir}/argouml-core-tools"/>
-    <available file="${argo.root.dir}/../tools/${tool.test.file}" 
-    	type="file" property="argo.tools.dir" value="${argo.root.dir}/../tools"/>
+    <available file="../argouml/src/argouml-core-tools/${tool.test.file}" 
+               type="file" property="argo.tools.dir"
+               value="../argouml/src/argouml-core-tools"/>
+    <available file="../argouml/tools/${tool.test.file}" 
+               type="file" property="argo.tools.dir"
+               value="../argouml/tools"/>
 
     <!-- figure out where main ArgoUML build directory is -->
     <!-- TODO: This probably needs to reference the packaging directory -->
-    <available file="${argo.root.dir}/argouml-build/build" 
-    	type="dir" property="argo.build.dir" value="${argo.root.dir}/argouml-build/build"/>
-    <available file="${basedir}/../argouml/build" 
-    	type="dir" property="argo.build.dir" value="${basedir}/../argouml/build"/>
+    <available file="../argouml/src/argouml-build/build" 
+               type="dir" property="argo.build.dir"
+               value="../argouml/src/argouml-build/build"/>
+    <available file="../argouml/build" 
+               type="dir" property="argo.build.dir"
+               value="../argouml/build"/>
 
-    <property name="argo.build.dest" value="${argo.build.dir}/classes"/>
-    <property name="argo.jarfile" value="${argo.build.dir}/argouml.jar"/>
     <property name="module.jarfile.name" value="${argo.module.jarfile}.jar"/>
     <property name="module.jarfile"
               value="${module.build.dir}/${module.jarfile.name}"/>
 
-    <!-- Load ArgoUML properties, including the version -->
-    <!-- we really need an absolute path for argo.root.dir -->
-    <!-- if it is set in a property file before now, it must be absolute -->
-    <property file="${override.build.properties}"/>
-
     <!-- If not set by the override file we still need this one for antlr. -->
-    <property name="argo.src.dir" value="${argo.app.dir}/src"/>
     <property name="junit.jar.path" value="${argo.tools.dir}/junit-3.8.2/junit.jar"/>
  
-    <property name="log4j.jar.path" 
-	      value="{argo.build.dir}/log4j.jar"/>
-    <property file="${argo.src.dir}/default.properties"/>
-   
-    <echo message="${argo.root.dir} ${argo.src.dir} ${junit.jar.path} ${ant.home}"/>
+    <echo message="${junit.jar.path} ${ant.home}"/>
 
     <property name="debug" value="on"/>
     <property name="optimize" value="on"/>
     <property name="deprecation" value="on"/>
 
-    <property name="module.version" value="${argo.core.version}-${DSTAMP}-${TSTAMP}"/>
+    <property name="module.version" value="${DSTAMP}-${TSTAMP}"/>
     <echo message="Module version: ${module.version}"/>
-
-    <property name="argouml-model.build.dir" value="${argo.basedir}/src/model/build"/>
-    <property name="argouml-model-mdr.build.dir" value="${argo.basedir}/src/model-mdr/build"/>
 
     <path id="module.compile.classpath">
         <pathelement location="${argo.build.dir}/argouml.jar"/>
-        <pathelement location="${ocl-argo.jar.path}"/>
-        <pathelement location="${gef.jar.path}"/>
-        <pathelement location="${log4j.jar.path}"/>
-        <pathelement location="${swidgets.jar.path}"/>
-        <pathelement location="${commons-logging.jar.path}"/>
         <pathelement location="${antlrall.jar.path}"/>
         <pathelement location="${argo.build.dir}/argouml-model.jar"/>
     </path>
-    <!--
     <echo message="module.compile.classpath value:"/>
     <pathconvert refid="module.compile.classpath"/>
-    -->
 
     <path id="module.compile-tests.classpath">
       <pathelement location="${module.build.dest}"/>
       <path refid="module.compile.classpath"/>
       <pathelement location="${junit.jar.path}"/>
     </path>
-    <!--
     <echo message="module.compile-tests.classpath value:"/>
     <pathconvert refid="module.compile-tests.classpath"/>
-    -->
 
     <path id="module.run-tests.classpath">
       <pathelement location="${module.build.dest}"/>
@@ -173,29 +150,21 @@ engineering of Java code and support for built-in types and standard libraries.
         <include name="*.jar"/>
       </fileset>
     </path>
-    <!--
     <echo message="module.run-tests.classpath value:"/>
     <pathconvert refid="module.compile-tests.classpath"/>
-    -->
     
     <path id="module.antlr-genparser.classpath">
       <pathelement location="${antlrall.jar.path}"/>
     </path>
-    <!--
     <echo message="module.antlr-genparser.classpath value:"/>
     <pathconvert refid="module.antlr-genparser.classpath"/>
-    -->
 
     <path id="ant.optional.classpath">
       <pathelement location="${ant.home}/libopt/ant-junit.jar"/>
       <pathelement location="${junit.jar.path}"/>
-      <pathelement location="${jdepend.jar.path}"/>
-      <pathelement location="${javasrc.jar.path}"/>
     </path>
-    <!--
     <echo message="ant.optional.classpath value:"/>
     <pathconvert refid="ant.optional.classpath"/>
-    -->
 
     <taskdef classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask" name="junit">
       <classpath>
