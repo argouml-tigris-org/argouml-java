@@ -70,11 +70,11 @@ public class ByteTokenStream implements TokenStream {
             i++; // e.g., translate LA(-1) to use offset i=0; then
             // data[p+0-1]
             if ((p + i - 1) < 0) {
-                return ByteToken.EOF; // invalid; no byte before first byte
+                //return ByteToken.EOF; // invalid; no byte before first byte
             }
         }
         if ((p + i - 1) >= data.length) {
-            return ByteToken.EOF;
+            //return ByteToken.EOF;
         }
         // this is tricky: bytes match with the token type that has a value of
         // 4 higher than the byte value, so we add 4:
@@ -142,11 +142,11 @@ public class ByteTokenStream implements TokenStream {
     }
 
     public Token LT(int i) {
-        return new ByteToken((byte) LA(i));
+        return null; //new ByteToken((byte) LA(i));
     }
 
     public Token get(int i) {
-        return new ByteToken(data[i - 1]);
+        return null; //new ByteToken(data[i - 1]);
     }
 
     public TokenSource getTokenSource() {
