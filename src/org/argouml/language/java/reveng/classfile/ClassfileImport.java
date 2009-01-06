@@ -24,11 +24,13 @@
 
 package org.argouml.language.java.reveng.classfile;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -39,20 +41,24 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
-import org.antlr.runtime.ANTLRInputStream;
-import org.antlr.runtime.CommonTokenStream;
-import org.apache.log4j.Logger;
+import org.argouml.application.api.Argo;
+import org.argouml.configuration.Configuration;
 import org.argouml.i18n.Translator;
 import org.argouml.kernel.Project;
-import org.argouml.language.java.reveng.JavaImport;
-import org.argouml.language.java.reveng.Modeller;
 import org.argouml.taskmgmt.ProgressMonitor;
 import org.argouml.uml.reveng.FileImportUtils;
+import org.argouml.uml.reveng.ImportClassLoader;
 import org.argouml.uml.reveng.ImportInterface;
 import org.argouml.uml.reveng.ImportSettings;
 import org.argouml.uml.reveng.ImporterManager;
+import org.argouml.uml.reveng.Setting;
 import org.argouml.uml.reveng.SettingsTypes;
 import org.argouml.util.SuffixFilter;
+
+import antlr.ANTLRException;
+import antlr.RecognitionException;
+import antlr.TokenStreamException;
+
 
 /**
  * This is the main class for the classfile import.  It shares some logic with
@@ -61,9 +67,6 @@ import org.argouml.util.SuffixFilter;
  * @author Andreas Rueckert <a_rueckert@gmx.net>
  */
 public class ClassfileImport implements ImportInterface {
-
-    /** logger */
-    private static final Logger LOG = Logger.getLogger(ClassfileImport.class);
 
     /** The files that needs a second RE pass. */
     private Collection secondPassFiles;
@@ -74,10 +77,13 @@ public class ClassfileImport implements ImportInterface {
 
     private int fileCount;
 
-    /**
-     * We use this to be able to share the settings machinery only
-     */
-    private JavaImport javaImporter;
+    private List<SettingsTypes.Setting> settingsList;
+
+    private SettingsTypes.UniqueSelection2 attributeSetting;
+
+    private SettingsTypes.UniqueSelection2 datatypeSetting;
+
+    private SettingsTypes.PathListSelection pathlistSetting;
 
     /*
      * @see org.argouml.uml.reveng.ImportInterface#parseFiles(org.argouml.kernel.Project, java.util.Collection, org.argouml.uml.reveng.ImportSettings, org.argouml.application.api.ProgressMonitor)
@@ -122,10 +128,12 @@ public class ClassfileImport implements ImportInterface {
                         if (monitor.isCanceled()) {
                             break;
                         }
-                        parseFile(fis, (int) nextFile.length(), fileName);
+                        parseFile(fis, fileName);
                         monitor.updateProgress(fileCount++);
                     }
-                } catch (Exception e) {
+                } catch (ANTLRException e) {
+                    throw new ImportException(e);
+                } catch (IOException e) {
                     throw new ImportException(e);
                 }
             }
@@ -209,8 +217,8 @@ public class ClassfileImport implements ImportInterface {
                 } catch (FileNotFoundException e) {
                     throw new ImportException(e);
                 }
-                parseFile(is, (int) f.length(), fileName);
-            } catch (Exception e) {
+                parseFile(is, fileName);
+            } catch (ANTLRException e) {
                 // TODO: Is this still needed/appropriate? It looks like
                 // Modeller has been changed so that it no longer throws
                 // exceptions... - tfm
@@ -258,9 +266,9 @@ public class ClassfileImport implements ImportInterface {
                     if (monitor.isCanceled()) {
                         break;
                     }
-		    parseFile(is, (int) entry.getSize(), entryName);
+		    parseFile(is, entryName);
 		    monitor.updateProgress(fileCount++);
-		} catch (Exception e1) {
+		} catch (ANTLRException e1) {
 		    if (jarSecondPassFiles.isEmpty()) {
 		        // If there are no files tagged for a second pass,
 		        // add the jar file as the 1st element.
@@ -289,11 +297,12 @@ public class ClassfileImport implements ImportInterface {
      *
      * @param secondPassBuffer A buffer, that holds the jarfile and the names of
      *                the entries to parse again.
-     * @throws IOException
-     * @throws ImportException
+     * @throws TokenStreamException
+     * @throws RecognitionException
      */
     private void do2ndJarPass(Collection secondPassBuffer,
-            ProgressMonitor monitor) throws IOException, ImportException {
+            ProgressMonitor monitor) throws IOException, RecognitionException,
+        TokenStreamException {
         if (!secondPassBuffer.isEmpty()) {
 	    Iterator iterator = secondPassBuffer.iterator();
 	    JarFile jarfile = new JarFile( (File) iterator.next());
@@ -305,9 +314,8 @@ public class ClassfileImport implements ImportInterface {
                 if (monitor.isCanceled()) {
                     break;
                 }
-                ZipEntry entry = jarfile.getEntry(filename);
 		parseFile(
-		        jarfile.getInputStream(entry), (int) entry.getSize(),
+		        jarfile.getInputStream(jarfile.getEntry(filename)),
 		        filename);
 		monitor.updateProgress(fileCount++);
 	    }
@@ -319,56 +327,38 @@ public class ClassfileImport implements ImportInterface {
      * This method parses 1 Java classfile.
      *
      * @param is The inputStream for the file to parse.
-     * @param size The size of the inputStream source.
      * @param fileName the name of the file to parse
-     * @throws IOException
-     * @throws ImportException
+     * @throws RecognitionException ANTLR parser error
+     * @throws TokenStreamException ANTLR parser error
      */
-    private void parseFile(InputStream is, int size, String fileName)
-        throws IOException, ImportException {
+
+    public void parseFile(InputStream is, String fileName)
+        throws RecognitionException, TokenStreamException {
 
         int lastSlash = fileName.lastIndexOf('/');
 	if (lastSlash != -1) {
 	    fileName = fileName.substring(lastSlash + 1);
 	}
 
-        // Create a lexer that reads from the input stream
-	//ClassfileLexer lexer = new ClassfileLexer(new ANTLRInputStream(is));
-	//ClassfileLexer lexer = new ClassfileLexer(new ByteStream(is, size));
-
-        // Create a parser that reads the token stream
         ClassfileParser parser =
-                new ClassfileParser(new ByteTokenStream(is, size));
+                new ClassfileParser(new SimpleByteLexer(
+                        new BufferedInputStream(is)));
+
+        // start parsing at the classfile rule
+        parser.classfile();
 
         // Create a modeller for the parser
         Modeller modeller =
             new Modeller(
-                currentProject.getUserDefinedModelList().get(0),
-                isAttributeSelected(),
-                isDatatypeSelected(),
-                fileName);
+                                                 currentProject.getModel(),
+						 isAttributeSelected(),
+						 isDatatypeSelected(),
+                                                 fileName);
 
-        // Print the name of the current file, so we can associate
-        // exceptions to the file.
-        LOG.info("Parsing " + fileName);
-
-        // start parsing at the classfile rule
-        try {
-            // start parsing at the compilationUnit rule
-            parser.classfile();
-        } catch (Exception e) {
-            String errorString = "Exception in file: " + fileName;
-            LOG.error(e.getClass().getName()
-                    + errorString, e);
-            throw new ImportException(errorString, e);
-        } finally {
-            //newElements.addAll(modeller.getNewElements());
-            is.close();
-        }
 
 	// do something with the tree
-	//ClassfileTreeParser tparser = new ClassfileTreeParser();
-	//tparser.classfile(parser.getAST(), modeller);
+	ClassfileTreeParser tparser = new ClassfileTreeParser();
+	tparser.classfile(parser.getAST(), modeller);
         newElements.addAll(modeller.getNewElements());
 
         // Was there an exception thrown during modelling?
@@ -383,7 +373,6 @@ public class ClassfileImport implements ImportInterface {
      */
     public boolean enable() {
         ImporterManager.getInstance().addImporter(this);
-        getJavaImporter();
         return true;
     }
 
@@ -399,7 +388,7 @@ public class ClassfileImport implements ImportInterface {
      */
     public String getName() {
         // TODO: I18N
-        return "Java classfiles";
+        return "Java from classes";
     }
 
     /*
@@ -422,13 +411,10 @@ public class ClassfileImport implements ImportInterface {
      */
     public SuffixFilter[] getSuffixFilters() {
         SuffixFilter[] result = {
-            new SuffixFilter(new String[] {"class", "jar"} ,
-                    Translator.localize("java.filefilter.classjar")),
-            new SuffixFilter("class",
-                    Translator.localize("java.filefilter.class")),
-            new SuffixFilter("jar",
-                    Translator.localize("java.filefilter.jar")),
-        };
+            // TODO: I18N
+            new SuffixFilter(new String[] {"class", "jar"} , "Java files"),
+            new SuffixFilter("class", "Java class files"),
+            new SuffixFilter("jar", "Java JAR files"), };
 	return result;
     }
 
@@ -443,23 +429,47 @@ public class ClassfileImport implements ImportInterface {
      * @see org.argouml.uml.reveng.ImportInterface#getImportSettings()
      */
     public List<SettingsTypes.Setting> getImportSettings() {
-        return getJavaImporter().getImportSettings();
+
+        settingsList = new ArrayList<SettingsTypes.Setting>();
+
+        // Settings from ConfigPanelExtension
+
+        // TODO: These properties should move out of the core into someplace
+        // specific to the Java importer
+        List<String> options = new ArrayList<String>();
+        options.add(Translator.localize("action.import-java-UML-attr"));
+        options.add(Translator.localize("action.import-java-UML-assoc"));
+
+        options.clear();
+        options.add(Translator
+                .localize("action.import-java-array-model-datatype"));
+        options.add(Translator
+                .localize("action.import-java-array-model-multi"));
+
+        List<String> paths = new ArrayList<String>();
+        URL[] urls = ImportClassLoader.getURLs(Configuration.getString(
+                Argo.KEY_USER_IMPORT_CLASSPATH, ""));
+
+        for (URL url : urls) {
+            paths.add(url.getFile());
+        }
+        pathlistSetting = new Setting.PathListSelection(Translator
+                .localize("dialog.import.classpath.title"), Translator
+                .localize("dialog.import.classpath.text"), paths);
+        settingsList.add(pathlistSetting);
+
+
+        return settingsList;
     }
 
     private boolean isAttributeSelected() {
-        return getJavaImporter().isAttributeSelected();
+        return attributeSetting.getSelection() == 0;
     }
 
     private boolean isDatatypeSelected() {
-        return getJavaImporter().isDatatypeSelected();
+        return datatypeSetting.getSelection() == 0;
     }
 
-    private JavaImport getJavaImporter() {
-        if (javaImporter == null) {
-            javaImporter = new JavaImport();
-        }
-        return javaImporter;
-    }
 }
 
 

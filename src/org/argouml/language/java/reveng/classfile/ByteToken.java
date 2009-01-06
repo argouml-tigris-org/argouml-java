@@ -1,5 +1,5 @@
 // $Id$
-// Copyright (c) 1996-2008 The Regents of the University of California. All
+// Copyright (c) 1996-2006 The Regents of the University of California. All
 // Rights Reserved. Permission to use, copy, modify, and distribute this
 // software and its documentation without fee, and without a written
 // agreement is hereby granted, provided that the above copyright notice
@@ -24,127 +24,84 @@
 
 package org.argouml.language.java.reveng.classfile;
 
-import org.antlr.runtime.CharStream;
-import org.antlr.runtime.Token;
+import antlr.Token;
 
 /**
- * A class representing a token that is a byte. The token and the token type is
- * identified simply by its byte value.
+ * A class representing a Token that is a byte.
+ *
  */
-public class ByteToken implements Token {
+public class ByteToken extends Token {
+
+    //////////////////////
+    // Instance variables.
 
     private byte val = 0;
 
-    private int channel = Token.DEFAULT_CHANNEL;
 
-    private int charPositionInLine = -1; // set to invalid position
+    ///////////////
+    // Constructors
 
     /**
-     * Constructor. Create a new ByteToken instance with a given byte value.
-     * 
-     * @param value The byte value of the token.
+     * Create a new ByteToken instance with a given type.
+     *
+     * @param type The type of the ByteToken.
      */
-    public ByteToken(byte value) {
-        setValue(value);
+    public ByteToken( int type) {
+	super(type);
     }
 
     /**
+     * Create a new ByteToken instance with a given type and
+     * byte value.
+     *
+     * @param type The type of the token.
+     * @param value The byte value of the token.
+     */
+    public ByteToken( int type, byte value) {
+	this(type);
+	setValue(value);
+    }
+
+
+    //////////
+    // Methods
+
+    /**
      * Set the byte value of this token.
-     * 
+     *
      * @param value The new byte value.
      */
-    final void setValue(byte value) {
-        val = value;
+    final void setValue( byte value) {
+	val = value;
     }
 
     /**
      * Get the byte value of this token.
-     * 
+     *
      * @return the byte value of this token.
      */
     final byte getValue() {
-        return val;
+	return val;
     }
 
     /**
      * Get the value of the byte as a masked short (no sign extension if < 0).
-     * 
+     *
      * @return The byte value of this token as a masked short.
      */
     final short getShortValue() {
-        return (short) (val & (short) 0xff);
+	return (short) (val & (short) 0xff);
     }
 
     /**
      * Get the value of the byte as a masked int (no sign extension if < 0).
-     * 
+     *
      * @return The byte value of this token as a masked int.
      */
     final int getIntValue() {
-        return val & 0xff;
-    }
-
-    public int getChannel() {
-        return channel;
-    }
-
-    public int getCharPositionInLine() {
-        return charPositionInLine;
-    }
-
-    public CharStream getInputStream() {
-        // returns null, we don't deal with CharStream, the Token interface
-        // shouldn't depend on CharStream
-        return null;
-    }
-
-    public int getLine() {
-        // returns 0, because a binary file has no lines
-        return 0;
-    }
-
-    public String getText() {
-        return Byte.toString(val);
-    }
-
-    public int getTokenIndex() {
-        return getIntValue();
-    }
-
-    public int getType() {
-        return getIntValue();
-    }
-
-    public void setChannel(int arg0) {
-        channel = arg0;
-    }
-
-    public void setCharPositionInLine(int arg0) {
-        charPositionInLine = arg0;
-    }
-
-    public void setInputStream(CharStream arg0) {
-        // do nothing, we don't deal with CharStream, the Token interface
-        // shouldn't depend on CharStream
-    }
-
-    public void setLine(int arg0) {
-        // do nothing, because a binary file has no lines
-    }
-
-    public void setText(String arg0) {
-        try {
-            val = Byte.parseByte(arg0);
-        } catch (NumberFormatException e) {
-            // silently keep the old value, what else can we do?
-        }
-    }
-
-    public void setTokenIndex(int arg0) {
-        val = (byte) arg0;
-    }
-
-    public void setType(int arg0) {
-        val = (byte) arg0;
+	return val & 0xff;
     }
 }
+
+
+
