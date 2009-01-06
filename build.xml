@@ -79,6 +79,9 @@ engineering of Java code and support for built-in types and standard libraries.
     <property name="antlr-rt.jar" value="antlr-runtime-3.1.1.jar"/>
     <property name="antlrall.jar.path" value="${module.lib.dir}/antlrworks-1.2.2.jar"/>
     <property name="antlr-rt.jar.path" value="${module.lib.dir}/${antlr-rt.jar}"/>
+    <!-- needed only until classfile grammar is ported to Antlr3: -->
+    <property name="antlr2.jar" value="antlr-2.7.7.jar"/>
+    <property name="antlr2.jar.path" value="${module.lib.dir}/${antlr2.jar}"/>
 
     <property name="manifest" value="manifest.mf"/>
     <property name="manifest.src" value="${module.src.dir}/org/${manifest}"/>
@@ -129,6 +132,7 @@ engineering of Java code and support for built-in types and standard libraries.
     <path id="module.compile.classpath">
         <pathelement location="${argo.build.dir}/argouml.jar"/>
         <pathelement location="${antlrall.jar.path}"/>
+        <pathelement location="${antlr2.jar.path}"/>
         <pathelement location="${argo.build.dir}/argouml-model.jar"/>
     </path>
     <echo message="module.compile.classpath value:"/>
@@ -211,6 +215,7 @@ engineering of Java code and support for built-in types and standard libraries.
       targetfile="${module.src_generated.dir}/org/argouml/language/java/reveng/classfile/ClassfileTokenTypes.txt">
       <srcfiles dir="${module.src.dir}/org/argouml/language/java/reveng/classfile">
         <include name="Classfile.g"/>
+        <include name="classfile.tree.g"/>
       </srcfiles>
     </uptodate>
     <antcall target="generateparser_classfile"/>
@@ -228,11 +233,16 @@ engineering of Java code and support for built-in types and standard libraries.
 
   <target name="generateparser_classfile" unless="classfileparser.is.current" 
           depends="prepare">
-    <echo message="Running antlr3 from ${antlrall.jar.path}"/>
-    <java classname="org.antlr.Tool" fork="yes" maxmemory="128M" classpath="${antlrall.jar.path}">
+    <echo message="Running antlr2 from ${antlr2.jar.path}"/>
+    <java classname="antlr.Tool" fork="yes" maxmemory="128M" classpath="${antlr2.jar.path}">
       <arg value="-o"/>
       <arg file="${module.src_generated.dir}/org/argouml/language/java/reveng/classfile"/>
       <arg file="${module.src.dir}/org/argouml/language/java/reveng/classfile/Classfile.g"/>
+    </java>
+    <java classname="antlr.Tool" fork="yes" maxmemory="128M" classpath="${antlr2.jar.path}">
+      <arg value="-o"/>
+      <arg file="${module.src_generated.dir}/org/argouml/language/java/reveng/classfile"/>
+      <arg file="${module.src.dir}/org/argouml/language/java/reveng/classfile/classfile.tree.g"/>
     </java>
   </target>
   
@@ -328,6 +338,7 @@ engineering of Java code and support for built-in types and standard libraries.
           description="cleanup all files and directories created by this build script">
     <delete file="${argo.build.dir}/ext/${module.jarfile.name}"/>
     <delete file="${argo.build.dir}/ext/${antlr-rt.jar}"/>
+    <delete file="${argo.build.dir}/ext/${antlr2.jar}"/>
     <delete dir="${module.build.dir}"/>
    
     <antcall target="cleanparsers"/>
@@ -344,6 +355,7 @@ engineering of Java code and support for built-in types and standard libraries.
     <copy todir="${argo.build.dir}/ext">
       <fileset dir="${module.lib.dir}">
         <include name="${antlr-rt.jar}"/>
+        <include name="${antlr2.jar}"/>
       </fileset>
     </copy>
   </target>
