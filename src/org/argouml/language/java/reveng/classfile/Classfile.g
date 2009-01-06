@@ -1,5 +1,12 @@
 // $Id: Context.java 48 2008-09-29 21:45:47Z thn $
 
+header {
+package org.argouml.language.java.reveng.classfile;
+
+import antlr.*;
+import antlr.collections.*;
+import java.util.*;
+}   
 // Copyright note for the modifications/additions for the ArgoUML project:
 //
 // Copyright (c) 2003-2008 The Regents of the University of California. All
@@ -30,7 +37,6 @@
  * Contributing authors:
  *     Andreas Rueckert <a_rueckert@gmx.net>
  *     Tom Morris <tfmorris@gmail.com>
- *     Thomas Neustupny <thn@tigris.org>
  * Since: June 2003 (or earlier)
  * 
  * Todo for Java 1.5:
@@ -40,31 +46,15 @@
 /********************************
  * A parser for a Java classfile.
  ********************************/
+class ClassfileParser extends Parser;
 
-grammar Classfile;
-options {k=1; output = AST;}
-//options {k=1; backtrack=true; memoize=true; output = AST;}
+options { 
+	exportVocab=Classfile;
+	defaultErrorHandler = false;       // Don't generate parser error handlers
+        buildAST = true;     
+}
 
 tokens {
-	// the token type values of the following 256 tokens are equal to the
-	// respective byte value plus 4 (See ByteTokenStream.LA(int))
-	X00; X01; X02; X03; X04; X05; X06; X07; X08; X09; X0A; X0B; X0C; X0D; X0E; X0F;
-	X10; X11; X12; X13; X14; X15; X16; X17; X18; X19; X1A; X1B; X1C; X1D; X1E; X1F;
-	X20; X21; X22; X23; X24; X25; X26; X27; X28; X29; X2A; X2B; X2C; X2D; X2E; X2F;
-	X30; X31; X32; X33; X34; X35; X36; X37; X38; X39; X3A; X3B; X3C; X3D; X3E; X3F;
-	X40; X41; X42; X43; X44; X45; X46; X47; X48; X49; X4A; X4B; X4C; X4D; X4E; X4F;
-	X50; X51; X52; X53; X54; X55; X56; X57; X58; X59; X5A; X5B; X5C; X5D; X5E; X5F;
-	X60; X61; X62; X63; X64; X65; X66; X67; X68; X69; X6A; X6B; X6C; X6D; X6E; X6F;
-	X70; X71; X72; X73; X74; X75; X76; X77; X78; X79; X7A; X7B; X7C; X7D; X7E; X7F;
-	X80; X81; X82; X83; X84; X85; X86; X87; X88; X89; X8A; X8B; X8C; X8D; X8E; X8F;
-	X90; X91; X92; X93; X94; X95; X96; X97; X98; X99; X9A; X9B; X9C; X9D; X9E; X9F;
-	XA0; XA1; XA2; XA3; XA4; XA5; XA6; XA7; XA8; XA9; XAA; XAB; XAC; XAD; XAE; XAF;
-	XB0; XB1; XB2; XB3; XB4; XB5; XB6; XB7; XB8; XB9; XBA; XBB; XBC; XBD; XBE; XBF;
-	XC0; XC1; XC2; XC3; XC4; XC5; XC6; XC7; XC8; XC9; XCA; XCB; XCC; XCD; XCE; XCF;
-	XD0; XD1; XD2; XD3; XD4; XD5; XD6; XD7; XD8; XD9; XDA; XDB; XDC; XDD; XDE; XDF;
-	XE0; XE1; XE2; XE3; XE4; XE5; XE6; XE7; XE8; XE9; XEA; XEB; XEC; XED; XEE; XEF;
-	XF0; XF1; XF2; XF3; XF4; XF5; XF6; XF7; XF8; XF9; XFA; XFB; XFC; XFD; XFE; XFF;
-	// now the remaining tokens:
 	ACCESS_MODIFIERS;
 	ATTRIBUTE_CONSTANT;
 	CLASS_DEF;
@@ -96,296 +86,309 @@ tokens {
 	VERSION; 
 }
 
-@rulecatch { }
+{
+	// Constants as defined in the JVM classfile specs.
+	public static final byte CONSTANT_Class 		=  7; 
+ 	public static final byte CONSTANT_Fieldref 		=  9; 
+ 	public static final byte CONSTANT_Methodref 		= 10;
+ 	public static final byte CONSTANT_InterfaceMethodref 	= 11;
+ 	public static final byte CONSTANT_String 		=  8;
+ 	public static final byte CONSTANT_Integer 		=  3; 
+ 	public static final byte CONSTANT_Float 		=  4; 
+ 	public static final byte CONSTANT_Long 	 		=  5; 
+ 	public static final byte CONSTANT_Double 		=  6;
+ 	public static final byte CONSTANT_NameAndType 		= 12;
+ 	public static final byte CONSTANT_Utf8 			=  1;
 
-@header {
-package org.argouml.language.java.reveng.classfile;
+	// Access flags as defined in the JVM specs.
+ 	public static final short ACC_PUBLIC    = 0x0001;
+        public static final short ACC_PRIVATE   = 0x0002;
+        public static final short ACC_PROTECTED = 0x0004;
+        public static final short ACC_STATIC    = 0x0008;
+        public static final short ACC_FINAL     = 0x0010;
 
-import org.argouml.language.java.reveng.Modeller;
-//import java.util.*;
-}   
+        public static final short ACC_SUPER     = 0x0020;
+        public static final short ACC_VOLATILE  = 0x0040;
+        public static final short ACC_TRANSIENT = 0x0080;
+        
+        // Method access versions of above class access flags
+        public static final short ACC_SYNCHRONIZED = 0x0020;
+        public static final short ACC_BRIDGE       = 0x0040;
+        public static final short ACC_VARARGS      = 0x0080;
+                
+        public static final short ACC_NATIVE    = 0x0100;
+        public static final short ACC_INTERFACE = 0x0200;
+        public static final short ACC_ABSTRACT  = 0x0400;
+        public static final short ACC_SYNTHETIC = 0x1000;
+        public static final short ACC_ANNOTATION= 0x2000; // deleted in Java 1.5
+        public static final short ACC_ENUM      = 0x4000;
+                
+	// The name of the current class (to be used for constructors)
+	private String _className = null;
 
-@members{
-    // Constants as defined in the JVM classfile specs.
-    public static final byte CONSTANT_Class              =  7; 
-    public static final byte CONSTANT_Fieldref           =  9; 
-    public static final byte CONSTANT_Methodref          = 10;
-    public static final byte CONSTANT_InterfaceMethodref = 11;
-    public static final byte CONSTANT_String             =  8;
-    public static final byte CONSTANT_Integer            =  3; 
-    public static final byte CONSTANT_Float              =  4; 
-    public static final byte CONSTANT_Long               =  5; 
-    public static final byte CONSTANT_Double             =  6;
-    public static final byte CONSTANT_NameAndType        = 12;
-    public static final byte CONSTANT_Utf8               =  1;
+	// A array buffer for the constant pool.
+	private AST [] _constant = null;
 
-    // Access flags as defined in the JVM specs.
-    public static final short ACC_PUBLIC    = 0x0001;
-    public static final short ACC_PRIVATE   = 0x0002;
-    public static final short ACC_PROTECTED = 0x0004;
-    public static final short ACC_STATIC    = 0x0008;
-    public static final short ACC_FINAL     = 0x0010;
-    public static final short ACC_SUPER     = 0x0020;
-    public static final short ACC_VOLATILE  = 0x0040;
-    public static final short ACC_TRANSIENT = 0x0080;
+	/**
+	 * Set the name of the currently parsed class.
+	 *
+	 * @param name The name of the class.
+	 */
+	private void setClassName(String name) {
 
-    // Method access versions of above class access flags
-    public static final short ACC_SYNCHRONIZED = 0x0020;
-    public static final short ACC_BRIDGE       = 0x0040;
-    public static final short ACC_VARARGS      = 0x0080;
-    public static final short ACC_NATIVE    = 0x0100;
-    public static final short ACC_INTERFACE = 0x0200;
-    public static final short ACC_ABSTRACT  = 0x0400;
-    public static final short ACC_SYNTHETIC = 0x1000;
-    public static final short ACC_ANNOTATION= 0x2000; // deleted in Java 1.5
-    public static final short ACC_ENUM      = 0x4000;
+	    // Remove the package info.
+    	    int lastDot = name.lastIndexOf('.');
+            if(lastDot == -1) {
+		_className = name;
+            }  else {
+                _className = name.substring(lastDot+1);
+            }    
+	}
 
-    // The name of the current class (to be used for constructors)
-    private String _className = null;
+	/**
+	 * Get the name of the currently parsed class.
+	 *
+	 * @return The name of the class.
+	 */
+	private String getClassName() {
+	    return _className;
+	}
 
-    /**
-     * Set the name of the currently parsed class.
-     *
-     * @param name The name of the class.
-     */
-     private void setClassName(String name) {
-        // Remove the package info.
-        int lastDot = name.lastIndexOf('.');
-        if(lastDot == -1) {
-            _className = name;
-        }  else {
-            _className = name.substring(lastDot+1);
-        }    
-    }
+	/**
+	 * Init the buffer for a given number of AST nodes.
+	 *
+	 * @param size The number of AST nodes.
+	 */
+	private void initPoolBuffer(int size) {
+	    // This is a casted short, so we have to remove the sign extension.
+	    _constant = new AST[size & 0xffff];
+	}	
 
-    /**
-     * Get the name of the currently parsed class.
-     *
-     * @return The name of the class.
-     */
-    private String getClassName() {
-        return _className;
-    }
+	/**
+	 * Add a AST holding a constant to the buffer.
+	 *
+	 * @param index The index of the buffer, where the node is copied to.
+	 * @param node The AST node with the constant info.
+	 */
+	private void copyConstant(int index, AST node) {
+	    _constant[index] = node;
+	}
 
-    /**
-     * Convert a classfile field descriptor.
-     *
-     * @param desc The descriptor as a string.
-     * @return The descriptor as it would appear in a Java sourcefile.
-     */
-    String convertDescriptor(String desc) {
-        int arrayDim = 0;
-        StringBuffer result = new StringBuffer();
+	/**
+	 * Get a constant from the buffer.
+	 *
+	 * @param index The index of the node in the buffer.
+	 *
+	 * @return The AST at the given position.
+	 */
+	private AST getConstant(short index) {
+	    return _constant[(int)index &0xffff];
+	}
 
-        while(desc.charAt(0) == '[') {
-            arrayDim++;
-            desc = desc.substring(1);
-        }
+	/**
+	 * Convert a classfile field descriptor.
+	 *
+	 * @param desc The descriptor as a string.
+	 *
+	 * @return The descriptor as it would appear in a Java sourcefile.
+	 */
+	String convertDescriptor(String desc) {
+	    int arrayDim = 0;
+	    StringBuffer result = new StringBuffer();
 
-        switch(desc.charAt(0)) {
-            case 'B': result.append("byte"); break;
-            case 'C': result.append("char"); break;
-            case 'D': result.append("double"); break;
-            case 'F': result.append("float"); break;
-            case 'I': result.append("int"); break;
-            case 'J': result.append("long"); break;
-            case 'S': result.append("short"); break;
-            case 'Z': result.append("boolean"); break;
-            case 'L': result.append(desc.substring( 1, desc.indexOf(';'))); break;
-            case 'T':
-                result.append('<');
-                result.append(desc.substring( 1, desc.indexOf(';')));
-                result.append('>');
-                break;
-        }
+	    while(desc.charAt(0) == '[') {
+	        arrayDim++;
+		desc = desc.substring(1);
+	    }
 
-        for(int d = 0; d < arrayDim; d++) {
-            result.append("[]");
-        }
+	    switch(desc.charAt(0)) {
+	    	case 'B': result.append("byte"); break;
+		case 'C': result.append("char"); break;
+		case 'D': result.append("double"); break;
+		case 'F': result.append("float"); break;
+		case 'I': result.append("int"); break;
+		case 'J': result.append("long"); break;
+		case 'S': result.append("short"); break;
+		case 'Z': result.append("boolean"); break;
+		case 'L': result.append(desc.substring( 1, desc.indexOf(';'))); break;
+		case 'T': 
+                    result.append("<");
+                    result.append(desc.substring( 1, desc.indexOf(';')));
+                    result.append(">");
+		    break;
+	    }
 
-        return result.toString();
-    }
+	    for(int d = 0; d < arrayDim; d++) {
+	        result.append("[]");
+	    }
 
-    /**
-     * Convert the descriptor of a method.
-     *
-     * @param desc The method descriptor as a String.
-     * @return The method descriptor as a array of Strings, that holds Java types.
-     */
-    String[] convertMethodDescriptor(String desc) {
-        java.util.List<String> resultBuffer = new ArrayList<String>();  // A buffer for the result.
-        int arrayDim = 0;
-        String typeIdent = null;
+	    return result.toString();
+	}
 
-        if(desc.startsWith("(")) {  // parse parameters
-            int paramLen = desc.indexOf(")") - 1;
-            String paramDesc = desc.substring( 1, 1 + paramLen);
+	/**
+	 * Convert the descriptor of a method.
+	 *
+	 * @param desc The method descriptor as a String.
+	 *
+	 * @return The method descriptor as a array of Strings, that holds Java types.
+	 */
+	String [] convertMethodDescriptor(String desc) {
+	    java.util.List<String> resultBuffer = new ArrayList<String>();  // A buffer for the result.
+	    int arrayDim = 0;
+	    String typeIdent = null;
 
-            while(paramDesc.length() > 0) {
-                while(paramDesc.charAt(0) == '[') {
-                    arrayDim++;
-                    paramDesc = paramDesc.substring(1);
-                }
-                int len;			
-                switch(paramDesc.charAt(0)) {
-                    case 'B': typeIdent = "byte"; paramDesc = paramDesc.substring(1); break;
-                    case 'C': typeIdent = "char"; paramDesc = paramDesc.substring(1); break;
-                    case 'D': typeIdent = "double"; paramDesc = paramDesc.substring(1); break;
-                    case 'F': typeIdent = "float"; paramDesc = paramDesc.substring(1); break;
-                    case 'I': typeIdent = "int"; paramDesc = paramDesc.substring(1); break;
-                    case 'J': typeIdent = "long"; paramDesc = paramDesc.substring(1); break;
-                    case 'S': typeIdent = "short"; paramDesc = paramDesc.substring(1); break;
-                    case 'Z': typeIdent = "boolean"; paramDesc = paramDesc.substring(1); break;
-                    case 'L': len = paramDesc.indexOf(';') - 1;
-                        typeIdent = paramDesc.substring( 1, 1 + len).replace('/', '.');
-                        paramDesc = paramDesc.substring(len + 2);
-                        break;
-                    case 'T':
-                        len = paramDesc.indexOf(';') - 1;
-                        typeIdent = paramDesc.substring( 1, 1 + len).replace('$', '.');
-                        paramDesc = "<" + paramDesc.substring(len + 2) + ">";
-                        break;
-                }
-                for(int i=0; i < arrayDim; i++) {
-                    typeIdent += "[]";
-                }
-                arrayDim = 0;
-                resultBuffer.add(typeIdent);
-            }
-            desc = desc.substring(paramLen + 2);
-        }
+	    if(desc.startsWith("(")) {  // parse parameters
+		int paramLen = desc.indexOf(")") - 1;
+	        String paramDesc = desc.substring( 1, 1 + paramLen);
 
-        // Now convert the return type descriptor.
-        while(desc.charAt(0) == '[') {
-            arrayDim++;
-            desc = desc.substring(1);
-        }
+		while(paramDesc.length() > 0) {
 
-        switch(desc.charAt(0)) {
-            case 'B': typeIdent = "byte"; break;
-            case 'C': typeIdent = "char"; break;
-            case 'D': typeIdent = "double"; break;
-            case 'F': typeIdent = "float"; break;
-            case 'I': typeIdent = "int"; break;
-            case 'J': typeIdent = "long"; break;
-            case 'S': typeIdent = "short"; break;
-            case 'Z': typeIdent = "boolean"; break;
-            case 'V': typeIdent = "void"; break;
-            case 'L': typeIdent = desc.substring( 1, desc.indexOf(';')).replace('/','.'); break;
-            case 'T': typeIdent = '<' + desc.substring( 1, desc.indexOf(';')).replace('$','.') + '>'; break;
-        }
+		    while(paramDesc.charAt(0) == '[') {
+			arrayDim++;
+			paramDesc = paramDesc.substring(1);
+		    }
 
-        for(int i=0; i < arrayDim; i++) {
-            typeIdent += "[]";
-        }
+		    int len;			
+		    switch(paramDesc.charAt(0)) {
+	    	        case 'B': typeIdent = "byte"; paramDesc = paramDesc.substring(1); break;
+		        case 'C': typeIdent = "char"; paramDesc = paramDesc.substring(1); break;
+		        case 'D': typeIdent = "double"; paramDesc = paramDesc.substring(1); break;
+		        case 'F': typeIdent = "float"; paramDesc = paramDesc.substring(1); break;
+		        case 'I': typeIdent = "int"; paramDesc = paramDesc.substring(1); break;
+		        case 'J': typeIdent = "long"; paramDesc = paramDesc.substring(1); break;
+		        case 'S': typeIdent = "short"; paramDesc = paramDesc.substring(1); break;
+		        case 'Z': typeIdent = "boolean"; paramDesc = paramDesc.substring(1); break;
+		        case 'L': len = paramDesc.indexOf(';') - 1;
+				  typeIdent = paramDesc.substring( 1, 1 + len).replace('/', '.');
+				  paramDesc = paramDesc.substring(len + 2);
+				  break;
+		        case 'T': len = paramDesc.indexOf(';') - 1;
+				  typeIdent = paramDesc.substring( 1, 1 + len).replace('$', '.');
+				  paramDesc = "<" + paramDesc.substring(len + 2) + ">";
+				  break;
+		    }		
 
-        resultBuffer.add(0, typeIdent);
+		    for(int i=0; i < arrayDim; i++) {
+			typeIdent += "[]";
+		    }
+		    arrayDim = 0;
 
-        String [] result = new String [ resultBuffer.size() ];
-        resultBuffer.toArray(result);
-        return result;
-    }
+		    resultBuffer.add(typeIdent);
+		}
+		desc = desc.substring(paramLen + 2);
+	    }
 
-    private Modeller _modeller;
+	    // Now convert the return type descriptor.
 
-    public Modeller getModeller() {
-        return _modeller;
-    }
+	    while(desc.charAt(0) == '[') {
+	        arrayDim++;
+		desc = desc.substring(1);
+	    }
 
-    public void setModeller(Modeller modeller) {
-        _modeller = modeller;
-        //Object lvl = modeller.getAttribute("level");
-        //if (lvl != null) {
-        //  level = ((Integer)lvl).intValue();
-        //}
-    }
+	    switch(desc.charAt(0)) {
+	    	case 'B': typeIdent = "byte"; break;
+		case 'C': typeIdent = "char"; break;
+		case 'D': typeIdent = "double"; break;
+		case 'F': typeIdent = "float"; break;
+		case 'I': typeIdent = "int"; break;
+		case 'J': typeIdent = "long"; break;
+		case 'S': typeIdent = "short"; break;
+		case 'Z': typeIdent = "boolean"; break;
+		case 'V': typeIdent = "void"; break;
+		case 'L': typeIdent = desc.substring( 1, desc.indexOf(';')).replace('/','.'); break;
+		case 'T': typeIdent = "<" + desc.substring( 1, desc.indexOf(';')).replace('$','.') + ">"; break;
+	    }
+
+	    for(int i=0; i < arrayDim; i++) {
+	        typeIdent += "[]";
+	    }
+
+	    resultBuffer.add(0, typeIdent);
+
+	    String [] result = new String [ resultBuffer.size() ];
+            resultBuffer.toArray(result);
+	    return result;
+	}
 }
 
 // The entire classfile
 classfile
 	: magic_number
 	  version_number
-      /*
 	  constant_pool
 	  type_definition
 	  field_block
 	  method_block
 	  attribute_block
-	  */
-	  .*
 	  EOF
-	;
+        ;
 
 // The magic number 0xCAFEBABE, every classfile starts with
 magic_number!
-	: XCA XFE XBA XBE
+{ int magic=0; } 
+	: magic=u4 {magic==0xcafebabe}? { #magic_number = #[MAGIC,Integer.toHexString(magic)]; }
 	;
 
 // The version number.
 version_number!
-	: minor=u2 major=u2
-	{
-		String verStr = major + "." + minor;
-		//#version_number = #[VERSION,verStr];
-	}
-	-> ^(VERSION $major $minor)
+{ short minor=0,major=0; String verStr=null; }
+	: minor=u2 major=u2 { verStr = ""+major+"."+minor; #version_number = #[VERSION,verStr]; }
 	;
 
-/*
 // The constant pool.
-constant_pool
-	@init{ short poolSize=0; int index=1; }
+constant_pool!
+{ short poolSize=0; int index=1; }
 	: poolSize=u2 { initPoolBuffer(poolSize); }  // Parse the size of the constant pool + 1
 	  ( 
 	    {index < ((int)poolSize & 0xffff)}? 
-            cp=cp_info 
-             {
-               copyConstant(index++, cp); 
+            cp:cp_info 
+             { 
+               copyConstant(index++, #cp); 
 
 	       // 8 byte constants consume 2 constant pool entries (according to the JVM specs).
-	       if( (cp.getType() == CONSTANT_LONGINFO) || (cp.getType() == CONSTANT_DOUBLEINFO)) {
+	       if( (#cp.getType() == CONSTANT_LONGINFO) || (#cp.getType() == CONSTANT_DOUBLEINFO)) {
 		  index++;
 	       }
-             }
-          )*
+             } 
+          )* 
 	  {index==((int)poolSize & 0xffff)}?  	// Parse <poolSize-1> cp_info structures.
 	;
 
 // Info on a entry in the constant pool
-cp_info
-	@init{ byte tag=0; }
+cp_info!
+{ byte tag=0; }
 	: tag=u1  // This tag does actually belong to the *info structures according to the 
                   // classfile specs. Put putting it into the *info rules might cause quite
 	          // a bit of guessing and backtracking, which might cause performance issues.
                   // So I check it, before the actual *info structures are parsed.
 	  (      
-	    {tag == CONSTANT_Class}?                cl=constant_class_info               {cp_info=cl;}
-	    | {tag == CONSTANT_Fieldref}?           cf=constant_fieldref_info            {cp_info=cf;}
-	    | {tag == CONSTANT_Methodref}?          cm=constant_methodref_info           {cp_info=cm;}
- 	    | {tag == CONSTANT_InterfaceMethodref}? ci=constant_interface_methodref_info {cp_info=ci;}
- 	    | {tag == CONSTANT_String}?             cs=constant_string_info              {cp_info=cs;}          
- 	    | {tag == CONSTANT_Integer}?            ct=constant_integer_info             {cp_info=ct;}
- 	    | {tag == CONSTANT_Float}?              ca=constant_float_info               {cp_info=ca;}
- 	    | {tag == CONSTANT_Long}?               co=constant_long_info                {cp_info=co;}
- 	    | {tag == CONSTANT_Double}?             cd=constant_double_info              {cp_info=cd;}
- 	    | {tag == CONSTANT_NameAndType}?        cn=constant_name_and_type_info       {cp_info=cn;}
- 	    | {tag == CONSTANT_Utf8}?               cu=constant_utf8_info                {cp_info=cu;}
+	    {tag == CONSTANT_Class}?                cl:constant_class_info               {#cp_info=#cl;}
+	    | {tag == CONSTANT_Fieldref}?           cf:constant_fieldref_info            {#cp_info=#cf;}
+	    | {tag == CONSTANT_Methodref}?          cm:constant_methodref_info           {#cp_info=#cm;}
+ 	    | {tag == CONSTANT_InterfaceMethodref}? ci:constant_interface_methodref_info {#cp_info=#ci;}
+ 	    | {tag == CONSTANT_String}?             cs:constant_string_info              {#cp_info=#cs;}          
+ 	    | {tag == CONSTANT_Integer}?            ct:constant_integer_info             {#cp_info=#ct;}
+ 	    | {tag == CONSTANT_Float}?              ca:constant_float_info               {#cp_info=#ca;}
+ 	    | {tag == CONSTANT_Long}?               co:constant_long_info                {#cp_info=#co;}
+ 	    | {tag == CONSTANT_Double}?             cd:constant_double_info              {#cp_info=#cd;}
+ 	    | {tag == CONSTANT_NameAndType}?        cn:constant_name_and_type_info       {#cp_info=#cn;}
+ 	    | {tag == CONSTANT_Utf8}?               cu:constant_utf8_info                {#cp_info=#cu;}
 	  )
 	;
 
 // Info on a class in the constant pool.
-constant_class_info
-	@init{ short name_index=0; }
+constant_class_info!
+{ short name_index=0; }
 	: name_index=u2  // Missing tag (according to the classfile specs)! See the cp_info rule!
 	  { #constant_class_info = new ShortAST( CONSTANT_CLASSINFO, name_index); }
 	;
 
 // Info on a field in the constant pool.
-constant_fieldref_info
-	@init{
-	  short class_index=0;
-	  short name_and_type_index=0;
-	}
+constant_fieldref_info!
+{
+  short class_index=0;
+  short name_and_type_index=0;
+}
 	: class_index=u2  // Missing tag (according to the classfile specs)! See the cp_info rule!
 	  name_and_type_index=u2  
 	   { 
@@ -395,11 +398,11 @@ constant_fieldref_info
 	;
 
 // Info on a class method in the constant pool.
-constant_methodref_info
-	@init{
-	  short class_index=0;
-	  short name_and_type_index=0;
-	}
+constant_methodref_info!
+{
+  short class_index=0;
+  short name_and_type_index=0;
+}
 	: class_index=u2  // Missing tag (according to the classfile specs)! See the cp_info rule!
 	  name_and_type_index=u2 
 	   { 
@@ -409,11 +412,11 @@ constant_methodref_info
 	;
 
 // Info on a interface method in the constant pool.
-constant_interface_methodref_info
-	@init{
-	  short class_index=0;
-	  short name_and_type_index=0;
-	}
+constant_interface_methodref_info!
+{
+  short class_index=0;
+  short name_and_type_index=0;
+}
 	: class_index=u2  // Missing tag (according to the classfile specs)! See the cp_info rule!
 	  name_and_type_index=u2 
 	   { 
@@ -423,44 +426,44 @@ constant_interface_methodref_info
 	;
 
 // Info on a string in the constant pool.
-constant_string_info
-	@init{ short string_index=0; }
+constant_string_info!
+{ short string_index=0; }
 	: string_index=u2  // Missing tag (according to the classfile specs)! See the cp_info rule!
 	   { #constant_string_info = new ShortAST( CONSTANT_STRINGINFO, string_index); }
 	;
 
 // Info on a string in the constant pool.
-constant_integer_info
-	@init{ int val=0; }
+constant_integer_info!
+{ int val=0; }
 	: val=u4  // Missing tag (according to the classfile specs)! See the cp_info rule!
 	   { #constant_integer_info = new ObjectAST(CONSTANT_INTEGERINFO, new Integer(val)); }
 	;
 
 // Info on a float in the constant pool.
-constant_float_info
-	@init{ int bytes=0; }
+constant_float_info!
+{ int bytes=0; }
 	: bytes=u4  // Missing tag (according to the classfile specs)! See the cp_info rule!
 	   { #constant_float_info = new ObjectAST(CONSTANT_FLOATINFO, new Double(Float.intBitsToFloat(bytes))); }
 	;
 
 // Info on a long in the constant pool.
-constant_long_info
-	@init{ int high_bytes=0, low_bytes=0; long val = 0L; }
+constant_long_info!
+{ int high_bytes=0, low_bytes=0; long val = 0L; }
 	: high_bytes=u4 low_bytes=u4  // Missing tag (according to the classfile specs)! See the cp_info rule!
 	   { #constant_long_info = new ObjectAST(CONSTANT_LONGINFO, new Long((long)high_bytes | ((long)low_bytes & 0xFFFFL))); }
 	;
 
 // Info on a double in the constant pool.
-constant_double_info
-	@init{ int high_bytes=0, low_bytes=0; }
+constant_double_info!
+{ int high_bytes=0, low_bytes=0; }
 	: high_bytes=u4 low_bytes=u4  // Missing tag (according to the classfile specs)! See the cp_info rule!
 	   { #constant_double_info = new ObjectAST(CONSTANT_DOUBLEINFO, new Double(Double.longBitsToDouble( (long)high_bytes | ((long)low_bytes & 0xFFFFL))));
 }
 	;
 
 // Info on name and type.
-constant_name_and_type_info
-	@init{ short name_index=0, descriptor_index=0; }
+constant_name_and_type_info!
+{ short name_index=0, descriptor_index=0; }
 	: name_index=u2
 	  descriptor_index=u2  // Missing tag (according to the classfile specs)! See the cp_info rule!
 	   {
@@ -470,13 +473,13 @@ constant_name_and_type_info
 	;
 
 // A UTF8 encoded string in the constant pool.
-constant_utf8_info
-	@init{
-	  short length=0;
-	  byte [] bytes;
-	  byte bytebuf=0;
-	  int bytepos=0;
-	}
+constant_utf8_info!
+{
+  short length=0;
+  byte [] bytes;
+  byte bytebuf=0;
+  int bytepos=0;
+}
 	: length=u2 { bytes = new byte[length]; }  // Missing tag (according to the classfile specs)! See the cp_info rule!
 	  ( {length > 0}? bytebuf=u1 { bytes[bytepos++] = bytebuf; length--; } )* {length==0}? 
 	  { 
@@ -490,11 +493,11 @@ constant_utf8_info
 	;
 
 // The head of a class of interface definition.
-type_definition
-	: m=access_modifiers
-	  c=class_info
-	  s=superclass_info
-	  i=interface_block
+type_definition!
+	: m:access_modifiers
+	  c:class_info
+	  s:superclass_info
+	  i:interface_block
 	   { 
 	     if( (((ShortAST)#m).getShortValue() & ACC_INTERFACE) > 0) {
 	         #type_definition = #( [INTERFACE_DEF], m, c, ([EXTENDS_CLAUSE], i));
@@ -505,14 +508,14 @@ type_definition
 	;
 
 // Access modifiers for the class
-access_modifiers
-	@init{ short modifiers=0; }
+access_modifiers!
+{ short modifiers=0; }
 	: modifiers=u2 { #access_modifiers = new ShortAST( ACCESS_MODIFIERS, modifiers); }
 	;
 
 // Info on the main class
-class_info
-	@init{ short class_info_index = 0; }  	// A index of a entry in the constant pool.
+class_info!
+{ short class_info_index = 0; }  	// A index of a entry in the constant pool.
 	: class_info_index=u2  
 	  { 
             String class_name = getConstant(((ShortAST)getConstant(class_info_index)).getShortValue()).getText();
@@ -522,8 +525,8 @@ class_info
 	;
 
 // Info on the super class
-superclass_info
-	@init{ short class_info_index = 0; }   // A index of a entry in the constant pool.
+superclass_info!
+{ short class_info_index = 0; }   // A index of a entry in the constant pool.
 	: class_info_index=u2
 	  { 
             String class_name = getConstant(((ShortAST)getConstant(class_info_index)).getShortValue()).getText();
@@ -533,14 +536,14 @@ superclass_info
 
 // Info on the implemented interfaces
 interface_block
-	@init{ short interfaces_count=0; }
+{ short interfaces_count=0; }
 	: interfaces_count=u2    // Get the number of implemented interfaces.
  	  ( {interfaces_count > 0}? interface_info {interfaces_count--;} )* {interfaces_count==0}?  // Parse <interfaces_count> interface_info structures.
 	;
 
 // Info on a interface.
-interface_info
-	@init{ short interface_index=0; }
+interface_info!
+{ short interface_index=0; }
 	: interface_index=u2  	// A valid index into the constant_pool table, that references a CONSTANT_Class_info structure.
 	   { 
              String interface_name = getConstant(((ShortAST)getConstant(interface_index)).getShortValue()).getText();
@@ -550,19 +553,19 @@ interface_info
 
 // Info on all the fields of this class.
 field_block
-	@init{ short fields_count=0; }
+{ short fields_count=0; }
 	: fields_count=u2  // Get the number of fields.
 	  ( {fields_count > 0}? field_info {fields_count--;})* {fields_count==0}?  // Parse <fields_count> field_info structures.
 	;
 
 // Info on a field.
 field_info
-	@init{
-	  short access_flags=0;
-	  short name_index=0;
-	  short descriptor_index=0;
-	  short attributes_count;
-	}
+{
+  short access_flags=0;
+  short name_index=0;
+  short descriptor_index=0;
+  short attributes_count;
+}
 	: access_flags=u2
 	  name_index=u2
 	  descriptor_index=u2
@@ -578,30 +581,30 @@ field_info
 
 // Info on all the methods of this class.
 method_block
-	@init{ int methods_count=0; }
+{ int methods_count=0; }
 	: methods_count=u2  // Get the number of methods.
 	  ( {methods_count > 0}? method_info {methods_count--;})* {methods_count==0}?  // Parse <methods_count> method_info structures.
 	;
 
 // Info on a method.
-method_info
-	@init{
-	  short access_flags=0;
-	  short name_index=0;
-	  short descriptor_index=0;
-	  short attributes_count=0;
-	  AST exceptions = #[THROWS];  // Create a empty exception clause.
-	}
+method_info!
+{
+  short access_flags=0;
+  short name_index=0;
+  short descriptor_index=0;
+  short attributes_count=0;
+  AST exceptions = #[THROWS];  // Create a empty exception clause.
+}
 	: access_flags=u2
           name_index=u2  
 	  descriptor_index=u2
 	  attributes_count=u2	
 	  ( 
             {attributes_count > 0}? 
-            attr=attribute_info 
+            attr:attribute_info 
 	    (
 	     // If this is a exception table, store it for the method AST.
-	      {attr != null && THROWS == #attr.getType()}? {exceptions = #attr;}
+	      {#attr != null && THROWS == #attr.getType()}? {exceptions = #attr;}
 
 	      |  // Could also be a code attribute.
 	    )
@@ -634,60 +637,60 @@ method_info
 
 // Info on all the attributes of a class.
 attribute_block
-	@init{ int attributes_count=0; }
+{ int attributes_count=0; }
 	: attributes_count=u2  // Get the number of attributes.
 	  ( {attributes_count > 0}? attribute_info {attributes_count--;})* {attributes_count==0}?  // Parse <attributes_count> attribute_info structures.
 	;
 
 // Info on a attribute
-attribute_info
-	@init{
-	  short attribute_name_index=0;
-	  int attribute_length=0;
-	  String attribute_name=null;
-	  byte [] info;
-	  int bytepos=0;
-	  byte bytebuf=0;
-	}
+attribute_info!
+{
+  short attribute_name_index=0;
+  int attribute_length=0;
+  String attribute_name=null;
+  byte [] info;
+  int bytepos=0;
+  byte bytebuf=0;
+}
 	: attribute_name_index=u2 {getConstant(attribute_name_index).getType()==CONSTANT_UTF8STRING}? {attribute_name = getConstant(attribute_name_index).getText(); }
 	  attribute_length=u4
 	  (
 //	    {"AnnotationDefault".equals(attribute_name)}? adattr:annotationDefault_attribute { #attribute_info = #adattr; }
 //	    |
-	    {"Code".equals(attribute_name)}? cattr=code_attribute { attribute_info = cattr; }
+	    {"Code".equals(attribute_name)}? cattr:code_attribute { #attribute_info = #cattr; }
 	    |
- 	    {"ConstantValue".equals(attribute_name)}? cvattr=constantValue_attribute { attribute_info = cvattr; }
+ 	    {"ConstantValue".equals(attribute_name)}? cvattr:constantValue_attribute { #attribute_info = #cvattr; }
             // "Deprecated" attribute - can this be handled implicitly?
 //	    |
 //	    {"EnclosingMethod".equals(attribute_name)}? emattr:enclosingMethod_attribute { #attribute_info = #emattr; }
 	    |
-	    {"Exceptions".equals(attribute_name)}? exattr=exceptions_attribute { attribute_info = exattr; }
+	    {"Exceptions".equals(attribute_name)}? exattr:exceptions_attribute { #attribute_info = #exattr; }
 	    |
-	    {"InnerClasses".equals(attribute_name)}? icattr=innerClasses_attribute { attribute_info = icattr; }
+	    {"InnerClasses".equals(attribute_name)}? icattr:innerClasses_attribute { #attribute_info = #icattr; }
 	    |
-	    {"LineNumberTable".equals(attribute_name)}? lnattr=lineNumberTable_attribute { attribute_info = lnattr; }
+	    {"LineNumberTable".equals(attribute_name)}? lnattr:lineNumberTable_attribute { #attribute_info = #lnattr; }
 	    |
- 	    {"LocalVariableTable".equals(attribute_name)}? lattr=localVariableTable_attribute { attribute_info = lattr; }
+ 	    {"LocalVariableTable".equals(attribute_name)}? lattr:localVariableTable_attribute { #attribute_info = #lattr; }
 	    |
- 	    {"LocalVariableTypeTable".equals(attribute_name)}? lvtattr=localVariableTypeTable_attribute { attribute_info = lvtattr; }
+ 	    {"LocalVariableTypeTable".equals(attribute_name)}? lvtattr:localVariableTypeTable_attribute { #attribute_info = #lvtattr; }
 //	    |
 //	    {"Signature".equals(attribute_name)}? sigattr:signature_attribute { #attribute_info = #sigattr; }
             // "SourceDebugExtension" attribute ignored
             // "Synthetic" attribute ignored
 	    |
 	    // The classfile specs define a attribute, that gives info on the filename of the sourcecode.
-	    {attribute_length==2 && "SourceFile".equals(attribute_name)}? sattr=sourcefile_attribute { attribute_info = sattr; }
+	    {attribute_length==2 && "SourceFile".equals(attribute_name)}? sattr:sourcefile_attribute { #attribute_info = #sattr; }
 	    |
 	    // A compiler specific attribute, that is not known in detail..
 	    { info = new byte[attribute_length]; }
 	    ( {bytepos < attribute_length}? bytebuf=u1 {info[bytepos++] = bytebuf;} )* {bytepos==attribute_length}?
 	    { #attribute_info = #[UNKNOWN_ATTRIBUTE, attribute_name]; }
-	  )
-	; catch [SemanticException se] {}
+	  ) exception catch [SemanticException se] {}
+	;
 
 // A predefined attribute, that holds the filename of the sourcecode.
-sourcefile_attribute
-	@init{ short sourcefile_index = 0; }
+sourcefile_attribute!
+{ short sourcefile_index = 0; }
 	: sourcefile_index=u2 
 	   { 
 	     String sourcefile_name = getConstant(sourcefile_index).getText();
@@ -696,8 +699,8 @@ sourcefile_attribute
 	;
 
 // A attribute holding a constant value
-constantValue_attribute
-	@init{ short constantvalue_index = 0; }
+constantValue_attribute!
+{ short constantvalue_index = 0; }
 	: constantvalue_index=u2 { #constantValue_attribute = new ShortAST(ATTRIBUTE_CONSTANT, constantvalue_index); }
 	;
 
@@ -705,18 +708,18 @@ constantValue_attribute
 // The name index and length are missing here, cause they are already
 // parsed in the attribute_info rule to decide how to proceed further.
 code_attribute
-	@init{
-	  short max_stack = 0;
-	  short max_locals = 0;
-	  int code_length = 0;
-	  int codepos = 0;  // This should be long, but Java seems cause problems with array sizes > max_int.
-	  byte [] code = null;
-	  byte bytebuf = 0;
-	  short exception_table_length = 0;
-	  int exceptionpos=0;
-	  short attribute_count=0;
-	  int attributepos=0;
-	}
+{
+  short max_stack = 0;
+  short max_locals = 0;
+  int code_length = 0;
+  int codepos = 0;  // This should be long, but Java seems cause problems with array sizes > max_int.
+  byte [] code = null;
+  byte bytebuf = 0;
+  short exception_table_length = 0;
+  int exceptionpos=0;
+  short attribute_count=0;
+  int attributepos=0;
+}
 	: max_stack=u2
 	  max_locals=u2
 	  code_length=u4 { code = new byte[code_length]; }
@@ -733,12 +736,12 @@ code_attribute
 
 // A entry in the exception table.
 exception_table_entry
-	@init{
-	  short start_pc = 0;
-	  short end_pc = 0;
-	  short handler_pc = 0;
-	  short catch_type = 0;
-	}
+{
+  short start_pc = 0;
+  short end_pc = 0;
+  short handler_pc = 0;
+  short catch_type = 0;
+}
 	: start_pc=u2
           end_pc=u2
           handler_pc=u2
@@ -747,10 +750,10 @@ exception_table_entry
 
 // A attribute, holding the table of thrown exceptions.
 exceptions_attribute
-	@init{
-	  short number_of_exceptions = 0;
-	  int indexpos=0;
-	}
+{
+  short number_of_exceptions = 0;
+  int indexpos=0;
+}
 	: number_of_exceptions=u2
 	  ( {indexpos < ((int)number_of_exceptions & 0xffff)}? exception_index_entry { indexpos++; } )* 
 	  {indexpos==((int)number_of_exceptions & 0xffff)}?
@@ -758,8 +761,8 @@ exceptions_attribute
 	;
 
 // A entry in the table of thrown exceptions
-exception_index_entry
-	@init{ short index=0;}
+exception_index_entry!
+{ short index=0;}
 	: index=u2 {index != 0}?  // For some reason, the specs define only exceptions, if index != 0? (why store a exception with no name?) 
 	   { 
 	     // The index references a Class_info structure in the constant pool,
@@ -771,10 +774,10 @@ exception_index_entry
 
 // The linenumber table.
 lineNumberTable_attribute
-	@init{ 
-	  short line_number_table_length = 0; 
-	  int entrypos = 0;
-	}
+{ 
+  short line_number_table_length = 0; 
+  int entrypos = 0;
+}
 	: line_number_table_length=u2
           ( 
 	    {entrypos < ((int)line_number_table_length & 0xffff)}? 
@@ -785,17 +788,17 @@ lineNumberTable_attribute
 
 // A entry in the linenumber table.
 lineNumberTableEntry
-	@init{ short start_pc=0, line_number=0; }
+{ short start_pc=0, line_number=0; }
 	: start_pc=u2
 	  line_number=u2
 	;
 
 // The table with the local variables.
 localVariableTable_attribute
-	@init{
-	  short local_variable_table_length = 0; 
-	  int entrypos=0;
-	}
+{ 
+  short local_variable_table_length = 0; 
+  int entrypos=0;
+}
 	: local_variable_table_length=u2
 	  ( 
 	    {entrypos < ((int)local_variable_table_length & 0xffff)}? 
@@ -806,7 +809,7 @@ localVariableTable_attribute
 
 // A entry in the local variable table.
 localVariableTableEntry
-	@init{ short start_pc = 0, length = 0, name_index = 0, descriptor_index = 0, index = 0; }
+{ short start_pc = 0, length = 0, name_index = 0, descriptor_index = 0, index = 0; }
 	: start_pc=u2
           length=u2
           name_index=u2
@@ -817,10 +820,10 @@ localVariableTableEntry
 // The table with the local variables or types.
 // TODO: Can we just reuse the local variable table definition? - tfm
 localVariableTypeTable_attribute
-	@init{
-	  short local_variable_type_table_length = 0; 
-	  int entrypos=0;
-	}
+{ 
+  short local_variable_type_table_length = 0; 
+  int entrypos=0;
+}
 	: local_variable_type_table_length=u2
 	  ( 
 	    {entrypos < ((int)local_variable_type_table_length & 0xffff)}? 
@@ -831,7 +834,7 @@ localVariableTypeTable_attribute
 	
 // A entry in the local variable type table.
 localVariableTypeTableEntry
-	@init{ short start_pc = 0, length = 0, name_index = 0, signature_index = 0, index = 0; }
+{ short start_pc = 0, length = 0, name_index = 0, signature_index = 0, index = 0; }
 	: start_pc=u2
           length=u2
           name_index=u2
@@ -841,10 +844,10 @@ localVariableTypeTableEntry
 
 // Table of Inner Classes.
 innerClasses_attribute
-	@init{
-	  short inner_class_table_length = 0; 
-	  int entrypos=0;
-	}
+{ 
+  short inner_class_table_length = 0; 
+  int entrypos=0;
+}
 	: inner_class_table_length=u2
 	  ( 
 	    {entrypos < ((int)inner_class_table_length & 0xffff)}? 
@@ -855,40 +858,35 @@ innerClasses_attribute
 	
 // An entry in the table of inner classes.
 innerClassTableEntry
-	@init{ short inner_class_info_index = 0, outer_class_info_index = 0, inner_name_index = 0, inner_class_access_flags = 0; }
+{ short inner_class_info_index = 0, outer_class_info_index = 0, inner_name_index = 0, inner_class_access_flags = 0; }
 	: inner_class_info_index=u2
           outer_class_info_index=u2
           inner_name_index=u2
           inner_class_access_flags=u2
 	;
-*/
+
 //////////////////////
 // Some utility rules.
 //////////////////////
 
 // A 1 byte int
 u1! returns [byte res=0]
-	:	.
-		{
-		    $u1.res = (byte) input.LA(-1);
-		}
+	: val:BYTE { res = ((ByteToken)val).getValue(); }
 	;
 
 // A 2 byte int
 u2! returns [short res=0]
-	:	. .
-		{
-		    $u2.res = (short)(input.LA(-2) << 8 | input.LA(-1));
-		}
+	: ( high:BYTE low:BYTE ) 
+	    { res = (short)(((ByteToken)high).getShortValue() << 8 | ((ByteToken)low).getShortValue()); }
 	;
 
 // A 4 byte int
 u4! returns [int res=0]
-	:	. . . . // Bytes are in highbyte 1st order!
-		{
-			$u4.res = input.LA(-4) << 24
-				| input.LA(-3) << 16 
-				| input.LA(-2) << 8
-				| input.LA(-1);
-		}
+	: ( high1:BYTE high2:BYTE low1:BYTE low2:BYTE )  // Bytes are in highbyte 1st order!
+	  { 
+	    res = ((ByteToken)high1).getIntValue() << 24
+	          | ((ByteToken)high2).getIntValue() << 16 
+	          | ((ByteToken)low1).getIntValue() << 8
+	          | ((ByteToken)low2).getIntValue();
+	  }
 	;
