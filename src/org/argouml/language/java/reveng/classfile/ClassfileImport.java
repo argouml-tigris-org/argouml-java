@@ -30,7 +30,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -41,17 +40,13 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
-import org.argouml.application.api.Argo;
-import org.argouml.configuration.Configuration;
-import org.argouml.i18n.Translator;
 import org.argouml.kernel.Project;
+import org.argouml.language.java.reveng.JavaImportSettings;
 import org.argouml.taskmgmt.ProgressMonitor;
 import org.argouml.uml.reveng.FileImportUtils;
-import org.argouml.uml.reveng.ImportClassLoader;
 import org.argouml.uml.reveng.ImportInterface;
 import org.argouml.uml.reveng.ImportSettings;
 import org.argouml.uml.reveng.ImporterManager;
-import org.argouml.uml.reveng.Setting;
 import org.argouml.uml.reveng.SettingsTypes;
 import org.argouml.util.SuffixFilter;
 
@@ -76,14 +71,6 @@ public class ClassfileImport implements ImportInterface {
     private Collection newElements;
 
     private int fileCount;
-
-    private List<SettingsTypes.Setting> settingsList;
-
-    private SettingsTypes.UniqueSelection2 attributeSetting;
-
-    private SettingsTypes.UniqueSelection2 datatypeSetting;
-
-    private SettingsTypes.PathListSelection pathlistSetting;
 
     /*
      * @see org.argouml.uml.reveng.ImportInterface#parseFiles(org.argouml.kernel.Project, java.util.Collection, org.argouml.uml.reveng.ImportSettings, org.argouml.application.api.ProgressMonitor)
@@ -348,12 +335,11 @@ public class ClassfileImport implements ImportInterface {
         parser.classfile();
 
         // Create a modeller for the parser
-        Modeller modeller =
-            new Modeller(
-                                                 currentProject.getModel(),
-						 isAttributeSelected(),
-						 isDatatypeSelected(),
-                                                 fileName);
+        Modeller modeller = new Modeller(
+                currentProject.getModel(),
+                JavaImportSettings.getInstance().isAttributeSelected(),
+                JavaImportSettings.getInstance().isDatatypeSelected(),
+                fileName);
 
 
 	// do something with the tree
@@ -429,47 +415,8 @@ public class ClassfileImport implements ImportInterface {
      * @see org.argouml.uml.reveng.ImportInterface#getImportSettings()
      */
     public List<SettingsTypes.Setting> getImportSettings() {
-
-        settingsList = new ArrayList<SettingsTypes.Setting>();
-
-        // Settings from ConfigPanelExtension
-
-        // TODO: These properties should move out of the core into someplace
-        // specific to the Java importer
-        List<String> options = new ArrayList<String>();
-        options.add(Translator.localize("action.import-java-UML-attr"));
-        options.add(Translator.localize("action.import-java-UML-assoc"));
-
-        options.clear();
-        options.add(Translator
-                .localize("action.import-java-array-model-datatype"));
-        options.add(Translator
-                .localize("action.import-java-array-model-multi"));
-
-        List<String> paths = new ArrayList<String>();
-        URL[] urls = ImportClassLoader.getURLs(Configuration.getString(
-                Argo.KEY_USER_IMPORT_CLASSPATH, ""));
-
-        for (URL url : urls) {
-            paths.add(url.getFile());
-        }
-        pathlistSetting = new Setting.PathListSelection(Translator
-                .localize("dialog.import.classpath.title"), Translator
-                .localize("dialog.import.classpath.text"), paths);
-        settingsList.add(pathlistSetting);
-
-
-        return settingsList;
+        return JavaImportSettings.getInstance().getImportSettings();
     }
-
-    private boolean isAttributeSelected() {
-        return attributeSetting.getSelection() == 0;
-    }
-
-    private boolean isDatatypeSelected() {
-        return datatypeSetting.getSelection() == 0;
-    }
-
 }
 
 

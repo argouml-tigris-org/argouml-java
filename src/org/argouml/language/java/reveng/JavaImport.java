@@ -33,7 +33,6 @@ import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -41,9 +40,6 @@ import java.util.List;
 import org.antlr.runtime.ANTLRReaderStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.apache.log4j.Logger;
-import org.argouml.application.api.Argo;
-import org.argouml.configuration.Configuration;
-import org.argouml.configuration.ConfigurationKey;
 import org.argouml.i18n.Translator;
 import org.argouml.kernel.Project;
 import org.argouml.profile.Profile;
@@ -53,7 +49,6 @@ import org.argouml.uml.reveng.ImportClassLoader;
 import org.argouml.uml.reveng.ImportInterface;
 import org.argouml.uml.reveng.ImportSettings;
 import org.argouml.uml.reveng.ImporterManager;
-import org.argouml.uml.reveng.Setting;
 import org.argouml.uml.reveng.SettingsTypes;
 import org.argouml.util.SuffixFilter;
 
@@ -72,68 +67,11 @@ public class JavaImport implements ImportInterface {
      * Java profile model.
      */
     private Profile javaProfile = null;
-
-    /**
-     * Key for RE extended settings: model attributes as:
-     * 0: attributes
-     * 1: associations
-     */
-    public static final ConfigurationKey KEY_IMPORT_EXTENDED_MODEL_ATTR =
-        Configuration
-            .makeKey("import", "extended", "java", "model", "attributes");
-
-    /**
-     * Key for RE extended settings: model arrays as:
-     * 0: datatype
-     * 1: associations
-     */
-    public static final ConfigurationKey KEY_IMPORT_EXTENDED_MODEL_ARRAYS =
-        Configuration.makeKey("import", "extended", "java", "model", "arrays");
-
-    /**
-     * Key for RE extended settings: flag for modeling of listed collections,
-     * if to model them as associations with multiplicity *.
-     */
-    public static final ConfigurationKey KEY_IMPORT_EXTENDED_COLLECTIONS_FLAG =
-        Configuration
-            .makeKey("import", "extended", "java", "collections", "flag");
-
-    /**
-     * Key for RE extended settings: list of collections, that will be modelled
-     * as associations with multiplicity *.
-     */
-    public static final ConfigurationKey KEY_IMPORT_EXTENDED_COLLECTIONS_LIST =
-        Configuration
-            .makeKey("import", "extended", "java", "collections", "list");
-
-    /**
-     * Key for RE extended settings: flag for modelling of listed collections,
-     * if to model them as ordered associations with multiplicity *.
-     */
-    public static final ConfigurationKey KEY_IMPORT_EXTENDED_ORDEREDCOLLS_FLAG =
-        Configuration
-            .makeKey("import", "extended", "java", "orderedcolls", "flag");
-
-    /**
-     * Key for RE extended settings: list of collections, that will be modelled
-     * as ordered associations with multiplicity *.
-     */
-    public static final ConfigurationKey KEY_IMPORT_EXTENDED_ORDEREDCOLLS_LIST =
-        Configuration
-            .makeKey("import", "extended", "java", "orderedcolls", "list");
     
     /**
      * New model elements that were added
      */
-    private Collection newElements;
-
-    private List<SettingsTypes.Setting> settingsList;
-
-    private SettingsTypes.UniqueSelection2 attributeSetting;
-
-    private SettingsTypes.UniqueSelection2 datatypeSetting;
-
-    private SettingsTypes.PathListSelection pathlistSetting;    
+    private Collection<Object> newElements;
 
     /*
      * @see org.argouml.uml.reveng.ImportInterface#parseFiles(org.argouml.kernel.Project, java.util.Collection, org.argouml.uml.reveng.ImportSettings, org.argouml.application.api.ProgressMonitor)
@@ -142,9 +80,9 @@ public class JavaImport implements ImportInterface {
             ImportSettings settings, ProgressMonitor monitor)
         throws ImportException {
 
-        saveSettings();
+        JavaImportSettings.getInstance().saveSettings();
         updateImportClassloader();
-        newElements = new HashSet();
+        newElements = new HashSet<Object>();
         monitor.updateMainTask(Translator.localize("dialog.import.pass1"));
 
         // get the Java profile from project, if available
@@ -177,13 +115,6 @@ public class JavaImport implements ImportInterface {
             monitor.close();
         }
         return newElements;
-    }
-
-    private void saveSettings() {
-        Configuration.setString(KEY_IMPORT_EXTENDED_MODEL_ATTR, String
-                .valueOf(attributeSetting.getSelection()));
-        Configuration.setString(KEY_IMPORT_EXTENDED_MODEL_ARRAYS, String
-                .valueOf(datatypeSetting.getSelection()));
     }
 
     private void doImportPass(Project p, Collection<File> files,
@@ -281,7 +212,8 @@ public class JavaImport implements ImportInterface {
             Modeller modeller = new Modeller(
                     p.getUserDefinedModelList().get(0),
                     javaProfile,
-                    isAttributeSelected(), isDatatypeSelected(),
+                    JavaImportSettings.getInstance().isAttributeSelected(),
+                    JavaImportSettings.getInstance().isDatatypeSelected(),
                     f.getName());
 
             // Print the name of the current file, so we can associate
@@ -389,65 +321,16 @@ public class JavaImport implements ImportInterface {
      * @see org.argouml.uml.reveng.ImportInterface#getImportSettings()
      */
     public List<SettingsTypes.Setting> getImportSettings() {
-        
-        settingsList = new ArrayList<SettingsTypes.Setting>();
-
-        // Settings from ConfigPanelExtension
-
-        // TODO: These properties should move out of the core into someplace
-        // specific to the Java importer
-        List<String> options = new ArrayList<String>();
-        options.add(Translator.localize("action.import-java-UML-attr"));
-        options.add(Translator.localize("action.import-java-UML-assoc"));
-
-        int selected;
-        String modelattr = Configuration
-                .getString(KEY_IMPORT_EXTENDED_MODEL_ATTR, "0");
-        selected = Integer.parseInt(modelattr);
-
-        attributeSetting = new Setting.UniqueSelection(Translator
-                .localize("action.import-java-attr-model"), options,
-                selected);
-        settingsList.add(attributeSetting);
-
-        options.clear();
-        options.add(Translator
-                .localize("action.import-java-array-model-datatype"));
-        options.add(Translator
-                .localize("action.import-java-array-model-multi"));
-
-        String modelarrays = Configuration
-                .getString(KEY_IMPORT_EXTENDED_MODEL_ARRAYS, "0");
-        selected = Integer.parseInt(modelarrays);
-
-        datatypeSetting = new Setting.UniqueSelection(Translator
-                .localize("action.import-java-array-model"), options,
-                selected);
-        settingsList.add(datatypeSetting);
-
-        List<String> paths = new ArrayList<String>();
-        URL[] urls = ImportClassLoader.getURLs(Configuration.getString(
-                Argo.KEY_USER_IMPORT_CLASSPATH, ""));
-
-        for (URL url : urls) {
-            paths.add(url.getFile());
-        }
-        pathlistSetting = new Setting.PathListSelection(Translator
-                .localize("dialog.import.classpath.title"), Translator
-                .localize("dialog.import.classpath.text"), paths);
-        settingsList.add(pathlistSetting);
-
-        
-        return settingsList;
+        return JavaImportSettings.getInstance().getImportSettings();
     }
 
 
     private void updateImportClassloader() {
-        List<String> pathList = pathlistSetting.getPathList();
+        List<String> pathList = JavaImportSettings.getInstance().getPathList();
         URL[] urls = new URL[pathList.size()];
 
         int i = 0;
-        for (String path : pathlistSetting.getPathList()) {
+        for (String path : pathList) {
             try {
                 urls[i++] = new File(path).toURI().toURL();
             } catch (MalformedURLException e) {
@@ -461,25 +344,5 @@ public class JavaImport implements ImportInterface {
         } catch (MalformedURLException e) {
 
         }
-    }
-    
-    /**
-     * Only intended for use in the Java classfile importer.
-     * 
-     * @return true if references should be modeled as UML Attributes instead of
-     *         UML Associations.
-     */
-    public boolean isAttributeSelected() {        
-        return attributeSetting.getSelection() == 0;
-    }
-    
-    /**
-     * Only intended for use in the Java classfile importer
-     * 
-     * @return true if arrays should be modeled as datatypes instead of using
-     *         UML's multiplicities.
-     */
-    public boolean isDatatypeSelected() {
-        return datatypeSetting.getSelection() == 0;
     }
 }
