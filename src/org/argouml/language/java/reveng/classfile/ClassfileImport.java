@@ -40,6 +40,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
+import org.argouml.application.helpers.ApplicationVersion;
 import org.argouml.kernel.Project;
 import org.argouml.language.java.reveng.JavaImportSettings;
 import org.argouml.taskmgmt.ProgressMonitor;
@@ -383,10 +384,11 @@ public class ClassfileImport implements ImportInterface {
     public String getInfo(int type) {
         switch (type) {
         case AUTHOR:
-            return "Andreas Rueckert";
+            return "The ArgoUML project team";
         case DESCRIPTION:
             return "Java import from class or jar files";
         case VERSION:
+            return ApplicationVersion.getVersion();
         default:
             return null;
         }

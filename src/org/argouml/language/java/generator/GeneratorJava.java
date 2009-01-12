@@ -1866,9 +1866,9 @@ public class GeneratorJava implements CodeGenerator, ModuleInterface {
     public String getInfo(int type) {
         switch (type) {
         case DESCRIPTION:
-            return "Java Notation and Code Generator";
+            return "Java notation and code generator";
         case AUTHOR:
-            return "ArgoUML team";
+            return "The ArgoUML project team";
         case VERSION:
             return ApplicationVersion.getVersion();
         default:

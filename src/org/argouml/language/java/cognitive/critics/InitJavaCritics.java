@@ -84,7 +84,7 @@ public class InitJavaCritics implements InitSubsystem, ModuleInterface {
         case DESCRIPTION:
             return "Java related critics";
         case AUTHOR:
-            return "ArgoUML team";
+            return "The ArgoUML project team";
         case VERSION:
             return ApplicationVersion.getVersion();
         default:

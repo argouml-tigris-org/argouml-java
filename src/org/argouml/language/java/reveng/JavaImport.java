@@ -40,6 +40,7 @@ import java.util.List;
 import org.antlr.runtime.ANTLRReaderStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.apache.log4j.Logger;
+import org.argouml.application.helpers.ApplicationVersion;
 import org.argouml.i18n.Translator;
 import org.argouml.kernel.Project;
 import org.argouml.profile.Profile;
@@ -291,11 +292,11 @@ public class JavaImport implements ImportInterface {
     public String getInfo(int type) {
         switch (type) {
         case DESCRIPTION:
-            return "This is a module for import from Java files.";
+            return "Java import from Java files.";
         case AUTHOR:
-            return "Marcus Andersson, Thomas Neustupny, Andreas Rückert";
+            return "The ArgoUML project team";
         case VERSION:
-            return "1.0";
+            return ApplicationVersion.getVersion();
         default:
             return null;
         }
