@@ -18,18 +18,54 @@
 
 <p>
 This is the ArgoUML Java project.
-The purpose is to provide the ability to import Java source code (.java files)
-and binaries (.class and .jar files) into ArgoUML, use Java notation for
-modeling inside ArgoUML, and generate Java source code from the model within
-ArgoUML.
+The purpose is to provide an optional extension to ArgoUML for the ability
+to import data from Java source code (.java files) and binaries (.class and
+.jar files) into ArgoUML, use Java profile and notation for modeling inside
+ArgoUML, and generate Java source code from the model within ArgoUML.
 </p>
 <p>
-Currently, Java support is integrated in ArgoUML by default. This project aims
-for take over, enhance and further develop this functionality, so that it can
-be removed in the core ArgoUML application and substituted by the module
-developed here.
+In the ArgoUML releases upto 0.26.x, Java support is integrated by default.
+This project aims for a complete substitution of all Java related stuff in
+ArgoUML and to further develop this functionality. From ArgoUML 0.28 on,
+the Java features are removed from the core ArgoUML application and
+substituted by the module developed here.
+The first versions of this module were made available in all 0.27.x developer
+releases, and ArgoUML 0.28 is the first stable release with modularized Java
+support, which allows to disable (not even load) Java support for those who
+don't need it.
 </p>
+<p>
+The Java module is a jar file, organizing it's main features in separate submodules:
+<ul>
+  <li>Import of Java source files to extract data for the model
+  </li>
+  <li>Import of Java .class and .jar files to extract data for the model
+  </li>
+  <li>Generation of Java source files from the model
+  </li>
+  <li>Java related critics for the cognitive support of ArgoUML
+  </li>
+</ul>
+</p>
+</div>
 
+<div class="h3">
+<h3>Upcoming Milestones</h3>
+<ul>
+  <li>
+  Enhance the parsing support, e.g. Java5 and Java6 features. See issue
+  <a href="http://argouml.tigris.org/issues/show_bug.cgi?id=3385">3385</a>
+  in the ArgoUML project.
+  </li>
+  <li>
+  Integrate Java profile and notation, and all remaining Java dependencies
+  from the core ArgoUML application, so that ArgoUML is free from Java
+  modeling functionality.
+  </li>
+  <li>
+  Add more documentation and proposals here.
+  </li>
+</ul>
 </div>
 
 <div class="h3">
@@ -43,38 +79,6 @@ developed here.
 <li>Announce your intentions on the dev mailing list.
 <li>Get in contact with one of the registered developer of this project
     so that you can get your work committed.
-</ol>
-
-</div>
-
-<div class="h3">
-
-<h3>Upcoming Milestones</h3>
-<ol>
-  <li>
-  Make available a first version of the module, which only includes the Java
-  sources import and integrates in the ArgoUML import sources dialog. The
-  Java parser is based on <a href="http://www.antlr.org">Antlr 3</a>,
-  independently of the Antlr 2.7.7 lib shipped with ArgoUML. See issue
-  <a href="http://argouml.tigris.org/issues/show_bug.cgi?id=5019">5019</a>
-  in the ArgoUML project.
-  </li>
-  <li>
-  Integrate the Java classfile import from the
-  <a href="http://argouml-classfile.tigris.org/">argouml-classfile</a> project.
-  </li>
-  <li>
-  Enhance the parsing support, e.g. Java5 and Java6 features. See issue
-  <a href="http://argouml.tigris.org/issues/show_bug.cgi?id=3385">3385</a>
-  in the ArgoUML project.
-  </li>
-  <li>
-  Integrate code generation and Java notation, so that Java support in the
-  core ArgoUML can be discontinued..
-  </li>
-  <li>
-  Add more documentation and proposals here.
-  </li>
 </ol>
 </div>
 
