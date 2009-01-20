@@ -349,6 +349,15 @@ public class Modeller {
         }
 
         String packageName = getPackageName(name);
+        
+        if (packageName == null) {
+            // TODO: This won't happen and can be removed when there is a
+            // real symbol table for name lookup instead of guessing based
+            // on parsing "." strings
+            LOG.warn("Import skipped - unable to get package name for " + name);
+            return;
+        }
+        
         // TODO: In the case of an inner class, we probably want either the
         // qualified name with both outer and inner class names, or just the
         // outer class name
