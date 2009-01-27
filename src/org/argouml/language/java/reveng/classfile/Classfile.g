@@ -101,6 +101,8 @@ tokens {
  	public static final byte CONSTANT_Utf8 			=  1;
 
 	// Access flags as defined in the JVM specs.
+	// CAUTION: Must be the same as in the Java grammar Java.g!
+	// TODO: Cleanup, so that it is only in one place
  	public static final short ACC_PUBLIC    = 0x0001;
         public static final short ACC_PRIVATE   = 0x0002;
         public static final short ACC_PROTECTED = 0x0004;

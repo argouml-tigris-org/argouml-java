@@ -49,14 +49,14 @@ options {
 
 {
     // The modeller to create the meta model objects.
-    private Modeller _modeller;
+    private org.argouml.language.java.reveng.Modeller _modeller;
 
     /**
      * Return the modeller of this parser.
      *
      * @return The modeller of this parser.
      */
-    public final Modeller getModeller() {
+    public final org.argouml.language.java.reveng.Modeller getModeller() {
         return _modeller;
     }
 
@@ -65,7 +65,7 @@ options {
      *
      * @param modeller The new modeller of this parser.
      */
-    public final void setModeller( Modeller modeller) {
+    public final void setModeller(org.argouml.language.java.reveng.Modeller modeller) {
         _modeller = modeller;
     }
 
@@ -87,7 +87,7 @@ options {
 }
 
 // A entire classfile
-classfile[Modeller modeller] 
+classfile[org.argouml.language.java.reveng.Modeller modeller] 
 { setModeller(modeller); }
 	: magic_number
 	  version_number

@@ -43,6 +43,7 @@ import java.util.zip.ZipEntry;
 import org.argouml.application.helpers.ApplicationVersion;
 import org.argouml.kernel.Project;
 import org.argouml.language.java.reveng.JavaImportSettings;
+import org.argouml.profile.Profile;
 import org.argouml.taskmgmt.ProgressMonitor;
 import org.argouml.uml.reveng.FileImportUtils;
 import org.argouml.uml.reveng.ImportInterface;
@@ -69,6 +70,14 @@ public class ClassfileImport implements ImportInterface {
 
     private Project currentProject = null;
 
+    /**
+     * Java profile model.
+     */
+    private Profile javaProfile = null;
+    
+    /**
+     * New model elements that were added
+     */
     private Collection newElements;
 
     private int fileCount;
@@ -84,13 +93,23 @@ public class ClassfileImport implements ImportInterface {
         currentProject = p;
         newElements = new HashSet();
 
+        // get the Java profile from project, if available
+        if (javaProfile == null) {
+            for (Profile profile
+                    : p.getProfileConfiguration().getProfiles()) {
+                if ("Java".equals(profile.getDisplayName())) {
+                    javaProfile = profile;
+                }
+            }
+        }
+
         monitor.setMaximumProgress(countFiles(files));
         for (File file : files) {
             monitor.updateMainTask("Parsing file: " + file);
             if (monitor.isCanceled()) {
                 break;
             }
-            processFile((File) file, monitor);
+            processFile(p, (File) file, monitor);
             monitor.updateProgress(fileCount++);
         }
 
@@ -100,7 +119,7 @@ public class ClassfileImport implements ImportInterface {
             for (Object next : secondPassFiles) {
                 try {
                     if (next instanceof Collection) {
-                        do2ndJarPass((Collection) next, monitor);
+                        do2ndJarPass(p, (Collection) next, monitor);
                     } else {
                         File nextFile = (File) next;
                         String fileName = nextFile.getName();
@@ -116,7 +135,7 @@ public class ClassfileImport implements ImportInterface {
                         if (monitor.isCanceled()) {
                             break;
                         }
-                        parseFile(fis, fileName);
+                        parseFile(p, fis, fileName);
                         monitor.updateProgress(fileCount++);
                     }
                 } catch (ANTLRException e) {
@@ -189,13 +208,13 @@ public class ClassfileImport implements ImportInterface {
      * @param f The file or directory, we want to parse.
      * @throws ImportException containing nested exception with original error
      */
-    private void processFile(File f, ProgressMonitor monitor)
+    private void processFile(Project p, File f, ProgressMonitor monitor)
         throws ImportException {
 
         monitor.updateMainTask("Importing " + f.getName());
         // Is this file a Jarfile?
         if ( f.getName().endsWith(".jar")) { //$NON-NLS-1$
-            processJarFile(f, monitor);
+            processJarFile(p, f, monitor);
         } else {
             String fileName = f.getName();
             try {    // Try to parse this file.
@@ -205,7 +224,7 @@ public class ClassfileImport implements ImportInterface {
                 } catch (FileNotFoundException e) {
                     throw new ImportException(e);
                 }
-                parseFile(is, fileName);
+                parseFile(p, is, fileName);
             } catch (ANTLRException e) {
                 // TODO: Is this still needed/appropriate? It looks like
                 // Modeller has been changed so that it no longer throws
@@ -222,7 +241,7 @@ public class ClassfileImport implements ImportInterface {
      *
      * @param f The Jar file.
      */
-    private void processJarFile(File f, ProgressMonitor monitor)
+    private void processJarFile(Project p, File f, ProgressMonitor monitor)
         throws ImportException {
 
         JarFile jarfile;
@@ -254,7 +273,7 @@ public class ClassfileImport implements ImportInterface {
                     if (monitor.isCanceled()) {
                         break;
                     }
-		    parseFile(is, entryName);
+		    parseFile(p, is, entryName);
 		    monitor.updateProgress(fileCount++);
 		} catch (ANTLRException e1) {
 		    if (jarSecondPassFiles.isEmpty()) {
@@ -288,7 +307,7 @@ public class ClassfileImport implements ImportInterface {
      * @throws TokenStreamException
      * @throws RecognitionException
      */
-    private void do2ndJarPass(Collection secondPassBuffer,
+    private void do2ndJarPass(Project p, Collection secondPassBuffer,
             ProgressMonitor monitor) throws IOException, RecognitionException,
         TokenStreamException {
         if (!secondPassBuffer.isEmpty()) {
@@ -303,6 +322,7 @@ public class ClassfileImport implements ImportInterface {
                     break;
                 }
 		parseFile(
+		        p,
 		        jarfile.getInputStream(jarfile.getEntry(filename)),
 		        filename);
 		monitor.updateProgress(fileCount++);
@@ -320,7 +340,7 @@ public class ClassfileImport implements ImportInterface {
      * @throws TokenStreamException ANTLR parser error
      */
 
-    public void parseFile(InputStream is, String fileName)
+    public void parseFile(Project p, InputStream is, String fileName)
         throws RecognitionException, TokenStreamException {
 
         int lastSlash = fileName.lastIndexOf('/');
@@ -335,9 +355,20 @@ public class ClassfileImport implements ImportInterface {
         // start parsing at the classfile rule
         parser.classfile();
 
+        // get the Java profile from project, if available
+        if (javaProfile == null) {
+            for (Profile profile
+                    : p.getProfileConfiguration().getProfiles()) {
+                if ("Java".equals(profile.getDisplayName())) {
+                    javaProfile = profile;
+                }
+            }
+        }
+
         // Create a modeller for the parser
-        Modeller modeller = new Modeller(
-                currentProject.getModel(),
+        org.argouml.language.java.reveng.Modeller modeller = new org.argouml.language.java.reveng.Modeller(
+                p.getUserDefinedModelList().get(0),
+                javaProfile,
                 JavaImportSettings.getInstance().isAttributeSelected(),
                 JavaImportSettings.getInstance().isDatatypeSelected(),
                 fileName);

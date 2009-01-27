@@ -276,7 +276,7 @@ package org.argouml.language.java.reveng;
     }
     
     // This one is not(!) in the JVM specs, but required
-    public static final short ACC_SYNCHRONIZED  = 0x0800;
+    public static final short ACC_SYNCHRONIZED  = 0x0020;
 
     /**
      * To get direct access to the lexer (for the javadoc
