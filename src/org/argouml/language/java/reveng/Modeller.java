@@ -1520,6 +1520,7 @@ public class Modeller {
                         .buildPackage(getRelativePackageName(rname));
                     // set the owner for this package.
                     Model.getCoreHelper().addOwnedElement(currentNs, mPackage);
+                    newElements.add(mPackage);
                 }
                 currentNs = mPackage;
             }
