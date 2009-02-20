@@ -43,6 +43,7 @@ import org.apache.log4j.Logger;
 import org.argouml.application.helpers.ApplicationVersion;
 import org.argouml.i18n.Translator;
 import org.argouml.kernel.Project;
+import org.argouml.moduleloader.ModuleInterface;
 import org.argouml.profile.Profile;
 import org.argouml.taskmgmt.ProgressMonitor;
 import org.argouml.uml.reveng.FileImportUtils;
@@ -296,7 +297,9 @@ public class JavaImport implements ImportInterface {
         case AUTHOR:
             return "The ArgoUML project team";
         case VERSION:
-            return ApplicationVersion.getVersion();
+            return "0.28.beta";
+        case ModuleInterface.DOWNLOADSITE:
+            return "http://argouml-java.tigris.org/";
         default:
             return null;
         }

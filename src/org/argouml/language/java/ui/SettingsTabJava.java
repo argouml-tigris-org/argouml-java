@@ -195,17 +195,14 @@ public class SettingsTabJava implements ModuleInterface, GUISettingsTabInterface
      */
     public String getInfo(int type) {
         switch (type) {
-        case ModuleInterface.AUTHOR:
-            return "Thomas Neustupny"; //$NON-NLS-1$
         case ModuleInterface.DESCRIPTION:
-            // TODO: i18n
-            return "Java Settings";
+            return "Java Import Settings";
+        case ModuleInterface.AUTHOR:
+            return "The ArgoUML project team";
         case ModuleInterface.VERSION:
-            return "Revision date: " // TODO: i18n
-                + REVISION_DATE;
-        // TODO: remove duplication here and in ProfileModule.getInfo.
+            return "0.28.beta";
         case ModuleInterface.DOWNLOADSITE:
-            return "http://argouml-downloads.tigris.org/"; //$NON-NLS-1$
+            return "http://argouml-java.tigris.org/";
         default:
             return null;
         }
