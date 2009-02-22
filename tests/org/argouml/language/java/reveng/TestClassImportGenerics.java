@@ -102,7 +102,10 @@ public class TestClassImportGenerics extends TestCase {
         private E arg2;
         private List<E> arg3;
 
-        public List<E> method_1() {
+        public List method_1() {
+            return null;
+        }
+        public List<E> method_2() {
             return null;
         }
     }

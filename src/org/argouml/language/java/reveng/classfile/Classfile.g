@@ -615,7 +615,8 @@ method_info!
 	    (
 	     // If this is a exception table, store it for the method AST.
 	     {#attr != null && THROWS == #attr.getType()}? {exceptions = #attr;}
-	     {#attr != null && SIGNATURE == #attr.getType()}? {signature = #attr;}
+         |
+         {#attr != null && SIGNATURE == #attr.getType()}? {signature = #attr;}
 
 	      |  // Could also be a code attribute.
 	    )
