@@ -83,7 +83,8 @@ tokens {
 	TYPE;
 	UNKNOWN_ATTRIBUTE;
 	VARIABLE_DEF;
-	VERSION; 
+	VERSION;
+    SIGNATURE;
 }
 
 {
@@ -567,17 +568,23 @@ field_info
   short name_index=0;
   short descriptor_index=0;
   short attributes_count;
+  AST signature = #[SIGNATURE];
 }
 	: access_flags=u2
 	  name_index=u2
 	  descriptor_index=u2
           attributes_count=u2
-	  ( {attributes_count > 0}? attribute_info {attributes_count--;})* {attributes_count==0}?
+	  ({attributes_count > 0}?
+        attr:attribute_info
+	    (
+	      {#attr != null && SIGNATURE == #attr.getType()}? {signature = #attr;}
+	    )
+       {attributes_count--;})* {attributes_count==0}?
 	   {
 	     AST access = new ShortAST(ACCESS_MODIFIERS,access_flags);
 	     String typeIdent = convertDescriptor(getConstant(descriptor_index).getText());
 	     String name = getConstant(name_index).getText();
-	     #field_info = #( #field_info, [VARIABLE_DEF], access, [TYPE,typeIdent], [IDENT,name]);
+	     #field_info = #([VARIABLE_DEF], access, [TYPE,typeIdent], [IDENT,name], signature);
 	   }
 	;
 
@@ -596,6 +603,7 @@ method_info!
   short descriptor_index=0;
   short attributes_count=0;
   AST exceptions = #[THROWS];  // Create a empty exception clause.
+  AST signature = #[SIGNATURE];
 }
 	: access_flags=u2
           name_index=u2  
@@ -606,7 +614,8 @@ method_info!
             attr:attribute_info 
 	    (
 	     // If this is a exception table, store it for the method AST.
-	      {#attr != null && THROWS == #attr.getType()}? {exceptions = #attr;}
+	     {#attr != null && THROWS == #attr.getType()}? {exceptions = #attr;}
+	     {#attr != null && SIGNATURE == #attr.getType()}? {signature = #attr;}
 
 	      |  // Could also be a code attribute.
 	    )
@@ -629,10 +638,10 @@ method_info!
 	      String ident = getConstant(name_index).getText();
 	      if( "<init>".equals(ident)) {  // is this a constructor?
 		  ident = getClassName();  // Use the class name as the constructor's method name.
-		  #method_info = #( [CTOR_DEF], access,  [IDENT,ident], parameters, exceptions);
+		  #method_info = #( [CTOR_DEF], access,  [IDENT,ident], parameters, exceptions, signature);
 	      } else {
 	          String retType = method_descriptor[0];
-	          #method_info = #( [METHOD_DEF], access, [TYPE,retType], [IDENT,ident], parameters, exceptions);
+	          #method_info = #( [METHOD_DEF], access, [TYPE,retType], [IDENT,ident], parameters, exceptions, signature);
 	      }
 	    }
 	;
@@ -675,8 +684,8 @@ attribute_info!
  	    {"LocalVariableTable".equals(attribute_name)}? lattr:localVariableTable_attribute { #attribute_info = #lattr; }
 	    |
  	    {"LocalVariableTypeTable".equals(attribute_name)}? lvtattr:localVariableTypeTable_attribute { #attribute_info = #lvtattr; }
-//	    |
-//	    {"Signature".equals(attribute_name)}? sigattr:signature_attribute { #attribute_info = #sigattr; }
+	    |
+	    {"Signature".equals(attribute_name)}? sigattr:signature_attribute { #attribute_info = #sigattr; }
             // "SourceDebugExtension" attribute ignored
             // "Synthetic" attribute ignored
 	    |
@@ -689,6 +698,16 @@ attribute_info!
 	    { #attribute_info = #[UNKNOWN_ATTRIBUTE, attribute_name]; }
 	  ) exception catch [SemanticException se] {}
 	;
+
+signature_attribute!
+{ short signature_index = 0; }
+	: signature_index=u2
+	   {
+	     String signature_name = getConstant(signature_index).getText();
+	     #signature_attribute = #[SIGNATURE, signature_name];
+	   }
+	;
+
 
 // A predefined attribute, that holds the filename of the sourcecode.
 sourcefile_attribute!

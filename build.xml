@@ -308,7 +308,7 @@ engineering of Java code and support for built-in types and standard libraries.
   <!-- =================================================================== -->
   <!-- Run ArgoUML from compiled sources                                   -->
   <!-- =================================================================== -->
-  <target name="run" depends="init, jar" 
+  <target name="run" depends="init, jar"
           description="run ArgoUML using the built module jar">
     <echo message="--- Executing ${Name} ---"/>
     <java classname="org.argouml.application.Main"
@@ -319,7 +319,7 @@ engineering of Java code and support for built-in types and standard libraries.
             <include name="${module.jarfile.name}" />
         </fileset>
         <path refid="module.compile.classpath"/>
-        <!-- maybe this will be used in the future, but, for now it makes 
+        <!-- maybe this will be used in the future, but, for now it makes
              this build target fail -->
         <!--
         <fileset dir="${module.lib.dir}">
@@ -328,6 +328,20 @@ engineering of Java code and support for built-in types and standard libraries.
         -->
       </classpath>
 
+    </java>
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- Show AST in a frame                                   -->
+  <!-- =================================================================== -->
+  <target name="showAST" depends="generateparser,compile-tests"
+          description="show AST in a frame">
+    <java classname="org.argouml.language.java.reveng.TestClassImportGenerics"
+          fork="yes">
+      <classpath>
+        <path refid="module.run-tests.classpath"/>
+        <pathelement location="${module.tests.classes}"/>
+      </classpath>
     </java>
   </target>
 
@@ -433,7 +447,7 @@ engineering of Java code and support for built-in types and standard libraries.
     <echo message="running the unit tests"/>
     
     <junit errorproperty="junit.failure" fork="yes" haltonfailure="false" 
-           maxmemory="48M" printsummary="true">
+           maxmemory="48M" printsummary="true" dir="${basedir}">
           <!-- use different log4j configuration for testing -->
       <sysproperty key="log4j.configuration" value="org/argouml/resource/full_console.lcf"/>
       <classpath>
@@ -443,7 +457,7 @@ engineering of Java code and support for built-in types and standard libraries.
       <formatter type="xml"/>
       <batchtest todir="${module.tests.reports}">
         <fileset dir="${module.tests.src}">
-          <include name="org/argouml/**/Test*.java"/>
+          <include name="org/argouml/**/TestClassImportGenerics.java"/>
         </fileset>
       </batchtest>
     </junit>

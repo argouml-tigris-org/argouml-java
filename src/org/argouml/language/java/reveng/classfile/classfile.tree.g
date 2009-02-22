@@ -88,7 +88,9 @@ options {
 
 // A entire classfile
 classfile[org.argouml.language.java.reveng.Modeller modeller] 
-{ setModeller(modeller); }
+{ setModeller(modeller);
+System.err.println("Tree parser is started ");
+}
 	: magic_number
 	  version_number
 	  typeDefinition
@@ -160,9 +162,14 @@ attribute_block
 
 // Info on one class attributes (variables).
 attribute_info
-	: VARIABLE_DEF ACCESS_MODIFIERS TYPE IDENT
+{
+  String signature=null;
+}	: #(VARIABLE_DEF ACCESS_MODIFIERS TYPE IDENT
+        (SIGNATURE {signature = #SIGNATURE.getText();})?
+       )
   	    { // Add the attribute to the model element, that holds
 	      // the class/interface info.
+System.err.println("parsing attribute "+#IDENT.getText()+" with signature="+signature);
 	      getModeller().addAttribute( ((ShortAST)#ACCESS_MODIFIERS).getShortValue(), 
 					  #TYPE.getText(),
 					  #IDENT.getText(),
@@ -180,7 +187,9 @@ method_block
 
 // A constructor definition
 ctorDef
-{ List<ParameterDeclaration> params = null; }
+{ List<ParameterDeclaration> params = null;
+  String signature=null;
+}
 	: #(CTOR_DEF ACCESS_MODIFIERS IDENT params=parameters (exceptions)? )
 	  {
 	    getModeller().addOperation( ((ShortAST)#ACCESS_MODIFIERS).getShortValue(),
@@ -193,9 +202,14 @@ ctorDef
 
 // A method declaration
 methodDecl
-{ List<ParameterDeclaration> params = null; }
-	: #(METHOD_DEF ACCESS_MODIFIERS TYPE IDENT params=parameters (exceptions)? )
+{ List<ParameterDeclaration> params = null;
+  String signature=null;
+}
+	: #(METHOD_DEF ACCESS_MODIFIERS TYPE IDENT params=parameters (exceptions)?
+        (SIGNATURE {signature = #SIGNATURE.getText();})?
+       )
 	  {
+System.err.println("parsing method "+#IDENT.getText()+" with signature="+signature);
 	    getModeller().addOperation( ((ShortAST)#ACCESS_MODIFIERS).getShortValue(),
 					#TYPE.getText(),
 					#IDENT.getText(),
