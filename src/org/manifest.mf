@@ -37,3 +37,12 @@ Specification-Vendor: University of California
 Implementation-Vendor: ArgoUML project
 Implementation-Version: 0.27.1
 Implementation-Title: ArgoUML Java classfile import module
+
+Name: org/argouml/language/java/profile/ProfileModule.class
+Extension-name: module.language.java.profile
+Specification-Title: ArgoUML Dynamic Load Module
+Specification-Version: 0.27.1
+Specification-Vendor: University of California
+Implementation-Vendor: ArgoUML project
+Implementation-Version: 0.27.1
+Implementation-Title: ArgoUML Java profile module
