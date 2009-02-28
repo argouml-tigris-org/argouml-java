@@ -231,7 +231,7 @@ engineering of Java code and support for built-in types and standard libraries.
     </java>
   </target>
 
-  <target name="generateparser_classfile" unless="classfileparser.is.current" 
+  <target name="generateparser_classfile" unless="classfileparser.is.current"
           depends="prepare">
     <echo message="Running antlr2 from ${antlr2.jar.path}"/>
     <java classname="antlr.Tool" fork="yes" maxmemory="128M" classpath="${antlr2.jar.path}">
@@ -245,7 +245,7 @@ engineering of Java code and support for built-in types and standard libraries.
       <arg file="${module.src.dir}/org/argouml/language/java/reveng/classfile/classfile.tree.g"/>
     </java>
   </target>
-  
+
   <target name="cleanparsers" depends="init">
     <delete>
       <fileset dir="${module.src_generated.dir}/org/argouml/language/java/reveng">
@@ -457,7 +457,7 @@ engineering of Java code and support for built-in types and standard libraries.
       <formatter type="xml"/>
       <batchtest todir="${module.tests.reports}">
         <fileset dir="${module.tests.src}">
-          <include name="org/argouml/**/TestClassImportGenerics.java"/>
+          <include name="org/argouml/**/TestParserUtils.java"/>
         </fileset>
       </batchtest>
     </junit>
