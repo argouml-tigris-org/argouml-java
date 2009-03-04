@@ -27,16 +27,17 @@ package org.argouml.language.java.reveng;
 import org.apache.log4j.Logger;
 import org.argouml.model.Facade;
 import org.argouml.model.Model;
+import org.argouml.profile.Profile;
 
 /**
  * This context is a package.
- *
+ * 
  * @author Marcus Andersson
  */
 class PackageContext extends Context {
-    
+
     static final Logger LOG = Logger.getLogger(PackageContext.class);
-    
+
     /** The package this context represents. */
     private Object mPackage;
 
@@ -44,48 +45,30 @@ class PackageContext extends Context {
     private String javaName;
 
     /**
-       Create a new context from a package.
-
-       @param base Based on this context.
-       @param thePackage Represents this package.
-    */
+     * Create a new context from a package.
+     * 
+     * @param base Based on this context.
+     * @param thePackage Represents this package.
+     */
     public PackageContext(Context base, Object thePackage) {
         super(base);
         this.mPackage = thePackage;
         javaName = getJavaName(thePackage);
     }
 
-    public Object getInterface(String name)
-        throws ClassifierNotFoundException {
-        return get(name, true);
-    }
-
     /**
-     * Get a classifier from the model. If it is not in the model, try
-     * to find it with the CLASSPATH. If found, in the classpath, the
-     * classifier is created and added to the model. If not found at
-     * all, a datatype is created and added to the model.
-     *
+     * Get a classifier from the model. If it is not in the model, try to find
+     * it with the CLASSPATH. If found, in the classpath, the classifier is
+     * created and added to the model. If not found at all, a datatype is
+     * created and added to the model.
+     * 
      * @param name The name of the classifier to find.
+     * @param interfacesOnly Filter for interfaces only.
+     * @param profile The Java profile or null.
      * @return Found classifier.
      * @throws ClassifierNotFoundException if classifier couldn't be located
      */
-    public Object get(String name)
-        throws ClassifierNotFoundException {
-        return get(name, false);
-    }
-    
-    /**
-     * Get a classifier from the model. If it is not in the model, try
-     * to find it with the CLASSPATH. If found, in the classpath, the
-     * classifier is created and added to the model. If not found at
-     * all, a datatype is created and added to the model.
-     *
-     * @param name The name of the classifier to find.
-     * @return Found classifier.
-     * @throws ClassifierNotFoundException if classifier couldn't be located
-     */
-    public Object get(String name, boolean interfacesOnly)
+    public Object get(String name, boolean interfacesOnly, Profile profile)
         throws ClassifierNotFoundException {
         // Search in model
         Object mClassifier = Model.getFacade().lookupIn(mPackage, name);
@@ -103,10 +86,10 @@ class PackageContext extends Context {
                 try {
                     if (classifier.isInterface()) {
                         mClassifier = Model.getCoreFactory().buildInterface(
-                            name, mPackage);
+                                name, mPackage);
                     } else {
-                        mClassifier = Model.getCoreFactory().buildClass(
-                            name, mPackage);
+                        mClassifier = Model.getCoreFactory().buildClass(name,
+                                mPackage);
                     }
                 } catch (Exception e) {
                     // creation failed (e.g. mPackage is readOnly), so null:
@@ -120,24 +103,31 @@ class PackageContext extends Context {
         if (mClassifier == null) {
             // Continue the search through the rest of the model
             if (getContext() != null) {
-                mClassifier = getContext().get(name, interfacesOnly);
+                mClassifier = getContext().get(name, interfacesOnly, profile);
             } else {
                 // Check for java data types
-                if (!interfacesOnly 
-                        && name.equals("int")
-                        || name.equals("long")
-                        || name.equals("short")
-                        || name.equals("byte")
-                        || name.equals("char")
-                        || name.equals("float")
-                        || name.equals("double")
-                        || name.equals("boolean")
-                        || name.equals("void")
+                if (!interfacesOnly
+                        && (name.equals("int") || name.equals("long")
+                                || name.equals("short") || name.equals("byte")
+                                || name.equals("char") || name.equals("float")
+                                || name.equals("double")
+                                || name.equals("boolean")
+                                || name.equals("void")
                         // How do I represent arrays in UML?
-                        || name.indexOf("[]") != -1) {
-                    mClassifier =
-                        Model.getCoreFactory()
-                            .buildDataType(name, mPackage);
+                        || name.indexOf("[]") != -1)) {
+                    if (profile != null) {
+                        try {
+                            Object m = profile.getProfilePackages().iterator()
+                                    .next();
+                            mClassifier = Model.getFacade().lookupIn(m, name);
+                        } catch (Exception e) {
+                            mClassifier = null;
+                        }
+                    }
+                    if (mClassifier == null) {
+                        mClassifier = Model.getCoreFactory().buildDataType(
+                                name, mPackage);
+                    }
                 }
             }
         }
@@ -151,25 +141,24 @@ class PackageContext extends Context {
     // Historically this used the value "yes", but all existing
     // code only checks for the presence of the tag, not its value
     private static final String GENERATED_TAG_VALUE = "true";
-    
+
     /**
-     * Set the tagged value which indicates this element was 
-     * generated as a result of reverse engineering.
+     * Set the tagged value which indicates this element was generated as a
+     * result of reverse engineering.
      * 
      * @param element the ModelElement to set the tag on
      */
     private void setGeneratedTag(Object element) {
-        Object tv =
-                Model.getFacade().getTaggedValue(element, Facade.GENERATED_TAG);
+        Object tv = Model.getFacade().getTaggedValue(element,
+                Facade.GENERATED_TAG);
         if (tv == null) {
             Model.getExtensionMechanismsHelper().addTaggedValue(
                     element,
                     Model.getExtensionMechanismsFactory().buildTaggedValue(
                             Facade.GENERATED_TAG, GENERATED_TAG_VALUE));
         } else {
-            Model.getExtensionMechanismsHelper().setValueOfTag(
-                    tv, GENERATED_TAG_VALUE);
+            Model.getExtensionMechanismsHelper().setValueOfTag(tv,
+                    GENERATED_TAG_VALUE);
         }
     }
 }
-

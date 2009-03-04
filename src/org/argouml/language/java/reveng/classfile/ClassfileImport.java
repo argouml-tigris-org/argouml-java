@@ -94,14 +94,7 @@ public class ClassfileImport implements ImportInterface {
         newElements = new HashSet();
 
         // get the Java profile from project, if available
-        if (javaProfile == null) {
-            for (Profile profile
-                    : p.getProfileConfiguration().getProfiles()) {
-                if ("Java".equals(profile.getDisplayName())) {
-                    javaProfile = profile;
-                }
-            }
-        }
+        javaProfile = getJavaProfile(p);
 
         monitor.setMaximumProgress(countFiles(files));
         for (File file : files) {
@@ -355,16 +348,6 @@ public class ClassfileImport implements ImportInterface {
         // start parsing at the classfile rule
         parser.classfile();
 
-        // get the Java profile from project, if available
-        if (javaProfile == null) {
-            for (Profile profile
-                    : p.getProfileConfiguration().getProfiles()) {
-                if ("Java".equals(profile.getDisplayName())) {
-                    javaProfile = profile;
-                }
-            }
-        }
-
         // Create a modeller for the parser
         org.argouml.language.java.reveng.Modeller modeller = new org.argouml.language.java.reveng.Modeller(
                 p.getUserDefinedModelList().get(0),
@@ -449,6 +432,21 @@ public class ClassfileImport implements ImportInterface {
      */
     public List<SettingsTypes.Setting> getImportSettings() {
         return JavaImportSettings.getInstance().getImportSettings();
+    }
+
+    /**
+     * Get the Java profile from project, if available.
+     * 
+     * @param p the project
+     * @return the Java profile
+     */
+    private Profile getJavaProfile(Project p) {
+        for (Profile profile : p.getProfileConfiguration().getProfiles()) {
+            if ("Java".equals(profile.getDisplayName())) {
+                return profile;
+            }
+        }
+        return null;
     }
 }
 

@@ -25,14 +25,15 @@
 package org.argouml.language.java.reveng;
 
 import org.argouml.model.Model;
+import org.argouml.profile.Profile;
 
 /**
  * This context is an outer class containing inner classes.
- *
+ * 
  * @author Marcus Andersson
  */
 class OuterClassifierContext extends Context {
-    
+
     /** The classifier this context represents. */
     private Object mClassifier;
 
@@ -46,17 +47,15 @@ class OuterClassifierContext extends Context {
     private String packageJavaName;
 
     /**
-     Create a new context from a classifier.
-
-     @param base Based on this context.
-     @param theClassifier The classifier.
-     @param thePackage The package the classifier belongs to.
-     @param theNamePrefix Inner class prefix, like "OuterClassname$"
-    */
-    public OuterClassifierContext(Context base,
-                                  Object theClassifier,
-                                  Object thePackage,
-                                  String theNamePrefix) {
+     * Create a new context from a classifier.
+     * 
+     * @param base Based on this context.
+     * @param theClassifier The classifier.
+     * @param thePackage The package the classifier belongs to.
+     * @param theNamePrefix Inner class prefix, like "OuterClassname$"
+     */
+    public OuterClassifierContext(Context base, Object theClassifier,
+            Object thePackage, String theNamePrefix) {
         super(base);
         this.mClassifier = theClassifier;
         this.mPackage = thePackage;
@@ -64,26 +63,29 @@ class OuterClassifierContext extends Context {
         packageJavaName = getJavaName(thePackage);
     }
 
-    public Object getInterface(String name)
-        throws ClassifierNotFoundException {
+    public Object getInterface(String name) throws ClassifierNotFoundException {
         return get(name, true);
     }
 
     /**
-     * Get a classifier from the model. If it is not in the model, try
-     * to find it with the CLASSPATH. If found, in the classpath, the
-     * classifier is created and added to the model. If not found at
-     * all, a datatype is created and added to the model.
-     *
+     * Get a classifier from the model. If it is not in the model, try to find
+     * it with the CLASSPATH. If found, in the classpath, the classifier is
+     * created and added to the model. If not found at all, a datatype is
+     * created and added to the model.
+     * 
      * @param name The name of the classifier to find.
      * @return Found classifier.
      */
-    public Object get(String name)
-        throws ClassifierNotFoundException {
-        return get(name, false);
+    public Object get(String name) throws ClassifierNotFoundException {
+        return get(name, false, null);
     }
 
     public Object get(String name, boolean interfacesOnly)
+        throws ClassifierNotFoundException {
+        return get(name, interfacesOnly, null);
+    }
+
+    public Object get(String name, boolean interfacesOnly, Profile profile)
         throws ClassifierNotFoundException {
         // Search in classifier
         Object iClassifier = Model.getFacade().lookupIn(mClassifier, name);
@@ -93,9 +95,8 @@ class OuterClassifierContext extends Context {
             String clazzName = namePrefix + name;
             // Special case for model
             if (!Model.getFacade().isAModel(mPackage)) {
-                clazzName =
-                    packageJavaName + "." + namePrefix + name;
-            } 
+                clazzName = packageJavaName + "." + namePrefix + name;
+            }
             classifier = findClass(clazzName, interfacesOnly);
             if (classifier != null) {
                 if (classifier.isInterface()) {
@@ -109,9 +110,8 @@ class OuterClassifierContext extends Context {
         }
         if (iClassifier == null && getContext() != null) {
             // Continue the search through the rest of the model
-            iClassifier = getContext().get(name, interfacesOnly);
+            iClassifier = getContext().get(name, interfacesOnly, profile);
         }
         return iClassifier;
     }
 }
-

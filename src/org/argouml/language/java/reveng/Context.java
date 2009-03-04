@@ -23,9 +23,9 @@
 // UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 /*
-  JavaRE - Code generation and reverse engineering for UML and Java
-  Copyright (C) 2000 Marcus Andersson andersson@users.sourceforge.net
-*/
+ JavaRE - Code generation and reverse engineering for UML and Java
+ Copyright (C) 2000 Marcus Andersson andersson@users.sourceforge.net
+ */
 
 package org.argouml.language.java.reveng;
 
@@ -33,73 +33,57 @@ import java.net.MalformedURLException;
 
 import org.apache.log4j.Logger;
 import org.argouml.model.Model;
+import org.argouml.profile.Profile;
 import org.argouml.uml.reveng.ImportClassLoader;
 
 /**
-   The context is the current available namespaces via import in the
-   class that is currently parsed. It is non mutable and a new
-   context can be based on the current context with an
-   additional namespace.
-*/
-abstract class Context
-{
+ * The context is the current available namespaces via import in the class that
+ * is currently parsed. It is non mutable and a new context can be based on the
+ * current context with an additional namespace.
+ */
+abstract class Context {
     private static final Logger LOG = Logger.getLogger(Context.class);
-    
+
     /** The parent context. May be null. */
     private Context context;
 
     /**
-       Create a new context.
-
-       @param base Based on this context, may be null.
-    */
-    public Context(Context base)
-    {
+     * Create a new context.
+     * 
+     * @param base Based on this context, may be null.
+     */
+    public Context(Context base) {
         context = base;
     }
 
     /**
-     * Get a classifier from the model. If it is not in the model, try
-     * to find it with the CLASSPATH. If found, in the classpath, the
-     * classifier is created and added to the model. If not found at
-     * all, a datatype is created and added to the model.
-     *
+     * Get a classifier from the model. If it is not in the model, try to find
+     * it with the CLASSPATH. If found, in the classpath, the classifier is
+     * created and added to the model. If not found at all, a datatype is
+     * created and added to the model.
+     * 
      * @param name The name of the classifier to find.
+     * @param interfacesOnly Filter for interfaces only.
+     * @param profile The Java profile or null.
      * @return Found classifier.
      */
-    public abstract Object get(String name)
-        throws ClassifierNotFoundException;
-    
-    public abstract Object get(String name, boolean interfacesOnly)
-        throws ClassifierNotFoundException;
-    
+    public abstract Object get(String name, boolean interfacesOnly,
+            Profile profile) throws ClassifierNotFoundException;
+
     /**
-     * Return a classifier restricting the search to Interfaces only.
+     * Get the complete java name for a package.
      * 
-     * @param name the name of the Interface to search for
-     * @return an Interface with the given name
-     * @throws ClassifierNotFoundException
+     * @param mPackage The package.
+     * @return Package name in java format
      */
-    public abstract Object getInterface(String name)
-        throws ClassifierNotFoundException;
-
-    /**
-       Get the complete java name for a package.
-
-       @param mPackage The package.
-       @return Package name in java format
-    */
-    protected String getJavaName(Object mPackage)
-    {
+    protected String getJavaName(Object mPackage) {
         Object parent = Model.getFacade().getNamespace(mPackage);
         if (Model.getFacade().isAModel(parent)) {
             return Model.getFacade().getName(mPackage);
-        }
-        else if (parent != null) {
+        } else if (parent != null) {
             return getJavaName(parent) + "."
                     + Model.getFacade().getName(mPackage);
-        }
-        else {
+        } else {
             return "";
         }
     }
@@ -155,4 +139,3 @@ abstract class Context
         return clazz;
     }
 }
-

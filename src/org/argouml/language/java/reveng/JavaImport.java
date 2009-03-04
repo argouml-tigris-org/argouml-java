@@ -55,9 +55,9 @@ import org.argouml.uml.reveng.SettingsTypes;
 import org.argouml.util.SuffixFilter;
 
 /**
- * This is the main class for Java reverse engineering. It's based
- * on the Antlr Java example.
- *
+ * This is the main class for Java reverse engineering. It's based on the Antlr
+ * Java example.
+ * 
  * @author Andreas Rueckert <a_rueckert@gmx.net>
  */
 public class JavaImport implements ImportInterface {
@@ -69,14 +69,16 @@ public class JavaImport implements ImportInterface {
      * Java profile model.
      */
     private Profile javaProfile = null;
-    
+
     /**
      * New model elements that were added
      */
     private Collection<Object> newElements;
 
     /*
-     * @see org.argouml.uml.reveng.ImportInterface#parseFiles(org.argouml.kernel.Project, java.util.Collection, org.argouml.uml.reveng.ImportSettings, org.argouml.application.api.ProgressMonitor)
+     * @see org.argouml.uml.reveng.ImportInterface#parseFiles(org.argouml.kernel.Project,
+     *      java.util.Collection, org.argouml.uml.reveng.ImportSettings,
+     *      org.argouml.application.api.ProgressMonitor)
      */
     public Collection parseFiles(Project p, Collection<File> files,
             ImportSettings settings, ProgressMonitor monitor)
@@ -88,20 +90,11 @@ public class JavaImport implements ImportInterface {
         monitor.updateMainTask(Translator.localize("dialog.import.pass1"));
 
         // get the Java profile from project, if available
-        if (javaProfile == null) {
-            for (Profile profile
-                    : p.getProfileConfiguration().getProfiles()) {
-                if ("Java".equals(profile.getDisplayName())) {
-                    javaProfile = profile;
-                }
-            }
-        }
+        javaProfile = getJavaProfile(p);
 
         try {
-            if (settings.getImportLevel() 
-                        == ImportSettings.DETAIL_CLASSIFIER_FEATURE
-                    || settings.getImportLevel() 
-                        == ImportSettings.DETAIL_FULL) {
+            if (settings.getImportLevel() == ImportSettings.DETAIL_CLASSIFIER_FEATURE
+                    || settings.getImportLevel() == ImportSettings.DETAIL_FULL) {
                 monitor.setMaximumProgress(files.size() * 2);
                 doImportPass(p, files, settings, monitor, 0, 0);
                 if (!monitor.isCanceled()) {
@@ -126,8 +119,8 @@ public class JavaImport implements ImportInterface {
         int count = startCount;
         for (File file : files) {
             if (monitor.isCanceled()) {
-                monitor.updateSubTask(
-                        Translator.localize("dialog.import.cancelled"));
+                monitor.updateSubTask(Translator
+                        .localize("dialog.import.cancelled"));
                 return;
             }
             try {
@@ -136,39 +129,32 @@ public class JavaImport implements ImportInterface {
                 StringWriter sw = new StringWriter();
                 PrintWriter pw = new java.io.PrintWriter(sw);
                 e.printStackTrace(pw);
-                monitor.notifyMessage(
-                        Translator.localize(
-                                "dialog.title.import-problems"), //$NON-NLS-1$
-                                Translator.localize(
-                                "label.import-problems"),        //$NON-NLS-1$
-                                sw.toString());
+                monitor.notifyMessage(Translator
+                        .localize("dialog.title.import-problems"), //$NON-NLS-1$
+                        Translator.localize("label.import-problems"), //$NON-NLS-1$
+                        sw.toString());
                 if (monitor.isCanceled()) {
                     break;
                 }
             }
             monitor.updateProgress(count++);
             monitor.updateSubTask(Translator.localize(
-                    "dialog.import.parsingAction",
-                    new Object[] {file.getAbsolutePath()}));
+                    "dialog.import.parsingAction", new Object[] { file
+                            .getAbsolutePath() }));
 
         }
 
         return;
     }
 
-
     /**
      * Do a single import pass of a single file.
-     *
-     * @param p
-     *            the project
-     * @param f
-     *            the source file
-     * @param settings
-     *            the user provided import settings
-     * @param pass
-     *            current import pass - 0 = single pass, 1 = pass 1 of 2, 2 =
-     *            pass 2 of 2
+     * 
+     * @param p the project
+     * @param f the source file
+     * @param settings the user provided import settings
+     * @param pass current import pass - 0 = single pass, 1 = pass 1 of 2, 2 =
+     *                pass 2 of 2
      */
     private void parseFile(Project p, File f, ImportSettings settings, int pass)
         throws ImportException {
@@ -190,9 +176,8 @@ public class JavaImport implements ImportInterface {
             JavaParser parser = new JavaParser(new CommonTokenStream(lexer));
 
             // Pass == 0 means single pass recognition
-            int parserMode =
-                    JavaParser.MODE_IMPORT_PASS1
-                            | JavaParser.MODE_IMPORT_PASS2;
+            int parserMode = JavaParser.MODE_IMPORT_PASS1
+                    | JavaParser.MODE_IMPORT_PASS2;
             if (pass == 0) {
                 parserMode = JavaParser.MODE_IMPORT_PASS1;
             } else if (pass == 1) {
@@ -200,23 +185,12 @@ public class JavaImport implements ImportInterface {
             }
             parser.setParserMode(parserMode);
 
-            // get the Java profile from project, if available
-            if (javaProfile == null) {
-                for (Profile profile
-                        : p.getProfileConfiguration().getProfiles()) {
-                    if ("Java".equals(profile.getDisplayName())) {
-                        javaProfile = profile;
-                    }
-                }
-            }
-
             // Create a modeller for the parser
             Modeller modeller = new Modeller(
-                    p.getUserDefinedModelList().get(0),
-                    javaProfile,
+                    p.getUserDefinedModelList().get(0), javaProfile,
                     JavaImportSettings.getInstance().isAttributeSelected(),
-                    JavaImportSettings.getInstance().isDatatypeSelected(),
-                    f.getName());
+                    JavaImportSettings.getInstance().isDatatypeSelected(), f
+                            .getName());
 
             // Print the name of the current file, so we can associate
             // exceptions to the file.
@@ -231,16 +205,14 @@ public class JavaImport implements ImportInterface {
                 // full level only needed for the second pass
                 level = (pass == 0) ? 0 : 2;
             }
-            modeller.setAttribute("level", 
-                    Integer.valueOf(level));
+            modeller.setAttribute("level", Integer.valueOf(level));
 
             try {
                 // start parsing at the compilationUnit rule
                 parser.compilationUnit(modeller, lexer);
             } catch (Exception e) {
                 String errorString = buildErrorString(f);
-                LOG.error(e.getClass().getName()
-                        + errorString, e);
+                LOG.error(e.getClass().getName() + errorString, e);
                 throw new ImportException(errorString, e);
             } finally {
                 newElements.addAll(modeller.getNewElements());
@@ -261,16 +233,13 @@ public class JavaImport implements ImportInterface {
         return "Exception in file: " + path + " " + f.getName();
     }
 
-
     /*
      * @see org.argouml.uml.reveng.ImportInterface#getSuffixFilters()
      */
     public SuffixFilter[] getSuffixFilters() {
-	SuffixFilter[] result = {
-	    new SuffixFilter("java", 
-	            Translator.localize("java.filefilter.java")),
-	};
-	return result;
+        SuffixFilter[] result = { new SuffixFilter("java", Translator
+                .localize("java.filefilter.java")), };
+        return result;
     }
 
     /*
@@ -284,7 +253,7 @@ public class JavaImport implements ImportInterface {
      * @see org.argouml.moduleloader.ModuleInterface#getName()
      */
     public String getName() {
-	return "Java";
+        return "Java";
     }
 
     /*
@@ -328,7 +297,6 @@ public class JavaImport implements ImportInterface {
         return JavaImportSettings.getInstance().getImportSettings();
     }
 
-
     private void updateImportClassloader() {
         List<String> pathList = JavaImportSettings.getInstance().getPathList();
         URL[] urls = new URL[pathList.size()];
@@ -348,5 +316,20 @@ public class JavaImport implements ImportInterface {
         } catch (MalformedURLException e) {
 
         }
+    }
+
+    /**
+     * Get the Java profile from project, if available.
+     * 
+     * @param p the project
+     * @return the Java profile
+     */
+    private Profile getJavaProfile(Project p) {
+        for (Profile profile : p.getProfileConfiguration().getProfiles()) {
+            if ("Java".equals(profile.getDisplayName())) {
+                return profile;
+            }
+        }
+        return null;
     }
 }

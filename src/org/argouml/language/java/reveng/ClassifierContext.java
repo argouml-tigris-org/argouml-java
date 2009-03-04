@@ -30,6 +30,7 @@
 package org.argouml.language.java.reveng;
 
 import org.argouml.model.Model;
+import org.argouml.profile.Profile;
 
 /**
  * This context is a specific classifier.
@@ -49,29 +50,16 @@ class ClassifierContext extends Context {
         this.mClassifier = classifier;
     }
 
-    public Object getInterface(String name) throws ClassifierNotFoundException {
-        return get(name, true);
-    }
-
     /**
      * Get the classifier for a given name
      * 
-     * @param classifierName The name of the classifier to retrieve.
+     * @param classifierName The name of the classifier to find.
+     * @param interfacesOnly Filter for interfaces only.
+     * @param profile The Java profile or null.
      * @return A classifier for the name.
      */
-    public Object get(String classifierName)
-        throws ClassifierNotFoundException {
-        return get(classifierName, false);
-    }
-
-    /**
-     * Get the classifier for a given name
-     * 
-     * @param classifierName The name of the classifier to retrieve.
-     * @return A classifier for the name.
-     */
-    public Object get(String classifierName, boolean interfacesOnly)
-        throws ClassifierNotFoundException {
+    public Object get(String classifierName, boolean interfacesOnly,
+            Profile profile) throws ClassifierNotFoundException {
         // Check if it is this classifier
         if (classifierName.equals(Model.getFacade().getName(mClassifier))
                 && (!interfacesOnly || Model.getFacade().isAInterface(
@@ -80,7 +68,8 @@ class ClassifierContext extends Context {
         } else {
             // Continue the search through the rest of the model
             if (getContext() != null) {
-                return getContext().get(classifierName, interfacesOnly);
+                return getContext()
+                        .get(classifierName, interfacesOnly, profile);
             } else {
                 return null;
             }

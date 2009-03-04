@@ -375,7 +375,8 @@ public class Modeller {
             Object mClassifier = null;
             try {
                 mClassifier =
-                    (new PackageContext(null, mPackage)).get(classifierName);
+                    (new PackageContext(null, mPackage)).get(classifierName,
+                            false, javaProfile);
             } catch (ClassifierNotFoundException e) {
                 if (forceIt && classifierName != null && mPackage != null) {
                     // call getPackage again WITHOUT Java profile, because
@@ -542,7 +543,8 @@ public class Modeller {
             try {
                 parentClass =
                     getContext(superclassName)
-                        .get(getClassifierName(superclassName));
+                        .get(getClassifierName(superclassName), false,
+                                javaProfile);
                 getGeneralization(currentPackage, parentClass, mClass);
             } catch (ClassifierNotFoundException e) {
                 if (forceIt && superclassName != null && model != null) {
@@ -594,7 +596,8 @@ public class Modeller {
     void addAnonymousClass(String type, boolean forceIt) {
         String name = parseState.anonymousClass();
         try {
-            Object mClassifier = getContext(type).get(getClassifierName(type));
+            Object mClassifier = getContext(type).get(getClassifierName(type),
+                    false, javaProfile);
             List<String> interfaces = new ArrayList<String>();
             if (Model.getFacade().isAInterface(mClassifier)) {
                 interfaces.add(type);
@@ -678,7 +681,8 @@ public class Modeller {
             try {
                 parentInterface =
                     getContext(interfaceName)
-                        .getInterface(getClassifierName(interfaceName));
+                        .get(getClassifierName(interfaceName), true,
+                                javaProfile);
                 getGeneralization(currentPackage, parentInterface, mInterface);
             } catch (ClassifierNotFoundException e) {
                 if (forceIt && interfaceName != null && model != null) {
@@ -774,7 +778,8 @@ public class Modeller {
             try {
                 mInterface =
                     getContext(interfaceName)
-                        .getInterface(getClassifierName(interfaceName));
+                        .get(getClassifierName(interfaceName), true,
+                                javaProfile);
             } catch (ClassifierNotFoundException e) {
                 if (forceIt && interfaceName != null && model != null) {
                     LOG.info("Modeller.java: " 
@@ -1096,7 +1101,8 @@ public class Modeller {
                 mClassifier =
                     // FIXME: This can't throw away the fully qualified 
                     // name before starting the search!
-                    getContext(returnType).get(getClassifierName(returnType));
+                    getContext(returnType).get(getClassifierName(returnType),
+                            false, javaProfile);
             } catch (ClassifierNotFoundException e) {
                 if (forceIt && returnType != null && model != null) {
                     LOG.info("Modeller.java: " 
@@ -1141,7 +1147,8 @@ public class Modeller {
             mClassifier = null;
             try {
                 mClassifier =
-                    getContext(typeName).get(getClassifierName(typeName));
+                    getContext(typeName).get(getClassifierName(typeName),
+                            false, javaProfile);
             } catch (ClassifierNotFoundException e) {
                 if (forceIt && typeName != null && model != null) {
                     LOG.info("Modeller.java: " 
@@ -1322,7 +1329,8 @@ public class Modeller {
             try {
                 // get the attribute type
                 mClassifier =
-                        getContext(typeSpec).get(getClassifierName(typeSpec));
+                        getContext(typeSpec).get(getClassifierName(typeSpec),
+                                false, javaProfile);
             } catch (ClassifierNotFoundException e) {
                 if (forceIt && typeSpec != null && model != null) {
                     LOG.info("Modeller.java: forced creation of"
