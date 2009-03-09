@@ -23,328 +23,541 @@
 // UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 package org.argouml.language.java.reveng.classfile;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Contains methods used in Classfile.g to parse descriptors.
+ * 
  * @author Alexander Lepekhin
  */
 public class ParserUtils {
 
-	/**
-	 * Convert a classfile field descriptor.
-	 * @param desc The descriptor as a string.
-	 * @return The descriptor as it would appear in a Java sourcefile.
-	 */
+    /**
+     * Convert a classfile field descriptor.
+     * 
+     * @param desc The descriptor as a string.
+     * @return The descriptor as it would appear in a Java sourcefile.
+     */
     public static String convertFieldDescriptor(String desc) {
-        return convertComponentType(desc);
+        return convertFieldDescriptor(new FieldDescriptorLexer(desc).parse());
     }
 
-	/**
-	 * Convert the descriptor of a method.
-	 * @param desc The method descriptor as a String.
-	 * @return The method descriptor as a array of Strings, that holds Java types.
-	 */
-    public static String[] convertMethodDescriptor(String desc) {
-        List<String> buf = new ArrayList<String>();
-        String parameters = desc.substring(desc.indexOf("(")+1, desc.indexOf(")"));
-        if (parameters.length() > 0) {
-            for (String parameter : parseParameters(parameters)) {
-                buf.add(convertFieldDescriptor(parameter));
+    protected static String convertFieldDescriptor(List<Token> tokens) {
+        String brackets = "";
+        for (Token t : tokens) {
+            if (t.getType() == Token.BASE_TYPE) {
+                return convertBaseType(t.getValue()) + brackets;
+            } else if (t.getType() == Token.CLASS_NAME) {
+                return t.getValue().replaceAll("/", ".") + brackets;
+            } else if (t.getType() == Token.ARRAY_BRACKET) {
+                brackets += t.getValue();
             }
         }
-        buf.add(convertReturnDescriptor(desc.substring(desc.indexOf(")")+1)));
-        return buf.toArray(new String[]{});
+        throw new IllegalArgumentException("Can not parse field descriptor");
     }
 
-	/**
-	 * Convert a class signature.
-	 * @param desc The signature as a string.
-	 * @return The signature as it would appear in a Java sourcefile.
-	 */
-    public static String convertClassSignature(String desc) {
-        throw new IllegalStateException("Not implemented yet");
-    }
-
-	/**
-	 * Convert a class type signature.
-	 * @param desc The signature as a string.
-	 * @return The signature as it would appear in a Java sourcefile.
-	 */
-    public static String convertClassTypeSignature(String s) {
-
-        StringBuilder result = new StringBuilder();
-        String packageString = getPackageSpecifier(s.substring(1)); // remove leading "L"
-        if (packageString.length() != 0) {
-            result.append(packageString.replaceAll("/", "."));
+    /**
+     * Convert a method descriptor.
+     * 
+     * @param desc The method descriptor as a String.
+     * @return The method descriptor as a array of Strings, that holds Java
+     *         types.
+     */
+    public static String[] convertMethodDescriptor(String desc) {
+        List<String> buf = new LinkedList<String>();
+        MethodDescriptorLexer lexer = new MethodDescriptorLexer(desc);
+        for (Token t : lexer.parse()) {
+            buf.add(t.getValue());
         }
-        String rest = s.substring(packageString.length() + 1);
-        String simpleClassTypeSignature = getSimpleClassTypeSignature(rest);
-        result.append(convertSimpleClassTypeSignature(simpleClassTypeSignature));
-        // TODO: Inner classes
-//        for (int i = 1; i < c.length; i++) {
-//            result.append(".");
-//            result.append(convertSimpleClassTypeSignature(c[i]));
-//        }
-        return result.toString();
+        return buf.toArray(new String[] {});
     }
 
-	/**
-	 * Convert a method type signature.
-	 * @param desc The signature as a string.
-	 * @return The signature as it would appear in a Java sourcefile.
-	 */
+    /**
+     * 
+     * Convert a field type signature.
+     * 
+     * @param desc The signature as a string.
+     * @return The signature as it would appear in a Java sourcefile.
+     */
+    public static String convertFieldTypeSignature(String s) {
+        return convertFieldTypeSignature(new FieldTypeSignatureLexer(s).parse());
+    }
+
+    public static String convertFieldTypeSignature(List<Token> tokens) {
+        StringBuilder buf = new StringBuilder();
+        for (Token t : tokens) {
+            buf.append(t.getValue());
+        }
+        System.out.println(buf.toString());
+        return buf.toString();
+    }
+
+    /**
+     * Convert a method type signature.
+     * 
+     * @param desc The signature as a string.
+     * @return The signature as it would appear in a Java sourcefile.
+     */
     public static String convertMethodTypeSignature(String desc) {
         throw new IllegalStateException("Not implemented yet");
     }
 
-    //
-    // protected methods for parsing descriptors according to class file specification
-    //
-
-    protected static boolean isBaseType(String s) {
-        char[] baseTypes = {'B','C','D','F','I','J','S','Z'};
-        for (char c : baseTypes) {
-            if (s.charAt(0) == c) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    protected static boolean isObjectType(String s) {
-        return s.charAt(0) == 'L';
-    }
-
-    protected static boolean isArrayType(String s) {
-        return s.charAt(0) == '[';
-    }
-
-    protected static boolean isVoidType(String s) {
-        return s.charAt(0) == 'V';
-    }
-
     protected static String convertBaseType(String s) {
         switch (s.charAt(0)) {
-            case 'B':
-                return "byte";
-            case 'C':
-                return "char";
-            case 'D':
-                return "double";
-            case 'F':
-                return "float";
-            case 'I':
-                return "int";
-            case 'J':
-                return "long";
-            case 'S':
-                return "short";
-            case 'Z':
-                return "boolean";
+        case 'B':
+            return "byte";
+        case 'C':
+            return "char";
+        case 'D':
+            return "double";
+        case 'F':
+            return "float";
+        case 'I':
+            return "int";
+        case 'J':
+            return "long";
+        case 'S':
+            return "short";
+        case 'Z':
+            return "boolean";
         }
         throw new IllegalArgumentException(s + " is not a base type");
     }
 
-    protected static String convertObjectType(String s) {
-        return s.substring(1, s.indexOf(";")).replaceAll("/", ".");
-    }
+    protected static class Token {
 
-    protected static String convertVoidType(String s) {
-        return "void";
-    }
+        public static final int BASE_TYPE = 0; // B|C|D...
 
-    protected static String convertArrayType(String s) {
-        return convertComponentType(s.substring(1))+"[]";
-    }
+        public static final int VOID_TYPE = 1; // V
 
-    protected static String convertComponentType(String s) {
-        if (isArrayType(s)) {
-            return convertArrayType(s);
-        } else if (isBaseType(s)) {
-            return convertBaseType(s);
-        } else if (isObjectType(s)) {
-            return convertObjectType(s);
+        public static final int CLASS_NAME = 2; // with slashes
+
+        public static final int ARRAY_BRACKET = 3; // [
+
+        public static final int FIELD_DESCRIPTOR = 4; // method parameter
+
+        public static final int PACKAGE = 5; // as a.b.c
+
+        public static final int IDENTIFIER = 6; // 
+
+        public static final int LABRACKET = 7; // <
+
+        public static final int RABRACKET = 8; // >
+
+        public static final int WILDCARD = 9; // +-*
+
+        public static final int COMMA = 10; // ,
+
+        public static final int POINT = 11; // .
+
+        private String value;
+
+        private int type;
+
+        public Token(int type, String value) {
+            this.type = type;
+            this.value = value;
         }
-        throw new IllegalArgumentException(s + " is not a component type");
-    }
 
-    protected static List<String> parseParameters(String parameters) {
-        List<String> result = new ArrayList<String>();
-        while (parameters.length() > 0) {
-            String firstParameter = getFirstParameter(parameters);
-            result.add(firstParameter);
-            parameters = parameters.substring(firstParameter.length());
+        public int getType() {
+            return type;
         }
-        return result;
-    }
 
-    protected static String getFirstParameter(String parameters) {
-        if (isBaseType(parameters)) {
-            return parameters.substring(0,1);
-        } else if (isObjectType(parameters)) {
-            return parameters.substring(0, parameters.indexOf(";")+1);
-        } else if (isArrayType(parameters)) {
-            return "[" +  getFirstParameter(parameters.substring(1));
+        public String getValue() {
+            return value;
         }
-        return null;
+
     }
 
-    public static String convertReturnDescriptor(String s) {
-        if (isVoidType(s)) {
-            return convertVoidType(s);
-        } else {
-            return convertFieldDescriptor(s);
+    protected static class FieldDescriptorLexer extends AbstractLexer {
+
+        public FieldDescriptorLexer(String desc) {
+            super(desc);
         }
-    }
 
-    //
-    // protected methods for parsing signatures according to class file specification
-    //
-
-    public static boolean isClassTypeSignature(String s) {
-        return s.charAt(0) == 'L';
-    }
-
-    public static boolean isArrayTypeSignature(String s) {
-        return s.charAt(0) == '[';
-    }
-
-    public static boolean isTypeVariableSignature(String s) {
-        return s.charAt(0) == 'T';
-    }
-
-    protected static String convertFieldTypeSignature(String s) {
-        if (isClassTypeSignature(s)) {
-            return convertClassTypeSignature(s);
-        } else if (isArrayTypeSignature(s)) {
-            return convertArrayTypeSignature(s);
-        } else if (isTypeVariableSignature(s)) {
-            return convertTypeVariableSignature(s);
-        }
-        throw new IllegalArgumentException(s + " is not a FieldTypeSignature");
-    }
-
-    protected static String convertArrayTypeSignature(String s) {
-        if (isBaseType(s.substring(1))) {
-            return convertBaseType(s.substring(1)) + "[]";
-        } else {
-            return convertFieldTypeSignature(s.substring(1)) + "[]";
-        }
-    }
-
-    protected static String convertTypeVariableSignature(String s) {
-        return s.substring(1, s.indexOf(";"));
-    }
-
-    protected static String convertSimpleClassTypeSignature(String s) {
-        if (s.indexOf("<") == -1) {
-            return s;
-        } else {
-            String identifier = s.substring(0, s.indexOf("<"));
-            String typeArguments = s.substring(s.indexOf("<") + 1, s.lastIndexOf(">"));
-            String argList = "";
-            for (String argument : parseArguments(typeArguments)) {
-                argList += "," + convertArgument(argument);
+        /**
+         * Parse field descriptor according the grammar:
+         * 
+         * <pre>
+         * FieldDescriptor:=BaseType|ObjectType|ArrayType
+         *         BaseType:=B|C|D|F|J|S|Z
+         *         ObjectType:=L Classname;
+         *         ArrayType:=[FieldDescriptor
+         * </pre>
+         * 
+         */
+        public List<Token> parse() {
+            // Object type?
+            Matcher m = Pattern.compile("^(L)(.+)(;)").matcher(desc);
+            if (m.matches()) {
+                result.add(new Token(Token.CLASS_NAME, m.group(2))); // Classname
+                desc = desc.substring(m.group(0).length()); // the rest after ;
+                return result;
             }
-            return identifier + "<" + argList.substring(1) + ">";
-        }
-    }
-
-    protected static List<String> parseArguments(String arguments) {
-        List<String> result = new ArrayList<String>();
-        while (arguments.length() > 0) {
-            String firstArgument = getFirstArgument(arguments);
-            result.add(firstArgument);
-            arguments = arguments.substring(firstArgument.length());
-        }
-        return result;
-    }
-
-    protected static String getFirstArgument(String arguments) {
-        if (arguments.charAt(0) == '*') {
-            return "*";
-        } else if (arguments.charAt(0) == '+') {
-            return "+" + getFirstArgument(arguments.substring(1));
-        } else if (arguments.charAt(0) == '-') {
-            return "-" + getFirstArgument(arguments.substring(1));
-        } else {
-            // this is FieldTypeSignature
-            if (arguments.charAt(0) == 'L') {
-                return arguments.substring(0, arguments.indexOf(";") + 1);
-            } else if (arguments.charAt(0) == 'T') {
-                return arguments.substring(0, arguments.indexOf(";") + 1);
-            } else if (arguments.charAt(0) == '[') {
-                if (isBaseType(arguments.substring(1))) {
-                    return arguments.substring(0,1);
-                } else {
-                    return "[" + getFirstArgument(arguments.substring(1));
-                }
+            // Array type?
+            m = Pattern.compile("^(\\[)((.+))").matcher(desc);
+            if (m.matches()) {
+                result.add(new Token(Token.ARRAY_BRACKET, "[]"));
+                desc = desc.substring(1);
+                parse();
             }
-            throw new IllegalArgumentException(arguments + " is not a valid argument");
+            // Base type?
+            m = Pattern.compile("^(B|C|D|F|I|J|S|Z)((.*))").matcher(desc);
+            if (m.matches()) {
+                result.add(new Token(Token.BASE_TYPE, m.group(1)));
+                desc = desc.substring(1);
+                return result;
+            }
+            if (desc.length() == 0) {
+                return result;
+            }
+            throw new IllegalArgumentException(desc
+                    + " is not a FieldDescriptor");
         }
+
     }
 
-    protected static String convertArgument(String argument) {
-        if (argument.charAt(0) == '*') {
-            return "?";
-        } else if (argument.charAt(0) == '+') {
-            return "? extends " + convertArgument(argument.substring(1));
-        } else if (argument.charAt(0) == '-') {
-            return "? super " + convertArgument(argument.substring(1));
-        } else {
-            // this is FieldTypeSignature
-            return convertFieldTypeSignature(argument);
-        }
-    }
+    protected static class MethodDescriptorLexer extends AbstractLexer {
 
-    protected static String getPackageSpecifier(String s) {
-        String packageString = s;
-        if (packageString.indexOf("<") != -1) {
-            packageString = packageString.substring(0, packageString.indexOf("<"));
+        public MethodDescriptorLexer(String desc) {
+            super(desc);
         }
-        if (packageString.indexOf(".") != -1) {
-            packageString = packageString.substring(0, packageString.indexOf("."));
-        }
-        if (packageString.indexOf("/") != -1) {
-            packageString = packageString.substring(0, packageString.lastIndexOf("/") + 1);
-        } else {
-            packageString = "";
-        }
-        return packageString;
-    }
 
-    protected static String getSimpleClassTypeSignature(String s) {
-        int p1 = s.indexOf("<");
-        int p2 = s.indexOf(".");
-        if ( p1 == -1) {
-            if (p2 == -1) {
-                if (s.endsWith(";")) {
-                    return s.substring(0, s.length() - 1);
-                } else {
-                    return s;
+        /**
+         * Parse method descriptor according the grammar:
+         * 
+         * <pre>
+         * MethodDescriptor:= ( FieldDescriptor* ) ReturnDescriptor
+         * ReturnDescriptor:=FieldDescriptor|V
+         * 
+         * <pre>
+         * 
+         */
+        public List<Token> parse() {
+            // Object type?
+            Matcher m = Pattern.compile("^(\\()(.*)(\\))((.+))").matcher(desc);
+            if (m.matches()) {
+                String returnDescriptor = m.group(4);
+                String parameters = m.group(2);
+                while (parameters.length() > 0) {
+                    FieldDescriptorLexer lexer = new FieldDescriptorLexer(
+                            parameters);
+                    result.add(new Token(Token.FIELD_DESCRIPTOR,
+                            convertFieldDescriptor(lexer.parse())));
+                    parameters = lexer.getRest();
                 }
+                if (returnDescriptor.equals("V")) {
+                    result.add(new Token(Token.VOID_TYPE, "void"));
+                } else {
+                    FieldDescriptorLexer lexer = new FieldDescriptorLexer(
+                            returnDescriptor);
+                    result.add(new Token(Token.FIELD_DESCRIPTOR,
+                            convertFieldDescriptor(lexer.parse())));
+                }
+                return result;
+            }
+            throw new IllegalArgumentException(desc
+                    + " is not a MethodDescriptor");
+
+        }
+
+    }
+
+    protected static class FieldTypeSignatureLexer extends AbstractLexer {
+
+        public FieldTypeSignatureLexer(String desc) {
+            super(desc);
+        }
+
+        /**
+         * Parse FieldTypeSignature according the grammar:
+         * 
+         * <pre>
+         * FieldTypeSignature: ClassTypeSignature|ArrayTypeSignature|TypeVariableSignature
+         * </pre>
+         */
+        @Override
+        public List<Token> parse() {
+            // while (desc.length() > 0) {
+            AbstractLexer lexer = null;
+            switch (desc.charAt(0)) {
+            case 'L':
+                lexer = new ClassTypeSignatureLexer(desc);
+                break;
+            case '[':
+                lexer = new ArrayTypeSignatureLexer(desc);
+                break;
+            case 'T':
+                lexer = new TypeVariableSignatureLexer(desc);
+                break;
+            default:
+                throw new IllegalArgumentException(desc
+                        + " is not a field type signature");
+            }
+            result.addAll(lexer.parse());
+            desc = lexer.getRest();
+            // }
+            return result;
+        }
+    }
+
+    protected static class TypeVariableSignatureLexer extends AbstractLexer {
+
+        public TypeVariableSignatureLexer(String desc) {
+            super(desc);
+        }
+
+        /**
+         * Parse type variable signature according the grammar:
+         * 
+         * <pre>
+         * TypeVariableSignature: T Identifer ;
+         * </pre>
+         */
+        @Override
+        public List<Token> parse() {
+            Matcher m = Pattern.compile("T([^;]*);((.*))").matcher(desc);
+            if (m.matches()) {
+                result.add(new Token(Token.IDENTIFIER, m.group(1)));
+                desc = m.group(2);
             } else {
-                return s.substring(0, p2);
+                new IllegalArgumentException(desc
+                        + " is not a type variable signature");
             }
-        } else {
-            int m = 0, p = 1;
-            for (char c : s.substring(p1 + 1).toCharArray()) {
-                if (c == '>') {
-                    if (m == 0) {
-                        String t = s.substring(0, p1 + p + 1);
-                        return s.substring(0, p1 + p + 1);
+            return result;
+        }
+    }
+
+    protected static class ArrayTypeSignatureLexer extends AbstractLexer {
+
+        public ArrayTypeSignatureLexer(String desc) {
+            super(desc);
+        }
+
+        /**
+         * Parse array type signature according the grammar:
+         * 
+         * <pre>
+         * ArrayTypeSignature:  [TypeSignature
+         * 	       TypeSignature: FieldTypeSignature|BaseType
+         * </pre>
+         */
+        @Override
+        public List<Token> parse() {
+            if (desc.charAt(0) == '[') {
+                desc = desc.substring(1);
+                Matcher m = Pattern.compile("^(B|C|D|F|I|J|S|Z)((.*))")
+                        .matcher(desc);
+                if (m.matches()) {
+                    result.add(new Token(Token.BASE_TYPE, convertBaseType(m
+                            .group(1))));
+                    desc = desc.substring(1);
+                } else {
+                    AbstractLexer l = new FieldTypeSignatureLexer(desc);
+                    result.addAll(l.parse());
+                    desc = l.getRest();
+                }
+                result.add(new Token(Token.ARRAY_BRACKET, "[]"));
+                return result;
+            } else {
+                throw new IllegalArgumentException(desc
+                        + " is not an array type signature");
+            }
+        }
+    }
+
+    protected static class SimpleClassTypeSignatureLexer extends AbstractLexer {
+
+        public SimpleClassTypeSignatureLexer(String desc) {
+            super(desc);
+        }
+
+        /**
+         * Parse simple class type signature according the grammar:
+         * 
+         * <pre>
+         * SimpleClassTypeSignature:=Identifier TypeArgumentsopt
+         * TypeArguments:&lt;TypeArgument+&gt;
+         * TypeArgument:WildcardIndicatoropt FieldTypeSignature|*
+         * WildcardIndicator:+|-
+         * </pre>
+         */
+        @Override
+        public List<Token> parse() {
+            System.out.println("simple:" + desc + ":");
+            Matcher m = Pattern.compile("([^<.]*)(<.*>)?((.*))").matcher(desc);
+            if (m.matches()) {
+                String identifier = m.group(1);
+                String typeArguments = m.group(2);
+                if (identifier != null && identifier.length() > 0) {
+                    result.add(new Token(Token.IDENTIFIER, identifier));
+                } else {
+                    throw new IllegalArgumentException(desc
+                            + " is not a SimpleClassTypeSignature");
+                }
+                if (typeArguments != null && typeArguments.length() > 0) {
+                    System.out.println("typeargs:" + typeArguments + ":");
+                    result.add(new Token(Token.LABRACKET, "<"));
+                    String arguments = typeArguments.substring(1, typeArguments
+                            .length() - 1);
+                    if (arguments.charAt(0) == '*') {
+                        result.add(new Token(Token.WILDCARD, "?"));
                     } else {
-                        m--;
+                        if (arguments.charAt(0) == '+') {
+                            result.add(new Token(Token.WILDCARD, "? extends "));
+                            arguments = arguments.substring(1);
+                        } else if (arguments.charAt(0) == '-') {
+                            result.add(new Token(Token.WILDCARD, "? super "));
+                            arguments = arguments.substring(1);
+                        }
+                        System.out.println("arguments:" + arguments);
+                        while (arguments.length() > 0) {
+                            FieldTypeSignatureLexer l = new FieldTypeSignatureLexer(
+                                    arguments);
+                            result.addAll(l.parse());
+                            arguments = l.getRest();
+                            if (arguments.length() > 0) {
+                                result.add(new Token(Token.COMMA, ","));
+                            }
+                        }
                     }
+                    result.add(new Token(Token.RABRACKET, ">"));
+                }
+            }
+            desc = m.group(3);
+            return result;
+        }
+    }
+
+    protected static class ClassTypeSignatureLexer extends AbstractLexer {
+
+        public ClassTypeSignatureLexer(String desc) {
+            super(desc);
+        }
+
+        /**
+         * Parse class type signature according the grammar:
+         * 
+         * <pre>
+         * ClassTypeSignature:=L PackageSpecifier* SimpleClassTypeSignature ClassTypeSignatureSuffix* ; 
+         * PackageSpecifier:=Identifier / PackageSpecifier* 
+         * ClassTypeSignatureSuffix:=. SimpleClassTypeSignature
+         * </pre>
+         */
+        @Override
+        public List<Token> parse() {
+            System.out.println("class:" + desc);
+            // find signature in desc
+            int count = 0, index = 0;
+            for (char c : desc.toCharArray()) {
+                if (c == ';' && count == 0) {
+                    break;
                 }
                 if (c == '<') {
-                    m++;
+                    count++;
                 }
-                p++;
+                if (c == '>') {
+                    count--;
+                }
+                index++;
+            }
+            String classTypeSignature = desc.substring(0, index + 1);
+            System.out.println("classTypeSignature:" + classTypeSignature);
+            desc = desc.substring(index + 1);
+            Matcher m = Pattern.compile("L([^<\\.;]*/)*([^<\\.;]*)((.*));$")
+                    .matcher(classTypeSignature);
+            if (m.matches()) {
+                for (int i = 0; i < m.groupCount(); i++) {
+                    System.out.println(i + ": " + m.group(i));
+                }
+                String packageSpecifier = m.group(1);
+                String identifier = m.group(2);
+                String other = m.group(3);
+                String arguments = "";
+                String suffixes = "";
+                if (other != null && other.length() > 0) {
+                    if (other.charAt(0) == '<') {
+                        // this is type arguments
+                        arguments = other.substring(0, balancedBracketPosition(
+                                other, '<', '>') + 1);
+                    }
+                    suffixes = other.substring(arguments.length());
+                }
+                if (packageSpecifier != null && packageSpecifier.length() > 0) {
+                    result.add(new Token(Token.PACKAGE, packageSpecifier
+                            .replaceAll("/", ".")));
+                }
+                SimpleClassTypeSignatureLexer sl = new SimpleClassTypeSignatureLexer(
+                        identifier + arguments);
+                result.addAll(sl.parse());
+                // parse suffixes
+                while (suffixes.length() > 0) {
+                    // find suffix in suffixes
+                    suffixes = suffixes.substring(1);
+                    count = 0;
+                    index = 0;
+                    for (char c : suffixes.toCharArray()) {
+                        if (c == '.' && count == 0) {
+                            break;
+                        }
+                        if (c == '<') {
+                            count++;
+                        }
+                        if (c == '>') {
+                            count--;
+                        }
+                        index++;
+                    }
+                    String suffix = suffixes.substring(0, index);
+                    result.add(new Token(Token.POINT, "."));
+                    result.addAll(new SimpleClassTypeSignatureLexer(suffix)
+                            .parse());
+                    System.out.println("suffix=" + suffix);
+                    suffixes = suffixes.substring(index);
+                    System.out.println("suffixes=" + suffixes);
+                }
+            }
+            return result;
+        }
+    }
+
+    protected static abstract class AbstractLexer {
+        protected String desc;
+
+        protected List<Token> result;
+
+        public AbstractLexer(String desc) {
+            this.desc = desc;
+            result = new LinkedList<Token>();
+        }
+
+        public abstract List<Token> parse();
+
+        public String getRest() {
+            return desc;
+        }
+    }
+
+    protected static int balancedBracketPosition(String other, char open,
+            char close) {
+        int count = -1;
+        char[] chars = other.toCharArray();
+        for (int i = 0; i < chars.length; i++) {
+            char c = chars[i];
+            if (c == open) {
+                count++;
+            } else if (c == close) {
+                if (count == 0) {
+                    return i;
+                } else {
+                    count--;
+                }
             }
         }
-        throw new IllegalStateException(s + " no matched <> found");
+        throw new IllegalArgumentException(other + " has no balanced bracket");
     }
+
 }
