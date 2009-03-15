@@ -120,16 +120,16 @@ public class TestClassImportGenerics extends TestCase {
         }
     }
 
-    public static class TestedClass<T extends Number, E> {
+    public static class TestedClass<T extends Number, E>  {
 
         private String arg1;
         private T arg2;
-        private Inner<String, List> arg3;
+        private Inner<String,  ? extends Throwable> arg3;
 
         public List method_1() {
             return null;
         }
-        public List<T> method_2(Inner<String, List> arg3) {
+        public List<T> method_2(Inner<String, List> arg3) throws IllegalStateException, IllegalArgumentException {
             return null;
         }
 

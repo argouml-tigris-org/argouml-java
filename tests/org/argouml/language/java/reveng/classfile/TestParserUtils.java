@@ -34,6 +34,9 @@ import java.awt.event.WindowEvent;
 import java.io.FileInputStream;
 import java.io.StringBufferInputStream;
 import java.util.List;
+
+import org.argouml.language.java.reveng.classfile.ParserUtils.Token;
+
 import junit.framework.TestCase;
 
 /**
@@ -46,6 +49,11 @@ public class TestParserUtils extends TestCase {
         super(str);
     }
 
+    public void testFirstIndexNotInside() throws Exception {
+    	assertEquals(17,
+    		ParserUtils.AbstractLexer.firstIndexNotInside(';', '<', '>', "Ljava/lang/Object;"));
+    }
+    
     public void testFieldDescriptorLexer() throws Exception {
         ParserUtils.FieldDescriptorLexer lexer = new ParserUtils.FieldDescriptorLexer("Bwhatelse");
         List<ParserUtils.Token> tokens = lexer.parse();
@@ -78,10 +86,6 @@ public class TestParserUtils extends TestCase {
         assertEquals("void", result[0]);
     }
 
-    public void testBalancedBracket() {
-    	assertEquals(5, ParserUtils.balancedBracketPosition("<1<>4>234", '<', '>'));
-    }
-    
     public void testConvertFieldTypeSignature() {
         assertEquals("java.lang.Comparable<?>",
                 ParserUtils.convertFieldTypeSignature("Ljava/lang/Comparable<*>;"));
@@ -103,6 +107,23 @@ public class TestParserUtils extends TestCase {
                 ParserUtils.convertFieldTypeSignature("Ljava/lang/Map<[B[[Ljava/lang/Map<TE;TE;>;>.Inner<Ld.inner;>.Inner2;"));
     }
 
+    public void testConvertClassTypeSignature() {
+        assertEquals("java.lang.Object",
+                ParserUtils.convertClassTypeSignature("Ljava/lang/Object;"));
+    }
+    
+    public void testConvertClassSignature() {
+        assertEquals("<T:java.lang.Number,E:java.lang.Object> extends java.lang.Object implements java.lang.Comparable,java.lang.Serializable",
+                ParserUtils.convertClassSignature("<T:Ljava/lang/Number;E:Ljava/lang/Object;>Ljava/lang/Object;Ljava/lang/Comparable;Ljava/lang/Serializable;"));
+    }
+    
+    public void testConvertMethodTypeSignature() {
+        assertEquals("() return void",
+                ParserUtils.convertMethodTypeSignature("()V"));
+        assertEquals("(E,java.lang.Integer) return java.lang.String throws java.lang.Exception,T",
+                ParserUtils.convertMethodTypeSignature("(TE;Ljava/lang/Integer;)Ljava/lang/String;^Ljava/lang/Exception;^TT;"));
+    }
+    
     static String txt = "/home/alepekhin/projects/work_issue3204_lepekhine/build/tests/classes/org/argouml/language/java/reveng/TestClassImportGenerics$TestedClass.class";
 
     public static void main(String[] args) throws Exception {
@@ -121,4 +142,5 @@ public class TestParserUtils extends TestCase {
         });
         frame.setVisible(true);
     }
+    
 }

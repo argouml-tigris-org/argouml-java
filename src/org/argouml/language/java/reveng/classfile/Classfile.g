@@ -533,7 +533,7 @@ method_info!
 // Info on all the attributes of a class.
 attribute_block
 { int attributes_count=0; }
-	: attributes_count=u2  // Get the number of attributes.
+	: attributes_count=u2  //  Get the number of attributes.
 	  ( {attributes_count > 0}? attribute_info {attributes_count--;})* {attributes_count==0}?  // Parse <attributes_count> attribute_info structures.
 	;
 
