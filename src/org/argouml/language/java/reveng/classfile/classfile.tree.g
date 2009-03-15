@@ -77,9 +77,9 @@ options {
      * @return The class name.
      */
     private final String splitPackageFromClass(String classname) {
-	int lastDot = classname.lastIndexOf('.');
+	int lastDot = classname.lastIndexOf('/');
 	if(lastDot != -1) {
-	    getModeller().addPackage(classname.substring(0,lastDot));
+	    getModeller().addPackage(classname.substring(0,lastDot).replaceAll("/","."));
 	    classname = classname.substring(lastDot + 1);
 	}
 	return classname;

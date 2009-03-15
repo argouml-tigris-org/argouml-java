@@ -140,7 +140,7 @@ tokens {
 	private void setClassName(String name) {
 
 	    // Remove the package info.
-    	    int lastDot = name.lastIndexOf('.');
+    	    int lastDot = name.lastIndexOf('/');
             if(lastDot == -1) {
 		_className = name;
             }  else {
@@ -370,10 +370,10 @@ constant_utf8_info!
 	  ( {length > 0}? bytebuf=u1 { bytes[bytepos++] = bytebuf; length--; } )* {length==0}? 
 	  { 
             String name = new String(bytes);
-	    name= name.replace('/','.'); 
-	    if(name.startsWith("[") && name.endsWith("]")) {
-		name = name.substring(1,name.length()-1) + "[]";
-	    }
+//	    name= name.replace('/','.'); 
+//	    if(name.startsWith("[") && name.endsWith("]")) {
+//		name = name.substring(1,name.length()-1) + "[]";
+//	    }
 	    #constant_utf8_info = #[CONSTANT_UTF8STRING,name];
           }
 	;
