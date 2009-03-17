@@ -200,7 +200,7 @@ public class SettingsTabJava implements ModuleInterface, GUISettingsTabInterface
         case ModuleInterface.AUTHOR:
             return "The ArgoUML project team";
         case ModuleInterface.VERSION:
-            return "0.28.beta";
+            return "0.28";
         case ModuleInterface.DOWNLOADSITE:
             return "http://argouml-java.tigris.org/";
         default:

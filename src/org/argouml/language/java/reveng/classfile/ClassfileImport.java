@@ -43,6 +43,7 @@ import java.util.zip.ZipEntry;
 import org.argouml.application.helpers.ApplicationVersion;
 import org.argouml.kernel.Project;
 import org.argouml.language.java.reveng.JavaImportSettings;
+import org.argouml.moduleloader.ModuleInterface;
 import org.argouml.profile.Profile;
 import org.argouml.taskmgmt.ProgressMonitor;
 import org.argouml.uml.reveng.FileImportUtils;
@@ -402,7 +403,9 @@ public class ClassfileImport implements ImportInterface {
         case DESCRIPTION:
             return "Java import from class or jar files";
         case VERSION:
-            return ApplicationVersion.getVersion();
+            return "0.28";
+        case ModuleInterface.DOWNLOADSITE:
+            return "http://argouml-java.tigris.org/";
         default:
             return null;
         }
