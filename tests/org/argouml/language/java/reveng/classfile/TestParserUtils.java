@@ -95,8 +95,6 @@ public class TestParserUtils extends TestCase {
                 ParserUtils.convertFieldTypeSignature("Ljava/lang/Comparable<-La/b/C;>;"));
         assertEquals("java.lang.Comparable<java.lang.String>",
                 ParserUtils.convertFieldTypeSignature("Ljava/lang/Comparable<Ljava/lang/String;>;"));
-        assertEquals("java.lang.Comparable",
-                ParserUtils.convertFieldTypeSignature("Ljava/lang/Comparable;Ljava/lang/String;"));
        assertEquals("java.lang.Map<java.lang.String,java.lang.Integer>",
                ParserUtils.convertFieldTypeSignature("Ljava/lang/Map<Ljava/lang/String;Ljava/lang/Integer;>;"));
        assertEquals("java.lang.Map<byte[],int[][]>",
@@ -113,8 +111,12 @@ public class TestParserUtils extends TestCase {
     }
     
     public void testConvertClassSignature() {
-        assertEquals("<T:java.lang.Number,E:java.lang.Object> extends java.lang.Object implements java.lang.Comparable,java.lang.Serializable",
+        assertEquals("<T extends java.lang.Number,E extends java.lang.Object> extends java.lang.Object implements java.lang.Comparable,java.lang.Serializable",
                 ParserUtils.convertClassSignature("<T:Ljava/lang/Number;E:Ljava/lang/Object;>Ljava/lang/Object;Ljava/lang/Comparable;Ljava/lang/Serializable;"));
+        assertEquals("<T extends java.lang.Number & java.lang.Comparable> extends java.lang.Object implements java.lang.Comparable,java.lang.Serializable",
+                ParserUtils.convertClassSignature("<T:Ljava/lang/Number;:Ljava/lang/Comparable;>Ljava/lang/Object;Ljava/lang/Comparable;Ljava/lang/Serializable;"));
+        assertEquals("<T extends java.lang.Number & java.lang.Comparable & java.lang.Serializable> extends java.lang.Object implements java.lang.Comparable,java.lang.Serializable",
+                ParserUtils.convertClassSignature("<T:Ljava/lang/Number;:Ljava/lang/Comparable;:Ljava/lang/Serializable;>Ljava/lang/Object;Ljava/lang/Comparable;Ljava/lang/Serializable;"));
     }
     
     public void testConvertMethodTypeSignature() {
@@ -122,25 +124,6 @@ public class TestParserUtils extends TestCase {
                 ParserUtils.convertMethodTypeSignature("()V"));
         assertEquals("(E,java.lang.Integer) return java.lang.String throws java.lang.Exception,T",
                 ParserUtils.convertMethodTypeSignature("(TE;Ljava/lang/Integer;)Ljava/lang/String;^Ljava/lang/Exception;^TT;"));
-    }
-    
-    static String txt = "/home/alepekhin/projects/work_issue3204_lepekhine/build/tests/classes/org/argouml/language/java/reveng/TestClassImportGenerics$TestedClass.class";
-
-    public static void main(String[] args) throws Exception {
-        SimpleByteLexer lexer = new SimpleByteLexer(new FileInputStream((txt)));
-        ClassfileParser parser = new ClassfileParser(lexer);
-        parser.classfile();
-        CommonAST t = (CommonAST) parser.getAST();
-        ASTFactory factory = parser.getASTFactory();
-        CommonAST r = (CommonAST) factory.create(0, "ROOT");
-        r.addChild(t);
-        ASTFrame frame = new ASTFrame("AST", r);
-        frame.addWindowListener(new WindowAdapter() {
-            public void windowClosing(WindowEvent event) {
-                System.exit(0);
-            }
-        });
-        frame.setVisible(true);
     }
     
 }

@@ -199,6 +199,7 @@ public class ParserUtils {
 		public static final int RBRACKET = 17; // )
 		public static final int THROWS = 18; // throws
 		public static final int RETURN = 19; // return
+		public static final int AMPERSAND = 20; // &
 
 		private String value;
 
@@ -616,20 +617,30 @@ public class ParserUtils {
 				String identifier = m.group(1);
 				String other = m.group(2);
 				result.add(new Token(Token.IDENTIFIER, identifier));
-				result.add(new Token(Token.COLON, ":"));
+				result.add(new Token(Token.SUPERCLASS, " extends "));
 				// other begins with ClassBound which is always present
+				System.out.println("other1 "+other);
 				FieldTypeSignatureLexer f = new FieldTypeSignatureLexer(other);
 				result.addAll(f.parse());
 				other = f.getRest();
+				System.out.println("other2 "+other);
 				if (other.length() > 0) {
 					if (other.startsWith(":")) {
 						// interface bounds begins here
-					} else {
+						while (other.startsWith(":") ) {
+							result.add(new Token(Token.AMPERSAND, " & "));
+							FieldTypeSignatureLexer l = new FieldTypeSignatureLexer(other.substring(1));
+							result.addAll(l.parse());
+							other = l.getRest();
+							System.out.println("other3 "+other);
+						}
+					}
+				}
+				if (other.length() > 0) {
 						// new FormalTypeParameter begins here
 						result.add(new Token(Token.COMMA, ","));
 						FormalTypeParameterLexer l = new FormalTypeParameterLexer(other);
 						result.addAll(l.parse());
-					}
 				}
 				desc = other;
 			}

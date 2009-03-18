@@ -31,6 +31,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.DataInputStream;
 import java.io.FileInputStream;
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -137,8 +138,16 @@ public class TestClassImportGenerics extends TestCase {
            T getT() { return null;}
            S getS() { return null;}
         }
-    }
 
+        <M extends Throwable & Comparable & Serializable> void cloakException(Throwable e) throws M {
+        	  throw (M) e;
+       	}
+
+        <M> void method3(M arg) {
+       	}
+
+    }
+    
     private static final String SHOW_CLASS="build/tests/classes/org/argouml/language/java/reveng/TestClassImportGenerics$TestedClass.class";
 
     public static void main(String[] args) throws Exception {
