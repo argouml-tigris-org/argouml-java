@@ -47,7 +47,7 @@ import org.argouml.ui.GUI;
 
 
 /**
- * Settings tab for the Java module.
+ * Settings tab for the Java generator module.
  */
 public class SettingsTabJava implements ModuleInterface, GUISettingsTabInterface
 {
@@ -196,11 +196,11 @@ public class SettingsTabJava implements ModuleInterface, GUISettingsTabInterface
     public String getInfo(int type) {
         switch (type) {
         case ModuleInterface.DESCRIPTION:
-            return "Java Import Settings";
+            return "Java Generator Settings";
         case ModuleInterface.AUTHOR:
             return "The ArgoUML project team";
         case ModuleInterface.VERSION:
-            return "0.28";
+            return "0.28.beta5";
         case ModuleInterface.DOWNLOADSITE:
             return "http://argouml-java.tigris.org/";
         default:

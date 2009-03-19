@@ -8,7 +8,7 @@ Specification-Title: ArgoUML Dynamic Load Module
 Specification-Version: 0.27.1
 Specification-Vendor: University of California
 Implementation-Vendor: ArgoUML project
-Implementation-Version: 0.28
+Implementation-Version: 0.28.beta5
 Implementation-Title: ArgoUML Java critics module
 
 Name: org/argouml/language/java/generator/GeneratorJava.class
@@ -17,7 +17,7 @@ Specification-Title: ArgoUML Dynamic Load Module
 Specification-Version: 0.27.1
 Specification-Vendor: University of California
 Implementation-Vendor: ArgoUML project
-Implementation-Version: 0.28
+Implementation-Version: 0.28.beta5
 Implementation-Title: ArgoUML Java source generation module
 
 Name: org/argouml/language/java/reveng/JavaImport.class
@@ -26,7 +26,7 @@ Specification-Title: ArgoUML Dynamic Load Module
 Specification-Version: 0.27.1
 Specification-Vendor: University of California
 Implementation-Vendor: ArgoUML project
-Implementation-Version: 0.28
+Implementation-Version: 0.28.beta5
 Implementation-Title: ArgoUML Java source import module
 
 Name: org/argouml/language/java/reveng/classfile/ClassfileImport.class
@@ -35,5 +35,14 @@ Specification-Title: ArgoUML Dynamic Load Module
 Specification-Version: 0.27.1
 Specification-Vendor: University of California
 Implementation-Vendor: ArgoUML project
-Implementation-Version: 0.28
+Implementation-Version: 0.28.beta5
 Implementation-Title: ArgoUML Java classfile import module
+
+Name: org/argouml/language/java/ui/SettingsTabJava.class
+Extension-name: module.language.java.ui
+Specification-Title: ArgoUML Dynamic Load Module
+Specification-Version: 0.27.1
+Specification-Vendor: University of California
+Implementation-Vendor: ArgoUML project
+Implementation-Version: 0.28.beta5
+Implementation-Title: ArgoUML settings tab for the Java generator module

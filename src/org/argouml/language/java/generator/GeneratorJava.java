@@ -1870,7 +1870,7 @@ public class GeneratorJava implements CodeGenerator, ModuleInterface {
         case AUTHOR:
             return "The ArgoUML project team";
         case VERSION:
-            return "0.28";
+            return "0.28.beta5";
         case ModuleInterface.DOWNLOADSITE:
             return "http://argouml-java.tigris.org/";
         default:
