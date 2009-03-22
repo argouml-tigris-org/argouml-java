@@ -96,11 +96,18 @@ System.err.println("Tree parser is started ");
 	  typeDefinition
  	  attribute_block
 	  method_block
+	  class_signature
 	    {  getModeller().popClassifier(); }
 	;
 
+class_signature
+    :SIGNATURE 
+    { getModeller().addClassSignature(ParserUtils.convertClassSignature(#SIGNATURE.getText())); }
+    ;
+
 magic_number
 	: MAGIC 
+    {System.err.println("MAGIC "+#MAGIC.getText());}
 	;
 
 version_number
@@ -112,6 +119,7 @@ typeDefinition
   short modifiers=0;
   String class_name=null;
   String superclass_name=null;
+  String classSignature = null;
   List<String> interfaces = new ArrayList<String>();
 }
 	: #( INTERFACE_DEF 
@@ -126,7 +134,8 @@ typeDefinition
 	  | 
           #( CLASS_DEF 
              modifiers=access_modifiers 
-             class_name=class_info 
+             class_name=class_info
+              
              #(EXTENDS_CLAUSE superclass_name=class_info) 
              #(IMPLEMENTS_CLAUSE interface_block[interfaces])
            )
@@ -135,6 +144,8 @@ typeDefinition
 		   superclass_name=null;  
 	       }
                getModeller().addComponent();
+               
+               
 	       getModeller().addClass( splitPackageFromClass(class_name), modifiers, superclass_name, interfaces, null);
 	     }
 	;

@@ -31,7 +31,12 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.DataInputStream;
 import java.io.FileInputStream;
+<<<<<<< .mine
 import java.io.Serializable;
+import java.util.ArrayList;
+=======
+import java.io.Serializable;
+>>>>>>> .r166
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -46,6 +51,8 @@ import org.argouml.model.CoreHelper;
 import org.argouml.model.Model;
 import org.argouml.profile.Profile;
 import org.argouml.profile.init.InitProfileSubsystem;
+import org.omg.uml.foundation.core.ModelElement;
+import org.omg.uml.foundation.core.TemplateParameter;
 
 public class TestClassImportGenerics extends TestCase {
 
@@ -71,7 +78,6 @@ public class TestClassImportGenerics extends TestCase {
             ClassfileParser parser = new ClassfileParser(lexer);
             parser.classfile();
             CommonAST t = (CommonAST) parser.getAST();
-
             for (Profile profile : project.getProfileConfiguration().getProfiles()) {
                 if ("Java".equals(profile.getDisplayName())) {
                     System.err.println("profile is " + profile.getDisplayName());
@@ -80,13 +86,9 @@ public class TestClassImportGenerics extends TestCase {
             }
             parsedModel = Model.getModelManagementFactory().createModel();
             assertNotNull("Creation of model failed.", parsedModel);
-
             Modeller modeller =
                     new Modeller(parsedModel, profileJava, true, true, "build/tests/classes/org/argouml/language/java/reveng/TestClassImportGenerics$TestedClass.class");
             assertNotNull("Creation of Modeller instance failed.", modeller);
-
-
-
             ClassfileTreeParser p = new ClassfileTreeParser();
             p.classfile(parser.getAST(), modeller);
 
@@ -103,24 +105,34 @@ public class TestClassImportGenerics extends TestCase {
                         Model.getFacade().lookupIn(parsedPackage, "TestClassImportGenerics$TestedClass");
                 assertNotNull("No class \"TestClassImportGenerics$TestedClass\" found.", parsedClass);
             }
-            Collection attributes = Model.getFacade().getAttributes(parsedClass);
-            assertNotNull("No attributes found in class.", attributes);
-            assertEquals("Number of attributes is wrong", 3, attributes.size());
-            Object attribute = null;
-            Iterator iter = attributes.iterator();
-            while (iter.hasNext()) {
-                attribute = iter.next();
-                CoreHelper h = Model.getCoreHelper();
-                assertTrue("The attribute should be recognized as an attribute.",
-                        Model.getFacade().isAAttribute(attribute));
-            //Object attribType = Model.getFacade().getType(attribute);
+            ModelElement element = (ModelElement)parsedClass;
+            for (TemplateParameter p2 : element.getTemplateParameter()) {
+            	String name = p2.getParameter().getName();
+            	System.err.println("name found:"+name);
             }
+//            Collection attributes = Model.getFacade().getAttributes(parsedClass);
+//            assertNotNull("No attributes found in class.", attributes);
+//            assertEquals("Number of attributes is wrong", 3, attributes.size());
+//            Object attribute = null;
+//            Iterator iter = attributes.iterator();
+//            while (iter.hasNext()) {
+//                attribute = iter.next();
+//                CoreHelper h = Model.getCoreHelper();
+//                assertTrue("The attribute should be recognized as an attribute.",
+//                        Model.getFacade().isAAttribute(attribute));
+//            //Object attribType = Model.getFacade().getType(attribute);
+//            }
         } catch (Exception e) {
             e.printStackTrace();
             fail(e.toString());
         }
     }
 
+<<<<<<< .mine
+    public static class TestedClass<X extends List<String>&Comparable<X>, Y extends ArrayList<Integer>> {
+     }
+    
+=======
     public static class TestedClass<T extends Number, E>  {
 
         private String arg1;
@@ -148,6 +160,7 @@ public class TestClassImportGenerics extends TestCase {
 
     }
     
+>>>>>>> .r166
     private static final String SHOW_CLASS="build/tests/classes/org/argouml/language/java/reveng/TestClassImportGenerics$TestedClass.class";
 
     public static void main(String[] args) throws Exception {
@@ -166,4 +179,32 @@ public class TestClassImportGenerics extends TestCase {
         });
         frame.setVisible(true);
     }
+    
+//  CoreFactory
+//    buildTemplateArgument
+//    buildBinding
+//
+//  CoreHelper
+//    addTemplateArgument
+//    addTemplateParameter
+//    setDefaultElement
+//    setParameter
+//    removeTemplateArgument
+//    removeTemplateParameter
+//
+//  Façade
+//    getArguments
+//    getBinding
+//    getDefaultElement
+//    getModelElement (updated, not new)
+//    getParameter
+//    getTemplate
+//    getTemplateParameters
+//
+//  For code generation it would be useful to have a helper which applied the
+//  arguments to the template, applied any necessary defaults, and provided access
+//  to fully resolved elements, but for modeling purposes I *think* that in most
+//  cases the user will want to deal with things discretely (ie the template and the
+//  parameterized element separately).
+//
 }

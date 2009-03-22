@@ -313,7 +313,7 @@ engineering of Java code and support for built-in types and standard libraries.
     <echo message="--- Executing ${Name} ---"/>
     <java classname="org.argouml.application.Main"
           fork="yes">
-      <sysproperty key="log4j.configuration" value="org/argouml/resource/full_console.lcf"/>
+      <sysproperty key="log4j.configuration" value="org/argouml/resource/warn_console.lcf"/>
       <classpath>
         <fileset dir="${module.build.dir}">
             <include name="${module.jarfile.name}" />
@@ -457,7 +457,12 @@ engineering of Java code and support for built-in types and standard libraries.
       <formatter type="xml"/>
       <batchtest todir="${module.tests.reports}">
         <fileset dir="${module.tests.src}">
-          <include name="org/argouml/**/TestParserUtils.java"/>
+            <include name="org/argouml/**/TestClassImportGenerics.java"/>
+        	<!--
+            <include name="org/argouml/**/TestJavaImportClass.java"/>
+            <include name="org/argouml/**/TestClassImportGenerics.java"/>
+            <include name="org/argouml/**/TestParserUtils.java"/>
+            -->
         </fileset>
       </batchtest>
     </junit>
