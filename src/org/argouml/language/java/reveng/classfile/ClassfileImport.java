@@ -403,7 +403,7 @@ public class ClassfileImport implements ImportInterface {
         case DESCRIPTION:
             return "Java import from class or jar files";
         case VERSION:
-            return "0.28.beta5";
+            return "0.28";
         case ModuleInterface.DOWNLOADSITE:
             return "http://argouml-java.tigris.org/";
         default:

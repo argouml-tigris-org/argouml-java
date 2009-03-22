@@ -266,7 +266,7 @@ public class JavaImport implements ImportInterface {
         case AUTHOR:
             return "The ArgoUML project team";
         case VERSION:
-            return "0.28.beta5";
+            return "0.28";
         case ModuleInterface.DOWNLOADSITE:
             return "http://argouml-java.tigris.org/";
         default:
