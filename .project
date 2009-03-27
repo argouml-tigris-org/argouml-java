@@ -3,7 +3,6 @@
 	<name>argouml-module-java</name>
 	<comment></comment>
 	<projects>
-		<project>argouml</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
