@@ -164,9 +164,6 @@ public class JavaImportSettings {
         settingsList = new ArrayList<SettingsTypes.Setting>();
 
         // Settings from ConfigPanelExtension
-
-        // TODO: These properties should move out of the core into someplace
-        // specific to the Java importer
         List<String> options = new ArrayList<String>();
         options.add(Translator.localize("action.import-java-UML-attr"));
         options.add(Translator.localize("action.import-java-UML-assoc"));
@@ -214,10 +211,14 @@ public class JavaImportSettings {
      * Saves the settings in the configuration.
      */
     public void saveSettings() {
-        Configuration.setString(KEY_IMPORT_EXTENDED_MODEL_ATTR, String
+        if (attributeSetting != null) {
+            Configuration.setString(KEY_IMPORT_EXTENDED_MODEL_ATTR, String
                 .valueOf(attributeSetting.getSelection()));
-        Configuration.setString(KEY_IMPORT_EXTENDED_MODEL_ARRAYS, String
+        }
+        if (datatypeSetting != null) {
+            Configuration.setString(KEY_IMPORT_EXTENDED_MODEL_ARRAYS, String
                 .valueOf(datatypeSetting.getSelection()));
+        }
     }
 
 }
