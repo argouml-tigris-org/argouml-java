@@ -149,6 +149,9 @@ public class JavaImportSettings {
      * @return the path list
      */
     public List<String> getPathList() {
+        if (pathlistSetting == null) {
+            return new ArrayList<String>();
+        }
         return pathlistSetting.getPathList();
     }
 
