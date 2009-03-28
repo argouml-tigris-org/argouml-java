@@ -105,7 +105,6 @@ public class TestParserUtils extends TestCase {
                 ParserUtils.convertFieldTypeSignature("Ljava/lang/Map<[B[[Ljava/lang/Map<TE;TE;>;>.Inner<Ld.inner;>.Inner2;"));
     }
 
-<<<<<<< .mine
     public void testConvertClassTypeSignature() {
         assertEquals("java.lang.Object",
                 ParserUtils.convertClassTypeSignature("Ljava/lang/Object;"));
@@ -129,27 +128,4 @@ public class TestParserUtils extends TestCase {
                 ParserUtils.convertMethodTypeSignature("(TE;Ljava/lang/Integer;)Ljava/lang/String;^Ljava/lang/Exception;^TT;"));
     }
     
-=======
-    public void testConvertClassTypeSignature() {
-        assertEquals("java.lang.Object",
-                ParserUtils.convertClassTypeSignature("Ljava/lang/Object;"));
-    }
-    
-    public void testConvertClassSignature() {
-        assertEquals("<T extends java.lang.Number,E extends java.lang.Object> extends java.lang.Object implements java.lang.Comparable,java.lang.Serializable",
-                ParserUtils.convertClassSignature("<T:Ljava/lang/Number;E:Ljava/lang/Object;>Ljava/lang/Object;Ljava/lang/Comparable;Ljava/lang/Serializable;"));
-        assertEquals("<T extends java.lang.Number & java.lang.Comparable> extends java.lang.Object implements java.lang.Comparable,java.lang.Serializable",
-                ParserUtils.convertClassSignature("<T:Ljava/lang/Number;:Ljava/lang/Comparable;>Ljava/lang/Object;Ljava/lang/Comparable;Ljava/lang/Serializable;"));
-        assertEquals("<T extends java.lang.Number & java.lang.Comparable & java.lang.Serializable> extends java.lang.Object implements java.lang.Comparable,java.lang.Serializable",
-                ParserUtils.convertClassSignature("<T:Ljava/lang/Number;:Ljava/lang/Comparable;:Ljava/lang/Serializable;>Ljava/lang/Object;Ljava/lang/Comparable;Ljava/lang/Serializable;"));
-    }
-    
-    public void testConvertMethodTypeSignature() {
-        assertEquals("() return void",
-                ParserUtils.convertMethodTypeSignature("()V"));
-        assertEquals("(E,java.lang.Integer) return java.lang.String throws java.lang.Exception,T",
-                ParserUtils.convertMethodTypeSignature("(TE;Ljava/lang/Integer;)Ljava/lang/String;^Ljava/lang/Exception;^TT;"));
-    }
-    
->>>>>>> .r166
 }
