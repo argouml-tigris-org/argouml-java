@@ -304,14 +304,14 @@ package org.argouml.language.java.reveng;
      * Updates the last parsed javadoc comment.
      */
     private void updateJavadocComment() {
-        Token t = null;
         int i = input.index();
         if (i == 0) {
             return;
         }
-        do {
+        Token t = (Token)input.get(--i);
+        while (i > 0 && t.getType()== _lexer.WS) {
             t = (Token)input.get(--i);
-        } while (i >= 0 && t.getType()== _lexer.WS);
+        }
         if (t.getType() == _lexer.JAVADOC) {
             _javadocComment = t.getText();
         }
