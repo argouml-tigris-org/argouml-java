@@ -845,6 +845,7 @@ public class GeneratorJava implements CodeGenerator, ModuleInterface {
 		sb.append(" ").append(Model.getFacade().getName(cls));
 		sb.append(LINE_SEPARATOR);
             }
+    		sb.append(LINE_SEPARATOR);
             sb.append("}");
         }
         return sb;

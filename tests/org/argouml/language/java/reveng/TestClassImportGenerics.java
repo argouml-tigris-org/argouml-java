@@ -31,12 +31,8 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.DataInputStream;
 import java.io.FileInputStream;
-<<<<<<< .mine
 import java.io.Serializable;
 import java.util.ArrayList;
-=======
-import java.io.Serializable;
->>>>>>> .r166
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -128,39 +124,8 @@ public class TestClassImportGenerics extends TestCase {
         }
     }
 
-<<<<<<< .mine
     public static class TestedClass<X extends List<String>&Comparable<X>, Y extends ArrayList<Integer>> {
      }
-    
-=======
-    public static class TestedClass<T extends Number, E>  {
-
-        private String arg1;
-        private T arg2;
-        private Inner<String,  ? extends Throwable> arg3;
-
-        public List method_1() {
-            return null;
-        }
-        public List<T> method_2(Inner<String, List> arg3) throws IllegalStateException, IllegalArgumentException {
-            return null;
-        }
-
-        public class Inner<S extends Comparable<S>, E> {
-           T getT() { return null;}
-           S getS() { return null;}
-        }
-
-        <M extends Throwable & Comparable & Serializable> void cloakException(Throwable e) throws M {
-        	  throw (M) e;
-       	}
-
-        <M> void method3(M arg) {
-       	}
-
-    }
-    
->>>>>>> .r166
     private static final String SHOW_CLASS="build/tests/classes/org/argouml/language/java/reveng/TestClassImportGenerics$TestedClass.class";
 
     public static void main(String[] args) throws Exception {

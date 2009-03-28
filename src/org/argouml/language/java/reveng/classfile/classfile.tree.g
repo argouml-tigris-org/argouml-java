@@ -88,9 +88,7 @@ options {
 
 // A entire classfile
 classfile[org.argouml.language.java.reveng.Modeller modeller] 
-{ setModeller(modeller);
-System.err.println("Tree parser is started ");
-}
+{ setModeller(modeller); }
 	: magic_number
 	  version_number
 	  typeDefinition
@@ -180,7 +178,6 @@ attribute_info
        )
   	    { // Add the attribute to the model element, that holds
 	      // the class/interface info.
-System.err.println("parsing attribute "+#IDENT.getText()+" with signature="+signature);
 	      getModeller().addAttribute( ((ShortAST)#ACCESS_MODIFIERS).getShortValue(), 
 					  #TYPE.getText(),
 					  #IDENT.getText(),
@@ -220,7 +217,6 @@ methodDecl
         (SIGNATURE {signature = #SIGNATURE.getText();})?
        )
 	  {
-System.err.println("parsing method "+#IDENT.getText()+" with signature="+signature);
 	    getModeller().addOperation( ((ShortAST)#ACCESS_MODIFIERS).getShortValue(),
 					#TYPE.getText(),
 					#IDENT.getText(),

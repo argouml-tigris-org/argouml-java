@@ -1,4 +1,3 @@
-// $Id$
 // Copyright (c) 2003-2008 The Regents of the University of California. All
 // Rights Reserved. Permission to use, copy, modify, and distribute this
 // software and its documentation without fee, and without a written
@@ -364,30 +363,12 @@ public class Modeller {
     */
     public void addClassSignature(String signature) {
     	Object classifier = parseState.getClassifier();
-    	System.err.println("classifier:"+classifier.getClass().getName());
         JavaLexer lexer = new JavaLexer(new ANTLRStringStream(signature));
        	CommonTokenStream tokens = new CommonTokenStream(lexer);
         JavaParser parser = new JavaParser(tokens);
         try {
 			List<String> typeParameters = parser.typeParameters();
-			for (int index = 0; index < typeParameters.size(); index++) {
-				String parameter = typeParameters.get(index);
-				TemplateParameter t = (TemplateParameter) Model.getCoreFactory().createTemplateParameter();
-				DataType d = (DataType) Model.getCoreFactory().createDataType();
-				d.setName(parameter);
-				t.setParameter(d);
-				Model.getCoreHelper().addTemplateParameter(classifier, t);
-				System.err.println("params:"+parameter);
-				//buildTaggedValue(, "type_parameter_"+index, new String[]{parameter});
-				//ModelElement cls = (ModelElement)classifier;
-				
-				
-				Stereotype st = (Stereotype) Model.getExtensionMechanismsFactory().buildStereotype("TypeParameter", classifier);
-				TagDefinition df =(TagDefinition) Model.getExtensionMechanismsFactory().
-					buildTagDefinition("type_parameter_"+index, st, null);
-				TaggedValue value =(TaggedValue) Model.getExtensionMechanismsFactory().buildTaggedValue(df, new String[]{parameter});
-				Model.getExtensionMechanismsHelper().addTaggedValue(df, value);
-			}
+			addTypeParameters(classifier, typeParameters);
 		} catch (RecognitionException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -635,7 +616,7 @@ public class Modeller {
         if (interfaces != null) {
             addInterfaces(mClass, interfaces, forceIt);
         }
-    }
+  }
 
     /**
      * Called from the parser when an anonymous inner class is found.
@@ -951,9 +932,17 @@ public class Modeller {
         // TODO: Placeholder.  Can we use popClassifier here?
     }
     
-    void addTypeParameters() {
-        // TODO: Not implemented
-        logError("Unsupported Java 5 type parameters", "");
+    void addTypeParameters(Object modelElement, List<String> typeParameters) {
+    	if (Model.getFacade().getTemplateParameters(modelElement).size() == 0) {
+    		for (int index = 0; index < typeParameters.size(); index++) {
+    			String parameter = typeParameters.get(index);
+    			TemplateParameter t = (TemplateParameter) Model.getCoreFactory().createTemplateParameter();
+    			DataType d = (DataType) Model.getCoreFactory().createDataType();
+    			d.setName(parameter);
+    			t.setParameter(d);
+    			Model.getCoreHelper().addTemplateParameter(modelElement, t);
+    		}
+    	}
     }
     
     /**
@@ -1033,7 +1022,7 @@ public class Modeller {
         if (getLevel() <= 0) {
             addDocumentationTag(mClassifier, javadoc);
         }
-
+      	addTypeParameters(mClassifier, typeParameters);
         return mClassifier;
     }
     

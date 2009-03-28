@@ -540,9 +540,6 @@ normalClassDeclaration[String javadoc, short modifiers]
 typeParameters returns [List<String> names = new ArrayList<String>()]
     @init{
         int currentLtLevel = ltCounter;
-        if (getModeller() != null) {
-        	getModeller().addTypeParameters();
-       	}
     }
     :
         '<'                  { ltCounter++; }
@@ -1002,7 +999,7 @@ classOrInterfaceType returns [String t = null]
             (ta=typeArguments)?
         )*
         {
-            t = sb.toString()+$ta.text;
+            t = sb.toString()+($ta.text != null ? $ta.text : "");
         }
     ;
 
