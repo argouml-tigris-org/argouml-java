@@ -77,7 +77,7 @@ public class ActionRESequenceDiagram extends AbstractAction {
         final Object target = TargetManager.getInstance().getTarget();
         if (Model.getFacade().isAOperation(target)) {
             RESequenceDiagramDialog dialog =
-                new RESequenceDiagramDialog(project, target);
+                new RESequenceDiagramDialog(target);
             dialog.setVisible(true);
         } else if (Model.getFacade().isAMessage(target) && messageFig != null) {
             final Object action = Model.getFacade().getAction(target);
@@ -98,7 +98,6 @@ public class ActionRESequenceDiagram extends AbstractAction {
                 // TODO: There is a cyclic dependency between
                 // ActionRESequenceDiagram and FigMessage
                 RESequenceDiagramDialog dialog = new RESequenceDiagramDialog(
-                        project,
                         operation,
                         (FigMessage) messageFig,
                         diagram);
@@ -138,7 +137,6 @@ public class ActionRESequenceDiagram extends AbstractAction {
                             // ActionRESequenceDiagram and FigMessage
                             RESequenceDiagramDialog dialog =
                                 new RESequenceDiagramDialog(
-                                        project,
                                         operation,
                                         (FigMessage) messageFig,
                                         diagram);

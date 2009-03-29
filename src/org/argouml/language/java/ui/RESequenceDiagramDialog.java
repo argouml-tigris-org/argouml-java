@@ -57,6 +57,7 @@ import org.antlr.runtime.CommonTokenStream;
 import org.apache.log4j.Logger;
 import org.argouml.i18n.Translator;
 import org.argouml.kernel.Project;
+import org.argouml.kernel.ProjectManager;
 import org.argouml.language.java.reveng.JavaLexer;
 import org.argouml.language.java.reveng.JavaParser;
 import org.argouml.language.java.reveng.Modeller;
@@ -149,11 +150,10 @@ public class RESequenceDiagramDialog
      * Constructor. A new sequence diagram will be created and the work
      * happens in that new sequence diagram.
      *
-     * @param aProject The project this dialog is acting within
      * @param oper The operation that should be reverse engineered.
      */
-    public RESequenceDiagramDialog(Project aProject, Object oper) {
-        this(aProject, oper, null, null);
+    public RESequenceDiagramDialog(Object oper) {
+        this(oper, null, null);
     }
 
     /**
@@ -161,13 +161,11 @@ public class RESequenceDiagramDialog
      * the actual diagram is a sequence diagram, so no new one is created and
      * the work happens in the actual sequence diagram.
      *
-     * @param aProject The project this dialog is acting within
      * @param oper The operation that should be reverse engineered.
      * @param figMessage the message figure where the result will be drawn to
      * @param aDiagram the diagram to draw to or null is a new diagram required
      */
     public RESequenceDiagramDialog(
-            final Project aProject,
             final Object oper,
             final FigMessage figMessage,
             final ArgoDiagram aDiagram) {
@@ -183,7 +181,7 @@ public class RESequenceDiagramDialog
                 ArgoDialog.OK_CANCEL_OPTION,
                 true);
         setResizable(false);
-        project = aProject;
+        project = ProjectManager.getManager().getCurrentProject();
 
         operation = oper;
         model = project.getUserDefinedModelList().get(0);
