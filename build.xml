@@ -131,6 +131,7 @@ engineering of Java code and support for built-in types and standard libraries.
 
     <path id="module.compile.classpath">
         <pathelement location="${argo.build.dir}/argouml.jar"/>
+        <pathelement location="${argo.build.dir}/ext/argouml-diagrams-sequence.jar"/>
         <pathelement location="${antlrall.jar.path}"/>
         <pathelement location="${antlr2.jar.path}"/>
         <pathelement location="${argo.build.dir}/argouml-model.jar"/>
