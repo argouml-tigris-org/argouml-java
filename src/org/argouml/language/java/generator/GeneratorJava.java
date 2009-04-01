@@ -54,6 +54,8 @@ import org.argouml.uml.generator.GeneratorManager;
 import org.argouml.uml.generator.Language;
 import org.argouml.uml.generator.TempFileUtils;
 import org.argouml.uml.reveng.ImportInterface;
+import org.omg.uml.foundation.core.ModelElement;
+import org.omg.uml.foundation.core.TemplateParameter;
 
 import tudresden.ocl.OclTree;
 import tudresden.ocl.parser.analysis.DepthFirstAdapter;
@@ -782,7 +784,22 @@ public class GeneratorJava implements CodeGenerator, ModuleInterface {
         // add classifier keyword and classifier name
         sb.append(sClassifierKeyword).append(" ");
 	sb.append(generateName(Model.getFacade().getName(cls)));
-
+		// add type parameters
+	ModelElement element = (ModelElement)cls;
+	List<TemplateParameter> templateParameters = element.getTemplateParameter();
+		for (int i = 0; i < templateParameters.size(); i++) {
+			if (i == 0) {
+				sb.append("<");
+			}
+			sb.append(templateParameters.get(i).getParameter().getName());
+			if (i ==  templateParameters.size() - 1 ) {
+				sb.append(">");
+			} else {
+				sb.append(", ");
+			}
+		}
+	
+		
         // add base class/interface
         String baseClass =
 	    generateGeneralization(Model.getFacade().getGeneralizations(cls));
@@ -828,6 +845,7 @@ public class GeneratorJava implements CodeGenerator, ModuleInterface {
 		sb.append(" ").append(Model.getFacade().getName(cls));
 		sb.append(LINE_SEPARATOR);
             }
+    		sb.append(LINE_SEPARATOR);
             sb.append("}");
         }
         return sb;
