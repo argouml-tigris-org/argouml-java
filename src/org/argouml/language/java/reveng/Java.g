@@ -540,7 +540,6 @@ normalClassDeclaration[String javadoc, short modifiers]
 typeParameters returns [List<String> names = new ArrayList<String>()]
     @init{
         int currentLtLevel = ltCounter;
-        getModeller().addTypeParameters();
     }
     :
         '<'                  { ltCounter++; }
@@ -994,14 +993,13 @@ classOrInterfaceType returns [String t = null]
     @init{
         StringBuffer sb = new StringBuffer();
         // TODO: type arguments not currently returned
-        List<String> ta = null;
     }
-    :   t1=Identifier (typeArguments)?    { sb.append($t1.text); }
+    :   t1=Identifier (ta=typeArguments)?    { sb.append($t1.text); }
         (   '.' t3=Identifier { sb.append('.').append($t3.text); }
             (ta=typeArguments)?
         )*
         {
-            t = sb.toString();
+            t = sb.toString()+($ta.text != null ? $ta.text : "");
         }
     ;
 

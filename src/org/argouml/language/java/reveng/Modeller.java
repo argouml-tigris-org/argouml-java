@@ -1,4 +1,3 @@
-// $Id$
 // Copyright (c) 2003-2008 The Regents of the University of California. All
 // Rights Reserved. Permission to use, copy, modify, and distribute this
 // software and its documentation without fee, and without a written
@@ -34,9 +33,13 @@ import java.util.List;
 import java.util.Stack;
 import java.util.StringTokenizer;
 
+import org.antlr.runtime.ANTLRStringStream;
+import org.antlr.runtime.CommonTokenStream;
+import org.antlr.runtime.RecognitionException;
 import org.apache.log4j.Logger;
 import org.argouml.application.api.Argo;
 import org.argouml.kernel.ProjectManager;
+import org.argouml.language.java.reveng.classfile.ParserUtils;
 import org.argouml.model.CoreFactory;
 import org.argouml.model.Facade;
 import org.argouml.model.Model;
@@ -44,6 +47,12 @@ import org.argouml.ocl.OCLUtil;
 import org.argouml.profile.Profile;
 import org.argouml.uml.reveng.ImportCommon;
 import org.argouml.uml.reveng.ImportInterface;
+import org.omg.uml.foundation.core.DataType;
+import org.omg.uml.foundation.core.ModelElement;
+import org.omg.uml.foundation.core.Stereotype;
+import org.omg.uml.foundation.core.TagDefinition;
+import org.omg.uml.foundation.core.TaggedValue;
+import org.omg.uml.foundation.core.TemplateParameter;
 
 /**
  * Modeller maps Java source code(parsed/recognised by ANTLR) to UML model
@@ -335,6 +344,36 @@ public class Modeller {
     public void addImport(String name) {
         addImport(name, false);
     }
+    /*
+     * ClassSignature: TypeParametersopt Superopt Interfacesopt
+
+    TypeParameters ::= < TypeParameterList >
+	TypeParameterList  ::= TypeParameterList , TypeParameter
+            | TypeParameter
+
+    TypeParameter:
+    	   TypeVariable TypeBoundopt
+    	TypeBound:
+    	   extends ClassOrInterfaceType AdditionalBoundListopt
+    	AdditionalBoundList:
+    	   AdditionalBound AdditionalBoundList
+    	   AdditionalBound
+    	AdditionalBound:
+    	   & InterfaceType
+    */
+    public void addClassSignature(String signature) {
+    	Object classifier = parseState.getClassifier();
+        JavaLexer lexer = new JavaLexer(new ANTLRStringStream(signature));
+       	CommonTokenStream tokens = new CommonTokenStream(lexer);
+        JavaParser parser = new JavaParser(tokens);
+        try {
+			List<String> typeParameters = parser.typeParameters();
+			addTypeParameters(classifier, typeParameters);
+		} catch (RecognitionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
     
     /**
      * Called from the parser when an import clause is found.
@@ -519,6 +558,9 @@ public class Modeller {
         if (typeParameters != null && typeParameters.size() > 0) {
             logError("type parameters not supported on Class", 
                     name);
+            for (String s : typeParameters) {
+            	logError("type parameter ",s);
+            }
         }
         Object mClass =
             addClassifier(Model.getCoreFactory().createClass(),
@@ -576,7 +618,7 @@ public class Modeller {
         if (interfaces != null) {
             addInterfaces(mClass, interfaces, forceIt);
         }
-    }
+  }
 
     /**
      * Called from the parser when an anonymous inner class is found.
@@ -895,9 +937,18 @@ public class Modeller {
         // TODO: Placeholder.  Can we use popClassifier here?
     }
     
-    void addTypeParameters() {
-        // TODO: Not implemented
-        logError("Unsupported Java 5 type parameters", "");
+    void addTypeParameters(Object modelElement, List<String> typeParameters) {
+    	if (Model.getFacade().getTemplateParameters(modelElement).size() == 0) {
+    		for (int index = 0; index < typeParameters.size(); index++) {
+    			String parameter = typeParameters.get(index);
+    			TemplateParameter t = (TemplateParameter) Model.getCoreFactory().createTemplateParameter();
+    			DataType d = (DataType) Model.getCoreFactory().createDataType();
+    			d.setName(parameter);
+    			t.setParameter(d);
+    			t.setTemplate((ModelElement)modelElement);
+    			Model.getCoreHelper().addTemplateParameter(modelElement, t);
+    		}
+    	}
     }
     
     /**
@@ -977,7 +1028,7 @@ public class Modeller {
         if (getLevel() <= 0) {
             addDocumentationTag(mClassifier, javadoc);
         }
-
+      	addTypeParameters(mClassifier, typeParameters);
         return mClassifier;
     }
     
