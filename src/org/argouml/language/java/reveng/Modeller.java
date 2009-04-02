@@ -885,6 +885,9 @@ public class Modeller {
     }
 
     void addTypeParameters(Object modelElement, List<String> typeParameters) {
+        if (modelElement == null || typeParameters == null) {
+            return;
+        }
         if (Model.getFacade().getTemplateParameters(modelElement).size() == 0) {
             for (String parameter : typeParameters) {
                 Object templateParam = Model.getCoreFactory()
