@@ -1,3 +1,26 @@
+// $Id$
+// Copyright (c) 1996-2006 The Regents of the University of California. All
+// Rights Reserved. Permission to use, copy, modify, and distribute this
+// software and its documentation without fee, and without a written
+// agreement is hereby granted, provided that the above copyright notice
+// and this paragraph appear in all copies.  This software program and
+// documentation are copyrighted by The Regents of the University of
+// California. The software program and documentation are supplied "AS
+// IS", without any accompanying services from The Regents. The Regents
+// does not warrant that the operation of the program will be
+// uninterrupted or error-free. The end-user understands that the program
+// was developed for research purposes and is advised not to rely
+// exclusively on the program for any reason.  IN NO EVENT SHALL THE
+// UNIVERSITY OF CALIFORNIA BE LIABLE TO ANY PARTY FOR DIRECT, INDIRECT,
+// SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES, INCLUDING LOST PROFITS,
+// ARISING OUT OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF
+// THE UNIVERSITY OF CALIFORNIA HAS BEEN ADVISED OF THE POSSIBILITY OF
+// SUCH DAMAGE. THE UNIVERSITY OF CALIFORNIA SPECIFICALLY DISCLAIMS ANY
+// WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+// MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE SOFTWARE
+// PROVIDED HEREUNDER IS ON AN "AS IS" BASIS, AND THE UNIVERSITY OF
+// CALIFORNIA HAS NO OBLIGATIONS TO PROVIDE MAINTENANCE, SUPPORT,
+// UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 // Copyright (c) 2003-2008 The Regents of the University of California. All
 // Rights Reserved. Permission to use, copy, modify, and distribute this
 // software and its documentation without fee, and without a written
@@ -47,18 +70,17 @@ import org.argouml.profile.Profile;
 import org.argouml.uml.reveng.ImportCommon;
 import org.argouml.uml.reveng.ImportInterface;
 
-
 /**
  * Modeller maps Java source code(parsed/recognised by ANTLR) to UML model
- * elements, it applies some of the semantics in JSR-26.  Note: JSR-26 was
- * withdrawn in March, 2004, so it obviously provides no guidance for
- * more recent language features such as Java 5.
- *
- * TODO: This really needs a more sophisticated symbol table facility.  It
- * currently uses the model repository as its symbol table which makes it
- * easy to merge into an existing model, but it also sometimes requires 
- * guessing about what a symbol represents (e.g. interface, class, or package)
- * so that the name can instantiated in a concrete form. - tfm 20070911
+ * elements, it applies some of the semantics in JSR-26. Note: JSR-26 was
+ * withdrawn in March, 2004, so it obviously provides no guidance for more
+ * recent language features such as Java 5.
+ * 
+ * TODO: This really needs a more sophisticated symbol table facility. It
+ * currently uses the model repository as its symbol table which makes it easy
+ * to merge into an existing model, but it also sometimes requires guessing
+ * about what a symbol represents (e.g. interface, class, or package) so that
+ * the name can instantiated in a concrete form. - tfm 20070911
  * 
  * @author Marcus Andersson, Thomas Neustupny
  */
@@ -67,8 +89,9 @@ public class Modeller {
     private static final Logger LOG = Logger.getLogger(Modeller.class);
 
     private static final String JAVA_PACKAGE = "java.lang";
-    private static final List<String> EMPTY_STRING_LIST = 
-        Collections.emptyList();
+
+    private static final List<String> EMPTY_STRING_LIST = Collections
+            .emptyList();
 
     /**
      * Current working model.
@@ -118,8 +141,7 @@ public class Modeller {
     /**
      * Arbitrary attributes.
      */
-    private Hashtable<String, Object> attributes = 
-        new Hashtable<String, Object>();
+    private Hashtable<String, Object> attributes = new Hashtable<String, Object>();
 
     /**
      * List of the names of parsed method calls.
@@ -130,38 +152,34 @@ public class Modeller {
      * HashMap of parsed local variables. Indexed by variable name with string
      * representation of the type stored as the value.
      */
-    private Hashtable<String, String> localVariables = 
-        new Hashtable<String, String>();
+    private Hashtable<String, String> localVariables = new Hashtable<String, String>();
 
     /**
-     * New model elements that were created during this
-     * reverse engineering session.
-     * TODO: We want a stronger type here, but ArgoUML treats all elements
-     * as just simple Objects.
+     * New model elements that were created during this reverse engineering
+     * session. TODO: We want a stronger type here, but ArgoUML treats all
+     * elements as just simple Objects.
      */
     private Collection<Object> newElements;
 
     /**
-     * Flag to control generation of artificial names for associations.  If
-     * true, generate names of form "From->To".  If false, set name to null.
+     * Flag to control generation of artificial names for associations. If true,
+     * generate names of form "From->To". If false, set name to null.
      */
     private boolean generateNames = true;
-    
 
     /**
      * Create a new modeller.
      * 
      * @param theModel The model to work with.
      * @param attributeSelected true if associations should be modeled as
-     *                attributes
+     *            attributes
      * @param datatypeSelected true if arrays should be modeled as datatypes
-     *                instead of instead of using UML multiplicities
+     *            instead of instead of using UML multiplicities
      * @param theFileName the current file name
      * @deprecated for 0.27.2 by thn. Use the other constructor.
      */
     public Modeller(Object theModel, boolean attributeSelected,
-            boolean datatypeSelected,
-            String theFileName) {
+            boolean datatypeSelected, String theFileName) {
         this(theModel, null, attributeSelected, datatypeSelected, theFileName);
     }
 
@@ -171,14 +189,13 @@ public class Modeller {
      * @param theModel The model to work with.
      * @param theJavaProfile The Java profile.
      * @param attributeSelected true if associations should be modeled as
-     *                attributes
+     *            attributes
      * @param datatypeSelected true if arrays should be modeled as datatypes
-     *                instead of instead of using UML multiplicities
+     *            instead of instead of using UML multiplicities
      * @param theFileName the current file name
      */
     public Modeller(Object theModel, Profile theJavaProfile,
-            boolean attributeSelected,
-            boolean datatypeSelected,
+            boolean attributeSelected, boolean datatypeSelected,
             String theFileName) {
         model = theModel;
         javaProfile = theJavaProfile;
@@ -186,15 +203,14 @@ public class Modeller {
         arraysAsDatatype = datatypeSelected;
         currentPackage = this.model;
         newElements = new HashSet<Object>();
-        parseState =
-            new ParseState(this.model, getPackage(JAVA_PACKAGE, true));
+        parseState = new ParseState(this.model, getPackage(JAVA_PACKAGE, true));
         parseStateStack = new Stack<ParseState>();
         fileName = theFileName;
         if (javaProfile == null) {
             LOG.warn("No Java profile activated for Java source import. Why?");
         }
     }
-    
+
     /**
      * @param key the key of the attribute to get
      * @return the value of the attribute
@@ -213,29 +229,32 @@ public class Modeller {
 
     /**
      * This is a mapping from a Java compilation Unit -> a UML component.
-     * Classes are resident in a component.
-     * Imports are relationships between components and other classes
-     * / packages.<p>
-     *
-     * See JSR 26.<p>
-     *
+     * Classes are resident in a component. Imports are relationships between
+     * components and other classes / packages.
+     * <p>
+     * 
+     * See JSR 26.
+     * <p>
+     * 
      * Adding components is a little messy since there are 2 cases:
-     *
+     * 
      * <ol>
-     * <li>source file has package statement, will be added several times
-     *     since lookup in addComponent() only looks in the model since the
-     *     package namespace is not yet known.
-     *
-     * <li>source file has not package statement: component is added
-     *     to the model namespace. the is no package statement so the
-     *     lookup will always work.
-     *
+     * <li>source file has package statement, will be added several times since
+     * lookup in addComponent() only looks in the model since the package
+     * namespace is not yet known.
+     * 
+     * <li>source file has not package statement: component is added to the
+     * model namespace. the is no package statement so the lookup will always
+     * work.
+     * 
      * </ol>
-     * Therefore in the case of (1), we need to delete duplicate components
-     * in the addPackage() method.<p>
-     *
-     * In either case we need to add a package since we don't know in advance
-     * if there will be a package statement.<p>
+     * Therefore in the case of (1), we need to delete duplicate components in
+     * the addPackage() method.
+     * <p>
+     * 
+     * In either case we need to add a package since we don't know in advance if
+     * there will be a package statement.
+     * <p>
      */
     public void addComponent() {
 
@@ -253,9 +272,9 @@ public class Modeller {
             // with its class with the same name when invoking
             // Model.getFacade().lookupIn(Object,String)
             /*
-              if(fileName.endsWith(".java"))
-              fileName = fileName.substring(0, fileName.length()-5);
-            */
+             * if(fileName.endsWith(".java")) fileName = fileName.substring(0,
+             * fileName.length()-5);
+             */
 
             component = Model.getCoreFactory().createComponent();
             Model.getCoreHelper().setName(component, fileName);
@@ -271,14 +290,14 @@ public class Modeller {
 
     /**
      * Called from the parser when a package clause is found.
-     *
+     * 
      * @param name The name of the package.
      */
     public void addPackage(String name) {
         // We used to add diagrams to the project here for each package
         // but diagram creation is handled in the common code for all
         // reverse engineering modules now
-        
+
         // Find the top level package
         String ownerPackageName, currentName = name;
         ownerPackageName = getPackageName(currentName);
@@ -292,12 +311,13 @@ public class Modeller {
         // Save src_path in the upper package
         // TODO: Rework this so that we don't need importSession here.
         // perhaps move to the common import code. - tfm
-        if (importSession != null && importSession.getSrcPath() != null
-            && Model.getFacade().getTaggedValue(mPackage,
+        if (importSession != null
+                && importSession.getSrcPath() != null
+                && Model.getFacade().getTaggedValue(mPackage,
                         ImportInterface.SOURCE_PATH_TAG) == null) {
-            String[] srcPaths = {importSession.getSrcPath()};
-            buildTaggedValue(
-                mPackage, ImportInterface.SOURCE_PATH_TAG, srcPaths);
+            String[] srcPaths = { importSession.getSrcPath() };
+            buildTaggedValue(mPackage, ImportInterface.SOURCE_PATH_TAG,
+                    srcPaths);
         }
 
         // Find or create a Package model element for this package
@@ -308,15 +328,14 @@ public class Modeller {
         currentPackage = mPackage;
         parseState.addPackageContext(mPackage);
 
-        //set the namespace of the component
+        // set the namespace of the component
         // check to see if there is already a component defined:
         Object component = Model.getFacade().lookupIn(currentPackage, fileName);
 
         if (component == null) {
 
             // set the namespace of the component
-            Model.getCoreHelper().setNamespace(
-                    parseState.getComponent(),
+            Model.getCoreHelper().setNamespace(parseState.getComponent(),
                     currentPackage);
         } else {
 
@@ -325,53 +344,48 @@ public class Modeller {
             Object oldComponent = parseState.getComponent();
             Model.getUmlFactory().delete(oldComponent);
             newElements.remove(oldComponent);
-        // change the parse state to the existing one.
+            // change the parse state to the existing one.
             parseState.addComponent(component);
         }
     }
 
     /**
      * Called from the parser when an import clause is found.
-     *
+     * 
      * @param name The name of the import. Can end with a '*'.
      */
     public void addImport(String name) {
         addImport(name, false);
     }
+
     /*
      * ClassSignature: TypeParametersopt Superopt Interfacesopt
-
-    TypeParameters ::= < TypeParameterList >
-	TypeParameterList  ::= TypeParameterList , TypeParameter
-            | TypeParameter
-
-    TypeParameter:
-    	   TypeVariable TypeBoundopt
-    	TypeBound:
-    	   extends ClassOrInterfaceType AdditionalBoundListopt
-    	AdditionalBoundList:
-    	   AdditionalBound AdditionalBoundList
-    	   AdditionalBound
-    	AdditionalBound:
-    	   & InterfaceType
-    */
+     * 
+     * TypeParameters ::= < TypeParameterList > TypeParameterList ::=
+     * TypeParameterList , TypeParameter | TypeParameter
+     * 
+     * TypeParameter: TypeVariable TypeBoundopt TypeBound: extends
+     * ClassOrInterfaceType AdditionalBoundListopt AdditionalBoundList:
+     * AdditionalBound AdditionalBoundList AdditionalBound AdditionalBound: &
+     * InterfaceType
+     */
     public void addClassSignature(String signature) {
-    	Object classifier = parseState.getClassifier();
+        Object classifier = parseState.getClassifier();
         JavaLexer lexer = new JavaLexer(new ANTLRStringStream(signature));
-       	CommonTokenStream tokens = new CommonTokenStream(lexer);
+        CommonTokenStream tokens = new CommonTokenStream(lexer);
         JavaParser parser = new JavaParser(tokens);
         try {
-			List<String> typeParameters = parser.typeParameters();
-			addTypeParameters(classifier, typeParameters);
-		} catch (RecognitionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+            List<String> typeParameters = parser.typeParameters();
+            addTypeParameters(classifier, typeParameters);
+        } catch (RecognitionException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
-    
+
     /**
      * Called from the parser when an import clause is found.
-     *
+     * 
      * @param name The name of the import. Can end with a '*'.
      * @param forceIt Force addition by creating all that's missing.
      */
@@ -382,7 +396,7 @@ public class Modeller {
         }
 
         String packageName = getPackageName(name);
-        
+
         if (packageName == null) {
             // TODO: This won't happen and can be removed when there is a
             // real symbol table for name lookup instead of guessing based
@@ -390,7 +404,7 @@ public class Modeller {
             LOG.warn("Import skipped - unable to get package name for " + name);
             return;
         }
-        
+
         // TODO: In the case of an inner class, we probably want either the
         // qualified name with both outer and inner class names, or just the
         // outer class name
@@ -407,22 +421,20 @@ public class Modeller {
         else {
             Object mClassifier = null;
             try {
-                mClassifier =
-                    (new PackageContext(null, mPackage)).get(classifierName,
-                            false, javaProfile);
+                mClassifier = (new PackageContext(null, mPackage)).get(
+                        classifierName, false, javaProfile);
             } catch (ClassifierNotFoundException e) {
                 if (forceIt && classifierName != null && mPackage != null) {
                     // call getPackage again WITHOUT Java profile, because
                     // class creation is only allowed in the user model
-                    mPackage = (packageName.length() > 0) 
-                            ? getPackage(packageName, false)
-                            : model;
+                    mPackage = (packageName.length() > 0) ? getPackage(
+                            packageName, false) : model;
                     // a last chance: maybe it's in this user model package:
                     mClassifier = Model.getFacade().lookupIn(mPackage,
                             classifierName);
                     if (mClassifier == null) {
                         // we must guess if it's a class/interface, so: class
-                        LOG.info("Modeller.java: " 
+                        LOG.info("Modeller.java: "
                                 + "forced creation of unknown classifier "
                                 + classifierName);
                         // TODO: A better strategy would be to defer creating
@@ -444,7 +456,6 @@ public class Modeller {
         }
     }
 
-
     /*
      * Build a Java import equivalent in UML. First search for an existing
      * permission. Create a new one if not found.
@@ -455,14 +466,13 @@ public class Modeller {
                 element, srcFile);
         for (Object dep : dependencies) {
             for (Object stereotype : Model.getFacade().getStereotypes(dep)) {
-                if ("javaImport".equals(Model.getFacade()
-                        .getName(stereotype))) {
+                if ("javaImport".equals(Model.getFacade().getName(stereotype))) {
                     return dep;
                 }
             }
         }
-        
-        // Didn't find it.  Let's create one.
+
+        // Didn't find it. Let's create one.
         Object pkgImport = Model.getCoreFactory().buildDependency(srcFile,
                 element);
         Model.getCoreHelper().addStereotype(pkgImport,
@@ -475,8 +485,8 @@ public class Modeller {
 
     private String makeAbstractionName(Object child, Object parent) {
         return makeFromToName(child, parent);
-    }   
-    
+    }
+
     private String makeAssociationName(Object from, Object to) {
         return makeFromToName(from, to);
     }
@@ -484,17 +494,16 @@ public class Modeller {
     private String makeDependencyName(Object from, Object to) {
         return makeFromToName(from, to);
     }
-    
+
     private String makeFromToName(Object from, Object to) {
-        if (!generateNames ) {
+        if (!generateNames) {
             return null;
         } else {
-            return makeFromToName(
-                    Model.getFacade().getName(from), 
-                    Model.getFacade().getName(to));
+            return makeFromToName(Model.getFacade().getName(from), Model
+                    .getFacade().getName(to));
         }
     }
-    
+
     private String makeFromToName(String from, String to) {
         if (!generateNames) {
             return null;
@@ -504,25 +513,21 @@ public class Modeller {
             return from + " -> " + to;
         }
     }
-    
+
     /**
      * Called from the parser when a class declaration is found.
-     *
+     * 
      * @param name The name of the class.
      * @param modifiers A sequence of class modifiers.
-     * @param superclassName Zero or one string with the name of the
-     *        superclass. Can be fully qualified or
-     *        just a simple class name.
+     * @param superclassName Zero or one string with the name of the superclass.
+     *            Can be fully qualified or just a simple class name.
      * @param interfaces Zero or more strings with the names of implemented
-     *        interfaces. Can be fully qualified or just a
-     *        simple interface name.
+     *            interfaces. Can be fully qualified or just a simple interface
+     *            name.
      * @param javadoc The javadoc comment. null or "" if no comment available.
      */
-    public void addClass(String name,
-                         short modifiers,
-                         String superclassName,
-                         List<String> interfaces,
-                         String javadoc) {
+    public void addClass(String name, short modifiers, String superclassName,
+            List<String> interfaces, String javadoc) {
         addClass(name, modifiers, EMPTY_STRING_LIST, superclassName,
                 interfaces, javadoc, false);
     }
@@ -533,38 +538,30 @@ public class Modeller {
      * @param name The name of the class.
      * @param modifiers A bitmask of class modifiers.
      * @param typeParameters List of strings containing names of types for
-     *                parameters
+     *            parameters
      * @param superclassName Zero or one string with the name of the superclass.
-     *                Can be fully qualified or just a simple class name.
+     *            Can be fully qualified or just a simple class name.
      * @param interfaces Zero or more strings with the names of implemented
-     *                interfaces. Can be fully qualified or just a simple
-     *                interface name.
+     *            interfaces. Can be fully qualified or just a simple interface
+     *            name.
      * @param javadoc The javadoc comment. null or "" if no comment available.
      * @param forceIt Force addition by creating all that's missing.
      */
-    void addClass(String name,
-                         short modifiers,
-                         List<String> typeParameters,
-                         String superclassName,
-                         List<String> interfaces,
-                         String javadoc,
-                         boolean forceIt) {
+    void addClass(String name, short modifiers, List<String> typeParameters,
+            String superclassName, List<String> interfaces, String javadoc,
+            boolean forceIt) {
         if (typeParameters != null && typeParameters.size() > 0) {
-            logError("type parameters not supported on Class", 
-                    name);
+            logError("type parameters not supported on Class", name);
             for (String s : typeParameters) {
-            	logError("type parameter ",s);
+                logError("type parameter ", s);
             }
         }
-        Object mClass =
-            addClassifier(Model.getCoreFactory().createClass(),
-                          name, modifiers, javadoc, typeParameters);
+        Object mClass = addClassifier(Model.getCoreFactory().createClass(),
+                name, modifiers, javadoc, typeParameters);
 
-        Model.getCoreHelper().setAbstract(
-                mClass,
+        Model.getCoreHelper().setAbstract(mClass,
                 (modifiers & JavaParser.ACC_ABSTRACT) > 0);
-        Model.getCoreHelper().setLeaf(
-                mClass,
+        Model.getCoreHelper().setLeaf(mClass,
                 (modifiers & JavaParser.ACC_FINAL) > 0);
         Model.getCoreHelper().setRoot(mClass, false);
         newElements.add(mClass);
@@ -577,10 +574,8 @@ public class Modeller {
         if (superclassName != null) {
             Object parentClass = null;
             try {
-                parentClass =
-                    getContext(superclassName)
-                        .get(getClassifierName(superclassName), false,
-                                javaProfile);
+                parentClass = getContext(superclassName).get(
+                        getClassifierName(superclassName), false, javaProfile);
                 getGeneralization(currentPackage, parentClass, mClass);
             } catch (ClassifierNotFoundException e) {
                 if (forceIt && superclassName != null && model != null) {
@@ -590,9 +585,8 @@ public class Modeller {
                     String classifierName = getClassifierName(superclassName);
                     // here, getPackage must NOT use the Java profile, because
                     // class creation is only allowed in the user model
-                    Object mPackage = (packageName.length() > 0) 
-                            ? getPackage(packageName, false)
-                            : model;
+                    Object mPackage = (packageName.length() > 0) ? getPackage(
+                            packageName, false) : model;
                     // a last chance: maybe it's in this user model package:
                     parentClass = Model.getFacade().lookupIn(mPackage,
                             classifierName);
@@ -603,8 +597,7 @@ public class Modeller {
                     }
                     getGeneralization(currentPackage, parentClass, mClass);
                 } else {
-                    warnClassifierNotFound(superclassName,
-                            "a generalization");
+                    warnClassifierNotFound(superclassName, "a generalization");
                 }
             }
         }
@@ -612,20 +605,20 @@ public class Modeller {
         if (interfaces != null) {
             addInterfaces(mClass, interfaces, forceIt);
         }
-  }
+    }
 
     /**
      * Called from the parser when an anonymous inner class is found.
-     *
+     * 
      * @param type The type of this anonymous class.
      */
     public void addAnonymousClass(String type) {
         addAnonymousClass(type, false);
     }
-    
+
     /**
      * Called from the parser when an anonymous inner class is found.
-     *
+     * 
      * @param type The type of this anonymous class.
      * @param forceIt Force addition by creating all that's missing.
      */
@@ -639,19 +632,15 @@ public class Modeller {
                 interfaces.add(type);
             }
 
-            addClass(name,
-                     (short) 0,
-                     EMPTY_STRING_LIST,
-                     Model.getFacade().isAClass(mClassifier) ? type : null,
-                     interfaces,
-                     "",
-                     forceIt);
+            addClass(name, (short) 0, EMPTY_STRING_LIST, Model.getFacade()
+                    .isAClass(mClassifier) ? type : null, interfaces, "",
+                    forceIt);
         } catch (ClassifierNotFoundException e) {
             // Must add it anyway, or the class popping will mismatch.
             addClass(name, (short) 0, EMPTY_STRING_LIST, null,
                     EMPTY_STRING_LIST, "", forceIt);
             LOG.info("Modeller.java: an anonymous class was created "
-                     + "although it could not be found in the classpath.");
+                    + "although it could not be found in the classpath.");
         }
     }
 
@@ -662,50 +651,38 @@ public class Modeller {
      * other reverse engineering modules such as the Classfile module. This
      * really needs to be decoupled.
      * 
-     * @param name
-     *            The name of the interface.
-     * @param modifiers
-     *            A sequence of interface modifiers.
-     * @param interfaces
-     *            Zero or more strings with the names of extended interfaces.
-     *            Can be fully qualified or just a simple interface name.
-     * @param javadoc
-     *            The javadoc comment. "" if no comment available.
-     */
-    public void addInterface(String name,
-                             short modifiers,
-                             List<String> interfaces,
-                             String javadoc) {
-        addInterface(name, modifiers, EMPTY_STRING_LIST, interfaces,
-                javadoc, false);
-    }
-    
-    /**
-     * Called from the parser when an interface declaration is found.
-     *
      * @param name The name of the interface.
      * @param modifiers A sequence of interface modifiers.
      * @param interfaces Zero or more strings with the names of extended
-     * interfaces. Can be fully qualified or just a simple interface name.
+     *            interfaces. Can be fully qualified or just a simple interface
+     *            name.
+     * @param javadoc The javadoc comment. "" if no comment available.
+     */
+    public void addInterface(String name, short modifiers,
+            List<String> interfaces, String javadoc) {
+        addInterface(name, modifiers, EMPTY_STRING_LIST, interfaces, javadoc,
+                false);
+    }
+
+    /**
+     * Called from the parser when an interface declaration is found.
+     * 
+     * @param name The name of the interface.
+     * @param modifiers A sequence of interface modifiers.
+     * @param interfaces Zero or more strings with the names of extended
+     *            interfaces. Can be fully qualified or just a simple interface
+     *            name.
      * @param javadoc The javadoc comment. "" if no comment available.
      * @param forceIt Force addition by creating all that's missing.
      */
-    void addInterface(String name,
-                             short modifiers,
-                             List<String> typeParameters,
-                             List<String> interfaces,
-                             String javadoc,
-                             boolean forceIt) {
+    void addInterface(String name, short modifiers,
+            List<String> typeParameters, List<String> interfaces,
+            String javadoc, boolean forceIt) {
         if (typeParameters != null && typeParameters.size() > 0) {
-            logError("type parameters not supported on Interface", 
-                    name);
+            logError("type parameters not supported on Interface", name);
         }
-        Object mInterface =
-            addClassifier(Model.getCoreFactory().createInterface(),
-                          name,
-                          modifiers,
-                          javadoc,
-                          typeParameters);
+        Object mInterface = addClassifier(Model.getCoreFactory()
+                .createInterface(), name, modifiers, javadoc, typeParameters);
 
         // only do generalizations and realizations on the 2nd pass.
         if (getLevel() == 0) {
@@ -715,36 +692,32 @@ public class Modeller {
         for (String interfaceName : interfaces) {
             Object parentInterface = null;
             try {
-                parentInterface =
-                    getContext(interfaceName)
-                        .get(getClassifierName(interfaceName), true,
-                                javaProfile);
+                parentInterface = getContext(interfaceName).get(
+                        getClassifierName(interfaceName), true, javaProfile);
                 getGeneralization(currentPackage, parentInterface, mInterface);
             } catch (ClassifierNotFoundException e) {
                 if (forceIt && interfaceName != null && model != null) {
-                    LOG.info("Modeller.java: " 
+                    LOG.info("Modeller.java: "
                             + "forced creation of unknown interface "
                             + interfaceName);
                     String packageName = getPackageName(interfaceName);
                     String classifierName = getClassifierName(interfaceName);
                     // here, getPackage must NOT use the Java profile, because
                     // interface creation is only allowed in the user model
-                    Object mPackage = (packageName.length() > 0) 
-                            ? getPackage(packageName, false)
-                            : model;
+                    Object mPackage = (packageName.length() > 0) ? getPackage(
+                            packageName, false) : model;
                     // a last chance: maybe it's in this user model package:
                     parentInterface = Model.getFacade().lookupIn(mPackage,
                             classifierName);
                     if (parentInterface == null) {
-                        parentInterface = Model.getCoreFactory().buildInterface(
-                                classifierName, mPackage);
+                        parentInterface = Model.getCoreFactory()
+                                .buildInterface(classifierName, mPackage);
                         newElements.add(parentInterface);
                     }
                     getGeneralization(currentPackage, parentInterface,
                             mInterface);
                 } else {
-                    warnClassifierNotFound(interfaceName, 
-                            "a generalization");
+                    warnClassifierNotFound(interfaceName, "a generalization");
                 }
             }
         }
@@ -752,27 +725,22 @@ public class Modeller {
 
     /**
      * Called from the parser when an enumeration declaration is found.
-     *
+     * 
      * @param name The name of the class.
      * @param modifiers A sequence of class modifiers.
      * @param interfaces Zero or more strings with the names of implemented
-     *        interfaces. Can be fully qualified or just a
-     *        simple interface name.
+     *            interfaces. Can be fully qualified or just a simple interface
+     *            name.
      * @param javadoc The javadoc comment. null or "" if no comment available.
      * @param forceIt Force addition by creating all that's missing.
      */
-    void addEnumeration(String name,
-                         short modifiers,
-                         List<String> interfaces,
-                         String javadoc,
-                         boolean forceIt) {
-        Object mClass =
-            addClassifier(Model.getCoreFactory().createClass(),
-                          name, modifiers, javadoc, 
-                          EMPTY_STRING_LIST); // no type params for now
-        
-        Model.getCoreHelper().addStereotype(
-                mClass,
+    void addEnumeration(String name, short modifiers, List<String> interfaces,
+            String javadoc, boolean forceIt) {
+        Object mClass = addClassifier(Model.getCoreFactory().createClass(),
+                name, modifiers, javadoc, EMPTY_STRING_LIST); // no type params
+                                                              // for now
+
+        Model.getCoreHelper().addStereotype(mClass,
                 getStereotype("enumeration"));
 
         if ((modifiers & JavaParser.ACC_ABSTRACT) > 0) {
@@ -807,59 +775,46 @@ public class Modeller {
      * @param interfaces
      * @param forceIt
      */
-    private void addInterfaces(Object mClass, List<String> interfaces, 
+    private void addInterfaces(Object mClass, List<String> interfaces,
             boolean forceIt) {
         for (String interfaceName : interfaces) {
             Object mInterface = null;
             try {
-                mInterface =
-                    getContext(interfaceName)
-                        .get(getClassifierName(interfaceName), true,
-                                javaProfile);
+                mInterface = getContext(interfaceName).get(
+                        getClassifierName(interfaceName), true, javaProfile);
             } catch (ClassifierNotFoundException e) {
                 if (forceIt && interfaceName != null && model != null) {
-                    LOG.info("Modeller.java: " 
+                    LOG.info("Modeller.java: "
                             + "forced creation of unknown interface "
                             + interfaceName);
                     String packageName = getPackageName(interfaceName);
-                    String classifierName =
-                            getClassifierName(interfaceName);
+                    String classifierName = getClassifierName(interfaceName);
                     // here, getPackage must NOT use the Java profile, because
                     // interface creation is only allowed in the user model
-                    Object mPackage = 
-                        (packageName.length() > 0) 
-                                    ? getPackage(packageName, false)
-                                    : model;
+                    Object mPackage = (packageName.length() > 0) ? getPackage(
+                            packageName, false) : model;
                     // a last chance: maybe it's in this user model package:
                     mInterface = Model.getFacade().lookupIn(mPackage,
                             classifierName);
                     if (mInterface == null) {
-                    mInterface =
-                            Model.getCoreFactory().buildInterface(
-                                    classifierName, mPackage);
-                    newElements.add(mInterface);
+                        mInterface = Model.getCoreFactory().buildInterface(
+                                classifierName, mPackage);
+                        newElements.add(mInterface);
                     }
                 } else {
-                    warnClassifierNotFound(interfaceName,
-                            "an abstraction");
+                    warnClassifierNotFound(interfaceName, "an abstraction");
                 }
             }
             // TODO: This should use the Model API's buildAbstraction - tfm
             if (mInterface != null && mInterface != mClass) {
-                Object mAbstraction =
-                    getAbstraction(mInterface, mClass);
-                if (Model.getFacade().getSuppliers(mAbstraction).size()
-                        == 0) {
-                    Model.getCoreHelper().addSupplier(
-                            mAbstraction,
-                            mInterface);
+                Object mAbstraction = getAbstraction(mInterface, mClass);
+                if (Model.getFacade().getSuppliers(mAbstraction).size() == 0) {
+                    Model.getCoreHelper().addSupplier(mAbstraction, mInterface);
                     Model.getCoreHelper().addClient(mAbstraction, mClass);
                 }
-                Model.getCoreHelper().setNamespace(
-                        mAbstraction,
-                        currentPackage);
-                Model.getCoreHelper().addStereotype(
-                        mAbstraction,
+                Model.getCoreHelper()
+                        .setNamespace(mAbstraction, currentPackage);
+                Model.getCoreHelper().addStereotype(mAbstraction,
                         getStereotype(CoreFactory.REALIZE_STEREOTYPE));
                 newElements.add(mAbstraction);
             }
@@ -868,7 +823,7 @@ public class Modeller {
 
     /**
      * Called from the parser when an enumeration literal is found.
-     *
+     * 
      * @param name The name of the enumerationLiteral.
      */
     void addEnumerationLiteral(String name) {
@@ -879,16 +834,16 @@ public class Modeller {
 
         short mod = JavaParser.ACC_PUBLIC | JavaParser.ACC_FINAL
                 | JavaParser.ACC_STATIC;
-        
+
         addAttribute(mod, null, name, null, null, true);
-        
+
         // add an <<enum>> stereotype to distinguish it from fields
-        // in the class  body?    
+        // in the class body?
     }
-    
+
     /*
-     * Recognizer for enumeration.  In our world an enumeration
-     * is a Class with the <<enumeration>> stereotype applied. 
+     * Recognizer for enumeration. In our world an enumeration is a Class with
+     * the <<enumeration>> stereotype applied.
      */
     private boolean isAEnumeration(Object element) {
         if (!Model.getFacade().isAClass(element)) {
@@ -900,75 +855,70 @@ public class Modeller {
 
     /**
      * Add an annotation declaration
-     *
+     * 
      * @param name identifier for annotation definition.
      * @param modifiers A sequence of modifiers.
      * @param javadoc The javadoc comment. null or "" if no comment available.
      * @param forceIt Force addition by creating all that's missing.
      */
-    void addAnnotationDefinition(String name,
-                         short modifiers,
-                         String javadoc,
-                         boolean forceIt) {
+    void addAnnotationDefinition(String name, short modifiers, String javadoc,
+            boolean forceIt) {
         // TODO: Not implemented
-        logError( "Java 5 annotation definitions not supported", "@" + name);
+        logError("Java 5 annotation definitions not supported", "@" + name);
     }
-    
+
     /**
      * Called from the parser when an annotation declaration is found.
-     *
+     * 
      * @param name identifier for annotation.
      */
     void addAnnotation(String name) {
         // TODO: Not implemented
-        logError( "Java 5 annotations not supported", "@" + name);
+        logError("Java 5 annotations not supported", "@" + name);
     }
 
     /**
      * Done adding an annotation.
      */
     void endAnnotation() {
-        // TODO: Placeholder.  Can we use popClassifier here?
+        // TODO: Placeholder. Can we use popClassifier here?
     }
-    
+
     void addTypeParameters(Object modelElement, List<String> typeParameters) {
         if (Model.getFacade().getTemplateParameters(modelElement).size() == 0) {
             for (String parameter : typeParameters) {
-                Object templateParam = 
-                    Model.getCoreFactory().createTemplateParameter();
-                // TODO: Why isn't this referencing a ModelElement that was 
-                // imported from Java?  The types have to match.
-                Object param = Model.getCoreFactory().buildDataType(parameter, 
+                Object templateParam = Model.getCoreFactory()
+                        .createTemplateParameter();
+                // TODO: Why isn't this referencing a ModelElement that was
+                // imported from Java? The types have to match.
+                Object param = Model.getCoreFactory().buildDataType(parameter,
                         modelElement);
                 Model.getCoreHelper().setParameter(templateParam, param);
-                Model.getCoreHelper().addTemplateParameter(modelElement, 
+                Model.getCoreHelper().addTemplateParameter(modelElement,
                         templateParam);
             }
         }
     }
-    
-    /**
-       Common code used by addClass and addInterface.
 
-       @param newClassifier Supply one if none is found in the model.
-       @param name Name of the classifier.
-       @param modifiers String of modifiers.
-       @param javadoc The javadoc comment. null or "" if no comment available.
-       @param typeParameters List of types for parameters (not implemented)
-       @return The newly created/found classifier.
-    */
-    private Object addClassifier(Object newClassifier,
-                                 String name,
-                                 short modifiers,
-                                 String javadoc, 
-                                 List<String> typeParameters) {
+    /**
+     * Common code used by addClass and addInterface.
+     * 
+     * @param newClassifier Supply one if none is found in the model.
+     * @param name Name of the classifier.
+     * @param modifiers String of modifiers.
+     * @param javadoc The javadoc comment. null or "" if no comment available.
+     * @param typeParameters List of types for parameters (not implemented)
+     * @return The newly created/found classifier.
+     */
+    private Object addClassifier(Object newClassifier, String name,
+            short modifiers, String javadoc, List<String> typeParameters) {
         Object mClassifier;
         Object mNamespace;
 
         if (parseState.getClassifier() != null) {
             // the new classifier is a java inner class
-            mClassifier =
-                Model.getFacade().lookupIn(parseState.getClassifier(), name);
+            mClassifier = Model.getFacade().lookupIn(
+                    parseState.getClassifier(), name);
             mNamespace = parseState.getClassifier();
         } else {
             // the new classifier is a top level java class
@@ -976,7 +926,6 @@ public class Modeller {
             mClassifier = Model.getFacade().lookupIn(currentPackage, name);
             mNamespace = currentPackage;
         }
-
 
         if (mClassifier == null) {
             // if the classifier could not be found in the model
@@ -1019,15 +968,15 @@ public class Modeller {
         parseState = new ParseState(parseState, mClassifier, currentPackage);
 
         setVisibility(mClassifier, modifiers);
-        
+
         // Add classifier documentation tags during first (or only) pass only
         if (getLevel() <= 0) {
             addDocumentationTag(mClassifier, javadoc);
         }
-      	addTypeParameters(mClassifier, typeParameters);
+        addTypeParameters(mClassifier, typeParameters);
         return mClassifier;
     }
-    
+
     /**
      * Return the current import pass/level.
      * 
@@ -1038,13 +987,13 @@ public class Modeller {
         Object level = this.getAttribute("level");
         if (level != null) {
             return ((Integer) level).intValue();
-        } 
+        }
         return -1;
     }
 
     /**
-       Called from the parser when a classifier is completely parsed.
-    */
+     * Called from the parser when a classifier is completely parsed.
+     */
     public void popClassifier() {
 
         // Remove operations and attributes not in source
@@ -1059,70 +1008,54 @@ public class Modeller {
     /**
      * Add an Operation to the current model
      * 
-     * @param modifiers
-     *            A sequence of operation modifiers.
-     * @param returnType
-     *            The return type of the operation.
-     * @param name
-     *            The name of the operation as a string
-     * @param parameters
-     *            A List of parameter declarations containing types and names.
-     * @param javadoc
-     *            The javadoc comment. null or "" if no comment available.
+     * @param modifiers A sequence of operation modifiers.
+     * @param returnType The return type of the operation.
+     * @param name The name of the operation as a string
+     * @param parameters A List of parameter declarations containing types and
+     *            names.
+     * @param javadoc The javadoc comment. null or "" if no comment available.
      * @return The operation.
      */
-    public Object addOperation (short modifiers,
-                                String returnType,
-                                String name,
-                                List<ParameterDeclaration> parameters,
-                                String javadoc) {
+    public Object addOperation(short modifiers, String returnType, String name,
+            List<ParameterDeclaration> parameters, String javadoc) {
         return addOperation(modifiers, EMPTY_STRING_LIST, returnType, name,
                 parameters, javadoc, false);
     }
-    
+
     /**
      * Called from the parser when an operation is found.
      * 
-     * @param modifiers
-     *            A sequence of operation modifiers.
-     * @param returnType
-     *            The return type of the operation.
-     * @param name
-     *            The name of the operation as a string
-     * @param parameters
-     *            A number of lists, each representing a parameter.
-     * @param javadoc
-     *            The javadoc comment. null or "" if no comment available.
-     * @param forceIt
-     *            Force addition by creating all that's missing.
+     * @param modifiers A sequence of operation modifiers.
+     * @param returnType The return type of the operation.
+     * @param name The name of the operation as a string
+     * @param parameters A number of lists, each representing a parameter.
+     * @param javadoc The javadoc comment. null or "" if no comment available.
+     * @param forceIt Force addition by creating all that's missing.
      * @return The operation.
      */
-    Object addOperation (short modifiers,
-                                List<String> typeParameters,
-                                String returnType,
-                                String name,
-                                List<ParameterDeclaration> parameters,
-                                String javadoc,
-                                boolean forceIt) {
+    Object addOperation(short modifiers, List<String> typeParameters,
+            String returnType, String name,
+            List<ParameterDeclaration> parameters, String javadoc,
+            boolean forceIt) {
         if (typeParameters != null && typeParameters.size() > 0) {
-            logError("type parameters not supported on operation return type", 
+            logError("type parameters not supported on operation return type",
                     name);
         }
         Object mOperation = getOperation(name);
         parseState.feature(mOperation);
 
         Model.getCoreHelper().setAbstract(mOperation,
-                                (modifiers & JavaParser.ACC_ABSTRACT) > 0);
+                (modifiers & JavaParser.ACC_ABSTRACT) > 0);
         Model.getCoreHelper().setLeaf(mOperation,
-                            (modifiers & JavaParser.ACC_FINAL) > 0);
+                (modifiers & JavaParser.ACC_FINAL) > 0);
         Model.getCoreHelper().setRoot(mOperation, false);
         setOwnerScope(mOperation, modifiers);
         setVisibility(mOperation, modifiers);
         if ((modifiers & JavaParser.ACC_SYNCHRONIZED) > 0) {
             Model.getCoreHelper().setConcurrency(mOperation,
                     Model.getConcurrencyKind().getGuarded());
-        } else if (Model.getFacade().getConcurrency(mOperation)
-                   == Model.getConcurrencyKind().getGuarded()) {
+        } else if (Model.getFacade().getConcurrency(mOperation) == Model
+                .getConcurrencyKind().getGuarded()) {
             Model.getCoreHelper().setConcurrency(mOperation,
                     Model.getConcurrencyKind().getSequential());
         }
@@ -1137,31 +1070,29 @@ public class Modeller {
         Object mClassifier = null;
 
         if (returnType == null
-            || ("void".equals(returnType)
-                && name.equals(Model.getFacade().getName(parseState
-                        .getClassifier())))) {
+                || ("void".equals(returnType) && name.equals(Model.getFacade()
+                        .getName(parseState.getClassifier())))) {
             // Constructor
             Model.getCoreHelper().addStereotype(mOperation,
-                getStereotype(mOperation, "create", "BehavioralFeature"));
+                    getStereotype(mOperation, "create", "BehavioralFeature"));
         } else {
             try {
                 mClassifier =
-                    // FIXME: This can't throw away the fully qualified 
-                    // name before starting the search!
-                    getContext(returnType).get(getClassifierName(returnType),
-                            false, javaProfile);
+                // FIXME: This can't throw away the fully qualified
+                // name before starting the search!
+                getContext(returnType).get(getClassifierName(returnType),
+                        false, javaProfile);
             } catch (ClassifierNotFoundException e) {
                 if (forceIt && returnType != null && model != null) {
-                    LOG.info("Modeller.java: " 
+                    LOG.info("Modeller.java: "
                             + "forced creation of unknown classifier "
                             + returnType);
                     String packageName = getPackageName(returnType);
                     String classifierName = getClassifierName(returnType);
                     // here, getPackage must NOT use the Java profile, because
                     // class creation is only allowed in the user model
-                    Object mPackage = (packageName.length() > 0)
-                            ? getPackage(packageName, false)
-                            : model;
+                    Object mPackage = (packageName.length() > 0) ? getPackage(
+                            packageName, false) : model;
                     // a last chance: maybe it's in this user model package:
                     mClassifier = Model.getFacade().lookupIn(mPackage,
                             classifierName);
@@ -1171,8 +1102,7 @@ public class Modeller {
                         newElements.add(mClassifier);
                     }
                 } else {
-                    warnClassifierNotFound(returnType,
-                            "operation return type");
+                    warnClassifierNotFound(returnType, "operation return type");
                 }
             }
             if (mClassifier != null) {
@@ -1183,7 +1113,7 @@ public class Modeller {
         for (ParameterDeclaration parameter : parameters) {
             typeName = parameter.getType();
             // TODO: A type name with a trailing "..." represents
-            // a variable length parameter list.  It can only be
+            // a variable length parameter list. It can only be
             // the last parameter and it gets converted to an array
             // on method invocation, so perhaps we should model it that
             // way (ie convert "Foo..." to "Foo[]"). - tfm - 20070329
@@ -1193,21 +1123,19 @@ public class Modeller {
             }
             mClassifier = null;
             try {
-                mClassifier =
-                    getContext(typeName).get(getClassifierName(typeName),
-                            false, javaProfile);
+                mClassifier = getContext(typeName).get(
+                        getClassifierName(typeName), false, javaProfile);
             } catch (ClassifierNotFoundException e) {
                 if (forceIt && typeName != null && model != null) {
-                    LOG.info("Modeller.java: " 
+                    LOG.info("Modeller.java: "
                             + "forced creation of unknown classifier "
                             + typeName);
                     String packageName = getPackageName(typeName);
                     String classifierName = getClassifierName(typeName);
                     // here, getPackage must NOT use the Java profile, because
                     // class creation is only allowed in the user model
-                    Object mPackage = (packageName.length() > 0)
-                            ? getPackage(packageName, false)
-                            : model;
+                    Object mPackage = (packageName.length() > 0) ? getPackage(
+                            packageName, false) : model;
                     // a last chance: maybe it's in this user model package:
                     mClassifier = Model.getFacade().lookupIn(mPackage,
                             classifierName);
@@ -1217,8 +1145,7 @@ public class Modeller {
                         newElements.add(mClassifier);
                     }
                 } else {
-                    warnClassifierNotFound(typeName,
-                            "operation params");
+                    warnClassifierNotFound(typeName, "operation params");
                 }
             }
             if (mClassifier != null) {
@@ -1227,16 +1154,16 @@ public class Modeller {
                 if (!Model.getFacade().isAClassifier(mClassifier)) {
                     // the type resolution failed to find a valid classifier.
                     logError("Modeller.java: a valid type for a parameter "
-                             + "could not be resolved:\n "
-                             + "In file: " + fileName + ", for operation: "
-                             + Model.getFacade().getName(mOperation)
-                             + ", for parameter: ",
-                             Model.getFacade().getName(mParameter));
+                            + "could not be resolved:\n " + "In file: "
+                            + fileName + ", for operation: "
+                            + Model.getFacade().getName(mOperation)
+                            + ", for parameter: ", Model.getFacade().getName(
+                            mParameter));
                 }
             }
         }
 
-        addDocumentationTag (mOperation, javadoc);
+        addDocumentationTag(mOperation, javadoc);
 
         return mOperation;
     }
@@ -1244,35 +1171,33 @@ public class Modeller {
     private Object buildInParameter(Object operation, Object classifier,
             String name) {
         Object parameter = buildParameter(operation, classifier, name);
-        Model.getCoreHelper().setKind(
-                parameter, Model.getDirectionKind().getInParameter());
+        Model.getCoreHelper().setKind(parameter,
+                Model.getDirectionKind().getInParameter());
         return parameter;
     }
 
     private Object buildReturnParameter(Object operation, Object classifier) {
         Object parameter = buildParameter(operation, classifier, "return");
-        Model.getCoreHelper().setKind(
-                parameter, Model.getDirectionKind().getReturnParameter());
+        Model.getCoreHelper().setKind(parameter,
+                Model.getDirectionKind().getReturnParameter());
         return parameter;
     }
 
     private Object buildParameter(Object operation, Object classifier,
             String name) {
-        Object parameter =
-                Model.getCoreFactory().buildParameter(operation, classifier);
+        Object parameter = Model.getCoreFactory().buildParameter(operation,
+                classifier);
         Model.getCoreHelper().setName(parameter, name);
         return parameter;
     }
-
 
     /**
      * Warn user that information available in input source will not be
      * reflected accurately in the model.
      * 
-     * @param name
-     *            name of the classifier which wasn't found
-     * @param operation -
-     *            a string indicating what type of operation was being attempted
+     * @param name name of the classifier which wasn't found
+     * @param operation - a string indicating what type of operation was being
+     *            attempted
      */
     private void warnClassifierNotFound(String name, String operation) {
         logError("Modeller.java: a classifier (" + name
@@ -1284,14 +1209,14 @@ public class Modeller {
      * Add an error message to the log to be shown to the user.
      * <p>
      * TODO: This currently just writes to the error log. It needs to return
-     * errors some place that the user can see them and deal with them.  We
-     * also need a way to get the line and column numbers to help the user
-     * track the problem down.
+     * errors some place that the user can see them and deal with them. We also
+     * need a way to get the line and column numbers to help the user track the
+     * problem down.
      */
     private void logError(String message, String identifier) {
         LOG.warn(message + " : " + identifier);
     }
-    
+
     /**
      * Called from the parser when a class field is parsed. This can occur in a
      * class block where it indicates a method body to to be added to an
@@ -1300,10 +1225,8 @@ public class Modeller {
      * 
      * TODO: Support use in an enum declaration
      * 
-     * @param op
-     *            An operation.
-     * @param body
-     *            A method body.
+     * @param op An operation.
+     * @param body A method body.
      */
     public void addBodyToOperation(Object op, String body) {
         if (op == null || !Model.getFacade().isAOperation(op)) {
@@ -1317,39 +1240,36 @@ public class Modeller {
 
         Object method = getMethod(Model.getFacade().getName(op));
         parseState.feature(method);
-        Model.getCoreHelper().setBody(method,
-                            Model.getDataTypesFactory()
-                                .createProcedureExpression("Java",
-                                                           body));
+        Model.getCoreHelper().setBody(
+                method,
+                Model.getDataTypesFactory().createProcedureExpression("Java",
+                        body));
         // Add the method to it's specification.
         Model.getCoreHelper().addMethod(op, method);
 
         // Add this method as a feature to the classifier that owns
         // the operation.
-        Model.getCoreHelper().addFeature(Model.getFacade().getOwner(op),
-                method);
+        Model.getCoreHelper()
+                .addFeature(Model.getFacade().getOwner(op), method);
     }
 
     /**
      * Called from the parser when an attribute is found.
-     *
+     * 
      * @param modifiers A sequence of attribute modifiers.
      * @param typeSpec The attribute's type.
      * @param name The name of the attribute.
      * @param initializer The initial value of the attribute.
      * @param javadoc The javadoc comment. null or "" if no comment available.
      */
-    public void addAttribute (short modifiers,
-                              String typeSpec,
-                              String name,
-                              String initializer,
-                              String javadoc) {
+    public void addAttribute(short modifiers, String typeSpec, String name,
+            String initializer, String javadoc) {
         addAttribute(modifiers, typeSpec, name, initializer, javadoc, false);
     }
-    
+
     /**
      * Called from the parser when an attribute is found.
-     *
+     * 
      * @param modifiers A sequence of attribute modifiers.
      * @param typeSpec The attribute's type.
      * @param name The name of the attribute.
@@ -1357,15 +1277,11 @@ public class Modeller {
      * @param javadoc The javadoc comment. null or "" if no comment available.
      * @param forceIt Force addition by creating all that's missing.
      */
-    void addAttribute (short modifiers,
-                              String typeSpec,
-                              String name,
-                              String initializer,
-                              String javadoc,
-                              boolean forceIt) {
+    void addAttribute(short modifiers, String typeSpec, String name,
+            String initializer, String javadoc, boolean forceIt) {
         String multiplicity = "1_1";
         Object mClassifier = null;
-        
+
         if (typeSpec != null) {
             if (!arraysAsDatatype && typeSpec.indexOf('[') != -1) {
                 typeSpec = typeSpec.substring(0, typeSpec.indexOf('['));
@@ -1375,9 +1291,8 @@ public class Modeller {
             // the attribute type
             try {
                 // get the attribute type
-                mClassifier =
-                        getContext(typeSpec).get(getClassifierName(typeSpec),
-                                false, javaProfile);
+                mClassifier = getContext(typeSpec).get(
+                        getClassifierName(typeSpec), false, javaProfile);
             } catch (ClassifierNotFoundException e) {
                 if (forceIt && typeSpec != null && model != null) {
                     LOG.info("Modeller.java: forced creation of"
@@ -1386,9 +1301,8 @@ public class Modeller {
                     String classifierName = getClassifierName(typeSpec);
                     // here, getPackage must NOT use the Java profile, because
                     // class creation is only allowed in the user model
-                    Object mPackage = (packageName.length() > 0)
-                            ? getPackage(packageName, false)
-                            : model;
+                    Object mPackage = (packageName.length() > 0) ? getPackage(
+                            packageName, false) : model;
                     // a last chance: maybe it's in this user model package:
                     mClassifier = Model.getFacade().lookupIn(mPackage,
                             classifierName);
@@ -1411,8 +1325,8 @@ public class Modeller {
         if (mClassifier == null
                 || noAssociations
                 || Model.getFacade().isADataType(mClassifier)
-                || (Model.getFacade().getNamespace(mClassifier) 
-                        == getPackage(JAVA_PACKAGE, true))) {
+                || (Model.getFacade().getNamespace(mClassifier) == getPackage(
+                        JAVA_PACKAGE, true))) {
 
             Object mAttribute = parseState.getAttribute(name);
             if (mAttribute == null) {
@@ -1431,9 +1345,9 @@ public class Modeller {
             } else {
                 // the type resolution failed to find a valid classifier.
                 logError("Modeller.java: a valid type for a parameter "
-                         + "could not be resolved:\n "
-                         + "In file: " + fileName + ", for attribute: ",
-                         Model.getFacade().getName(mAttribute));
+                        + "could not be resolved:\n " + "In file: " + fileName
+                        + ", for attribute: ", Model.getFacade().getName(
+                        mAttribute));
             }
 
             // Set the initial value for the attribute.
@@ -1444,12 +1358,9 @@ public class Modeller {
                 initializer = initializer.replace('\n', ' ');
                 initializer = initializer.replace('\t', ' ');
 
-                Object newInitialValue =
-                    Model.getDataTypesFactory()
-                        .createExpression("Java",
-                                          initializer);
-                Model.getCoreHelper().setInitialValue(
-                        mAttribute,
+                Object newInitialValue = Model.getDataTypesFactory()
+                        .createExpression("Java", initializer);
+                Model.getCoreHelper().setInitialValue(mAttribute,
                         newInitialValue);
             }
 
@@ -1464,12 +1375,11 @@ public class Modeller {
         else {
 
             Object mAssociationEnd = getAssociationEnd(name, mClassifier);
-            Model.getCoreHelper().setStatic(
-                    mAssociationEnd, (modifiers & JavaParser.ACC_STATIC) > 0);
+            Model.getCoreHelper().setStatic(mAssociationEnd,
+                    (modifiers & JavaParser.ACC_STATIC) > 0);
             setVisibility(mAssociationEnd, modifiers);
-            Model.getCoreHelper().setMultiplicity(
-                    mAssociationEnd,
-                    multiplicity);
+            Model.getCoreHelper()
+                    .setMultiplicity(mAssociationEnd, multiplicity);
             Model.getCoreHelper().setType(mAssociationEnd, mClassifier);
             Model.getCoreHelper().setName(mAssociationEnd, name);
             if ((modifiers & JavaParser.ACC_FINAL) > 0) {
@@ -1488,23 +1398,21 @@ public class Modeller {
     }
 
     /**
-       Find a generalization in the model. If it does not exist, a
-       new generalization is created.
-
-       @param mPackage Look in this package.
-       @param parent The superclass.
-       @param child The subclass.
-       @return The generalization found or created.
-    */
-    private Object getGeneralization(Object mPackage,
-                                     Object parent,
-                                     Object child) {
-        Object mGeneralization = 
-            Model.getFacade().getGeneralization(child, parent);
+     * Find a generalization in the model. If it does not exist, a new
+     * generalization is created.
+     * 
+     * @param mPackage Look in this package.
+     * @param parent The superclass.
+     * @param child The subclass.
+     * @return The generalization found or created.
+     */
+    private Object getGeneralization(Object mPackage, Object parent,
+            Object child) {
+        Object mGeneralization = Model.getFacade().getGeneralization(child,
+                parent);
         if (mGeneralization == null) {
-            mGeneralization =
-                    Model.getCoreFactory().buildGeneralization(
-                            child, parent);
+            mGeneralization = Model.getCoreFactory().buildGeneralization(child,
+                    parent);
             newElements.add(mGeneralization);
         }
         if (mGeneralization != null) {
@@ -1514,24 +1422,22 @@ public class Modeller {
     }
 
     /**
-     * Find an abstraction<<realize>> in the model. If it does not
-     * exist, a new abstraction is created.
-     *
+     * Find an abstraction<<realize>> in the model. If it does not exist, a new
+     * abstraction is created.
+     * 
      * @param parent The superclass.
      * @param child The subclass.
      * @return The abstraction found or created.
      */
-    private Object getAbstraction(Object parent,
-                                  Object child) {
+    private Object getAbstraction(Object parent, Object child) {
         Object mAbstraction = null;
-        for (Iterator i =
-                Model.getFacade().getClientDependencies(child).iterator();
-             i.hasNext();) {
+        for (Iterator i = Model.getFacade().getClientDependencies(child)
+                .iterator(); i.hasNext();) {
             mAbstraction = i.next();
             Collection c = Model.getFacade().getSuppliers(mAbstraction);
             if (c == null || c.size() == 0) {
-                Model.getCoreHelper()
-                        .removeClientDependency(child, mAbstraction);
+                Model.getCoreHelper().removeClientDependency(child,
+                        mAbstraction);
             } else {
                 if (parent != c.toArray()[0]) {
                     mAbstraction = null;
@@ -1543,9 +1449,7 @@ public class Modeller {
 
         if (mAbstraction == null) {
             mAbstraction = Model.getCoreFactory().buildAbstraction(
-                   makeAbstractionName(child, parent),
-                   parent,
-                   child);
+                    makeAbstractionName(child, parent), parent, child);
             newElements.add(mAbstraction);
         }
         return mAbstraction;
@@ -1556,7 +1460,7 @@ public class Modeller {
      * created in the user model.
      * 
      * @param name The name of the package.
-     * @param useProfile also look in the Java profile if true 
+     * @param useProfile also look in the Java profile if true
      * @return The package found or created.
      */
     private Object getPackage(String name, boolean useProfile) {
@@ -1569,10 +1473,9 @@ public class Modeller {
                 String rname = st.nextToken();
                 mPackage = Model.getFacade().lookupIn(currentNs, rname);
                 // the actual package might already exist in the user model
-                if (mPackage == null
-                        || !Model.getFacade().isAPackage(mPackage)) {
-                    mPackage = Model.getModelManagementFactory()
-                        .buildPackage(getRelativePackageName(rname));
+                if (mPackage == null || !Model.getFacade().isAPackage(mPackage)) {
+                    mPackage = Model.getModelManagementFactory().buildPackage(
+                            getRelativePackageName(rname));
                     // set the owner for this package.
                     Model.getCoreHelper().addOwnedElement(currentNs, mPackage);
                     newElements.add(mPackage);
@@ -1584,14 +1487,14 @@ public class Modeller {
     }
 
     /**
-     * Search recursively for nested packages in the user model. So if you
-     * pass a package org.argouml.kernel , this method searches for a package
-     * kernel, that is owned by a package argouml, which is owned by a
-     * package org. This method is required to nest the parsed packages.
-     * It optionally first searches in the Java profile.
-     *
-     * @param name The fully qualified package name of the package we
-     * are searching for.
+     * Search recursively for nested packages in the user model. So if you pass
+     * a package org.argouml.kernel , this method searches for a package kernel,
+     * that is owned by a package argouml, which is owned by a package org. This
+     * method is required to nest the parsed packages. It optionally first
+     * searches in the Java profile.
+     * 
+     * @param name The fully qualified package name of the package we are
+     *            searching for.
      * @param useProfile first have a look in the Java profile if true
      * @return The found package or null, if it is not in the model.
      */
@@ -1600,8 +1503,8 @@ public class Modeller {
         if ("".equals(getPackageName(name))) {
             if (useProfile && javaProfile != null) {
                 try {
-                    Object m = javaProfile.getProfilePackages()
-                        .iterator().next();
+                    Object m = javaProfile.getProfilePackages().iterator()
+                            .next();
                     ret = Model.getFacade().lookupIn(m, name);
                 } catch (Exception e) {
                     ret = null;
@@ -1613,18 +1516,17 @@ public class Modeller {
             return ret;
         }
         Object owner = searchPackageInModel(getPackageName(name), useProfile);
-        return owner == null
-            ? null
-            : Model.getFacade().lookupIn(owner, getRelativePackageName(name));
+        return owner == null ? null : Model.getFacade().lookupIn(owner,
+                getRelativePackageName(name));
     }
 
     /**
-       Find an operation in the currentClassifier. If the operation is
-       not found, a new is created.
-
-       @param name The name of the operation.
-       @return The operation found or created.
-    */
+     * Find an operation in the currentClassifier. If the operation is not
+     * found, a new is created.
+     * 
+     * @param name The name of the operation.
+     * @return The operation found or created.
+     */
     private Object getOperation(String name) {
         Object mOperation = parseState.getOperation(name);
         if (mOperation != null) {
@@ -1632,22 +1534,22 @@ public class Modeller {
         } else {
             LOG.info("Creating a new operation " + name);
             Object cls = parseState.getClassifier();
-            Object returnType = ProjectManager.getManager()
-                .getCurrentProject().getDefaultReturnType();
-            mOperation = Model.getCoreFactory().buildOperation2(cls, returnType,
-                    name);
+            Object returnType = ProjectManager.getManager().getCurrentProject()
+                    .getDefaultReturnType();
+            mOperation = Model.getCoreFactory().buildOperation2(cls,
+                    returnType, name);
             newElements.add(mOperation);
         }
         return mOperation;
     }
 
     /**
-       Find an operation in the currentClassifier. If the operation is
-       not found, a new is created.
-
-       @param name The name of the method.
-       @return The method found or created.
-    */
+     * Find an operation in the currentClassifier. If the operation is not
+     * found, a new is created.
+     * 
+     * @param name The name of the method.
+     * @return The method found or created.
+     */
     private Object getMethod(String name) {
         Object method = parseState.getMethod(name);
         if (method != null) {
@@ -1656,9 +1558,8 @@ public class Modeller {
             LOG.info("Creating a new method " + name);
             method = Model.getCoreFactory().buildMethod(name);
             newElements.add(method);
-            Model.getCoreHelper().addFeature(
-                    parseState.getClassifier(),
-                    method);
+            Model.getCoreHelper()
+                    .addFeature(parseState.getClassifier(), method);
         }
         return method;
     }
@@ -1666,31 +1567,25 @@ public class Modeller {
     /**
      * Build a new attribute in the current classifier.
      * 
-     * @param classifier
-     *            the model were are reverse engineering into
-     * @param type
-     *            the the type of the new attribute
-     * @param name
-     *            The name of the attribute.
+     * @param classifier the model were are reverse engineering into
+     * @param type the the type of the new attribute
+     * @param name The name of the attribute.
      * @return The attribute found or created.
      */
     private Object buildAttribute(Object classifier, Object type, String name) {
-        Object mAttribute = 
-            Model.getCoreFactory().buildAttribute2(classifier, type);
+        Object mAttribute = Model.getCoreFactory().buildAttribute2(classifier,
+                type);
         newElements.add(mAttribute);
         Model.getCoreHelper().setName(mAttribute, name);
         return mAttribute;
     }
 
     /**
-     * Find an associationEnd for a binary Association from the 
-     * currentClassifier to the type specified.
-     * If not found, a new is created.
+     * Find an associationEnd for a binary Association from the
+     * currentClassifier to the type specified. If not found, a new is created.
      * 
-     * @param name
-     *            The name of the attribute.
-     * @param mClassifier
-     *            Where the association ends.
+     * @param name The name of the attribute.
+     * @param mClassifier Where the association ends.
      * @return The attribute found or created.
      */
     private Object getAssociationEnd(String name, Object mClassifier) {
@@ -1701,25 +1596,22 @@ public class Modeller {
             Object assoc = Model.getFacade().getAssociation(ae);
             if (name.equals(Model.getFacade().getName(ae))
                     && Model.getFacade().getConnections(assoc).size() == 2
-                && Model.getFacade().getType(
-                            Model.getFacade().getNextEnd(ae))
-                    == parseState.getClassifier()) {
+                    && Model.getFacade().getType(
+                            Model.getFacade().getNextEnd(ae)) == parseState
+                            .getClassifier()) {
                 mAssociationEnd = ae;
             }
         }
         if (mAssociationEnd == null && !noAssociations) {
-            String newName =
-                    makeAssociationName(parseState.getClassifier(), 
-                            mClassifier);
+            String newName = makeAssociationName(parseState.getClassifier(),
+                    mClassifier);
 
-            Object mAssociation = buildDirectedAssociation(
-                        newName, parseState.getClassifier(), mClassifier);
-            // this causes a problem when mClassifier is not only 
+            Object mAssociation = buildDirectedAssociation(newName, parseState
+                    .getClassifier(), mClassifier);
+            // this causes a problem when mClassifier is not only
             // at one assoc end: (which one is the right one?)
-            mAssociationEnd =
-                Model.getFacade().getAssociationEnd(
-                        mClassifier,
-                        mAssociation);
+            mAssociationEnd = Model.getFacade().getAssociationEnd(mClassifier,
+                    mAssociation);
         }
         return mAssociationEnd;
     }
@@ -1732,21 +1624,18 @@ public class Modeller {
      * @param destClassifier destination classifier (end which is navigable)
      * @return newly created Association
      */
-    public static Object buildDirectedAssociation(
-            String name,
-            Object sourceClassifier, 
-            Object destClassifier) {
-        return Model.getCoreFactory().buildAssociation(
-                destClassifier, true, sourceClassifier, false, 
-                name);
+    public static Object buildDirectedAssociation(String name,
+            Object sourceClassifier, Object destClassifier) {
+        return Model.getCoreFactory().buildAssociation(destClassifier, true,
+                sourceClassifier, false, name);
     }
-    
-    /**
-       Get the stereotype with a specific name.
 
-       @param name The name of the stereotype.
-       @return The stereotype.
-    */
+    /**
+     * Get the stereotype with a specific name.
+     * 
+     * @param name The name of the stereotype.
+     * @return The stereotype.
+     */
     private Object getStereotype(String name) {
         LOG.debug("Trying to find a stereotype of name <<" + name + ">>");
         // Is this line really safe wouldn't it just return the first
@@ -1755,18 +1644,16 @@ public class Modeller {
 
         if (stereotype == null) {
             LOG.debug("Couldn't find so creating it");
-            return
-                Model.getExtensionMechanismsFactory()
-                    .buildStereotype(name, model);
+            return Model.getExtensionMechanismsFactory().buildStereotype(name,
+                    model);
         }
 
         if (!Model.getFacade().isAStereotype(stereotype)) {
             // and so this piece of code may create an existing stereotype
             // in error.
             LOG.debug("Found something that isn't a stereotype so creating it");
-            return
-                Model.getExtensionMechanismsFactory()
-                    .buildStereotype(name, model);
+            return Model.getExtensionMechanismsFactory().buildStereotype(name,
+                    model);
         }
 
         LOG.debug("Found it");
@@ -1775,29 +1662,28 @@ public class Modeller {
 
     /**
      * Find the first suitable stereotype with baseclass for a given object.
-     *
+     * 
      * @param me
      * @param name
      * @param baseClass
      * @return the stereotype if found
-     *
-     * @throws IllegalArgumentException if the desired stereotypes for
-     * the modelelement and baseclass was not found and could not be created.
-     * No stereotype is created.
+     * 
+     * @throws IllegalArgumentException if the desired stereotypes for the
+     *             modelelement and baseclass was not found and could not be
+     *             created. No stereotype is created.
      */
     private Object getStereotype(Object me, String name, String baseClass) {
-        Collection models =
-            ProjectManager.getManager().getCurrentProject().getModels();
-        Collection stereos =
-                Model.getExtensionMechanismsHelper().getAllPossibleStereotypes(
-                        models, me);
-        Object stereotype =  null;
+        Collection models = ProjectManager.getManager().getCurrentProject()
+                .getModels();
+        Collection stereos = Model.getExtensionMechanismsHelper()
+                .getAllPossibleStereotypes(models, me);
+        Object stereotype = null;
         if (stereos != null && stereos.size() > 0) {
             Iterator iter = stereos.iterator();
             while (iter.hasNext()) {
                 stereotype = iter.next();
-                if (Model.getExtensionMechanismsHelper()
-                        .isStereotypeInh(stereotype, name, baseClass)) {
+                if (Model.getExtensionMechanismsHelper().isStereotypeInh(
+                        stereotype, name, baseClass)) {
                     LOG.info("Returning the existing stereotype of <<"
                             + Model.getFacade().getName(stereotype) + ">>");
                     return stereotype;
@@ -1805,7 +1691,7 @@ public class Modeller {
             }
         }
         // Instead of failing, this should create any stereotypes that it
-        // requires.  Most likely cause of failure is that the stereotype isn't
+        // requires. Most likely cause of failure is that the stereotype isn't
         // included in the profile that is being used. - tfm 20060224
         stereotype = getStereotype(name);
         if (stereotype != null) {
@@ -1814,22 +1700,21 @@ public class Modeller {
         }
         // This should never happen then:
         throw new IllegalArgumentException("Could not find "
-            + "a suitable stereotype for " + Model.getFacade().getName(me)
-            + " -  stereotype: <<" + name
-            + ">> base: " + baseClass);
+                + "a suitable stereotype for " + Model.getFacade().getName(me)
+                + " -  stereotype: <<" + name + ">> base: " + baseClass);
     }
 
     /**
-       Return the tagged value with a specific tag.
-
-       @param element The tagged value belongs to this.
-       @param name The tag.
-       @return The found tag. A new is created if not found.
-    */
+     * Return the tagged value with a specific tag.
+     * 
+     * @param element The tagged value belongs to this.
+     * @param name The tag.
+     * @return The found tag. A new is created if not found.
+     */
     private Object getTaggedValue(Object element, String name) {
         Object tv = Model.getFacade().getTaggedValue(element, name);
         if (tv == null) {
-            String[] empties = {""};
+            String[] empties = { "" };
             buildTaggedValue(element, name, empties);
             tv = Model.getFacade().getTaggedValue(element, name);
         }
@@ -1837,19 +1722,18 @@ public class Modeller {
     }
 
     /**
-     * This classifier was earlier generated by reference but now it is
-     * its time to be parsed so we clean out remnants.
-     *
+     * This classifier was earlier generated by reference but now it is its time
+     * to be parsed so we clean out remnants.
+     * 
      * @param element that they are removed from
      */
     private void cleanModelElement(Object element) {
-        Object tv =
-                Model.getFacade().getTaggedValue(element, Facade.GENERATED_TAG);
+        Object tv = Model.getFacade().getTaggedValue(element,
+                Facade.GENERATED_TAG);
         while (tv != null) {
             Model.getUmlFactory().delete(tv);
-            tv =
-                    Model.getFacade().getTaggedValue(
-                            element, Facade.GENERATED_TAG);
+            tv = Model.getFacade()
+                    .getTaggedValue(element, Facade.GENERATED_TAG);
         }
     }
 
@@ -1867,10 +1751,9 @@ public class Modeller {
         String pkgName = name.substring(0, lastDot);
 
         // If the last element begins with an uppercase character, assume
-        // that we've really got a class, not a package.  
+        // that we've really got a class, not a package.
         // TODO: A better strategy would be to defer until we can disambiguate
-        if (Character.isUpperCase(
-                getRelativePackageName(pkgName).charAt(0))) {
+        if (Character.isUpperCase(getRelativePackageName(pkgName).charAt(0))) {
             return getPackageName(pkgName);
         } else {
             return pkgName;
@@ -1878,11 +1761,10 @@ public class Modeller {
     }
 
     /**
-     * Get the relative package name from a fully qualified
-     * package name. So if the parameter is 'org.argouml.kernel'
-     * the method is supposed to return 'kernel' (the package
-     * kernel is in package 'org.argouml').
-     *
+     * Get the relative package name from a fully qualified package name. So if
+     * the parameter is 'org.argouml.kernel' the method is supposed to return
+     * 'kernel' (the package kernel is in package 'org.argouml').
+     * 
      * @param packageName A fully qualified package name.
      * @return The relative package name.
      */
@@ -1894,7 +1776,7 @@ public class Modeller {
         // TODO: This won't correctly identify the package for an inner class
         // e.g. package.Foo.Bar, but getPackageName() makes an attempt to
         // guess correctly
-        
+
         return getClassifierName(packageName);
     }
 
@@ -1918,106 +1800,96 @@ public class Modeller {
     }
 
     /**
-       Set the visibility for a model element.
-
-       @param element The model element.
-       @param modifiers A sequence of modifiers which may contain
-       'private', 'protected' or 'public'.
-    */
-    private void setVisibility(Object element,
-                               short modifiers) {
+     * Set the visibility for a model element.
+     * 
+     * @param element The model element.
+     * @param modifiers A sequence of modifiers which may contain 'private',
+     *            'protected' or 'public'.
+     */
+    private void setVisibility(Object element, short modifiers) {
         if ((modifiers & JavaParser.ACC_PRIVATE) > 0) {
-            Model.getCoreHelper().setVisibility(
-                    element,
+            Model.getCoreHelper().setVisibility(element,
                     Model.getVisibilityKind().getPrivate());
         } else if ((modifiers & JavaParser.ACC_PROTECTED) > 0) {
-            Model.getCoreHelper().setVisibility(
-                    element,
+            Model.getCoreHelper().setVisibility(element,
                     Model.getVisibilityKind().getProtected());
         } else if ((modifiers & JavaParser.ACC_PUBLIC) > 0) {
-            Model.getCoreHelper().setVisibility(
-                    element,
+            Model.getCoreHelper().setVisibility(element,
                     Model.getVisibilityKind().getPublic());
         } else {
             // Default Java visibility is "package"
-            Model.getCoreHelper().setVisibility(
-                    element,
+            Model.getCoreHelper().setVisibility(element,
                     Model.getVisibilityKind().getPackage());
         }
     }
 
     /**
-       Set the owner scope for a feature.
-
-       @param feature The feature.
-       @param modifiers A sequence of modifiers which may contain
-       'static'.
-    */
+     * Set the owner scope for a feature.
+     * 
+     * @param feature The feature.
+     * @param modifiers A sequence of modifiers which may contain 'static'.
+     */
     private void setOwnerScope(Object feature, short modifiers) {
-        Model.getCoreHelper().setStatic(
-                feature, (modifiers & JavaParser.ACC_STATIC) > 0);
+        Model.getCoreHelper().setStatic(feature,
+                (modifiers & JavaParser.ACC_STATIC) > 0);
     }
 
     /**
      * Get the context for a classifier name that may or may not be fully
      * qualified. The context contains either the user model, or a package
      * inside the user model, or a package in the Java profile.
-     *
+     * 
      * @param name the classifier name
      * @return the context
-    */
+     */
     private Context getContext(String name) {
         Context context = parseState.getContext();
-        //TODO: the context need not be a package, so here is a bug!
+        // TODO: the context need not be a package, so here is a bug!
         String packageName = getPackageName(name);
         if (!"".equals(packageName)) {
-            context =
-                new PackageContext(context, getPackage(packageName, true));
+            context = new PackageContext(context, getPackage(packageName, true));
         }
         return context;
     }
 
-
     /**
      * Add the contents of a single standard javadoc tag to the model element.
      * Usually this will be added as a tagged value.
-     *
+     * 
      * This is called from {@link #addDocumentationTag} only.
-     *
+     * 
      * @param me the model element to add to
      * @param sTagName the name of the javadoc tag
      * @param sTagData the contents of the javadoc tag
      */
-    private void addJavadocTagContents(Object me,
-                                       String sTagName,
-                                       String[] sTagData) {
+    private void addJavadocTagContents(Object me, String sTagName,
+            String[] sTagData) {
         if (sTagData.length == 0 || sTagData[0] == null) {
             LOG.debug("Called addJavadocTagContents with no tag data!");
             return;
         }
         int colonPos = (sTagData != null) ? sTagData[0].indexOf(':') : -1;
-        if (colonPos != -1 && (("invariant".equals(sTagName))
-            || ("pre-condition".equals(sTagName))
-            || ("post-condition".equals(sTagName)))) {
+        if (colonPos != -1
+                && (("invariant".equals(sTagName))
+                        || ("pre-condition".equals(sTagName)) || ("post-condition"
+                        .equals(sTagName)))) {
 
             // add as OCL constraint
             String sContext = OCLUtil.getContextString(me);
             String name = sTagData[0].substring(0, colonPos);
             String body = null;
-            if (sTagName.equals ("invariant")) {
+            if (sTagName.equals("invariant")) {
                 // add as invariant constraint Note that no checking
                 // of constraint syntax is performed... BAD!
                 body = sContext + " inv " + sTagData;
-            } else if (sTagName.equals ("pre-condition")) {
+            } else if (sTagName.equals("pre-condition")) {
                 body = sContext + " pre " + sTagData;
             } else {
                 body = sContext + " post " + sTagData;
             }
-            Object bexpr =
-                Model.getDataTypesFactory()
-                    .createBooleanExpression("OCL", body);
-            Object mc =
-                Model.getCoreFactory().buildConstraint(name, bexpr);
+            Object bexpr = Model.getDataTypesFactory().createBooleanExpression(
+                    "OCL", body);
+            Object mc = Model.getCoreFactory().buildConstraint(name, bexpr);
             Model.getCoreHelper().addConstraint(me, mc);
             if (Model.getFacade().getNamespace(me) != null) {
                 // Apparently namespace management is not supported
@@ -2025,8 +1897,7 @@ public class Modeller {
                 // cause problems, I'll just leave it at that for the
                 // moment...
                 Model.getCoreHelper().addOwnedElement(
-                        Model.getFacade().getNamespace(me),
-                        mc);
+                        Model.getFacade().getNamespace(me), mc);
             }
         } else {
             if ("stereotype".equals(sTagName)) {
@@ -2060,8 +1931,7 @@ public class Modeller {
         }
     }
 
-    private void buildTaggedValue(
-            Object me, String sTagName, String[] sTagData) {
+    private void buildTaggedValue(Object me, String sTagName, String[] sTagData) {
         Object tv = Model.getFacade().getTaggedValue(me, sTagName);
         if (tv == null) {
             // using deprecated buildTaggedValue here, because getting the tag
@@ -2073,38 +1943,35 @@ public class Modeller {
                     Model.getExtensionMechanismsFactory().buildTaggedValue(
                             sTagName, sTagData[0]));
         } else {
-            Model.getExtensionMechanismsHelper()
-                    .setDataValues(tv, sTagData);
+            Model.getExtensionMechanismsHelper().setDataValues(tv, sTagData);
         }
     }
 
     /**
-     * Add the javadocs as a tagged value 'documentation' to the model
-     * element. All comment delimiters are removed prior to adding the
-     * comment.
-     *
+     * Add the javadocs as a tagged value 'documentation' to the model element.
+     * All comment delimiters are removed prior to adding the comment.
+     * 
      * Added 2001-10-05 STEFFEN ZSCHALER.
-     *
+     * 
      * @param modelElement the model element to which to add the documentation
-     * @param sJavaDocs the documentation comments to add ("" or null
-     * if no java docs)
+     * @param sJavaDocs the documentation comments to add ("" or null if no java
+     *            docs)
      */
     private void addDocumentationTag(Object modelElement, String sJavaDocs) {
-        if ((sJavaDocs != null)
-            && (sJavaDocs.trim().length() >= 5)) {
+        if ((sJavaDocs != null) && (sJavaDocs.trim().length() >= 5)) {
             StringBuffer sbPureDocs = new StringBuffer(80);
             String sCurrentTagName = null;
-            String[] sCurrentTagData = {null};
+            String[] sCurrentTagData = { null };
             int nStartPos = 3; // skip the leading /**
             boolean fHadAsterisk = true;
 
             while (nStartPos < sJavaDocs.length()) {
-                switch (sJavaDocs.charAt (nStartPos)) {
+                switch (sJavaDocs.charAt(nStartPos)) {
                 case '*':
                     fHadAsterisk = true;
                     nStartPos++;
                     break;
-                case ' ':   // all white space, hope I didn't miss any ;-)
+                case ' ': // all white space, hope I didn't miss any ;-)
                 case '\t':
                     // ignore white space before the first asterisk
                     if (!fHadAsterisk) {
@@ -2116,12 +1983,12 @@ public class Modeller {
                     // check ahead for tag
                     int j = nStartPos;
                     while ((j < sJavaDocs.length())
-                           && ((sJavaDocs.charAt (j) == ' ')
-                               || (sJavaDocs.charAt (j) == '\t'))) {
+                            && ((sJavaDocs.charAt(j) == ' ') || (sJavaDocs
+                                    .charAt(j) == '\t'))) {
                         j++;
                     }
                     if (j < sJavaDocs.length()) {
-                        if (sJavaDocs.charAt (j) == '@') {
+                        if (sJavaDocs.charAt(j) == '@') {
                             // if the last javadoc is on the last line
                             // no new line will be found, causing an
                             // indexoutofboundexception.
@@ -2131,48 +1998,45 @@ public class Modeller {
                             } else {
                                 lineEndPos = sJavaDocs.indexOf('\n', j) + 1;
                             }
-                            sbPureDocs.append(sJavaDocs.substring(j,
-                                                                  lineEndPos));
+                            sbPureDocs.append(sJavaDocs
+                                    .substring(j, lineEndPos));
                             // start standard tag potentially add
                             // current tag to set of tagged values...
                             if (sCurrentTagName != null) {
-                                addJavadocTagContents (modelElement,
-                                                       sCurrentTagName,
-                                                       sCurrentTagData);
+                                addJavadocTagContents(modelElement,
+                                        sCurrentTagName, sCurrentTagData);
                             }
                             // open new tag
-                            int nTemp = sJavaDocs.indexOf (' ', j + 1);
+                            int nTemp = sJavaDocs.indexOf(' ', j + 1);
                             if (nTemp == -1) {
                                 nTemp = sJavaDocs.length() - 1;
                             }
-                            sCurrentTagName = sJavaDocs.substring(j + 1,
-                                                                  nTemp);
-                            int nTemp1 = sJavaDocs.indexOf ('\n', ++nTemp);
+                            sCurrentTagName = sJavaDocs.substring(j + 1, nTemp);
+                            int nTemp1 = sJavaDocs.indexOf('\n', ++nTemp);
                             if (nTemp1 == -1) {
                                 nTemp1 = sJavaDocs.length();
                             } else {
                                 nTemp1++;
                             }
-                            sCurrentTagData[0] =
-                                sJavaDocs.substring (nTemp, nTemp1);
+                            sCurrentTagData[0] = sJavaDocs.substring(nTemp,
+                                    nTemp1);
                             nStartPos = nTemp1;
                         } else {
                             // continue standard tag or comment text
-                            int nTemp = sJavaDocs.indexOf ('\n', nStartPos);
+                            int nTemp = sJavaDocs.indexOf('\n', nStartPos);
                             if (nTemp == -1) {
                                 nTemp = sJavaDocs.length();
                             } else {
                                 nTemp++;
                             }
                             if (sCurrentTagName != null) {
-                                sbPureDocs.append(sJavaDocs.substring(nStartPos,
-                                                                      nTemp));
-                                sCurrentTagData[0] +=
-                                    " "
-                                    + sJavaDocs.substring (nStartPos, nTemp);
+                                sbPureDocs.append(sJavaDocs.substring(
+                                        nStartPos, nTemp));
+                                sCurrentTagData[0] += " "
+                                        + sJavaDocs.substring(nStartPos, nTemp);
                             } else {
-                                sbPureDocs.append(sJavaDocs.substring(nStartPos,
-                                                                      nTemp));
+                                sbPureDocs.append(sJavaDocs.substring(
+                                        nStartPos, nTemp));
                             }
                             nStartPos = nTemp;
                         }
@@ -2192,17 +2056,16 @@ public class Modeller {
             // handle last tag, if any (strip trailing slash there too)
             if (sCurrentTagName != null) {
                 sCurrentTagData[0] = removeTrailingSlash(sCurrentTagData[0]);
-                addJavadocTagContents (modelElement, sCurrentTagName,
-                                       sCurrentTagData);
+                addJavadocTagContents(modelElement, sCurrentTagName,
+                        sCurrentTagData);
             }
 
             // Now store documentation text in a tagged value
-            String[] javadocs = {sJavaDocs};
+            String[] javadocs = { sJavaDocs };
             buildTaggedValue(modelElement, Argo.DOCUMENTATION_TAG, javadocs);
             addStereotypes(modelElement);
         }
     }
-
 
     /*
      * Remove a trailing slash, including the entire line if it's the only thing
@@ -2211,7 +2074,7 @@ public class Modeller {
     private String removeTrailingSlash(String s) {
         if (s.endsWith("\n/")) {
             return s.substring(0, s.length() - 2);
-        } else  if (s.endsWith("/")) {
+        } else if (s.endsWith("/")) {
             return s.substring(0, s.length() - 1);
         } else {
             return s;
@@ -2219,10 +2082,9 @@ public class Modeller {
     }
 
     /*
-     * If there is a tagged value named 'stereotype', make it a real
-     * stereotype and remove the tagged value.
-     * We allow multiple instances of this tagged value
-     * AND parse a single instance for multiple stereotypes
+     * If there is a tagged value named 'stereotype', make it a real stereotype
+     * and remove the tagged value. We allow multiple instances of this tagged
+     * value AND parse a single instance for multiple stereotypes
      */
     private void addStereotypes(Object modelElement) {
         Object tv = Model.getFacade()
@@ -2246,8 +2108,8 @@ public class Modeller {
      */
     /**
      * Add a parsed method call to the collection of method calls.
-     * @param methodName
-     *            The method name called.
+     * 
+     * @param methodName The method name called.
      */
     public void addCall(String methodName) {
         methodCalls.add(methodName);
@@ -2255,6 +2117,7 @@ public class Modeller {
 
     /**
      * Get collection of method calls.
+     * 
      * @return list containing collected method calls
      */
     public synchronized List<String> getMethodCalls() {
@@ -2270,7 +2133,7 @@ public class Modeller {
 
     /**
      * Add a local variable declaration to the list of variables.
-     *
+     * 
      * @param type type of declared variable
      * @param name name of declared variable
      */
@@ -2280,7 +2143,7 @@ public class Modeller {
 
     /**
      * Return the collected set of local variable declarations.
-     *
+     * 
      * @return hash table containing all local variable declarations.
      */
     public Hashtable<String, String> getLocalVariableDeclarations() {
@@ -2293,7 +2156,7 @@ public class Modeller {
     public void clearLocalVariableDeclarations() {
         localVariables.clear();
     }
-    
+
     /**
      * Get the elements which were created while reverse engineering this file.
      * 
@@ -2304,12 +2167,11 @@ public class Modeller {
     }
 
     /**
-     * Set flag that controls name generation.  Artificial names are generated
-     * by default for historical reasons, but in most cases they are just
-     * clutter.
+     * Set flag that controls name generation. Artificial names are generated by
+     * default for historical reasons, but in most cases they are just clutter.
      * 
      * @param generateNamesFlag true to generate artificial names of the form
-     *                "From->To" for Associations, Dependencies, etc.
+     *            "From->To" for Associations, Dependencies, etc.
      */
     public void setGenerateNames(boolean generateNamesFlag) {
         generateNames = generateNamesFlag;
