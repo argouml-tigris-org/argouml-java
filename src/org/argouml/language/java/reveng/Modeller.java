@@ -39,7 +39,6 @@ import org.antlr.runtime.RecognitionException;
 import org.apache.log4j.Logger;
 import org.argouml.application.api.Argo;
 import org.argouml.kernel.ProjectManager;
-import org.argouml.language.java.reveng.classfile.ParserUtils;
 import org.argouml.model.CoreFactory;
 import org.argouml.model.Facade;
 import org.argouml.model.Model;
@@ -47,12 +46,7 @@ import org.argouml.ocl.OCLUtil;
 import org.argouml.profile.Profile;
 import org.argouml.uml.reveng.ImportCommon;
 import org.argouml.uml.reveng.ImportInterface;
-import org.omg.uml.foundation.core.DataType;
-import org.omg.uml.foundation.core.ModelElement;
-import org.omg.uml.foundation.core.Stereotype;
-import org.omg.uml.foundation.core.TagDefinition;
-import org.omg.uml.foundation.core.TaggedValue;
-import org.omg.uml.foundation.core.TemplateParameter;
+
 
 /**
  * Modeller maps Java source code(parsed/recognised by ANTLR) to UML model
@@ -938,17 +932,19 @@ public class Modeller {
     }
     
     void addTypeParameters(Object modelElement, List<String> typeParameters) {
-    	if (Model.getFacade().getTemplateParameters(modelElement).size() == 0) {
-    		for (int index = 0; index < typeParameters.size(); index++) {
-    			String parameter = typeParameters.get(index);
-    			TemplateParameter t = (TemplateParameter) Model.getCoreFactory().createTemplateParameter();
-    			DataType d = (DataType) Model.getCoreFactory().createDataType();
-    			d.setName(parameter);
-    			t.setParameter(d);
-    			t.setTemplate((ModelElement)modelElement);
-    			Model.getCoreHelper().addTemplateParameter(modelElement, t);
-    		}
-    	}
+        if (Model.getFacade().getTemplateParameters(modelElement).size() == 0) {
+            for (String parameter : typeParameters) {
+                Object templateParam = 
+                    Model.getCoreFactory().createTemplateParameter();
+                // TODO: Why isn't this referencing a ModelElement that was 
+                // imported from Java?  The types have to match.
+                Object param = Model.getCoreFactory().buildDataType(parameter, 
+                        modelElement);
+                Model.getCoreHelper().setParameter(templateParam, param);
+                Model.getCoreHelper().addTemplateParameter(modelElement, 
+                        templateParam);
+            }
+        }
     }
     
     /**
