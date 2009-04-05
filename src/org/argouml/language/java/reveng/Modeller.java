@@ -55,6 +55,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Stack;
 import java.util.StringTokenizer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CommonTokenStream;
@@ -69,6 +71,7 @@ import org.argouml.ocl.OCLUtil;
 import org.argouml.profile.Profile;
 import org.argouml.uml.reveng.ImportCommon;
 import org.argouml.uml.reveng.ImportInterface;
+
 
 /**
  * Modeller maps Java source code(parsed/recognised by ANTLR) to UML model
@@ -892,10 +895,17 @@ public class Modeller {
             for (String parameter : typeParameters) {
                 Object templateParam = Model.getCoreFactory()
                         .createTemplateParameter();
-                // TODO: Why isn't this referencing a ModelElement that was
-                // imported from Java? The types have to match.
-                Object param = Model.getCoreFactory().buildDataType(parameter,
-                        modelElement);
+                Object param = Model.getCoreFactory().createParameter();
+                // parse parameter to name and bounds
+                Pattern p = Pattern.compile("([^ ]*)( super | extends )?((.*))");
+                Matcher m = p.matcher(parameter);
+                if (m.matches()) {
+                    Model.getCoreHelper().setName(param, m.group(1));
+                    if (m.group(2) != null) {
+                        // bounds are saved as tagged value in parameter
+                        buildTaggedValue(param, m.group(2).trim(), new String[]{m.group(3)});
+                    }
+                } 
                 Model.getCoreHelper().setParameter(templateParam, param);
                 Model.getCoreHelper().addTemplateParameter(modelElement,
                         templateParam);

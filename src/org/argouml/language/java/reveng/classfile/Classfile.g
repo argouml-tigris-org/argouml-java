@@ -83,7 +83,8 @@ tokens {
 	TYPE;
 	UNKNOWN_ATTRIBUTE;
 	VARIABLE_DEF;
-	VERSION; 
+	VERSION;
+    SIGNATURE;
 }
 
 {
@@ -139,7 +140,7 @@ tokens {
 	private void setClassName(String name) {
 
 	    // Remove the package info.
-    	    int lastDot = name.lastIndexOf('.');
+    	    int lastDot = name.lastIndexOf('/');
             if(lastDot == -1) {
 		_className = name;
             }  else {
@@ -187,129 +188,12 @@ tokens {
 	    return _constant[(int)index &0xffff];
 	}
 
-	/**
-	 * Convert a classfile field descriptor.
-	 *
-	 * @param desc The descriptor as a string.
-	 *
-	 * @return The descriptor as it would appear in a Java sourcefile.
-	 */
 	String convertDescriptor(String desc) {
-	    int arrayDim = 0;
-	    StringBuffer result = new StringBuffer();
-
-	    while(desc.charAt(0) == '[') {
-	        arrayDim++;
-		desc = desc.substring(1);
-	    }
-
-	    switch(desc.charAt(0)) {
-	    	case 'B': result.append("byte"); break;
-		case 'C': result.append("char"); break;
-		case 'D': result.append("double"); break;
-		case 'F': result.append("float"); break;
-		case 'I': result.append("int"); break;
-		case 'J': result.append("long"); break;
-		case 'S': result.append("short"); break;
-		case 'Z': result.append("boolean"); break;
-		case 'L': result.append(desc.substring( 1, desc.indexOf(';'))); break;
-		case 'T': 
-                    result.append("<");
-                    result.append(desc.substring( 1, desc.indexOf(';')));
-                    result.append(">");
-		    break;
-	    }
-
-	    for(int d = 0; d < arrayDim; d++) {
-	        result.append("[]");
-	    }
-
-	    return result.toString();
+	    return ParserUtils.convertFieldDescriptor(desc);
 	}
 
-	/**
-	 * Convert the descriptor of a method.
-	 *
-	 * @param desc The method descriptor as a String.
-	 *
-	 * @return The method descriptor as a array of Strings, that holds Java types.
-	 */
 	String [] convertMethodDescriptor(String desc) {
-	    java.util.List<String> resultBuffer = new ArrayList<String>();  // A buffer for the result.
-	    int arrayDim = 0;
-	    String typeIdent = null;
-
-	    if(desc.startsWith("(")) {  // parse parameters
-		int paramLen = desc.indexOf(")") - 1;
-	        String paramDesc = desc.substring( 1, 1 + paramLen);
-
-		while(paramDesc.length() > 0) {
-
-		    while(paramDesc.charAt(0) == '[') {
-			arrayDim++;
-			paramDesc = paramDesc.substring(1);
-		    }
-
-		    int len;			
-		    switch(paramDesc.charAt(0)) {
-	    	        case 'B': typeIdent = "byte"; paramDesc = paramDesc.substring(1); break;
-		        case 'C': typeIdent = "char"; paramDesc = paramDesc.substring(1); break;
-		        case 'D': typeIdent = "double"; paramDesc = paramDesc.substring(1); break;
-		        case 'F': typeIdent = "float"; paramDesc = paramDesc.substring(1); break;
-		        case 'I': typeIdent = "int"; paramDesc = paramDesc.substring(1); break;
-		        case 'J': typeIdent = "long"; paramDesc = paramDesc.substring(1); break;
-		        case 'S': typeIdent = "short"; paramDesc = paramDesc.substring(1); break;
-		        case 'Z': typeIdent = "boolean"; paramDesc = paramDesc.substring(1); break;
-		        case 'L': len = paramDesc.indexOf(';') - 1;
-				  typeIdent = paramDesc.substring( 1, 1 + len).replace('/', '.');
-				  paramDesc = paramDesc.substring(len + 2);
-				  break;
-		        case 'T': len = paramDesc.indexOf(';') - 1;
-				  typeIdent = paramDesc.substring( 1, 1 + len).replace('$', '.');
-				  paramDesc = "<" + paramDesc.substring(len + 2) + ">";
-				  break;
-		    }		
-
-		    for(int i=0; i < arrayDim; i++) {
-			typeIdent += "[]";
-		    }
-		    arrayDim = 0;
-
-		    resultBuffer.add(typeIdent);
-		}
-		desc = desc.substring(paramLen + 2);
-	    }
-
-	    // Now convert the return type descriptor.
-
-	    while(desc.charAt(0) == '[') {
-	        arrayDim++;
-		desc = desc.substring(1);
-	    }
-
-	    switch(desc.charAt(0)) {
-	    	case 'B': typeIdent = "byte"; break;
-		case 'C': typeIdent = "char"; break;
-		case 'D': typeIdent = "double"; break;
-		case 'F': typeIdent = "float"; break;
-		case 'I': typeIdent = "int"; break;
-		case 'J': typeIdent = "long"; break;
-		case 'S': typeIdent = "short"; break;
-		case 'Z': typeIdent = "boolean"; break;
-		case 'V': typeIdent = "void"; break;
-		case 'L': typeIdent = desc.substring( 1, desc.indexOf(';')).replace('/','.'); break;
-		case 'T': typeIdent = "<" + desc.substring( 1, desc.indexOf(';')).replace('$','.') + ">"; break;
-	    }
-
-	    for(int i=0; i < arrayDim; i++) {
-	        typeIdent += "[]";
-	    }
-
-	    resultBuffer.add(0, typeIdent);
-
-	    String [] result = new String [ resultBuffer.size() ];
-            resultBuffer.toArray(result);
-	    return result;
+	    return ParserUtils.convertMethodDescriptor(desc);
 	}
 }
 
@@ -486,10 +370,10 @@ constant_utf8_info!
 	  ( {length > 0}? bytebuf=u1 { bytes[bytepos++] = bytebuf; length--; } )* {length==0}? 
 	  { 
             String name = new String(bytes);
-	    name= name.replace('/','.'); 
-	    if(name.startsWith("[") && name.endsWith("]")) {
-		name = name.substring(1,name.length()-1) + "[]";
-	    }
+//	    name= name.replace('/','.'); 
+//	    if(name.startsWith("[") && name.endsWith("]")) {
+//		name = name.substring(1,name.length()-1) + "[]";
+//	    }
 	    #constant_utf8_info = #[CONSTANT_UTF8STRING,name];
           }
 	;
@@ -567,17 +451,23 @@ field_info
   short name_index=0;
   short descriptor_index=0;
   short attributes_count;
+  AST signature = #[SIGNATURE];
 }
 	: access_flags=u2
 	  name_index=u2
 	  descriptor_index=u2
           attributes_count=u2
-	  ( {attributes_count > 0}? attribute_info {attributes_count--;})* {attributes_count==0}?
+	  ({attributes_count > 0}?
+        attr:attribute_info
+	    (
+	      {#attr != null && SIGNATURE == #attr.getType()}? {signature = #attr;}
+	    )
+       {attributes_count--;})* {attributes_count==0}?
 	   {
 	     AST access = new ShortAST(ACCESS_MODIFIERS,access_flags);
 	     String typeIdent = convertDescriptor(getConstant(descriptor_index).getText());
 	     String name = getConstant(name_index).getText();
-	     #field_info = #( #field_info, [VARIABLE_DEF], access, [TYPE,typeIdent], [IDENT,name]);
+	     #field_info = #([VARIABLE_DEF], access, [TYPE,typeIdent], [IDENT,name], signature);
 	   }
 	;
 
@@ -596,6 +486,7 @@ method_info!
   short descriptor_index=0;
   short attributes_count=0;
   AST exceptions = #[THROWS];  // Create a empty exception clause.
+  AST signature = #[SIGNATURE];
 }
 	: access_flags=u2
           name_index=u2  
@@ -606,7 +497,9 @@ method_info!
             attr:attribute_info 
 	    (
 	     // If this is a exception table, store it for the method AST.
-	      {#attr != null && THROWS == #attr.getType()}? {exceptions = #attr;}
+	     {#attr != null && THROWS == #attr.getType()}? {exceptions = #attr;}
+         |
+         {#attr != null && SIGNATURE == #attr.getType()}? {signature = #attr;}
 
 	      |  // Could also be a code attribute.
 	    )
@@ -629,10 +522,10 @@ method_info!
 	      String ident = getConstant(name_index).getText();
 	      if( "<init>".equals(ident)) {  // is this a constructor?
 		  ident = getClassName();  // Use the class name as the constructor's method name.
-		  #method_info = #( [CTOR_DEF], access,  [IDENT,ident], parameters, exceptions);
+		  #method_info = #( [CTOR_DEF], access,  [IDENT,ident], parameters, exceptions, signature);
 	      } else {
 	          String retType = method_descriptor[0];
-	          #method_info = #( [METHOD_DEF], access, [TYPE,retType], [IDENT,ident], parameters, exceptions);
+	          #method_info = #( [METHOD_DEF], access, [TYPE,retType], [IDENT,ident], parameters, exceptions, signature);
 	      }
 	    }
 	;
@@ -640,7 +533,7 @@ method_info!
 // Info on all the attributes of a class.
 attribute_block
 { int attributes_count=0; }
-	: attributes_count=u2  // Get the number of attributes.
+	: attributes_count=u2  //  Get the number of attributes.
 	  ( {attributes_count > 0}? attribute_info {attributes_count--;})* {attributes_count==0}?  // Parse <attributes_count> attribute_info structures.
 	;
 
@@ -675,8 +568,8 @@ attribute_info!
  	    {"LocalVariableTable".equals(attribute_name)}? lattr:localVariableTable_attribute { #attribute_info = #lattr; }
 	    |
  	    {"LocalVariableTypeTable".equals(attribute_name)}? lvtattr:localVariableTypeTable_attribute { #attribute_info = #lvtattr; }
-//	    |
-//	    {"Signature".equals(attribute_name)}? sigattr:signature_attribute { #attribute_info = #sigattr; }
+	    |
+	    {"Signature".equals(attribute_name)}? sigattr:signature_attribute { #attribute_info = #sigattr; }
             // "SourceDebugExtension" attribute ignored
             // "Synthetic" attribute ignored
 	    |
@@ -689,6 +582,16 @@ attribute_info!
 	    { #attribute_info = #[UNKNOWN_ATTRIBUTE, attribute_name]; }
 	  ) exception catch [SemanticException se] {}
 	;
+
+signature_attribute!
+{ short signature_index = 0; }
+	: signature_index=u2
+	   {
+	     String signature_name = getConstant(signature_index).getText();
+	     #signature_attribute = #[SIGNATURE, signature_name];
+	   }
+	;
+
 
 // A predefined attribute, that holds the filename of the sourcecode.
 sourcefile_attribute!

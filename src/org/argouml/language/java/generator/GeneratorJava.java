@@ -790,6 +790,12 @@ public class GeneratorJava implements CodeGenerator, ModuleInterface {
 	    Object param = Model.getFacade().getParameter(
 	            templateParameters.get(i));
 	    sb.append(Model.getFacade().getName(param));
+	    for (String bound : new String[]{"extends","super"}) {
+	        Object s = Model.getFacade().getTaggedValueValue(param, bound);
+	        if (s != null && s.toString().trim().length() > 0) {
+	            sb.append(" "+bound+" "+s);
+	        }
+	    }
 	    if (i ==  templateParameters.size() - 1 ) {
 	        sb.append(">");
 	    } else {

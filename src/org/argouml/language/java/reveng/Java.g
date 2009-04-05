@@ -559,6 +559,8 @@ typeParameter returns [String type = null]
     :   t=Identifier              { sb.append($t.text); }
         ('extends' name=typeBound { sb.append(" extends ").append(name); }
         )?
+        ('super' name=typeBound { sb.append(" super ").append(name); }
+        )?
         {
             type = sb.toString();
         }

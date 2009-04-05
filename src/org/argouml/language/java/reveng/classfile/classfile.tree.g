@@ -77,9 +77,9 @@ options {
      * @return The class name.
      */
     private final String splitPackageFromClass(String classname) {
-	int lastDot = classname.lastIndexOf('.');
+	int lastDot = classname.lastIndexOf('/');
 	if(lastDot != -1) {
-	    getModeller().addPackage(classname.substring(0,lastDot));
+	    getModeller().addPackage(classname.substring(0,lastDot).replaceAll("/","."));
 	    classname = classname.substring(lastDot + 1);
 	}
 	return classname;
@@ -94,11 +94,18 @@ classfile[org.argouml.language.java.reveng.Modeller modeller]
 	  typeDefinition
  	  attribute_block
 	  method_block
+	  class_signature
 	    {  getModeller().popClassifier(); }
 	;
 
+class_signature
+    :SIGNATURE 
+    { getModeller().addClassSignature(ParserUtils.convertClassSignature(#SIGNATURE.getText())); }
+    ;
+
 magic_number
 	: MAGIC 
+    {System.err.println("MAGIC "+#MAGIC.getText());}
 	;
 
 version_number
@@ -110,6 +117,7 @@ typeDefinition
   short modifiers=0;
   String class_name=null;
   String superclass_name=null;
+  String classSignature = null;
   List<String> interfaces = new ArrayList<String>();
 }
 	: #( INTERFACE_DEF 
@@ -124,7 +132,8 @@ typeDefinition
 	  | 
           #( CLASS_DEF 
              modifiers=access_modifiers 
-             class_name=class_info 
+             class_name=class_info
+              
              #(EXTENDS_CLAUSE superclass_name=class_info) 
              #(IMPLEMENTS_CLAUSE interface_block[interfaces])
            )
@@ -133,6 +142,8 @@ typeDefinition
 		   superclass_name=null;  
 	       }
                getModeller().addComponent();
+               
+               
 	       getModeller().addClass( splitPackageFromClass(class_name), modifiers, superclass_name, interfaces, null);
 	     }
 	;
@@ -160,7 +171,11 @@ attribute_block
 
 // Info on one class attributes (variables).
 attribute_info
-	: VARIABLE_DEF ACCESS_MODIFIERS TYPE IDENT
+{
+  String signature=null;
+}	: #(VARIABLE_DEF ACCESS_MODIFIERS TYPE IDENT
+        (SIGNATURE {signature = #SIGNATURE.getText();})?
+       )
   	    { // Add the attribute to the model element, that holds
 	      // the class/interface info.
 	      getModeller().addAttribute( ((ShortAST)#ACCESS_MODIFIERS).getShortValue(), 
@@ -180,7 +195,9 @@ method_block
 
 // A constructor definition
 ctorDef
-{ List<ParameterDeclaration> params = null; }
+{ List<ParameterDeclaration> params = null;
+  String signature=null;
+}
 	: #(CTOR_DEF ACCESS_MODIFIERS IDENT params=parameters (exceptions)? )
 	  {
 	    getModeller().addOperation( ((ShortAST)#ACCESS_MODIFIERS).getShortValue(),
@@ -193,8 +210,12 @@ ctorDef
 
 // A method declaration
 methodDecl
-{ List<ParameterDeclaration> params = null; }
-	: #(METHOD_DEF ACCESS_MODIFIERS TYPE IDENT params=parameters (exceptions)? )
+{ List<ParameterDeclaration> params = null;
+  String signature=null;
+}
+	: #(METHOD_DEF ACCESS_MODIFIERS TYPE IDENT params=parameters (exceptions)?
+        (SIGNATURE {signature = #SIGNATURE.getText();})?
+       )
 	  {
 	    getModeller().addOperation( ((ShortAST)#ACCESS_MODIFIERS).getShortValue(),
 					#TYPE.getText(),
