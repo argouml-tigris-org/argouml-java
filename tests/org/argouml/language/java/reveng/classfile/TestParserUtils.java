@@ -1,4 +1,4 @@
-// $Id: ParseState.java 116 2009-01-06 11:23:31Z thn $
+// $Id$
 // Copyright (c) 2003-2006 The Regents of the University of California. All
 // Rights Reserved. Permission to use, copy, modify, and distribute this
 // software and its documentation without fee, and without a written
@@ -24,24 +24,15 @@
 
 package org.argouml.language.java.reveng.classfile;
 
-import antlr.ASTFactory;
-import antlr.CommonAST;
-import antlr.RecognitionException;
-import antlr.TokenStreamException;
-import antlr.debug.misc.ASTFrame;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.io.FileInputStream;
-import java.io.StringBufferInputStream;
 import java.util.List;
 
-import org.argouml.language.java.reveng.classfile.ParserUtils.Token;
-
 import junit.framework.TestCase;
+import antlr.RecognitionException;
+import antlr.TokenStreamException;
 
 /**
- *
- * @author Alexander Lepekhin
+ * Tests conversion of classfile signature to java lang signature. 
+ * @author alepekhin
  */
 public class TestParserUtils extends TestCase {
 
@@ -50,12 +41,13 @@ public class TestParserUtils extends TestCase {
     }
 
     public void testFirstIndexNotInside() throws Exception {
-    	assertEquals(17,
-    		ParserUtils.AbstractLexer.firstIndexNotInside(';', '<', '>', "Ljava/lang/Object;"));
+        assertEquals(17, ParserUtils.AbstractLexer.firstIndexNotInside(';',
+                '<', '>', "Ljava/lang/Object;"));
     }
-    
+
     public void testFieldDescriptorLexer() throws Exception {
-        ParserUtils.FieldDescriptorLexer lexer = new ParserUtils.FieldDescriptorLexer("Bwhatelse");
+        ParserUtils.FieldDescriptorLexer lexer = new ParserUtils.FieldDescriptorLexer(
+                "Bwhatelse");
         List<ParserUtils.Token> tokens = lexer.parse();
         assertEquals("B", tokens.get(0).getValue());
         assertEquals("whatelse", lexer.getRest());
@@ -73,11 +65,14 @@ public class TestParserUtils extends TestCase {
         assertEquals("byte[][][]", ParserUtils.convertFieldDescriptor("[[[B"));
         assertEquals("a", ParserUtils.convertFieldDescriptor("La;"));
         assertEquals("a.b", ParserUtils.convertFieldDescriptor("La/b;"));
-        assertEquals("java.lang.String[][]", ParserUtils.convertFieldDescriptor("[[Ljava/lang/String;"));
+        assertEquals("java.lang.String[][]", ParserUtils
+                .convertFieldDescriptor("[[Ljava/lang/String;"));
     }
 
-    public void testParseMethodDescriptor() throws RecognitionException, TokenStreamException  {
-        String[] result = ParserUtils.convertMethodDescriptor("(ID[[[Ljava/lang/Thread;)Ljava/lang/Object;");
+    public void testParseMethodDescriptor() throws RecognitionException,
+            TokenStreamException {
+        String[] result = ParserUtils
+                .convertMethodDescriptor("(ID[[[Ljava/lang/Thread;)Ljava/lang/Object;");
         assertEquals("int", result[0]);
         assertEquals("double", result[1]);
         assertEquals("java.lang.Thread[][][]", result[2]);
@@ -87,45 +82,63 @@ public class TestParserUtils extends TestCase {
     }
 
     public void testConvertFieldTypeSignature() {
-        assertEquals("java.lang.Comparable<?>",
-                ParserUtils.convertFieldTypeSignature("Ljava/lang/Comparable<*>;"));
-        assertEquals("java.lang.Comparable<? extends a.b.C>",
-                ParserUtils.convertFieldTypeSignature("Ljava/lang/Comparable<+La/b/C;>;"));
-        assertEquals("java.lang.Comparable<? super a.b.C>",
-                ParserUtils.convertFieldTypeSignature("Ljava/lang/Comparable<-La/b/C;>;"));
-        assertEquals("java.lang.Comparable<java.lang.String>",
-                ParserUtils.convertFieldTypeSignature("Ljava/lang/Comparable<Ljava/lang/String;>;"));
-       assertEquals("java.lang.Map<java.lang.String,java.lang.Integer>",
-               ParserUtils.convertFieldTypeSignature("Ljava/lang/Map<Ljava/lang/String;Ljava/lang/Integer;>;"));
-       assertEquals("java.lang.Map<byte[],int[][]>",
-               ParserUtils.convertFieldTypeSignature("Ljava/lang/Map<[B[[I>;"));
-        assertEquals("java.lang.Map<byte[],java.lang.Map<E,E>[][]>",
-                ParserUtils.convertFieldTypeSignature("Ljava/lang/Map<[B[[Ljava/lang/Map<TE;TE;>;>;"));
-        assertEquals("java.lang.Map<byte[],java.lang.Map<E,E>[][]>.Inner<d.inner>.Inner2",
-                ParserUtils.convertFieldTypeSignature("Ljava/lang/Map<[B[[Ljava/lang/Map<TE;TE;>;>.Inner<Ld.inner;>.Inner2;"));
+        assertEquals("java.lang.Comparable<?>", ParserUtils
+                .convertFieldTypeSignature("Ljava/lang/Comparable<*>;"));
+        assertEquals("java.lang.Comparable<? extends a.b.C>", ParserUtils
+                .convertFieldTypeSignature("Ljava/lang/Comparable<+La/b/C;>;"));
+        assertEquals("java.lang.Comparable<? super a.b.C>", ParserUtils
+                .convertFieldTypeSignature("Ljava/lang/Comparable<-La/b/C;>;"));
+        assertEquals(
+                "java.lang.Comparable<java.lang.String>",
+                ParserUtils
+                        .convertFieldTypeSignature("Ljava/lang/Comparable<Ljava/lang/String;>;"));
+        assertEquals(
+                "java.lang.Map<java.lang.String,java.lang.Integer>",
+                ParserUtils
+                        .convertFieldTypeSignature("Ljava/lang/Map<Ljava/lang/String;Ljava/lang/Integer;>;"));
+        assertEquals("java.lang.Map<byte[],int[][]>", ParserUtils
+                .convertFieldTypeSignature("Ljava/lang/Map<[B[[I>;"));
+        assertEquals(
+                "java.lang.Map<byte[],java.lang.Map<E,E>[][]>",
+                ParserUtils
+                        .convertFieldTypeSignature("Ljava/lang/Map<[B[[Ljava/lang/Map<TE;TE;>;>;"));
+        assertEquals(
+                "java.lang.Map<byte[],java.lang.Map<E,E>[][]>.Inner<d.inner>.Inner2",
+                ParserUtils
+                        .convertFieldTypeSignature("Ljava/lang/Map<[B[[Ljava/lang/Map<TE;TE;>;>.Inner<Ld.inner;>.Inner2;"));
     }
 
     public void testConvertClassTypeSignature() {
-        assertEquals("java.lang.Object",
-                ParserUtils.convertClassTypeSignature("Ljava/lang/Object;"));
+        assertEquals("java.lang.Object", ParserUtils
+                .convertClassTypeSignature("Ljava/lang/Object;"));
     }
-    
+
     public void testConvertClassSignature() {
-        assertEquals("<T extends java.lang.Number,E extends java.lang.Object> extends java.lang.Object implements java.lang.Comparable,java.lang.Serializable",
-                ParserUtils.convertClassSignature("<T:Ljava/lang/Number;E:Ljava/lang/Object;>Ljava/lang/Object;Ljava/lang/Comparable;Ljava/lang/Serializable;"));
-        assertEquals("<T extends java.lang.Number & java.lang.Comparable> extends java.lang.Object implements java.lang.Comparable,java.lang.Serializable",
-                ParserUtils.convertClassSignature("<T:Ljava/lang/Number;:Ljava/lang/Comparable;>Ljava/lang/Object;Ljava/lang/Comparable;Ljava/lang/Serializable;"));
-        assertEquals("<T extends java.lang.Number & java.lang.Comparable & java.lang.Serializable> extends java.lang.Object implements java.lang.Comparable,java.lang.Serializable",
-                ParserUtils.convertClassSignature("<T:Ljava/lang/Number;:Ljava/lang/Comparable;:Ljava/lang/Serializable;>Ljava/lang/Object;Ljava/lang/Comparable;Ljava/lang/Serializable;"));
-        assertEquals("<T extends java.lang.Comparable & java.lang.Serializable> extends java.lang.Object implements java.lang.Comparable,java.lang.Serializable",
-                ParserUtils.convertClassSignature("<T::Ljava/lang/Comparable;:Ljava/lang/Serializable;>Ljava/lang/Object;Ljava/lang/Comparable;Ljava/lang/Serializable;"));
+        assertEquals(
+                "<T extends java.lang.Number,E extends java.lang.Object> extends java.lang.Object implements java.lang.Comparable,java.lang.Serializable",
+                ParserUtils
+                        .convertClassSignature("<T:Ljava/lang/Number;E:Ljava/lang/Object;>Ljava/lang/Object;Ljava/lang/Comparable;Ljava/lang/Serializable;"));
+        assertEquals(
+                "<T extends java.lang.Number & java.lang.Comparable> extends java.lang.Object implements java.lang.Comparable,java.lang.Serializable",
+                ParserUtils
+                        .convertClassSignature("<T:Ljava/lang/Number;:Ljava/lang/Comparable;>Ljava/lang/Object;Ljava/lang/Comparable;Ljava/lang/Serializable;"));
+        assertEquals(
+                "<T extends java.lang.Number & java.lang.Comparable & java.lang.Serializable> extends java.lang.Object implements java.lang.Comparable,java.lang.Serializable",
+                ParserUtils
+                        .convertClassSignature("<T:Ljava/lang/Number;:Ljava/lang/Comparable;:Ljava/lang/Serializable;>Ljava/lang/Object;Ljava/lang/Comparable;Ljava/lang/Serializable;"));
+        assertEquals(
+                "<T extends java.lang.Comparable & java.lang.Serializable> extends java.lang.Object implements java.lang.Comparable,java.lang.Serializable",
+                ParserUtils
+                        .convertClassSignature("<T::Ljava/lang/Comparable;:Ljava/lang/Serializable;>Ljava/lang/Object;Ljava/lang/Comparable;Ljava/lang/Serializable;"));
     }
-    
+
     public void testConvertMethodTypeSignature() {
-        assertEquals("() return void",
-                ParserUtils.convertMethodTypeSignature("()V"));
-        assertEquals("(E,java.lang.Integer) return java.lang.String throws java.lang.Exception,T",
-                ParserUtils.convertMethodTypeSignature("(TE;Ljava/lang/Integer;)Ljava/lang/String;^Ljava/lang/Exception;^TT;"));
+        assertEquals("() return void", ParserUtils
+                .convertMethodTypeSignature("()V"));
+        assertEquals(
+                "(E,java.lang.Integer) return java.lang.String throws java.lang.Exception,T",
+                ParserUtils
+                        .convertMethodTypeSignature("(TE;Ljava/lang/Integer;)Ljava/lang/String;^Ljava/lang/Exception;^TT;"));
     }
-    
+
 }
