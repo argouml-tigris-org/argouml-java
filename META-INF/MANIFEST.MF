@@ -2,9 +2,10 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: org.argouml.module.java
-Bundle-Version: 0.25.5
-Bundle-ClassPath: lib/antlr-3.1.1-runtime.jar,
- lib/commons-io-1.0.jar,
+Bundle-Version: 0.28.0.qualifier
+Bundle-ClassPath: .,
+ lib/antlr-2.7.7.jar,
+ lib/antlr-runtime-3.1.1.jar,
  lib/easymock-1.1.jar
 Bundle-Localization: plugin
 Export-Package: META-INF,
