@@ -24,31 +24,27 @@
 
 package org.argouml.language.java.reveng;
 
-import antlr.ASTFactory;
-import antlr.CommonAST;
-import antlr.debug.misc.ASTFrame;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.DataInputStream;
 import java.io.FileInputStream;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
+
 import junit.framework.TestCase;
-import org.argouml.language.java.reveng.classfile.ClassfileParser;
-import org.argouml.language.java.reveng.classfile.ClassfileTreeParser;
-import org.argouml.language.java.reveng.classfile.SimpleByteLexer;
+
 import org.argouml.Helper;
 import org.argouml.kernel.Project;
 import org.argouml.kernel.ProjectManager;
-import org.argouml.model.CoreHelper;
+import org.argouml.language.java.reveng.classfile.ClassfileParser;
+import org.argouml.language.java.reveng.classfile.ClassfileTreeParser;
+import org.argouml.language.java.reveng.classfile.SimpleByteLexer;
 import org.argouml.model.Model;
 import org.argouml.profile.Profile;
 import org.argouml.profile.init.InitProfileSubsystem;
-import org.omg.uml.foundation.core.ModelElement;
-import org.omg.uml.foundation.core.TemplateParameter;
+
+import antlr.ASTFactory;
+import antlr.CommonAST;
+import antlr.debug.misc.ASTFrame;
 
 public class TestClassImportGenerics extends TestCase {
 
@@ -103,9 +99,11 @@ public class TestClassImportGenerics extends TestCase {
                         Model.getFacade().lookupIn(parsedPackage, "TestClassImportGenerics$TestedClass");
                 assertNotNull("No class \"TestClassImportGenerics$TestedClass\" found.", parsedClass);
             }
-            ModelElement element = (ModelElement)parsedClass;
-            for (TemplateParameter p2 : element.getTemplateParameter()) {
-            	String name = p2.getParameter().getName();
+            Iterator iter =Model.getFacade().getTemplateParameters(parsedClass)
+                .iterator();
+            while (iter.hasNext()) {
+            	String name = Model.getFacade().getName(Model.getFacade()
+            	    .getParameter(iter.next()));
             	System.err.println("name found:"+name);
             }
 //            Collection attributes = Model.getFacade().getAttributes(parsedClass);
