@@ -573,7 +573,7 @@ public class RESequenceDiagramDialog
             coll = new ArrayList<Object>();
             coll.add(theClassifier);
             Model.getCollaborationsHelper().setBases(newClassifierRole, coll);
-            crFig = new FigClassifierRole(newClassifierRole);
+            crFig = new FigClassifierRole(newClassifierRole, null, null);
 
             // location must be set for correct automatic layouting (how funny)
             // otherwise, the new classifier role is not the rightmost
