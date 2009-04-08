@@ -40,7 +40,6 @@ import java.util.List;
 import org.antlr.runtime.ANTLRReaderStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.apache.log4j.Logger;
-import org.argouml.application.helpers.ApplicationVersion;
 import org.argouml.i18n.Translator;
 import org.argouml.kernel.Project;
 import org.argouml.moduleloader.ModuleInterface;
