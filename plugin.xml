@@ -2,7 +2,7 @@
 <?eclipse version="3.2"?>
 <plugin>
    <extension
-         point="org.argouml.argoeclipse.core.codeGenerator">
+         point="org.argouml.app.codeGenerator">
       <language
             id="org.argouml.language.java"
             name="Java">
@@ -15,7 +15,7 @@
       </generator>
    </extension>
    <extension
-         point="org.argouml.argoeclipse.core.sourceImporter">
+         point="org.argouml.app.sourceImporter">
       <language
             id="org.argouml.language.java"
             image="src/org/argouml/Images/JavaNotation.gif"
