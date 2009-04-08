@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
-Bundle-SymbolicName: org.argouml.module.java
+Bundle-SymbolicName: org.argouml.module.java;singleton:=true
 Bundle-Version: 0.28.0.qualifier
 Bundle-ClassPath: .,
  lib/antlr-2.7.7.jar,
@@ -17,3 +17,4 @@ Require-Bundle: org.argouml.app,
  org.argouml.core.model
 Bundle-Vendor: %pluginProvider
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Eclipse-LazyStart: false

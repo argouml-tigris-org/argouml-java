@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension
+         point="org.argouml.argoeclipse.core.codeGenerator">
+      <language
+            id="org.argouml.language.java"
+            name="Java">
+      </language>
+      <generator
+            class="org.argouml.language.java.generator.GeneratorJava"
+            id="org.argouml.language.java.generator"
+            language="org.argouml.language.java"
+            name="Java Code Generator">
+      </generator>
+   </extension>
+   <extension
+         point="org.argouml.argoeclipse.core.sourceImporter">
+      <language
+            id="org.argouml.language.java"
+            image="src/org/argouml/Images/JavaNotation.gif"
+            name="Java">
+      </language>
+      <importer
+            class="org.argouml.language.java.reveng.JavaImport"
+            id="org.argouml.language.java.reveng"
+            language="org.argouml.language.java"
+            name="Java">
+      </importer>
+   </extension>
+
+</plugin>
