@@ -730,7 +730,10 @@ interfaceMethodOrFieldRest[String name, short modifiers, String t]
 
 methodDeclaratorRest[String name, short modifiers, List<String> tparam, String t]
     @init{
-        StringBuffer sb = new StringBuffer(t);
+        StringBuffer sb = new StringBuffer(80);
+        if (t != null) {
+            sb.append(t);
+        }
         boolean isOutestCompStat = !isInCompoundStatement();
     }
     :   param=formalParameters ('[' ']' { sb.append("[]"); } )*
@@ -776,7 +779,10 @@ voidMethodDeclaratorRest[String name, short modifiers]
 
 interfaceMethodDeclaratorRest[String name, short modifiers, List<String> tparam, String t]
     @init{
-        StringBuffer sb = new StringBuffer(t);
+        StringBuffer sb = new StringBuffer(80);
+        if (t != null) {
+            sb.append(t);
+        }
         boolean isOutestCompStat = !isInCompoundStatement();
     }
     :   param=formalParameters ('[' ']' { sb.append("[]"); } )*
@@ -904,7 +910,10 @@ constantDeclaratorsRest[String javadoc, String name, short modifiers, String t]
 
 constantDeclaratorRest[String javadoc, String name, short modifiers, String t]
     @init{
-        StringBuffer sb = new StringBuffer(t);
+        StringBuffer sb = new StringBuffer(80);
+        if (t != null) {
+            sb.append(t);
+        }
         String trackedSoFar = null;
         String init = null;
     }
