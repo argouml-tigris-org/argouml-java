@@ -78,22 +78,107 @@
             <UML:Package xmi.id = '.:0000000000000863' name = 'util' isSpecification = 'false'
               isRoot = 'false' isLeaf = 'false' isAbstract = 'false'>
               <UML:Namespace.ownedElement>
-                <UML:Class xmi.id = '.:000000000000085B' name = 'Vector' isSpecification = 'false'
+                <UML:Class xmi.id = '.:0000000000000883' name = 'ArrayList' isSpecification = 'false'
                   isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '.:0000000000000884' name = 'BitSet' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '.:0000000000000885' name = 'Calendar' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'true' isActive = 'false'/>
                 <UML:Interface xmi.id = '.:000000000000085C' name = 'Collection' isSpecification = 'false'
                   isRoot = 'false' isLeaf = 'false' isAbstract = 'false'/>
+                <UML:Interface xmi.id = '.:0000000000000886' name = 'Comparator' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'false'/>
+                <UML:Class xmi.id = '.:0000000000000887' name = 'Currency' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'true' isActive = 'false'/>
+                <UML:Class xmi.id = '.:0000000000000888' name = 'CurrencyData' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'true' isActive = 'false'/>
+                <UML:Class xmi.id = '.:000000000000085F' name = 'Date' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '.:0000000000000889' name = 'Dictionary' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'true' isActive = 'false'/>
+                <UML:Interface xmi.id = '.:000000000000088A' name = 'Enumeration' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'false'/>
+                <UML:Class xmi.id = '.:000000000000088B' name = 'EnumMap' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '.:000000000000088C' name = 'EnumSet' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'true' isActive = 'false'/>
+                <UML:Interface xmi.id = '.:000000000000088D' name = 'EventListener' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'false'/>
+                <UML:Interface xmi.id = '.:000000000000088E' name = 'Formattable' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'false'/>
+                <UML:Class xmi.id = '.:000000000000088F' name = 'Formatter' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '.:0000000000000890' name = 'HashMap' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '.:0000000000000891' name = 'HashSet' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '.:0000000000000892' name = 'Hashtable' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
                 <UML:Interface xmi.id = '.:000000000000085D' name = 'Iterator' isSpecification = 'false'
                   isRoot = 'false' isLeaf = 'false' isAbstract = 'false'/>
                 <UML:Interface xmi.id = '.:000000000000085E' name = 'List' isSpecification = 'false'
                   isRoot = 'false' isLeaf = 'false' isAbstract = 'false'/>
-                <UML:Class xmi.id = '.:000000000000085F' name = 'Date' isSpecification = 'false'
+                <UML:Class xmi.id = '.:0000000000000893' name = 'Locale' isSpecification = 'false'
                   isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
-                <UML:Class xmi.id = '.:0000000000000860' name = 'Time' isSpecification = 'false'
+                <UML:Interface xmi.id = '.:0000000000000894' name = 'Map' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'false'/>
+                <UML:Class xmi.id = '.:0000000000000895' name = 'Observable' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Interface xmi.id = '.:0000000000000896' name = 'Observer' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'false'/>
+                <UML:Class xmi.id = '.:0000000000000897' name = 'Properties' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Interface xmi.id = '.:0000000000000898' name = 'Queue' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'false'/>
+                <UML:Class xmi.id = '.:0000000000000899' name = 'Random' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '.:000000000000089A' name = 'ResourceBundle' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'true' isActive = 'false'/>
+                <UML:Class xmi.id = '.:000000000000089B' name = 'Scanner' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '.:000000000000089C' name = 'ServiceLoader' isSpecification = 'false'
                   isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
                 <UML:Interface xmi.id = '.:0000000000000861' name = 'Set' isSpecification = 'false'
                   isRoot = 'false' isLeaf = 'false' isAbstract = 'false'/>
+                <UML:Interface xmi.id = '.:000000000000089D' name = 'SortedMap' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'false'/>
                 <UML:Interface xmi.id = '.:0000000000000862' name = 'SortedSet' isSpecification = 'false'
                   isRoot = 'false' isLeaf = 'false' isAbstract = 'false'/>
+                <UML:Class xmi.id = '.:000000000000089E' name = 'Stack' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '.:000000000000089F' name = 'StringTokenizer' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '.:0000000000000860' name = 'Time' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '.:00000000000008A0' name = 'Timer' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '.:00000000000008A1' name = 'TreeMap' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '.:00000000000008A2' name = 'TreeSet' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '.:000000000000085B' name = 'Vector' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '.:00000000000008A3' name = 'UUID' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '.:00000000000008A4' name = 'XMLUtils' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Package xmi.id = '.:00000000000008A5' name = 'zip' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'false'>
+                  <UML:Namespace.ownedElement>
+                    <UML:Interface xmi.id = '.:00000000000008A6' name = 'Checksum' isSpecification = 'false'
+                      isRoot = 'false' isLeaf = 'false' isAbstract = 'false'/>
+                    <UML:Class xmi.id = '.:00000000000008A7' name = 'CRC32' isSpecification = 'false'
+                      isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                    <UML:Class xmi.id = '.:00000000000008A8' name = 'ZipEntry' isSpecification = 'false'
+                      isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                    <UML:Class xmi.id = '.:00000000000008A9' name = 'ZipFile' isSpecification = 'false'
+                      isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                    <UML:Class xmi.id = '.:00000000000008AA' name = 'ZipInputStream' isSpecification = 'false'
+                      isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                    <UML:Class xmi.id = '.:00000000000008AB' name = 'ZipOutputStream' isSpecification = 'false'
+                      isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                  </UML:Namespace.ownedElement>
+                </UML:Package>
               </UML:Namespace.ownedElement>
             </UML:Package>
             <UML:Package xmi.id = '.:0000000000000866' name = 'math' isSpecification = 'false'
