@@ -135,25 +135,21 @@ public class TestJavaImportClass extends TestCase {
         Collection dependencies =
             Model.getFacade().getClientDependencies(component);
         assertNotNull("No dependencies found for component.", dependencies);
-        Object packageImport = null;
-        iter = dependencies.iterator();
-        while (iter.hasNext()) {
-            Object element = iter.next();
-            if (Model.getFacade().isAPackageImport(element)) {
-                packageImport = element;
-                break;
+        Object importDep = null;
+        for (Object o : Model.getFacade().getClientDependencies(component)) {
+            for (Object stereotype : Model.getFacade().getStereotypes(o)) {
+                if ("javaImport".equals(Model.getFacade()
+                        .getName(stereotype))) {
+                    importDep = o;
+                    break;
+                }
             }
         }
-        assertNotNull("No import found.", packageImport);
-        assertTrue("isAPackageImport returned false for import/Permission",
-                Model.getFacade().isAPackageImport(packageImport));
-        assertEquals("getPackageImport() found different result than "
-                + "getClientDependencies", packageImport, Model.getCoreHelper()
-                .getPackageImports(component).iterator().next());
+        assertNotNull("No import found.", importDep);
         assertEquals("The import name is wrong.",
             "TestClass.java -> Observer",
-            Model.getFacade().getName(packageImport));
-        Collection suppliers = Model.getFacade().getSuppliers(packageImport);
+            Model.getFacade().getName(importDep));
+        Collection suppliers = Model.getFacade().getSuppliers(importDep);
         assertNotNull("No suppliers found in import.", suppliers);
         Object supplier = null;
         iter = suppliers.iterator();
