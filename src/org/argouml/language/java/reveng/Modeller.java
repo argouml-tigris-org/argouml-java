@@ -64,6 +64,7 @@ import org.antlr.runtime.RecognitionException;
 import org.apache.log4j.Logger;
 import org.argouml.application.api.Argo;
 import org.argouml.kernel.ProjectManager;
+import org.argouml.language.java.reveng.classfile.ParserUtils;
 import org.argouml.model.CoreFactory;
 import org.argouml.model.Facade;
 import org.argouml.model.Model;
@@ -373,17 +374,7 @@ public class Modeller {
      * InterfaceType
      */
     public void addClassSignature(String signature) {
-        Object classifier = parseState.getClassifier();
-        JavaLexer lexer = new JavaLexer(new ANTLRStringStream(signature));
-        CommonTokenStream tokens = new CommonTokenStream(lexer);
-        JavaParser parser = new JavaParser(tokens);
-        try {
-            List<String> typeParameters = parser.typeParameters();
-            addTypeParameters(classifier, typeParameters);
-        } catch (RecognitionException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        addTypeParameters(parseState.getClassifier(), ParserUtils.extractTypeParameters(signature));
     }
 
     /**

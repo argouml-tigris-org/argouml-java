@@ -24,6 +24,7 @@
 
 package org.argouml.language.java.reveng.classfile;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import junit.framework.TestCase;
@@ -31,7 +32,8 @@ import antlr.RecognitionException;
 import antlr.TokenStreamException;
 
 /**
- * Tests conversion of classfile signature to java lang signature. 
+ * Tests conversion of classfile signature to java lang signature.
+ * 
  * @author alepekhin
  */
 public class TestParserUtils extends TestCase {
@@ -70,7 +72,7 @@ public class TestParserUtils extends TestCase {
     }
 
     public void testParseMethodDescriptor() throws RecognitionException,
-            TokenStreamException {
+        TokenStreamException {
         String[] result = ParserUtils
                 .convertMethodDescriptor("(ID[[[Ljava/lang/Thread;)Ljava/lang/Object;");
         assertEquals("int", result[0]);
@@ -141,4 +143,17 @@ public class TestParserUtils extends TestCase {
                         .convertMethodTypeSignature("(TE;Ljava/lang/Integer;)Ljava/lang/String;^Ljava/lang/Exception;^TT;"));
     }
 
+    public void testExtractTypeParameters() {
+        List<String> expected = new LinkedList<String>();
+        expected.add("T");
+        assertEquals(expected, ParserUtils.extractTypeParameters("<T>"));
+        expected = new LinkedList<String>();
+        expected.add("T");
+        expected.add("V");
+        assertEquals(expected, ParserUtils.extractTypeParameters("<T, V>"));
+        expected = new LinkedList<String>();
+        expected.add("T");
+        expected.add("V extends C<Integer, Double>");
+        assertEquals(expected, ParserUtils.extractTypeParameters("<T, V extends C<Integer, Double>>"));
+    }
 }
