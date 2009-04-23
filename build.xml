@@ -43,7 +43,7 @@ run build with the option -projecthelp
 ===========================================================================
 -->
 
-<project name="argouml-java-module" default="install" basedir=".">
+<project name="argouml-java-module" default="install">
 
 <description>
 ***************************** ArgoUML Java module *****************************
@@ -58,7 +58,7 @@ engineering of Java code and support for built-in types and standard libraries.
   <!-- Initialization target                                               -->
   <!-- =================================================================== -->
 
- <target name="init" 
+ <target name="init" depends="pde-init"
          description="initializes the Ant script environment for the other targets">
 
     <tstamp/>
@@ -69,7 +69,7 @@ engineering of Java code and support for built-in types and standard libraries.
     <property name="Name" value="ArgoModule-${argo.module.name}"/>
     <property name="name" value="argomodule-${argo.module.name}"/>
 
-    <property name="module.root" value="${basedir}"/>
+    <property name="module.root" location="."/>
     <property name="module.src.dir" value="${module.root}/src"/>
     <property name="module.src_generated.dir" value="${module.root}/src_generated"/>
     <property name="module.tests.src" value="${module.root}/tests"/>
@@ -112,7 +112,12 @@ engineering of Java code and support for built-in types and standard libraries.
     <available file="../argouml/build" 
                type="dir" property="argo.build.dir"
                value="../argouml/build"/>
+   <!-- Eclipse PDE build configuration -->
+   <available file="../argouml-app/build" 
+              type="dir" property="argo.build.dir"
+              value="../argouml-app/build"/>
 
+   
     <property name="module.jarfile.name" value="${argo.module.jarfile}.jar"/>
     <property name="module.jarfile"
               value="${module.build.dir}/${module.jarfile.name}"/>
@@ -135,6 +140,14 @@ engineering of Java code and support for built-in types and standard libraries.
         <pathelement location="${antlrall.jar.path}"/>
         <pathelement location="${antlr2.jar.path}"/>
         <pathelement location="${argo.build.dir}/argouml-model.jar"/>
+        <!-- Extra elements for Eclipse PDE build which doesn't use default packaging -->
+        <pathelement location="${argo.build.dir}/gef-0.13.jar"/>
+        <pathelement location="${argo.build.dir}/ocl-argo-1.1.jar"/>
+        <pathelement location="${argo.build.dir}/swidgets-0.1.4.jar"/>
+        <pathelement location="${module.root}/../argouml-core-infra/build/log4j-1.2.6.jar"/>
+        <pathelement location="${module.root}/../argouml-core-model/build/argouml-model.jar"/>
+        <pathelement location="${module.root}/../argouml-core-diagrams-sequence2/build/argouml-diagrams-sequence.jar"/>
+
     </path>
     <echo message="module.compile.classpath value:"/>
     <pathconvert refid="module.compile.classpath"/>
@@ -274,6 +287,8 @@ engineering of Java code and support for built-in types and standard libraries.
            debug="${debug}"
            deprecation="${deprecation}"
            optimize="${optimize}"
+           includeAntRuntime="no" 
+           bootclasspath="${bundleBootClasspath}" 
            source="1.5"
            target="1.5" >
     	<src path="${module.src.dir}"/>
@@ -281,6 +296,7 @@ engineering of Java code and support for built-in types and standard libraries.
         <classpath>
             <path refid="module.compile.classpath"/>
         </classpath>
+      <compilerarg line="-log '${module.build.dir}/compile.log'" compiler="org.eclipse.jdt.core.JDTCompilerAdapter" />      
     </javac>
     <copy todir="${module.build.dest}/${images.dir}" overwrite="on">
       <fileset dir="${module.src.dir}/${images.dir}"/>
@@ -343,6 +359,7 @@ engineering of Java code and support for built-in types and standard libraries.
     <delete dir="${module.build.dir}"/>
    
     <antcall target="cleanparsers"/>
+    <antcall target="pde-clean" />
   </target>
 
   <!-- =================================================================== -->
@@ -460,6 +477,91 @@ engineering of Java code and support for built-in types and standard libraries.
       </fileset>
       <report format="frames" todir="${module.tests.reports}/html"/>
     </junitreport>
+  </target>
+
+
+  <!-- =================================================================== -->
+  <!-- Eclipse PDE targets from here to end of file                        -->
+  <!-- =================================================================== -->
+  <!-- 
+    Required targets (called in this order) are:
+      build.jars
+      gather.bin.parts - must create and populate "${destination.temp.folder}/<Bundle-SymbolicName>_<Bundle-Version>
+      gather.logs
+  -->
+  
+    <target name="pde-properties" if="eclipse.running">
+      <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter" />
+    </target>
+  
+    <target name="pde-init" depends="pde-properties">
+
+      <property name="bundleId" value="org.argouml.module.java" />
+
+      <!-- This property is magic and will have its value substituted by PDE -->
+      <property name="version.suffix" value="0.28.0.200904210336"/>
+      <property name="bundleVersion" value="${version.suffix}" />
+
+      <!-- Compiler settings. -->
+      <condition property="dir_bootclasspath" value="${java.home}/../Classes">
+        <os family="mac" />
+      </condition>
+      <property name="dir_bootclasspath" value="${java.home}/lib" />
+      <path id="path_bootclasspath">
+        <fileset dir="${dir_bootclasspath}">
+          <include name="*.jar" />
+        </fileset>
+      </path>
+      <property name="bootclasspath" refid="path_bootclasspath" />
+      <property name="bundleBootClasspath" value="${bootclasspath}" />
+
+      <condition property="pluginTemp" value="${buildTempFolder}/plugins">
+        <isset property="buildTempFolder" />
+      </condition>
+      <property name="pluginTemp" value="${basedir}" />
+      <condition property="build.result.folder" value="${pluginTemp}/${bundleId}_${bundleVersion}">
+        <isset property="buildTempFolder" />
+      </condition>
+      <property name="build.result.folder" value="${basedir}" />
+      <property name="plugin.destination" value="${basedir}" />            
+    </target>
+
+  <target name="pde-clean" depends="pde-init">
+    <delete file="${plugin.destination}/${bundleId}_*.jar" />
+    <delete file="${plugin.destination}/${bundleId}_*.zip" />
+  </target>
+
+  <target name="build.jars" depends="jar" description="Compile classes and build nested jars for the plug-in: ${bundleId}.">
+    <mkdir dir="${build.result.folder}/@dot"/>
+    <copy todir="${build.result.folder}/@dot" failonerror="true" overwrite="false">
+      <fileset dir="${module.build.dest}" includes="org/argouml/**" excludes="*.txt,*.bat,*.xml,*.sh" />
+    </copy>
+  </target>
+
+  <target name="gather.bin.parts" depends="init" if="destination.temp.folder">
+    <mkdir dir="${destination.temp.folder}/${bundleId}_${bundleVersion}" />
+    <copy todir="${destination.temp.folder}/${bundleId}_${bundleVersion}" failonerror="true" overwrite="false">
+      <fileset dir="${build.result.folder}/@dot" includes="**"/>
+    </copy>
+    
+    <copy todir="${destination.temp.folder}/${bundleId}_${bundleVersion}" failonerror="true" overwrite="false">
+      <fileset dir="${basedir}">
+        <include name="META-INF/"/>
+        <include name="plugin.properties"/>
+        <include name="plugin.xml"/>
+      </fileset>
+    </copy>
+
+    <eclipse.versionReplacer path="${destination.temp.folder}/${bundleId}_${bundleVersion}" version="${bundleVersion}" />
+  </target>
+
+  <target name="gather.logs" depends="init" if="destination.temp.folder">
+    <mkdir dir="${destination.temp.folder}/${bundleId}_${bundleVersion}"/>
+    <copy todir="${destination.temp.folder}/${bundleId}_${bundleVersion}" failonerror="false" overwrite="false">
+      <fileset dir="${module.build.dir}">
+        <include name="compile.log"/>  
+      </fileset>
+    </copy>
   </target>
 
 </project>
