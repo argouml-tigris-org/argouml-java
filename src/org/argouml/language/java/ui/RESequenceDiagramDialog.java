@@ -64,24 +64,24 @@ import org.argouml.language.java.reveng.JavaParser;
 import org.argouml.language.java.reveng.Modeller;
 import org.argouml.model.Model;
 import org.argouml.profile.Profile;
+import org.argouml.sequence2.diagram.FigClassifierRole;
+import org.argouml.sequence2.diagram.FigMessage;
 import org.argouml.ui.CheckboxTableModel;
 import org.argouml.ui.explorer.ExplorerEventAdaptor;
 import org.argouml.ui.targetmanager.TargetManager;
 import org.argouml.uml.diagram.ArgoDiagram;
 import org.argouml.uml.diagram.DiagramFactory;
 import org.argouml.uml.diagram.DiagramFactory.DiagramType;
-import org.argouml.uml.diagram.sequence.MessageNode;
-import org.argouml.uml.diagram.sequence.SequenceDiagramGraphModel;
-import org.argouml.uml.diagram.sequence.ui.FigClassifierRole;
-import org.argouml.uml.diagram.sequence.ui.FigMessage;
-import org.argouml.uml.diagram.sequence.ui.SequenceDiagramLayer;
 import org.argouml.uml.ui.ActionDeleteModelElements;
 import org.argouml.util.ArgoDialog;
 import org.tigris.gef.base.Editor;
 import org.tigris.gef.base.Globals;
+import org.tigris.gef.base.Layer;
 import org.tigris.gef.base.Mode;
+import org.tigris.gef.graph.GraphModel;
 import org.tigris.gef.graph.MutableGraphModel;
 import org.tigris.gef.presentation.Fig;
+import org.tigris.gef.presentation.FigNode;
 
 /**
  * The dialog that starts the reverse engineering of operations.<p>
@@ -211,11 +211,12 @@ public class RESequenceDiagramDialog
             figClassifierRole = getFigClassifierRole(classifier, "obj");
             // TODO: There is only a single port on new implementation of SD
             // so how do we resolve this?
-            SequenceDiagramLayer layer
-                = (SequenceDiagramLayer) diagram.getLayer();
-            portCnt
-                = layer.getNodeIndex(
-                    figMessage.getDestMessageNode().getFigMessagePort().getY());
+            Layer layer = diagram.getLayer();
+            // TODO: Fix for new sequence diagrams
+            portCnt = 0;
+//            portCnt 
+//                = layer.getNodeIndex(
+//                    figMessage.getDestFigNode().getFigMessagePort().getY());
             Iterator<Fig> it = diagram.getFigIterator();
             while (it.hasNext()) {
                 Fig f = it.next();
@@ -231,13 +232,14 @@ public class RESequenceDiagramDialog
                         anonCnt++;
                     }
                 } else if (Model.getFacade().isAMessage(modelElement)) {
-                    int port =
-                        layer.getNodeIndex(
-                            ((FigMessage) f).getDestMessageNode()
-                                .getFigMessagePort().getY());
-                    if (maxPort < port) {
-                        maxPort = port;
-                    }
+                    // TODO: Fix for new sequence diagrams
+//                    int port =
+//                        layer.getNodeIndex(
+//                            ((FigMessage) f).getDestMessageNode()
+//                                .getFigMessagePort().getY());
+//                    if (maxPort < port) {
+//                        maxPort = port;
+//                    }
                 }
             }
         } else {
@@ -725,43 +727,46 @@ public class RESequenceDiagramDialog
             FigClassifierRole startFig,
             FigClassifierRole endFig,
             Object callType) {
-        SequenceDiagramLayer lay = (SequenceDiagramLayer) diagram.getLayer();
-        int n = startFig == endFig ? 2 : 1;
-        if (portCnt < maxPort) {
-            lay.expandDiagram(portCnt + 1, n);
-        }
-        MessageNode startPort = startFig.getNode(portCnt + 1);
-        MessageNode foundPort = endFig.getNode(portCnt + n);
-        portCnt += n;
-        maxPort += n;
-        Fig startPortFig = startFig.getPortFig(startPort);
-        Fig destPortFig = endFig.getPortFig(foundPort);
-        Object messageType = Model.getMetaTypes().getMessage();
-
-        // TODO: This has a bad smell. I don't think we should be using Modes
-        // here. Modes are for user interactions. Find a better way to do this.
-        Editor ce = Globals.curEditor();
-        Hashtable<String, Object> args = new Hashtable<String, Object>();
-        args.put("action", callType);
-        Mode mode = ce.getModeManager().top();
-        mode.setArgs(args);
-
-        SequenceDiagramGraphModel graphModel =
-            (SequenceDiagramGraphModel) diagram.getGraphModel();
-        Object newEdge = graphModel.connect(startPort, foundPort, messageType);
-        if (null != newEdge) {
-            Model.getCoreHelper().setName(newEdge, call);
-            final FigMessage figMessage =
-                (FigMessage) lay.presentationFor(newEdge);
-            figMessage.setSourcePortFig(startPortFig);
-            figMessage.setSourceFigNode(startFig);
-            figMessage.setDestPortFig(destPortFig);
-            figMessage.setDestFigNode(endFig);
-            endFig.updateEdges();
-            if (startFig != endFig) {
-                startFig.updateEdges();
-            }
-        }
+        
+        // TODO: Fix for new sequence diagram implementation
+        
+//        SequenceDiagramLayer lay = (SequenceDiagramLayer) diagram.getLayer();
+//        int n = startFig == endFig ? 2 : 1;
+//        if (portCnt < maxPort) {
+//            lay.expandDiagram(portCnt + 1, n);
+//        }
+//        MessageNode startPort = startFig.getNode(portCnt + 1);
+//        MessageNode foundPort = endFig.getNode(portCnt + n);
+//        portCnt += n;
+//        maxPort += n;
+//        Fig startPortFig = startFig.getPortFig(startPort);
+//        Fig destPortFig = endFig.getPortFig(foundPort);
+//        Object messageType = Model.getMetaTypes().getMessage();
+//
+//        // TODO: This has a bad smell. I don't think we should be using Modes
+//        // here. Modes are for user interactions. Find a better way to do this.
+//        Editor ce = Globals.curEditor();
+//        Hashtable<String, Object> args = new Hashtable<String, Object>();
+//        args.put("action", callType);
+//        Mode mode = ce.getModeManager().top();
+//        mode.setArgs(args);
+//
+//        SequenceDiagramGraphModel graphModel =
+//            (SequenceDiagramGraphModel) diagram.getGraphModel();
+//        Object newEdge = graphModel.connect(startPort, foundPort, messageType);
+//        if (null != newEdge) {
+//            Model.getCoreHelper().setName(newEdge, call);
+//            final FigMessage figMessage =
+//                (FigMessage) lay.presentationFor(newEdge);
+//            figMessage.setSourcePortFig(startPortFig);
+//            figMessage.setSourceFigNode(startFig);
+//            figMessage.setDestPortFig(destPortFig);
+//            figMessage.setDestFigNode(endFig);
+//            endFig.updateEdges();
+//            if (startFig != endFig) {
+//                startFig.updateEdges();
+//            }
+//        }
     }
 
     /**

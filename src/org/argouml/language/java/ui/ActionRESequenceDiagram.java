@@ -34,11 +34,11 @@ import org.argouml.i18n.Translator;
 import org.argouml.kernel.Project;
 import org.argouml.kernel.ProjectManager;
 import org.argouml.model.Model;
+import org.argouml.sequence2.diagram.FigMessage;
 import org.argouml.ui.targetmanager.TargetManager;
 import org.argouml.uml.diagram.ArgoDiagram;
-import org.argouml.uml.diagram.sequence.SequenceDiagramGraphModel;
-import org.argouml.uml.diagram.sequence.ui.FigMessage;
 import org.tigris.gef.base.Globals;
+import org.tigris.gef.graph.GraphModel;
 
 /**
  * Action to reverse engineer a sequence diagram from the operation bodies.
@@ -81,8 +81,8 @@ public class ActionRESequenceDiagram extends AbstractAction {
             dialog.setVisible(true);
         } else if (Model.getFacade().isAMessage(target) && messageFig != null) {
             final Object action = Model.getFacade().getAction(target);
-            final SequenceDiagramGraphModel sequenceDiagramGraphModel =
-                (SequenceDiagramGraphModel) Globals.curEditor().getGraphModel();
+            final GraphModel sequenceDiagramGraphModel =
+                 Globals.curEditor().getGraphModel();
             ArgoDiagram diagram = null;
             Iterator<ArgoDiagram> iter = project.getDiagramList().iterator();
             while (iter.hasNext()) {
