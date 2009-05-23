@@ -9,6 +9,5 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
 	<classpathentry kind="lib" path="lib/antlr-runtime-3.1.1.jar"/>
 	<classpathentry kind="lib" path="lib/antlr-2.7.7.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/argouml-app"/>
 	<classpathentry kind="output" path="build-eclipse"/>
 </classpath>
