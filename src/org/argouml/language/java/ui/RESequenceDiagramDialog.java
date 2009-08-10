@@ -72,6 +72,7 @@ import org.argouml.ui.targetmanager.TargetManager;
 import org.argouml.uml.diagram.ArgoDiagram;
 import org.argouml.uml.diagram.DiagramFactory;
 import org.argouml.uml.diagram.DiagramFactory.DiagramType;
+import org.argouml.uml.diagram.ui.FigNodeModelElement;
 import org.argouml.uml.ui.ActionDeleteModelElements;
 import org.argouml.util.ArgoDialog;
 import org.tigris.gef.base.Editor;
@@ -120,9 +121,8 @@ public class RESequenceDiagramDialog
     private final Object classifier;
     private final Object operation;
 
-    // TODO: Need to remove knowledge of Fig type. At the very least this
-    // be FigNodeModelElement but preferably we can also remove GEF knowledge.
-    private final FigClassifierRole figClassifierRole;
+    // TODO: Need to remove knowledge of GEF.
+    private final FigNodeModelElement figClassifierRole;
 
     private final List<String> calls = new ArrayList<String>();
     private final List<String> calldata = new ArrayList<String>();
@@ -531,10 +531,10 @@ public class RESequenceDiagramDialog
      * TODO: Hide this method elsewhere and use it in the implementation of a
      * to be defined method (see usage of this method in this class)
      */
-    private FigClassifierRole getFigClassifierRole(
+    private FigNodeModelElement getFigClassifierRole(
             Object theClassifier,
             String objName) {
-        FigClassifierRole crFig = null;
+        FigNodeModelElement crFig = null;
         // first check if the fig of the classifier role already exists
         Collection coll = diagram.getLayer().getContents();
         Iterator iter = coll != null ? coll.iterator() : null;
@@ -572,8 +572,8 @@ public class RESequenceDiagramDialog
             coll = new ArrayList<Object>();
             coll.add(theClassifier);
             Model.getCollaborationsHelper().setBases(newClassifierRole, coll);
-            crFig = new FigClassifierRole(newClassifierRole, DEFAULT_BOUNDS, 
-                    diagram.getDiagramSettings());
+            crFig = (FigNodeModelElement) diagram.createDiagramElement(
+                    newClassifierRole, DEFAULT_BOUNDS);
 
             // location must be set for correct automatic layouting (how funny)
             // otherwise, the new classifier role is not the rightmost
@@ -659,8 +659,8 @@ public class RESequenceDiagramDialog
      */
     private void buildAction(
             String call,
-            FigClassifierRole startFig,
-            FigClassifierRole endFig) {
+            FigNodeModelElement startFig,
+            FigNodeModelElement endFig) {
         StringBuffer sb = new StringBuffer(call);
         int findpos = sb.lastIndexOf(".");
         int createPos = sb.indexOf("new ");
@@ -724,8 +724,8 @@ public class RESequenceDiagramDialog
      */
     private void buildEdge(
             String call,
-            FigClassifierRole startFig,
-            FigClassifierRole endFig,
+            FigNodeModelElement startFig,
+            FigNodeModelElement endFig,
             Object callType) {
         
         // TODO: Fix for new sequence diagram implementation
