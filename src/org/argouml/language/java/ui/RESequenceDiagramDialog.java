@@ -71,7 +71,6 @@ import org.argouml.uml.diagram.ArgoDiagram;
 import org.argouml.uml.diagram.DiagramElement;
 import org.argouml.uml.diagram.DiagramFactory;
 import org.argouml.uml.diagram.DiagramFactory.DiagramType;
-import org.argouml.uml.diagram.ui.FigNodeModelElement;
 import org.argouml.uml.ui.ActionDeleteModelElements;
 import org.argouml.util.ArgoDialog;
 import org.tigris.gef.base.Layer;
@@ -109,14 +108,14 @@ public class RESequenceDiagramDialog
     private final Project project;
 
     private final Object model;
-
+    
     // TODO: Why is this not final?
     private Modeller modeller;
     private final Object classifier;
     private final Object operation;
 
     // TODO: Need to remove knowledge of GEF.
-    private final FigNodeModelElement figClassifierRole;
+    private final Fig figClassifierRole;
 
     private final List<String> calls = new ArrayList<String>();
     private final List<String> calldata = new ArrayList<String>();
@@ -525,10 +524,10 @@ public class RESequenceDiagramDialog
      * TODO: Hide this method elsewhere and use it in the implementation of a
      * to be defined method (see usage of this method in this class)
      */
-    private FigNodeModelElement getFigClassifierRole(
+    private Fig getFigClassifierRole(
             Object theClassifier,
             String objName) {
-        FigNodeModelElement crFig = null;
+        Fig crFig = null;
         // first check if the fig of the classifier role already exists
         Collection coll = diagram.getLayer().getContents();
         Iterator iter = coll != null ? coll.iterator() : null;
@@ -545,7 +544,7 @@ public class RESequenceDiagramDialog
                         // not, I'd expect an empty collection.
                         if (bases != null && bases.contains(theClassifier)) {
                             // yes found, so this will be returned
-                            crFig = (FigNodeModelElement) fig;
+                            crFig = (Fig) fig;
                             break;
                         }
                     }
@@ -568,7 +567,7 @@ public class RESequenceDiagramDialog
             coll = new ArrayList<Object>();
             coll.add(theClassifier);
             Model.getCollaborationsHelper().setBases(newClassifierRole, coll);
-            crFig = (FigNodeModelElement) diagram.createDiagramElement(
+            crFig = (Fig) diagram.createDiagramElement(
                     newClassifierRole, DEFAULT_BOUNDS);
 
             // location must be set for correct automatic layouting (how funny)
@@ -655,8 +654,8 @@ public class RESequenceDiagramDialog
      */
     private void buildAction(
             String call,
-            FigNodeModelElement startFig,
-            FigNodeModelElement endFig) {
+            Fig startFig,
+            Fig endFig) {
         StringBuffer sb = new StringBuffer(call);
         int findpos = sb.lastIndexOf(".");
         int createPos = sb.indexOf("new ");
@@ -720,8 +719,8 @@ public class RESequenceDiagramDialog
      */
     private void buildEdge(
             String call,
-            FigNodeModelElement startFig,
-            FigNodeModelElement endFig,
+            Fig startFig,
+            Fig endFig,
             Object callType) {
         
         // TODO: Fix for new sequence diagram implementation
