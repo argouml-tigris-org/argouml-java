@@ -24,7 +24,6 @@
 
 package org.argouml.language.java.ui;
 
-import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
@@ -38,8 +37,6 @@ import org.argouml.uml.diagram.ArgoDiagram;
 import org.argouml.uml.diagram.DiagramFactory;
 import org.argouml.uml.diagram.DiagramSettings;
 import org.argouml.uml.diagram.DiagramFactory.DiagramType;
-import org.tigris.gef.graph.MutableGraphModel;
-import org.tigris.gef.presentation.Fig;
 
 /**
  * Action to reverse engineer a sequence diagram from the operation bodies.
