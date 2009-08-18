@@ -64,25 +64,19 @@ import org.argouml.language.java.reveng.JavaParser;
 import org.argouml.language.java.reveng.Modeller;
 import org.argouml.model.Model;
 import org.argouml.profile.Profile;
-import org.argouml.sequence2.diagram.FigClassifierRole;
-import org.argouml.sequence2.diagram.FigMessage;
 import org.argouml.ui.CheckboxTableModel;
 import org.argouml.ui.explorer.ExplorerEventAdaptor;
 import org.argouml.ui.targetmanager.TargetManager;
 import org.argouml.uml.diagram.ArgoDiagram;
+import org.argouml.uml.diagram.DiagramElement;
 import org.argouml.uml.diagram.DiagramFactory;
 import org.argouml.uml.diagram.DiagramFactory.DiagramType;
 import org.argouml.uml.diagram.ui.FigNodeModelElement;
 import org.argouml.uml.ui.ActionDeleteModelElements;
 import org.argouml.util.ArgoDialog;
-import org.tigris.gef.base.Editor;
-import org.tigris.gef.base.Globals;
 import org.tigris.gef.base.Layer;
-import org.tigris.gef.base.Mode;
-import org.tigris.gef.graph.GraphModel;
 import org.tigris.gef.graph.MutableGraphModel;
 import org.tigris.gef.presentation.Fig;
-import org.tigris.gef.presentation.FigNode;
 
 /**
  * The dialog that starts the reverse engineering of operations.<p>
@@ -164,7 +158,7 @@ public class RESequenceDiagramDialog
      */
     public RESequenceDiagramDialog(
             final Object oper,
-            final FigMessage figMessage,
+            final DiagramElement figMessage,
             final ArgoDiagram aDiagram) {
         // TODO: don't depend on a Fig (but it is needed to extend an existing
         // sequence diagram, i.e. to perform an action on a FigMessage!)
@@ -540,18 +534,20 @@ public class RESequenceDiagramDialog
         Iterator iter = coll != null ? coll.iterator() : null;
         while (iter != null && iter.hasNext()) {
             Object fig = iter.next();
-            if (fig instanceof FigClassifierRole) {
-                Object elem = ((FigClassifierRole) fig).getOwner();
-                // TODO: Do we really need to test for name here if we know we
-                // have the right classifier role?
-                if (Model.getFacade().getName(elem).equals(objName)) {
-                    final Collection bases = Model.getFacade().getBases(elem);
-                    // TODO: Do we really have to test for null here? I suspect
-                    // not, I'd expect an empty collection.
-                    if (bases != null && bases.contains(theClassifier)) {
-                        // yes found, so this will be returned
-                        crFig = (FigClassifierRole) fig;
-                        break;
+            if (fig instanceof Fig) {
+                Object elem = ((Fig) fig).getOwner();
+                if (Model.getFacade().isAClassifierRole(elem)) {
+                    // TODO: Do we really need to test for name here if we know we
+                    // have the right classifier role?
+                    if (Model.getFacade().getName(elem).equals(objName)) {
+                        final Collection bases = Model.getFacade().getBases(elem);
+                        // TODO: Do we really have to test for null here? I suspect
+                        // not, I'd expect an empty collection.
+                        if (bases != null && bases.contains(theClassifier)) {
+                            // yes found, so this will be returned
+                            crFig = (FigNodeModelElement) fig;
+                            break;
+                        }
                     }
                 }
             }
