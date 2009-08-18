@@ -39,7 +39,6 @@ import org.argouml.uml.diagram.ArgoDiagram;
 import org.argouml.uml.diagram.DiagramElement;
 import org.tigris.gef.base.Globals;
 import org.tigris.gef.graph.GraphModel;
-import org.tigris.gef.presentation.FigEdge;
 
 /**
  * Action to reverse engineer a sequence diagram from the operation bodies.
@@ -52,7 +51,7 @@ public class ActionRESequenceDiagram extends AbstractAction {
     private static final long serialVersionUID = 2915509413708666273L;
 
     // TODO: We later cast this to FigMessage so why define as Object here?
-    private FigEdge messageFig;
+    private DiagramElement messageFig;
     
     /**
      * The constructor. If a figure is given, then it is invoked inside of a
@@ -63,7 +62,7 @@ public class ActionRESequenceDiagram extends AbstractAction {
      */
     public ActionRESequenceDiagram(Object fig) {
         super(Translator.localize("action.reverse-engineer-sequence-diagram"));
-        messageFig = (FigEdge) fig;
+        messageFig = (DiagramElement) fig;
     }
 
     /**
