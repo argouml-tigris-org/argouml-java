@@ -469,8 +469,11 @@ public class Modeller {
         // Didn't find it. Let's create one.
         Object pkgImport = Model.getCoreFactory().buildDependency(srcFile,
                 element);
-        Model.getCoreHelper().addStereotype(pkgImport,
-                getStereotype("javaImport"));
+        if (Model.getFacade().getUmlVersion().charAt(0) == '1') {
+            // TODO: support for stereotypes in eUML
+            Model.getCoreHelper().addStereotype(pkgImport,
+                    getStereotype("javaImport"));
+        }
         String newName = makeDependencyName(srcFile, element);
         Model.getCoreHelper().setName(pkgImport, newName);
         newElements.add(pkgImport);
