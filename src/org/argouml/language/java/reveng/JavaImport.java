@@ -106,7 +106,9 @@ public class JavaImport implements ImportInterface {
                 doImportPass(p, files, settings, monitor, 0, 0);
             }
         } finally {
-            monitor.close();
+            //this prevents parse problems to be displayed, so I disabled it:
+            // --thn
+            //monitor.close();
         }
         return newElements;
     }
