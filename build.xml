@@ -93,7 +93,7 @@ engineering of Java code and support for built-in types and standard libraries.
     <property name="module.tests.reports" value="${module.tests.build}/reports"/>
     <property name="i18n.dir" value="org/argouml/i18n/"/>
     <property name="images.dir" value="org/argouml/Images/"/>
-    <property name="profile.file" value="org/argouml/language/java/profile/JavaUmlProfile.xmi"/>
+    <property name="profile.file" value="org/argouml/language/java/profile/default-java.xmi"/>
 
     <!-- Try to figure out where main ArgoUML tools directory is -->
     <property name="tool.test.file" value="checkstyle/java.header"/>

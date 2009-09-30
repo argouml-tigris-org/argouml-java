@@ -1,8 +1,8 @@
 <?xml version = '1.0' encoding = 'UTF-8' ?>
-<XMI xmi.version = '1.2' xmlns:UML = 'org.omg.xmi.namespace.UML' timestamp = 'Fri May 02 13:16:12 EDT 2008'>
+<XMI xmi.version = '1.2' xmlns:UML = 'org.omg.xmi.namespace.UML' timestamp = 'Wed Jun 24 11:19:04 CEST 2009'>
   <XMI.header>    <XMI.documentation>
       <XMI.exporter>ArgoUML (using Netbeans XMI Writer version 1.0)</XMI.exporter>
-      <XMI.exporterVersion>PRE-0.25.5(5) revised on $Date: 2007-05-12 02:08:08 -0400 (Sat, 12 May 2007) $ </XMI.exporterVersion>
+      <XMI.exporterVersion>0.28(6) revised on $Date: 2007-05-12 08:08:08 +0200 (Sat, 12 May 2007) $ </XMI.exporterVersion>
     </XMI.documentation>
     <XMI.metamodel xmi.name="UML" xmi.version="1.4"/></XMI.header>
   <XMI.content>
@@ -218,9 +218,96 @@
         <UML:DataType xmi.id = '.:0000000000000873' name = 'boolean' isSpecification = 'false'
           isRoot = 'false' isLeaf = 'false' isAbstract = 'false'/>
         <UML:Stereotype xmi.id = '-64--88-1-3--3c483fe3:119aa9cff00:-8000:00000000000007A3'
-          name = 'profile' isSpecification = 'false' isRoot = 'false' isLeaf = 'false'
+          name = 'argo-module' isSpecification = 'false' isRoot = 'false' isLeaf = 'false'
           isAbstract = 'false'>
+          <UML:Stereotype.baseClass>Class</UML:Stereotype.baseClass>
+          <UML:Stereotype.definedTag>
+            <UML:TagDefinition xmi.id = '127-0-0-1-6369aeb7:1221177ca84:-8000:0000000000000F8C'
+              name = 'module-author' isSpecification = 'false'>
+              <UML:TagDefinition.multiplicity>
+                <UML:Multiplicity xmi.id = '127-0-0-1-6369aeb7:1221177ca84:-8000:0000000000000F90'>
+                  <UML:Multiplicity.range>
+                    <UML:MultiplicityRange xmi.id = '127-0-0-1-6369aeb7:1221177ca84:-8000:0000000000000F8F'
+                      lower = '1' upper = '1'/>
+                  </UML:Multiplicity.range>
+                </UML:Multiplicity>
+              </UML:TagDefinition.multiplicity>
+            </UML:TagDefinition>
+            <UML:TagDefinition xmi.id = '127-0-0-1-6369aeb7:1221177ca84:-8000:0000000000000F91'
+              name = 'module-description' isSpecification = 'false'>
+              <UML:TagDefinition.multiplicity>
+                <UML:Multiplicity xmi.id = '127-0-0-1-6369aeb7:1221177ca84:-8000:0000000000000F95'>
+                  <UML:Multiplicity.range>
+                    <UML:MultiplicityRange xmi.id = '127-0-0-1-6369aeb7:1221177ca84:-8000:0000000000000F94'
+                      lower = '1' upper = '1'/>
+                  </UML:Multiplicity.range>
+                </UML:Multiplicity>
+              </UML:TagDefinition.multiplicity>
+            </UML:TagDefinition>
+            <UML:TagDefinition xmi.id = '127-0-0-1-6369aeb7:1221177ca84:-8000:0000000000000F96'
+              name = 'module-downloadpath' isSpecification = 'false'>
+              <UML:TagDefinition.multiplicity>
+                <UML:Multiplicity xmi.id = '127-0-0-1-6369aeb7:1221177ca84:-8000:0000000000000F9C'>
+                  <UML:Multiplicity.range>
+                    <UML:MultiplicityRange xmi.id = '127-0-0-1-6369aeb7:1221177ca84:-8000:0000000000000F9B'
+                      lower = '0' upper = '1'/>
+                  </UML:Multiplicity.range>
+                </UML:Multiplicity>
+              </UML:TagDefinition.multiplicity>
+            </UML:TagDefinition>
+            <UML:TagDefinition xmi.id = '127-0-0-1--2a9234eb:122118dfb3e:-8000:0000000000000F91'
+              name = 'module-version' isSpecification = 'false'>
+              <UML:TagDefinition.multiplicity>
+                <UML:Multiplicity xmi.id = '127-0-0-1--2a9234eb:122118dfb3e:-8000:0000000000000F95'>
+                  <UML:Multiplicity.range>
+                    <UML:MultiplicityRange xmi.id = '127-0-0-1--2a9234eb:122118dfb3e:-8000:0000000000000F94'
+                      lower = '1' upper = '1'/>
+                  </UML:Multiplicity.range>
+                </UML:Multiplicity>
+              </UML:TagDefinition.multiplicity>
+            </UML:TagDefinition>
+          </UML:Stereotype.definedTag>
+        </UML:Stereotype>
+        <UML:Stereotype xmi.id = '127-0-0-1-6369aeb7:1221177ca84:-8000:0000000000000F7E'
+          name = 'argo-module-project' isSpecification = 'false' isRoot = 'false'
+          isLeaf = 'false' isAbstract = 'false'>
+          <UML:Stereotype.baseClass>Package</UML:Stereotype.baseClass>
           <UML:Stereotype.baseClass>Model</UML:Stereotype.baseClass>
+          <UML:Stereotype.definedTag>
+            <UML:TagDefinition xmi.id = '127-0-0-1-6369aeb7:1221177ca84:-8000:0000000000000F7F'
+              name = 'module-home' isSpecification = 'false'>
+              <UML:TagDefinition.multiplicity>
+                <UML:Multiplicity xmi.id = '127-0-0-1-6369aeb7:1221177ca84:-8000:0000000000000F83'>
+                  <UML:Multiplicity.range>
+                    <UML:MultiplicityRange xmi.id = '127-0-0-1-6369aeb7:1221177ca84:-8000:0000000000000F82'
+                      lower = '1' upper = '1'/>
+                  </UML:Multiplicity.range>
+                </UML:Multiplicity>
+              </UML:TagDefinition.multiplicity>
+            </UML:TagDefinition>
+            <UML:TagDefinition xmi.id = '127-0-0-1-6369aeb7:1221177ca84:-8000:0000000000000F84'
+              name = 'module-jar-import' isSpecification = 'false'>
+              <UML:TagDefinition.multiplicity>
+                <UML:Multiplicity xmi.id = '127-0-0-1-6369aeb7:1221177ca84:-8000:0000000000000F88'>
+                  <UML:Multiplicity.range>
+                    <UML:MultiplicityRange xmi.id = '127-0-0-1-6369aeb7:1221177ca84:-8000:0000000000000F87'
+                      lower = '1' upper = '-1'/>
+                  </UML:Multiplicity.range>
+                </UML:Multiplicity>
+              </UML:TagDefinition.multiplicity>
+            </UML:TagDefinition>
+            <UML:TagDefinition xmi.id = '127-0-0-1-6369aeb7:1221177ca84:-8000:0000000000000F89'
+              name = 'module-src-import' isSpecification = 'false'>
+              <UML:TagDefinition.multiplicity>
+                <UML:Multiplicity xmi.id = '127-0-0-1-6369aeb7:1221177ca84:-8000:0000000000000F8A'>
+                  <UML:Multiplicity.range>
+                    <UML:MultiplicityRange xmi.id = '127-0-0-1-6369aeb7:1221177ca84:-8000:0000000000000F8B'
+                      lower = '0' upper = '1'/>
+                  </UML:Multiplicity.range>
+                </UML:Multiplicity>
+              </UML:TagDefinition.multiplicity>
+            </UML:TagDefinition>
+          </UML:Stereotype.definedTag>
         </UML:Stereotype>
       </UML:Namespace.ownedElement>
     </UML:Model>
