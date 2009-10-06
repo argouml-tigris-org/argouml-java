@@ -26,6 +26,7 @@ package org.argouml.language.java.ui;
 
 import javax.swing.JMenu;
 
+import org.argouml.language.java.JavaModuleGlobals;
 import org.argouml.moduleloader.ModuleInterface;
 import org.argouml.ui.ProjectBrowser;
 import org.argouml.ui.cmd.GenericArgoMenuBar;
@@ -69,11 +70,11 @@ public class JavaTools implements ModuleInterface {
         case DESCRIPTION:
             return "Java tools";
         case AUTHOR:
-            return "The ArgoUML project team";
+            return JavaModuleGlobals.MODULE_AUTHOR;
         case VERSION:
-            return "0.28.beta";
+            return JavaModuleGlobals.MODULE_VERSION;
         case ModuleInterface.DOWNLOADSITE:
-            return "http://argouml-java.tigris.org/";
+            return JavaModuleGlobals.MODULE_DOWNLOADSITE;
         default:
             return null;
         }

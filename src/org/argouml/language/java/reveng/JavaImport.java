@@ -42,6 +42,7 @@ import org.antlr.runtime.CommonTokenStream;
 import org.apache.log4j.Logger;
 import org.argouml.i18n.Translator;
 import org.argouml.kernel.Project;
+import org.argouml.language.java.JavaModuleGlobals;
 import org.argouml.moduleloader.ModuleInterface;
 import org.argouml.profile.Profile;
 import org.argouml.taskmgmt.ProgressMonitor;
@@ -265,11 +266,11 @@ public class JavaImport implements ImportInterface {
         case DESCRIPTION:
             return "Java import from Java files.";
         case AUTHOR:
-            return "The ArgoUML project team";
+            return JavaModuleGlobals.MODULE_AUTHOR;
         case VERSION:
-            return "0.28";
+            return JavaModuleGlobals.MODULE_VERSION;
         case ModuleInterface.DOWNLOADSITE:
-            return "http://argouml-java.tigris.org/";
+            return JavaModuleGlobals.MODULE_DOWNLOADSITE;
         default:
             return null;
         }

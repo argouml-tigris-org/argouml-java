@@ -40,8 +40,8 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
-import org.argouml.application.helpers.ApplicationVersion;
 import org.argouml.kernel.Project;
+import org.argouml.language.java.JavaModuleGlobals;
 import org.argouml.language.java.reveng.JavaImportSettings;
 import org.argouml.moduleloader.ModuleInterface;
 import org.argouml.profile.Profile;
@@ -399,13 +399,13 @@ public class ClassfileImport implements ImportInterface {
     public String getInfo(int type) {
         switch (type) {
         case AUTHOR:
-            return "The ArgoUML project team";
+            return JavaModuleGlobals.MODULE_AUTHOR;
         case DESCRIPTION:
             return "Java import from class or jar files";
         case VERSION:
-            return "0.28";
+            return JavaModuleGlobals.MODULE_VERSION;
         case ModuleInterface.DOWNLOADSITE:
-            return "http://argouml-java.tigris.org/";
+            return JavaModuleGlobals.MODULE_DOWNLOADSITE;
         default:
             return null;
         }

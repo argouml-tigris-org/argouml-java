@@ -30,9 +30,9 @@ import java.util.List;
 import org.argouml.application.api.AbstractArgoJPanel;
 import org.argouml.application.api.GUISettingsTabInterface;
 import org.argouml.application.api.InitSubsystem;
-import org.argouml.application.helpers.ApplicationVersion;
 import org.argouml.cognitive.Agency;
 import org.argouml.cognitive.Critic;
+import org.argouml.language.java.JavaModuleGlobals;
 import org.argouml.model.Model;
 import org.argouml.moduleloader.ModuleInterface;
 
@@ -84,11 +84,11 @@ public class InitJavaCritics implements InitSubsystem, ModuleInterface {
         case DESCRIPTION:
             return "Java related critics";
         case AUTHOR:
-            return "The ArgoUML project team";
+            return JavaModuleGlobals.MODULE_AUTHOR;
         case VERSION:
-            return "0.28";
-        case ModuleInterface.DOWNLOADSITE:
-            return "http://argouml-java.tigris.org/";
+            return JavaModuleGlobals.MODULE_VERSION;
+        case DOWNLOADSITE:
+            return JavaModuleGlobals.MODULE_DOWNLOADSITE;
         default:
             return null;
         }

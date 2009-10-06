@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.apache.log4j.Logger;
+import org.argouml.language.java.JavaModuleGlobals;
 import org.argouml.model.Model;
 import org.argouml.moduleloader.ModuleInterface;
 import org.argouml.profile.DefaultTypeStrategy;
@@ -166,11 +167,11 @@ public class ProfileJava extends Profile implements ModuleInterface {
         case DESCRIPTION:
             return "Java profile.";
         case AUTHOR:
-            return "The ArgoUML project team";
+            return JavaModuleGlobals.MODULE_AUTHOR;
         case VERSION:
-            return "0.29.1";
+            return JavaModuleGlobals.MODULE_VERSION;
         case ModuleInterface.DOWNLOADSITE:
-            return "http://argouml-java.tigris.org/";
+            return JavaModuleGlobals.MODULE_DOWNLOADSITE;
         default:
             return null;
         }

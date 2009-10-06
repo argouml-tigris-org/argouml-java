@@ -43,6 +43,7 @@ import org.apache.log4j.Logger;
 import org.argouml.application.api.Argo;
 import org.argouml.application.helpers.ResourceLoaderWrapper;
 import org.argouml.configuration.Configuration;
+import org.argouml.language.java.JavaModuleGlobals;
 import org.argouml.model.Model;
 import org.argouml.moduleloader.ModuleInterface;
 import org.argouml.ocl.ArgoFacade;
@@ -1890,11 +1891,11 @@ public class GeneratorJava implements CodeGenerator, ModuleInterface {
         case DESCRIPTION:
             return "Java notation and code generator";
         case AUTHOR:
-            return "The ArgoUML project team";
+            return JavaModuleGlobals.MODULE_AUTHOR;
         case VERSION:
-            return "0.28";
-        case ModuleInterface.DOWNLOADSITE:
-            return "http://argouml-java.tigris.org/";
+            return JavaModuleGlobals.MODULE_VERSION;
+        case DOWNLOADSITE:
+            return JavaModuleGlobals.MODULE_DOWNLOADSITE;
         default:
             return null;
         }
