@@ -148,7 +148,7 @@ public class TestProjectWithJavaProfile extends TestCase {
      checkJavaListTypeExistsAndMatchesReturnParamType(project, 
              returnParamType);
      // remove the Java profile from the project's profile configuration
-     project.getProfileConfiguration().removeProfile(javaProfile);
+     project.getProfileConfiguration().removeProfile(javaProfile, model);
      // assert that the project's model elements that had a dependency to 
      // the UML profile for Java don't get inconsistent
      returnParamType = getFacade().getType(returnParam);
@@ -230,10 +230,10 @@ public class TestProjectWithJavaProfile extends TestCase {
      profileManager.registerProfile(userDefinedProfile);
      profileManager.addSearchPathDirectory(testCaseDir.getAbsolutePath());
      Project project = ProjectManager.getManager().makeEmptyProject();
-     project.getProfileConfiguration().addProfile(userDefinedProfile);
+     Object model = project.getUserDefinedModelList().get(0);
      // create a dependency between the project's model and the user defined 
      // profile
-     Object model = project.getUserDefinedModelList().get(0);
+     project.getProfileConfiguration().addProfile(userDefinedProfile, model);
      Model.getCoreHelper().setName(model, 
              "testProjectWithUserDefinedProfilePersistency-model");
      Object fooClass = getCoreFactory().buildClass(
@@ -310,10 +310,10 @@ public class TestProjectWithJavaProfile extends TestCase {
      profileManager.registerProfile(userDefinedProfile);
      profileManager.addSearchPathDirectory(testCaseDir.getAbsolutePath());
      Project project = ProjectManager.getManager().makeEmptyProject();
-     project.getProfileConfiguration().addProfile(userDefinedProfile);
+     Object model = project.getUserDefinedModelList().get(0);
      // create a dependency between the project's model and the user defined 
      // profile
-     Object model = project.getUserDefinedModelList().get(0);
+     project.getProfileConfiguration().addProfile(userDefinedProfile, model);
      final String className = "Foo4" + testName;
      Object fooClass = getCoreFactory().buildClass(className, model);
      Collection stereotypes = getExtensionMechanismsHelper().getStereotypes(
