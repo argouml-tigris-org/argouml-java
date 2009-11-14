@@ -70,6 +70,7 @@ import org.argouml.model.Facade;
 import org.argouml.model.Model;
 import org.argouml.ocl.OCLUtil;
 import org.argouml.profile.Profile;
+import org.argouml.uml.StereotypeUtility;
 import org.argouml.uml.reveng.ImportCommon;
 import org.argouml.uml.reveng.ImportInterface;
 
@@ -887,22 +888,23 @@ public class Modeller {
         }
         if (Model.getFacade().getTemplateParameters(modelElement).size() == 0) {
             for (String parameter : typeParameters) {
-                Object templateParam = Model.getCoreFactory()
-                        .createTemplateParameter();
-                Object param = Model.getCoreFactory().createParameter();
                 // parse parameter to name and bounds
                 Pattern p = Pattern.compile("([^ ]*)( super | extends )?((.*))");
                 Matcher m = p.matcher(parameter);
                 if (m.matches()) {
-                    Model.getCoreHelper().setName(param, m.group(1));
+                    String templateParameterName = m.group(1);
+                    // in java all generic parameters are types,
+                    // so we create an classifier and use it's name as template parameter name
+                    Object type = Model.getCoreFactory().buildInterface(templateParameterName);
+                    // TODO: this auxiliary class should be market with some stereotype
+                    // to prevent it's code generation in future
                     if (m.group(2) != null) {
-                        // bounds are saved as tagged value in parameter
-                        buildTaggedValue(param, m.group(2).trim(), new String[]{m.group(3)});
+                        // bounds are saved as tagged value in type
+                        buildTaggedValue(type, m.group(2).trim(), new String[]{m.group(3)});
                     }
+                    Object templateParameter = Model.getCoreFactory().buildTemplateParameter(modelElement, type, null);
+                    Model.getCoreHelper().addTemplateParameter(modelElement, templateParameter);
                 } 
-                Model.getCoreHelper().setParameter(templateParam, param);
-                Model.getCoreHelper().addTemplateParameter(modelElement,
-                        templateParam);
             }
         }
     }
