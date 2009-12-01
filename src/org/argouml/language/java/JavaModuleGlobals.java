@@ -34,7 +34,7 @@ public final class JavaModuleGlobals {
     /**
      * The version info of a module in the Java module project.
      */
-    public final static String MODULE_VERSION = "0.29.1";
+    public final static String MODULE_VERSION = "0.29.3";
 
     /**
      * The author info of a module in the Java module project.
