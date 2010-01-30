@@ -238,9 +238,9 @@ public class TestProjectWithJavaProfile extends TestCase {
      File userDefinedProfileFile = createUserProfileFile(testCaseDir,
          "testProjectWithUserDefinedProfilePersistency-TestUserProfile.xmi");
      // add it to the project configuration
-     Profile userDefinedProfile = 
-         new UserDefinedProfile(userDefinedProfileFile);
      ProfileManager profileManager = ProfileFacade.getManager();
+     Profile userDefinedProfile = 
+         new UserDefinedProfile(userDefinedProfileFile, profileManager);
      profileManager.registerProfile(userDefinedProfile);
      profileManager.addSearchPathDirectory(testCaseDir.getAbsolutePath());
      Project project = ProjectManager.getManager().makeEmptyProject();
@@ -318,9 +318,9 @@ public class TestProjectWithJavaProfile extends TestCase {
      File userDefinedProfileFile = createUserProfileFile(testCaseDir,
          testName + "-TestUserProfile.xmi");
      // add it to the project configuration
-     Profile userDefinedProfile = 
-         new UserDefinedProfile(userDefinedProfileFile);
      ProfileManager profileManager = ProfileFacade.getManager();
+     Profile userDefinedProfile = 
+         new UserDefinedProfile(userDefinedProfileFile, profileManager);
      profileManager.registerProfile(userDefinedProfile);
      profileManager.addSearchPathDirectory(testCaseDir.getAbsolutePath());
      Project project = ProjectManager.getManager().makeEmptyProject();
