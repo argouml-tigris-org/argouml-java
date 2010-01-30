@@ -141,7 +141,7 @@ engineering of Java code and support for built-in types and standard libraries.
         <pathelement location="${antlr2.jar.path}"/>
         <pathelement location="${argo.build.dir}/argouml-model.jar"/>
         <!-- Extra elements for Eclipse PDE build which doesn't use default packaging -->
-        <pathelement location="${argo.build.dir}/gef-0.13.1M3.jar"/>
+        <pathelement location="${argo.build.dir}/gef-0.13.1.jar"/>
         <pathelement location="${argo.build.dir}/ocl-argo-1.1.jar"/>
         <pathelement location="${argo.build.dir}/swidgets-0.1.4.jar"/>
         <pathelement location="${module.root}/../argouml-core-infra/build/log4j-1.2.6.jar"/>
