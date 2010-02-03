@@ -1,8 +1,8 @@
 <?xml version = '1.0' encoding = 'UTF-8' ?>
-<XMI xmi.version = '1.2' xmlns:UML = 'org.omg.xmi.namespace.UML' timestamp = 'Wed Jun 24 11:19:04 CEST 2009'>
+<XMI xmi.version = '1.2' xmlns:UML = 'org.omg.xmi.namespace.UML' timestamp = 'Wed Feb 03 15:57:27 CET 2010'>
   <XMI.header>    <XMI.documentation>
       <XMI.exporter>ArgoUML (using Netbeans XMI Writer version 1.0)</XMI.exporter>
-      <XMI.exporterVersion>0.28(6) revised on $Date: 2007-05-12 08:08:08 +0200 (Sat, 12 May 2007) $ </XMI.exporterVersion>
+      <XMI.exporterVersion>0.28.1(6) revised on $Date: 2007-05-12 08:08:08 +0200 (Sat, 12 May 2007) $ </XMI.exporterVersion>
     </XMI.documentation>
     <XMI.metamodel xmi.name="UML" xmi.version="1.4"/></XMI.header>
   <XMI.content>
@@ -73,6 +73,36 @@
                   isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
                 <UML:Class xmi.id = '.:0000000000000882' name = 'Throwable' isSpecification = 'false'
                   isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Package xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FDD'
+                  name = 'reflect' isSpecification = 'false' isRoot = 'false' isLeaf = 'false'
+                  isAbstract = 'false'>
+                  <UML:Namespace.ownedElement>
+                    <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FDE'
+                      name = 'Constructor' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                      isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                    <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FDF'
+                      name = 'Field' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                      isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                    <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FE0'
+                      name = 'InvocationTargetException' visibility = 'public' isSpecification = 'false'
+                      isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                    <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FE1'
+                      name = 'Member' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                      isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                    <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FE2'
+                      name = 'Method' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                      isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                    <UML:Interface xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FE3'
+                      name = 'ParameterizedType' visibility = 'public' isSpecification = 'false'
+                      isRoot = 'false' isLeaf = 'false' isAbstract = 'false'/>
+                    <UML:Interface xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FE4'
+                      name = 'Type' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                      isLeaf = 'false' isAbstract = 'false'/>
+                    <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FE5'
+                      name = 'UndeclaredThrowableException' visibility = 'public' isSpecification = 'false'
+                      isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                  </UML:Namespace.ownedElement>
+                </UML:Package>
               </UML:Namespace.ownedElement>
             </UML:Package>
             <UML:Package xmi.id = '.:0000000000000863' name = 'util' isSpecification = 'false'
@@ -179,6 +209,9 @@
                       isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
                   </UML:Namespace.ownedElement>
                 </UML:Package>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000001044'
+                  name = 'Collections' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
               </UML:Namespace.ownedElement>
             </UML:Package>
             <UML:Package xmi.id = '.:0000000000000866' name = 'math' isSpecification = 'false'
@@ -194,6 +227,357 @@
               isRoot = 'false' isLeaf = 'false' isAbstract = 'false'>
               <UML:Namespace.ownedElement>
                 <UML:Class xmi.id = '.:0000000000000867' name = 'URL' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000F96'
+                  name = 'URI' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:000000000000102F'
+                  name = 'URISyntaxException' visibility = 'public' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:000000000000103C'
+                  name = 'MalformedURLException' visibility = 'public' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+              </UML:Namespace.ownedElement>
+            </UML:Package>
+            <UML:Package xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000F94'
+              name = 'applet' isSpecification = 'false' isRoot = 'false' isLeaf = 'false'
+              isAbstract = 'false'>
+              <UML:Namespace.ownedElement>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000F95'
+                  name = 'Applet' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Interface xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000F97'
+                  name = 'AppletContext' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false'/>
+                <UML:Interface xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000F98'
+                  name = 'AppletStub' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false'/>
+                <UML:Interface xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000F99'
+                  name = 'AudioClip' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false'/>
+              </UML:Namespace.ownedElement>
+            </UML:Package>
+            <UML:Package xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000F9A'
+              name = 'awt' isSpecification = 'false' isRoot = 'false' isLeaf = 'false'
+              isAbstract = 'false'>
+              <UML:Namespace.ownedElement>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000F9B'
+                  name = 'BorderLayout' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000F9C'
+                  name = 'CardLayout' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000F9D'
+                  name = 'Component' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000F9E'
+                  name = 'Container' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000F9F'
+                  name = 'Cursor' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FA0'
+                  name = 'Dimension' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FA1'
+                  name = 'Event' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FA2'
+                  name = 'FileDialog' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FA3'
+                  name = 'FlowLayout' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FA4'
+                  name = 'Font' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FA5'
+                  name = 'Graphics' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FA6'
+                  name = 'Graphics2D' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FA7'
+                  name = 'GridBagConstraints' visibility = 'public' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FA8'
+                  name = 'GridBagLayout' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FA9'
+                  name = 'GridLayout' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FAA'
+                  name = 'Image' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FAB'
+                  name = 'Insets' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FAC'
+                  name = 'Point' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FAD'
+                  name = 'Polygon' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FAE'
+                  name = 'Rectangle' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FAF'
+                  name = 'SplashScreen' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FB0'
+                  name = 'SystemColor' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FB1'
+                  name = 'SystemTray' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FB2'
+                  name = 'Toolkit' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Interface xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FB3'
+                  name = 'Transparency' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FB4'
+                  name = 'TrayIcon' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FB5'
+                  name = 'Window' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Package xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FB6'
+                  name = 'event' isSpecification = 'false' isRoot = 'false' isLeaf = 'false'
+                  isAbstract = 'false'>
+                  <UML:Namespace.ownedElement>
+                    <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FB7'
+                      name = 'ActionEvent' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                      isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                    <UML:Interface xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FB8'
+                      name = 'ActionListener' visibility = 'public' isSpecification = 'false'
+                      isRoot = 'false' isLeaf = 'false' isAbstract = 'false'/>
+                    <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FB9'
+                      name = 'ComponentAdapter' visibility = 'public' isSpecification = 'false'
+                      isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                    <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FBA'
+                      name = 'ComponentEvent' visibility = 'public' isSpecification = 'false'
+                      isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                    <UML:Interface xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FBB'
+                      name = 'ComponentListener' visibility = 'public' isSpecification = 'false'
+                      isRoot = 'false' isLeaf = 'false' isAbstract = 'false'/>
+                    <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FBC'
+                      name = 'FocusAdapter' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                      isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                    <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FBD'
+                      name = 'FocusEvent' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                      isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                    <UML:Interface xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FBE'
+                      name = 'FocusListener' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                      isLeaf = 'false' isAbstract = 'false'/>
+                    <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FBF'
+                      name = 'ItemEvent' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                      isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                    <UML:Interface xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FC0'
+                      name = 'ItemListener' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                      isLeaf = 'false' isAbstract = 'false'/>
+                    <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FC1'
+                      name = 'KeyAdapter' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                      isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                    <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FC2'
+                      name = 'KeyEvent' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                      isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                    <UML:Interface xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FC3'
+                      name = 'KeyListener' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                      isLeaf = 'false' isAbstract = 'false'/>
+                    <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FC4'
+                      name = 'MouseAdapter' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                      isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                    <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FC5'
+                      name = 'MouseEvent' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                      isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                    <UML:Interface xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FC6'
+                      name = 'MouseListener' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                      isLeaf = 'false' isAbstract = 'false'/>
+                    <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FC7'
+                      name = 'TextEvent' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                      isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                    <UML:Interface xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FC8'
+                      name = 'TextListener' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                      isLeaf = 'false' isAbstract = 'false'/>
+                    <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FC9'
+                      name = 'WindowAdapter' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                      isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                    <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FCA'
+                      name = 'WindowEvent' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                      isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                    <UML:Interface xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FCB'
+                      name = 'WindowFocusListener' visibility = 'public' isSpecification = 'false'
+                      isRoot = 'false' isLeaf = 'false' isAbstract = 'false'/>
+                    <UML:Interface xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FCC'
+                      name = 'WindowListener' visibility = 'public' isSpecification = 'false'
+                      isRoot = 'false' isLeaf = 'false' isAbstract = 'false'/>
+                    <UML:Interface xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FCD'
+                      name = 'WindowStateListener' visibility = 'public' isSpecification = 'false'
+                      isRoot = 'false' isLeaf = 'false' isAbstract = 'false'/>
+                  </UML:Namespace.ownedElement>
+                </UML:Package>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:000000000000101B'
+                  name = 'KeyboardFocusManager' visibility = 'public' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+              </UML:Namespace.ownedElement>
+            </UML:Package>
+            <UML:Package xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FCE'
+              name = 'beans' isSpecification = 'false' isRoot = 'false' isLeaf = 'false'
+              isAbstract = 'false'>
+              <UML:Namespace.ownedElement>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FCF'
+                  name = 'PropertyChangeEvent' visibility = 'public' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Interface xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FD0'
+                  name = 'PropertyChangeListener' visibility = 'public' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:000000000000103D'
+                  name = 'PropertyVetoException' visibility = 'public' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:000000000000103E'
+                  name = 'VetoableChangeSupport' visibility = 'public' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Interface xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:000000000000103F'
+                  name = 'Visibility' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false'/>
+              </UML:Namespace.ownedElement>
+            </UML:Package>
+            <UML:Package xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FD1'
+              name = 'io' isSpecification = 'false' isRoot = 'false' isLeaf = 'false'
+              isAbstract = 'false'>
+              <UML:Namespace.ownedElement>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FD2'
+                  name = 'File' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FD3'
+                  name = 'IOException' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FD4'
+                  name = 'CharArrayReader' visibility = 'public' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FD5'
+                  name = 'CharArrayWriter' visibility = 'public' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FD6'
+                  name = 'FileReader' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FD7'
+                  name = 'FileWriter' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FD8'
+                  name = 'PipedReader' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FD9'
+                  name = 'PipedWriter' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FDA'
+                  name = 'PrintWriter' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FDB'
+                  name = 'StringReader' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FDC'
+                  name = 'StringWriter' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:000000000000101D'
+                  name = 'BufferedInputStream' visibility = 'public' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:000000000000101E'
+                  name = 'BufferedOutputStream' visibility = 'public' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:000000000000101F'
+                  name = 'ByteArrayInputStream' visibility = 'public' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000001020'
+                  name = 'ByteArrayOutputStream' visibility = 'public' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000001021'
+                  name = 'DataInputStream' visibility = 'public' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000001022'
+                  name = 'DataOutputStream' visibility = 'public' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000001023'
+                  name = 'FileInputStream' visibility = 'public' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000001024'
+                  name = 'FileOutputStream' visibility = 'public' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000001025'
+                  name = 'FilterInputStream' visibility = 'public' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000001026'
+                  name = 'FilterOutputStream' visibility = 'public' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000001027'
+                  name = 'InputStream' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000001028'
+                  name = 'OutputStream' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000001029'
+                  name = 'ObjectInputStream' visibility = 'public' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:000000000000102A'
+                  name = 'ObjectOutputStream' visibility = 'public' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:000000000000102B'
+                  name = 'PipedInputStream' visibility = 'public' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:000000000000102C'
+                  name = 'PipedOutputStream' visibility = 'public' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:000000000000102D'
+                  name = 'PrintStream' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:000000000000102E'
+                  name = 'UnsupportedEncodingException' visibility = 'public' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000001035'
+                  name = 'BufferedReader' visibility = 'public' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000001036'
+                  name = 'BufferedWriter' visibility = 'public' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000001037'
+                  name = 'FileNotFoundException' visibility = 'public' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000001038'
+                  name = 'InputStreamReader' visibility = 'public' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000001039'
+                  name = 'OutputStreamWriter' visibility = 'public' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:000000000000103A'
+                  name = 'Reader' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:000000000000103B'
+                  name = 'Writer' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Interface xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000001040'
+                  name = 'Closeable' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false'/>
+                <UML:Interface xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000001041'
+                  name = 'Externalizable' visibility = 'public' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'false'/>
+                <UML:Interface xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000001042'
+                  name = 'Flushable' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false'/>
+                <UML:Interface xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000001043'
+                  name = 'Serializable' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false'/>
+              </UML:Namespace.ownedElement>
+            </UML:Package>
+            <UML:Package xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FE6'
+              name = 'text' isSpecification = 'false' isRoot = 'false' isLeaf = 'false'
+              isAbstract = 'false'>
+              <UML:Namespace.ownedElement>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FE7'
+                  name = 'MessageFormat' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FE8'
+                  name = 'ParseException' visibility = 'public' isSpecification = 'false'
                   isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
               </UML:Namespace.ownedElement>
             </UML:Package>
@@ -309,6 +693,183 @@
             </UML:TagDefinition>
           </UML:Stereotype.definedTag>
         </UML:Stereotype>
+        <UML:Package xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FE9'
+          name = 'javax' isSpecification = 'false' isRoot = 'false' isLeaf = 'false'
+          isAbstract = 'false'>
+          <UML:Namespace.ownedElement>
+            <UML:Package xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FEA'
+              name = 'swing' isSpecification = 'false' isRoot = 'false' isLeaf = 'false'
+              isAbstract = 'false'>
+              <UML:Namespace.ownedElement>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FEB'
+                  name = 'AbstractAction' visibility = 'public' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FEC'
+                  name = 'BoxLayout' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FED'
+                  name = 'ImageIcon' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FEE'
+                  name = 'JApplet' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FEF'
+                  name = 'JCheckBox' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FF0'
+                  name = 'JButton' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FF1'
+                  name = 'JColorChooser' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FF2'
+                  name = 'JComboBox' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FF3'
+                  name = 'JComponent' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FF4'
+                  name = 'JDesktopPane' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FF5'
+                  name = 'JDialog' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FF6'
+                  name = 'JEditorPane' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FF7'
+                  name = 'JFileChooser' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FF8'
+                  name = 'JFormattedTextField' visibility = 'public' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FF9'
+                  name = 'JFrame' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FFA'
+                  name = 'JInternalFrame' visibility = 'public' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FFB'
+                  name = 'JLabel' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FFC'
+                  name = 'JLayeredPane' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FFD'
+                  name = 'JList' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FFE'
+                  name = 'JMenu' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000000FFF'
+                  name = 'JMenuBar' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000001000'
+                  name = 'JCheckBoxMenuItem' visibility = 'public' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000001001'
+                  name = 'JMenuItem' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000001002'
+                  name = 'JOptionPane' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000001003'
+                  name = 'JPanel' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000001004'
+                  name = 'JPasswordField' visibility = 'public' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000001005'
+                  name = 'JPopupMenu' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000001006'
+                  name = 'JProgressBar' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000001007'
+                  name = 'JRadioButton' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000001008'
+                  name = 'JRadioButtonMenuItem' visibility = 'public' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000001009'
+                  name = 'JRootPane' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:000000000000100A'
+                  name = 'JScrollBar' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:000000000000100B'
+                  name = 'JScrollPane' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:000000000000100C'
+                  name = 'JSeparator' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:000000000000100D'
+                  name = 'JSlider' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:000000000000100E'
+                  name = 'JSpinner' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:000000000000100F'
+                  name = 'JSplitPane' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000001010'
+                  name = 'JTabbedPane' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000001011'
+                  name = 'JTable' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000001012'
+                  name = 'JTextArea' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000001013'
+                  name = 'JTextField' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000001014'
+                  name = 'JTextPane' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000001015'
+                  name = 'JToggleButton' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000001016'
+                  name = 'JToolBar' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000001017'
+                  name = 'JToolTip' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000001018'
+                  name = 'JTree' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000001019'
+                  name = 'JViewport' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:000000000000101A'
+                  name = 'JWindow' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:000000000000101C'
+                  name = 'SwingUtilities' visibility = 'public' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                <UML:Package xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000001030'
+                  name = 'filechooser' isSpecification = 'false' isRoot = 'false' isLeaf = 'false'
+                  isAbstract = 'false'>
+                  <UML:Namespace.ownedElement>
+                    <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000001031'
+                      name = 'FileFilter' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                      isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                    <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000001032'
+                      name = 'FileNameExtensionFilter' visibility = 'public' isSpecification = 'false'
+                      isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                    <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000001033'
+                      name = 'FileSystemView' visibility = 'public' isSpecification = 'false'
+                      isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                    <UML:Class xmi.id = '10-11--56-4-7d36d244:12693710379:-8000:0000000000001034'
+                      name = 'FileView' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                      isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+                  </UML:Namespace.ownedElement>
+                </UML:Package>
+              </UML:Namespace.ownedElement>
+            </UML:Package>
+          </UML:Namespace.ownedElement>
+        </UML:Package>
       </UML:Namespace.ownedElement>
     </UML:Model>
   </XMI.content>
