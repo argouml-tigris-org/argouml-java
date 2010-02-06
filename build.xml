@@ -210,6 +210,7 @@ engineering of Java code and support for built-in types and standard libraries.
     <mkdir dir="${module.build.dest}"/>
     <mkdir dir="${module.tests.classes}"/>
     <mkdir dir="${module.tests.reports}"/>
+    <mkdir dir="${module.src_generated.dir}"/>
   </target>
   
   <!-- =================================================================== -->
@@ -259,15 +260,10 @@ engineering of Java code and support for built-in types and standard libraries.
     </java>
   </target>
   
-  <target name="cleanparsers" depends="init">
+  <target name="cleanparsers" depends="prepare">
     <delete>
-      <fileset dir="${module.src_generated.dir}/org/argouml/language/java/reveng">
-        <include name="*"/>
-      </fileset>
-    </delete> 
-    <delete>
-      <fileset dir="${module.src_generated.dir}/org/argouml/language/java/reveng/classfile">
-        <include name="*"/>
+      <fileset dir="${module.src_generated.dir}">
+        <include name="**"/>
       </fileset>
     </delete> 
   </target> 
@@ -500,7 +496,7 @@ engineering of Java code and support for built-in types and standard libraries.
       <property name="bundleId" value="org.argouml.module.java" />
 
       <!-- This property is magic and will have its value substituted by PDE -->
-      <property name="version.suffix" value="0.29.3.201001020415"/>
+      <property name="version.suffix" value="0.29.3.201001110804"/>
       <property name="bundleVersion" value="${version.suffix}" />
 
       <!-- Compiler settings. -->
