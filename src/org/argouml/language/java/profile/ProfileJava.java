@@ -42,6 +42,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 
 import org.apache.log4j.Logger;
 import org.argouml.language.java.JavaModuleGlobals;
@@ -75,9 +76,9 @@ public class ProfileJava extends Profile implements ModuleInterface {
 
     static final String NAME = "Java";
 
-    private ProfileModelLoader profileModelLoader;
-
-    private Collection<Object> model;
+    private Collection<Object> model = null;
+    
+    ProfileReference profileReference;
 
     /**
      * The default constructor for this class
@@ -86,8 +87,6 @@ public class ProfileJava extends Profile implements ModuleInterface {
      */
     @SuppressWarnings("unchecked")
     public ProfileJava() throws ProfileException {
-        profileModelLoader = new ResourceModelLoader(ProfileJava.class);
-        ProfileReference profileReference = null;
         try {
             URL profileURL = new URL(PROFILE_URL);
             profileReference = new ProfileReference(PROFILE_FILE, profileURL);
@@ -95,15 +94,34 @@ public class ProfileJava extends Profile implements ModuleInterface {
             throw new ProfileException(
                     "Exception while creating profile reference.", e);
         }
-        model = profileModelLoader.loadModel(profileReference);
-
-        if (model == null) {
-            model = new ArrayList();
-            model.add(Model.getModelManagementFactory().createModel());
-        }
-
         addProfileDependency(ProfileFacade.getManager().getUMLProfile());
         addProfileDependency("CodeGeneration");
+    }
+
+    private Collection<Object> getModel() {
+        if (model == null) {
+            ProfileModelLoader profileModelLoader = 
+                new ResourceModelLoader(ProfileJava.class);
+            try {
+                model = profileModelLoader.loadModel(profileReference);
+            } catch (ProfileException e) {
+                LOG.error("Exception loading profile file " + PROFILE_FILE, e);
+            }
+
+            if (model == null) {
+                model = getFallbackModel();
+                LOG.error("Using fallback profile");
+            }
+        }
+        return model;
+    }
+
+    private Collection getFallbackModel() {
+        Collection result = new ArrayList();
+        Object profile = Model.getModelManagementFactory().createModel();
+        Model.getCoreHelper().setName(profile,"Fallback Java profile");
+        result.add(profile);
+        return result;
     }
 
     public String getDisplayName() {
@@ -112,24 +130,33 @@ public class ProfileJava extends Profile implements ModuleInterface {
 
     @Override
     public Collection<Object> getProfilePackages() {
-        return model;
+        return getModel();
     }
 
+    @Override
+    public Collection<Object> getLoadedPackages() {
+        if (model == null) {
+            return Collections.emptyList();
+        } else {
+            return Collections.unmodifiableCollection(model);
+        }
+    }
+    
     @Override
     public DefaultTypeStrategy getDefaultTypeStrategy() {
         return new DefaultTypeStrategy() {
             public Object getDefaultAttributeType() {
-                return ModelUtils.findTypeInModel("int", model.iterator()
+                return ModelUtils.findTypeInModel("int", getModel().iterator()
                         .next());
             }
 
             public Object getDefaultParameterType() {
-                return ModelUtils.findTypeInModel("int", model.iterator()
+                return ModelUtils.findTypeInModel("int", getModel().iterator()
                         .next());
             }
 
             public Object getDefaultReturnType() {
-                return ModelUtils.findTypeInModel("void", model.iterator()
+                return ModelUtils.findTypeInModel("void", getModel().iterator()
                         .next());
             }
 
