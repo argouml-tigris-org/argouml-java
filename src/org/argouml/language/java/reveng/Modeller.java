@@ -907,16 +907,13 @@ public class Modeller {
                 Matcher m = p.matcher(parameter);
                 if (m.matches()) {
                     String templateParameterName = m.group(1);
-                    // in java all generic parameters are types,
-                    // so we create an classifier and use it's name as template parameter name
-                    Object type = Model.getCoreFactory().buildInterface(templateParameterName);
-                    // TODO: this auxiliary class should be market with some stereotype
-                    // to prevent it's code generation in future
+                    Object param = Model.getCoreFactory().createParameter();
+                    Model.getCoreHelper().setName(param, templateParameterName);
+                    Object templateParameter = Model.getCoreFactory().buildTemplateParameter(modelElement, param, null);
                     if (m.group(2) != null) {
-                        // bounds are saved as tagged value in type
-                        buildTaggedValue(type, m.group(2).trim(), new String[]{m.group(3)});
+                        // bounds are saved as tagged value in param
+                        buildTaggedValue(param, m.group(2).trim(), new String[]{m.group(3)});
                     }
-                    Object templateParameter = Model.getCoreFactory().buildTemplateParameter(modelElement, type, null);
                     Model.getCoreHelper().addTemplateParameter(modelElement, templateParameter);
                 } 
             }
