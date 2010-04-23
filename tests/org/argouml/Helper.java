@@ -7,7 +7,8 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    tfmorris
+ *    Tom Morris
+ *    Thomas Neustupny
  *****************************************************************************
  *
  * Some portions of this file was previously release using the BSD License:
@@ -39,6 +40,7 @@
 package org.argouml;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Collection;
 
@@ -48,6 +50,8 @@ import org.argouml.kernel.Project;
 import org.argouml.kernel.ProjectManager;
 import org.argouml.model.Model;
 import org.argouml.model.ModelImplementation;
+import org.argouml.model.XmiWriter;
+import org.argouml.persistence.UmlFilePersister;
 import org.argouml.profile.init.InitProfileSubsystem;
 
 /**
@@ -56,6 +60,24 @@ import org.argouml.profile.init.InitProfileSubsystem;
  * @author Luis Sergio Oliveira (euluis)
  */
 public class Helper {
+
+    /**
+     * "st" the example stereotype name.
+     */
+    public static final String STEREOTYPE_NAME_ST = "st";
+
+    /**
+     * "SimpleProfile" is the name of the SimpleProfile which ProfileMother
+     * uses for the most basic profile being used.
+     */
+    public static final String DEFAULT_SIMPLE_PROFILE_NAME = "SimpleProfile";
+
+    /**
+     * "TagDef" is the name of the Tag Definition applicable to model elements
+     * to which the stereotype named {@link ProfileMother#STEREOTYPE_NAME_ST}
+     * of SimpleProfile was applied.
+     */
+    public static final String TAG_DEFINITION_NAME_TD = "TagDef";
 
     public static Object getModel() {
         // TODO: This is making assumptions about the ordering of models which
@@ -190,6 +212,63 @@ public class Helper {
         }
         if (!dir.delete()) {
             throw new IOException("Unable to delete directory " + dir + ".");
+        }
+    }
+
+    /**
+     * Create a simple profile model with name {@link ProfileMother#DEFAULT_SIMPLE_PROFILE_NAME}
+     * with a class named "foo" and with a stereotype named
+     * {@link ProfileMother#STEREOTYPE_NAME_ST}.
+     *
+     * @return the profile model.
+     */
+    public static Object createSimpleProfileModel() {
+        return createSimpleProfileModel(DEFAULT_SIMPLE_PROFILE_NAME);
+    }
+
+    /**
+     * Create a simple profile model with name profileName,
+     * with a class named "foo" and with a stereotype named
+     * {@link ProfileMother#STEREOTYPE_NAME_ST}.
+     *
+     * @param profileName the name that the created profile shall have.
+     * @return the profile model.
+     */
+    public static Object createSimpleProfileModel(String profileName) {
+        // TODO: should it remove the leftovers from other tests?
+//        cleanAllExtents();
+//        assert getFacade().getRootElements().size() == 0;
+        Object model = Model.getModelManagementFactory().createProfile();
+        Object fooClass = Model.getCoreFactory().buildClass("foo", model);
+        Object stereotype = Model.getExtensionMechanismsFactory().buildStereotype(fooClass,
+            STEREOTYPE_NAME_ST, model);
+        Model.getCoreHelper().setName(model, profileName);
+        Model.getExtensionMechanismsFactory().buildTagDefinition(
+            TAG_DEFINITION_NAME_TD, stereotype, null);
+        return model;
+    }
+
+    /**
+     * Save the profile model into the given file.
+     *
+     * @param model the profile model.
+     * @param file the file into which to save the profile model.
+     * @throws IOException if IO goes wrong.
+     */
+    public static void saveProfileModel(Object model, File file) throws IOException {
+        FileOutputStream fileOut = new FileOutputStream(file);
+//        cleanAllExtentsBut(model); // TODO: why is this causing a crash?!?
+        try {
+            XmiWriter xmiWriter = Model.getXmiWriter(model, fileOut, "x("
+                + UmlFilePersister.PERSISTENCE_VERSION + ")");
+            xmiWriter.write();
+            fileOut.flush();
+        } catch (Exception e) {
+            String msg = "Exception while saving profile model.";
+            //LOG.error(msg, e);
+            throw new IOException(msg);
+        } finally {
+            fileOut.close();
         }
     }
 }
