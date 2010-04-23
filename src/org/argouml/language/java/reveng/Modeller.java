@@ -7,7 +7,8 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    lepekhine
+ *    Thomas Neustupny
+ *    Alexander Lepekhine
  *****************************************************************************
  *
  * Some portions of this file was previously release using the BSD License:
@@ -487,7 +488,7 @@ public class Modeller {
         if (Model.getFacade().getUmlVersion().charAt(0) == '1') {
             // TODO: support for stereotypes in eUML
             Model.getCoreHelper().addStereotype(pkgImport,
-                    getStereotype("javaImport"));
+                    getUML1Stereotype("javaImport"));
         }
         String newName = makeDependencyName(srcFile, element);
         Model.getCoreHelper().setName(pkgImport, newName);
@@ -750,20 +751,50 @@ public class Modeller {
      */
     void addEnumeration(String name, short modifiers, List<String> interfaces,
             String javadoc, boolean forceIt) {
-        Object mClass = addClassifier(Model.getCoreFactory().createClass(),
+        Object mEnum = null;
+        if (Model.getFacade().getUmlVersion().charAt(0) == '1') {
+            mEnum = addClassifier(Model.getCoreFactory().createClass(),
                 name, modifiers, javadoc, EMPTY_STRING_LIST); // no type params
                                                               // for now
+            Model.getCoreHelper().addStereotype(mEnum,
+                    getUML1Stereotype("enumeration"));
+        } else {
+            // TODO: always use UML Enumerations, like this:
+            mEnum = Model.getCoreFactory().createEnumeration();
+            Object mNamespace;
+            if (parseState.getClassifier() != null) {
+                // the new classifier is a java inner enumeration
+                mNamespace = parseState.getClassifier();
+            } else {
+                // the new classifier is a top level java enumeration
+                parseState.outerClassifier();
+                mNamespace = currentPackage;
+            }
+            if (LOG.isInfoEnabled()) {
+                LOG.info("Created new enumeration for " + name);
+            }
+            Model.getCoreHelper().setName(mEnum, name);
+            Model.getCoreHelper().setNamespace(mEnum, mNamespace);
+            newElements.add(mEnum);
 
-        if (Model.getFacade().getUmlVersion().charAt(0) == '1'){
-            Model.getCoreHelper().addStereotype(mClass,
-                    getStereotype("enumeration"));
+            parseState.innerClassifier(mEnum);
+            // change the parse state to a classifier parse state
+            parseStateStack.push(parseState);
+            parseState = new ParseState(parseState, mEnum, currentPackage);
+
+            setVisibility(mEnum, modifiers);
+
+            // Add classifier documentation tags during first (or only) pass only
+            if (getLevel() <= 0) {
+                addDocumentationTag(mEnum, javadoc);
+            }
         }
 
         if ((modifiers & JavaParser.ACC_ABSTRACT) > 0) {
             // abstract enums are illegal in Java
             logError("Illegal \"abstract\" modifier on enum ", name);
         } else {
-            Model.getCoreHelper().setAbstract(mClass, false);
+            Model.getCoreHelper().setAbstract(mEnum, false);
         }
         if ((modifiers & JavaParser.ACC_FINAL) > 0) {
             // it's an error to explicitly use the 'final' keyword for an enum
@@ -772,10 +803,10 @@ public class Modeller {
         } else {
             // enums are implicitly final unless they contain a class body
             // (which we won't know until we process the constants
-            Model.getCoreHelper().setLeaf(mClass, true);
+            Model.getCoreHelper().setLeaf(mEnum, true);
         }
         if (Model.getFacade().getUmlVersion().charAt(0) == '1') {
-            Model.getCoreHelper().setRoot(mClass, false);
+            Model.getCoreHelper().setRoot(mEnum, false);
         }
 
         // only do realizations on the 2nd pass.
@@ -784,7 +815,7 @@ public class Modeller {
         }
 
         if (interfaces != null) {
-            addInterfaces(mClass, interfaces, forceIt);
+            addInterfaces(mEnum, interfaces, forceIt);
         }
     }
 
@@ -830,10 +861,12 @@ public class Modeller {
                     Model.getCoreHelper().addSupplier(mAbstraction, mInterface);
                     Model.getCoreHelper().addClient(mAbstraction, mClass);
                 }
-                Model.getCoreHelper()
+                if (Model.getFacade().getUmlVersion().charAt(0) == '1') {
+                    Model.getCoreHelper()
                         .setNamespace(mAbstraction, currentPackage);
-                Model.getCoreHelper().addStereotype(mAbstraction,
-                        getStereotype(CoreFactory.REALIZE_STEREOTYPE));
+                    Model.getCoreHelper().addStereotype(mAbstraction,
+                        getUML1Stereotype(CoreFactory.REALIZE_STEREOTYPE));
+                }
                 newElements.add(mAbstraction);
             }
         }
@@ -853,7 +886,12 @@ public class Modeller {
         short mod = JavaParser.ACC_PUBLIC | JavaParser.ACC_FINAL
                 | JavaParser.ACC_STATIC;
 
-        addAttribute(mod, null, name, null, null, true);
+        if (Model.getFacade().getUmlVersion().charAt(0) == '1') {
+            // TODO: make this obsolete (always use real enumerations)
+            addAttribute(mod, null, name, null, null, true);
+        } else {
+            Model.getCoreFactory().buildEnumerationLiteral(name, enumeration);
+        }
 
         // add an <<enum>> stereotype to distinguish it from fields
         // in the class body?
@@ -864,6 +902,10 @@ public class Modeller {
      * the <<enumeration>> stereotype applied.
      */
     private boolean isAEnumeration(Object element) {
+        if (Model.getFacade().isAEnumeration(element)) {
+            return true;
+        }
+        // TODO: make the following obsolete
         if (!Model.getFacade().isAClass(element)) {
             return false;
         }
@@ -1075,7 +1117,9 @@ public class Modeller {
                 (modifiers & JavaParser.ACC_ABSTRACT) > 0);
         Model.getCoreHelper().setLeaf(mOperation,
                 (modifiers & JavaParser.ACC_FINAL) > 0);
-        Model.getCoreHelper().setRoot(mOperation, false);
+        if (Model.getFacade().getUmlVersion().charAt(0) == '1') {
+            Model.getCoreHelper().setRoot(mOperation, false);
+        }
         setOwnerScope(mOperation, modifiers);
         setVisibility(mOperation, modifiers);
         if ((modifiers & JavaParser.ACC_SYNCHRONIZED) > 0) {
@@ -1442,7 +1486,8 @@ public class Modeller {
                     parent);
             newElements.add(mGeneralization);
         }
-        if (mGeneralization != null) {
+        if (mGeneralization != null
+             && Model.getFacade().getUmlVersion().charAt(0) == '1') {
             Model.getCoreHelper().setNamespace(mGeneralization, mPackage);
         }
         return mGeneralization;
@@ -1658,12 +1703,12 @@ public class Modeller {
     }
 
     /**
-     * Get the stereotype with a specific name.
+     * Get the stereotype with a specific name. UML 1.x only.
      * 
      * @param name The name of the stereotype.
      * @return The stereotype.
      */
-    private Object getStereotype(String name) {
+    private Object getUML1Stereotype(String name) {
         LOG.debug("Trying to find a stereotype of name <<" + name + ">>");
         // Is this line really safe wouldn't it just return the first
         // model element of the same name whether or not it is a stereotype
@@ -1717,10 +1762,18 @@ public class Modeller {
                 }
             }
         }
+        if (Model.getFacade().getUmlVersion().charAt(0) != '1') {
+            // For UML2, we must fail now, because stereotypes must be found
+            // only in profiles.
+            throw new IllegalArgumentException("Could not find "
+                + "a suitable stereotype for " + Model.getFacade().getName(me)
+                + " -  stereotype: <<" + name + ">> base: " + baseClass);
+        }
+        // (UML 1.x only from here)
         // Instead of failing, this should create any stereotypes that it
         // requires. Most likely cause of failure is that the stereotype isn't
         // included in the profile that is being used. - tfm 20060224
-        stereotype = getStereotype(name);
+        stereotype = getUML1Stereotype(name);
         if (stereotype != null) {
             Model.getExtensionMechanismsHelper().addBaseClass(stereotype, me);
             return stereotype;
@@ -2114,18 +2167,21 @@ public class Modeller {
      * value AND parse a single instance for multiple stereotypes
      */
     private void addStereotypes(Object modelElement) {
-        Object tv = Model.getFacade()
-                .getTaggedValue(modelElement, "stereotype");
-        if (tv != null) {
-            String stereo = Model.getFacade().getValueOfTag(tv);
-            if (stereo != null && stereo.length() > 0) {
-                StringTokenizer st = new StringTokenizer(stereo, ", ");
-                while (st.hasMoreTokens()) {
-                    Model.getCoreHelper().addStereotype(modelElement,
-                            getStereotype(st.nextToken().trim()));
+        // TODO: What we do here is allowed for UML 1.x only!
+        if (Model.getFacade().getUmlVersion().charAt(0) == '1') {
+            Object tv = Model.getFacade()
+                    .getTaggedValue(modelElement, "stereotype");
+            if (tv != null) {
+                String stereo = Model.getFacade().getValueOfTag(tv);
+                if (stereo != null && stereo.length() > 0) {
+                    StringTokenizer st = new StringTokenizer(stereo, ", ");
+                    while (st.hasMoreTokens()) {
+                        Model.getCoreHelper().addStereotype(modelElement,
+                                getUML1Stereotype(st.nextToken().trim()));
+                    }
                 }
+                Model.getUmlFactory().delete(tv);
             }
-            Model.getUmlFactory().delete(tv);
         }
     }
 
