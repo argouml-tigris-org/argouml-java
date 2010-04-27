@@ -575,7 +575,9 @@ public class Modeller {
                 (modifiers & JavaParser.ACC_ABSTRACT) > 0);
         Model.getCoreHelper().setLeaf(mClass,
                 (modifiers & JavaParser.ACC_FINAL) > 0);
-        Model.getCoreHelper().setRoot(mClass, false);
+        if (Model.getFacade().getUmlVersion().charAt(0) == '1') {
+            Model.getCoreHelper().setRoot(mClass, false);
+        }
         newElements.add(mClass);
 
         // only do generalizations and realizations on the 2nd pass.
@@ -752,8 +754,10 @@ public class Modeller {
                 name, modifiers, javadoc, EMPTY_STRING_LIST); // no type params
                                                               // for now
 
-        Model.getCoreHelper().addStereotype(mClass,
-                getStereotype("enumeration"));
+        if (Model.getFacade().getUmlVersion().charAt(0) == '1'){
+            Model.getCoreHelper().addStereotype(mClass,
+                    getStereotype("enumeration"));
+        }
 
         if ((modifiers & JavaParser.ACC_ABSTRACT) > 0) {
             // abstract enums are illegal in Java
@@ -770,7 +774,9 @@ public class Modeller {
             // (which we won't know until we process the constants
             Model.getCoreHelper().setLeaf(mClass, true);
         }
-        Model.getCoreHelper().setRoot(mClass, false);
+        if (Model.getFacade().getUmlVersion().charAt(0) == '1') {
+            Model.getCoreHelper().setRoot(mClass, false);
+        }
 
         // only do realizations on the 2nd pass.
         if (getLevel() == 0) {
@@ -854,7 +860,7 @@ public class Modeller {
     }
 
     /*
-     * Recognizer for enumeration. In our world an enumeration is a Class with
+     * Recognizer for enumeration. In UML1 an enumeration is a Class with
      * the <<enumeration>> stereotype applied.
      */
     private boolean isAEnumeration(Object element) {
@@ -968,7 +974,8 @@ public class Modeller {
         parseState.innerClassifier(mClassifier);
 
         // set up the component residency (only for top level classes)
-        if (parseState.getClassifier() == null) {
+        if (parseState.getClassifier() == null
+             && Model.getFacade().getUmlVersion().charAt(0) == '1') {
             // set the classifier to be a resident in its component:
             // (before we push a new parse state on the stack)
 
