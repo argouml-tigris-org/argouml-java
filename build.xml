@@ -446,13 +446,16 @@ engineering of Java code and support for built-in types and standard libraries.
     <echo message="running the unit tests"/>
     
     <junit errorproperty="junit.failure" fork="yes" haltonfailure="false" 
-           maxmemory="48M" printsummary="true">
+           maxmemory="128M" printsummary="true">
           <!-- use different log4j configuration for testing -->
       <sysproperty key="log4j.configuration" value="org/argouml/resource/full_console.lcf"/>
       <classpath>
         <path refid="module.run-tests.classpath"/>
         <pathelement location="${module.tests.classes}"/>
       </classpath>
+      <assertions>
+        <enable package="org.argouml"/>
+      </assertions>
       <formatter type="xml"/>
       <batchtest todir="${module.tests.reports}">
         <fileset dir="${module.tests.src}">
