@@ -8,6 +8,7 @@
  *
  * Contributors:
  *    thn
+ *    Luis Sergio Oliveira (euluis)
  *****************************************************************************
  *
  * Some portions of this file was previously release using the BSD License:
@@ -72,6 +73,11 @@ public class TestClassImportGenerics extends TestCase {
 
     public TestClassImportGenerics(String str) {
         super(str);
+    }
+    
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
         if (!Model.isInitiated()) {
             Helper.initializeMDR();
         }

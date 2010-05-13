@@ -8,7 +8,7 @@
  *
  * Contributors:
  *    thn
- *    euluis
+ *    Luis Sergio Oliveira (euluis)
  *****************************************************************************
  *
  * Some portions of this file was previously release using the BSD License:
@@ -87,6 +87,7 @@ public class TestProjectWithJavaProfile extends TestCase {
      super.setUp();
      Helper.initializeMDR();
      new InitProfileSubsystem().init();
+     new ProfileJava().enable();
 
      if (ApplicationVersion.getVersion() == null) {
          Class argoVersionClass =
@@ -97,12 +98,12 @@ public class TestProjectWithJavaProfile extends TestCase {
          assertNotNull(ApplicationVersion.getVersion());
      }
      String testCaseDirName = getClass().getPackage().getName();
-     //testCaseDir = FileHelper.setUpDir4Test(testCaseDirName);
+     testCaseDir = Helper.setUpDir4Test(testCaseDirName);
  }
 
  @Override
  protected void tearDown() throws Exception {
-     //FileHelper.deleteDir(testCaseDir);
+     Helper.deleteDirectory(testCaseDir);
      super.tearDown();
  }
 
@@ -136,7 +137,8 @@ public class TestProjectWithJavaProfile extends TestCase {
      // set UML Profile for Java as a default profile
      ProfileManager profileManager = ProfileFacade.getManager();
      Profile javaProfile = profileManager.getProfileForClass(
-             "org.argouml.profile.internal.ProfileJava");
+             "org.argouml.language.java.profile.ProfileJava");
+     assertNotNull("The UML profile for Java shouldn't be null.", javaProfile);
      if (!profileManager.getDefaultProfiles().contains(javaProfile)) {
          profileManager.addToDefaultProfiles(javaProfile);
      }

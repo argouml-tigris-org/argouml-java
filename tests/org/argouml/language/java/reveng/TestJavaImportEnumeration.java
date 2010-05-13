@@ -8,6 +8,7 @@
  *
  * Contributors:
  *    tfmorris
+ *    Luis Sergio Oliveira (euluis)
  *****************************************************************************
  *
  * Some portions of this file was previously release using the BSD License:
@@ -48,7 +49,11 @@ import junit.framework.TestCase;
 import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
+import org.argouml.kernel.Project;
+import org.argouml.kernel.ProjectManager;
+import org.argouml.language.java.profile.ProfileJava;
 import org.argouml.model.Model;
+import org.argouml.profile.ProfileFacade;
 import org.argouml.profile.init.InitProfileSubsystem;
 
 /**
@@ -73,7 +78,7 @@ public class TestJavaImportEnumeration extends TestCase {
     /*
      * @see junit.framework.TestCase#setUp()
      */
-    protected void setUp() {
+    protected void setUp() throws Exception {
         if (isParsed) {
             return;
         }
@@ -84,13 +89,15 @@ public class TestJavaImportEnumeration extends TestCase {
         JavaParser parser = new JavaParser(tokens);
         assertNotNull("Creation of parser failed.", parser);
 
-        parsedModel = Model.getModelManagementFactory().createModel();
+        new InitProfileSubsystem().init();
+        profileJava = new ProfileJava();
+        profileJava.enable();
+
+        Project project = ProjectManager.getManager().makeEmptyProject();
+        parsedModel = project.getUserDefinedModelList().get(0);
         assertNotNull("Creation of model failed.", parsedModel);
 
-        Model.getModelManagementFactory().setRootModel(parsedModel);
-        new InitProfileSubsystem().init();
-
-        Modeller modeller = new Modeller(parsedModel, false, false,
+        Modeller modeller = new Modeller(parsedModel, profileJava, false, false,
                 "TestClass.java");
         assertNotNull("Creation of Modeller instance failed.", modeller);
 
@@ -100,6 +107,13 @@ public class TestJavaImportEnumeration extends TestCase {
         } catch (RecognitionException e) {
             fail("Parsing of Java source failed." + e);
         }
+    }
+    
+    @Override
+    protected void tearDown() throws Exception {
+        profileJava.disable();
+        ProfileFacade.reset();
+        super.tearDown();
     }
 
     /**
@@ -360,6 +374,6 @@ public class TestJavaImportEnumeration extends TestCase {
 
             + "}";
 
+    private ProfileJava profileJava;
+
 }
-
-

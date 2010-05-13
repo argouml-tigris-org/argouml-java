@@ -8,7 +8,8 @@
  *
  * Contributors:
  *    thn
- *****************************************************************************
+ *    Luis Sergio Oliveira (euluis)
+*****************************************************************************
  *
  * Some portions of this file was previously release using the BSD License:
  */
@@ -48,6 +49,10 @@ import junit.framework.TestCase;
 import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
+import org.argouml.Helper;
+import org.argouml.kernel.Project;
+import org.argouml.kernel.ProjectManager;
+import org.argouml.language.java.profile.ProfileJava;
 import org.argouml.model.Model;
 import org.argouml.profile.init.InitProfileSubsystem;
 
@@ -70,14 +75,13 @@ public class TestJavaImportInterface extends TestCase {
      */
     public TestJavaImportInterface(String str) {
         super(str);
-        newModel();
     }
 
     /*
      * @see junit.framework.TestCase#setUp()
      */
     @Override
-    protected void setUp() {
+    protected void setUp() throws Exception {
         if (isParsed) {
             return;
         }
@@ -88,16 +92,16 @@ public class TestJavaImportInterface extends TestCase {
         JavaParser parser = new JavaParser(tokens);
         assertNotNull("Creation of parser failed.", parser);
 
-        parsedModel = Model.getModelManagementFactory().createModel();
-        assertNotNull("Creation of model failed.", parsedModel);
-
-        Model.getModelManagementFactory().setRootModel(parsedModel);
+        Helper.initializeMDR();
         new InitProfileSubsystem().init();
+        ProfileJava profileJava = new ProfileJava();
+        profileJava.enable();
 
-        Modeller modeller =
-                new Modeller(parsedModel, false, false, "TestInterface.java");
-        assertNotNull("Creation of Modeller instance failed.", modeller);
+        Project project = ProjectManager.getManager().makeEmptyProfileProject();
+        parsedModel = project.getUserDefinedModelList().iterator().next();
 
+        Modeller modeller = new Modeller(parsedModel, profileJava, false,
+                false, "TestInterface.java");
         try {
             parser.compilationUnit(modeller, lexer);
             isParsed = true;
