@@ -36,7 +36,6 @@
 // PROVIDED HEREUNDER IS ON AN "AS IS" BASIS, AND THE UNIVERSITY OF
 // CALIFORNIA HAS NO OBLIGATIONS TO PROVIDE MAINTENANCE, SUPPORT,
 // UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
-
 package org.argouml.language.java.profile;
 
 import static org.argouml.model.Model.getFacade;
@@ -63,158 +62,158 @@ import org.argouml.profile.ProfileManager;
 import org.argouml.profile.init.InitProfileSubsystem;
 
 /**
-* Tests the {@link ProjectImpl} with profiles, specifically this enables the
-* testing of the org.argouml.profile subsystem API for the project and the
-* interactions between {@link ProfileConfiguration} and the {@link Project}.
-*
-* @author Luis Sergio Oliveira (euluis)
-*/
+ * Tests the {@link ProjectImpl} with profiles, specifically this enables the
+ * testing of the org.argouml.profile subsystem API for the project and the
+ * interactions between {@link ProfileConfiguration} and the {@link Project}.
+ * 
+ * @author Luis Sergio Oliveira (euluis)
+ */
 public class TestProjectWithJavaProfile extends TestCase {
 
- private File testCaseDir;
+    private File testCaseDir;
 
- /*
-  * @see junit.framework.TestCase#setUp()
-  */
- @Override
- protected void setUp() throws Exception {
-     super.setUp();
-     Helper.initializeMDR();
-     new InitProfileSubsystem().init();
-     new ProfileJava().enable();
+    /*
+     * @see junit.framework.TestCase#setUp()
+     */
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        Helper.initializeMDR();
+        new InitProfileSubsystem().init();
+        new ProfileJava().enable();
 
-     if (ApplicationVersion.getVersion() == null) {
-         Class argoVersionClass =
-             Class.forName("org.argouml.application.ArgoVersion");
-         Method initMethod = argoVersionClass.getDeclaredMethod("init");
-         initMethod.setAccessible(true);
-         initMethod.invoke(null);
-         assertNotNull(ApplicationVersion.getVersion());
-     }
-     String testCaseDirName = getClass().getPackage().getName();
-     testCaseDir = Helper.setUpDir4Test(testCaseDirName);
- }
+        if (ApplicationVersion.getVersion() == null) {
+            Class argoVersionClass = Class
+                    .forName("org.argouml.application.ArgoVersion");
+            Method initMethod = argoVersionClass.getDeclaredMethod("init");
+            initMethod.setAccessible(true);
+            initMethod.invoke(null);
+            assertNotNull(ApplicationVersion.getVersion());
+        }
+        String testCaseDirName = getClass().getPackage().getName();
+        testCaseDir = Helper.setUpDir4Test(testCaseDirName);
+    }
 
- @Override
- protected void tearDown() throws Exception {
-     Helper.deleteDirectory(testCaseDir);
-     super.tearDown();
- }
+    @Override
+    protected void tearDown() throws Exception {
+        Helper.deleteDirectory(testCaseDir);
+        super.tearDown();
+    }
 
- /**
-  * WARNING: not a unit test, this is more like a functional test, where
-  * several subsystems are tested.
-  *
-  * This test does:
-  * <ol>
-  *   <li>set UML Profile for Java as a default profile</li>
-  *   <li>create a new project and assert that it has the UML profile for
-  *   Java as part of the project's profile configuration</li>
-  *   <li>create a dependency from the project's model to the UML profile
-  *   for Java</li>
-  *   <li>remove the Java profile from the project's profile
-  *   configuration</li>
-  *   <li>assert that the project's model elements that had a dependency to
-  *   the UML profile for Java don't get inconsistent</li>
-  *   <li>save the project into a new file</li>
-  *   <li>reopen the project and assert that the Java profile isn't part of
-  *   the profile configuration</li>
-  *   <li>assert that the project's model elements that had a dependency to
-  *   the UML profile for Java are consistent</li>
-  * </ol>
-  * @throws OpenException if there was an error during a project load
-  * @throws SaveException if there was an error during a project save
-  * @throws InterruptedException if save or load was interrupted
-  */
- public void testRemoveProfileWithModelThatRefersToProfile()
-     throws OpenException, SaveException, InterruptedException {
-     // set UML Profile for Java as a default profile
-     ProfileManager profileManager = ProfileFacade.getManager();
-     Profile javaProfile = profileManager.getProfileForClass(
-             "org.argouml.language.java.profile.ProfileJava");
-     assertNotNull("The UML profile for Java shouldn't be null.", javaProfile);
-     if (!profileManager.getDefaultProfiles().contains(javaProfile)) {
-         profileManager.addToDefaultProfiles(javaProfile);
-     }
-     // create a new project and assert that it has the UML profile for
-     // Java as part of the project's profile configuration
-     Project project = ProjectManager.getManager().makeEmptyProject();
-     assertTrue(project.getProfileConfiguration().getProfiles().contains(
-             javaProfile));
-     // create a dependency from the project's model to the UML profile for
-     // Java
-     Object model = project.getUserDefinedModelList().get(0);
-     assertNotNull(model);
-     Object fooClass = Model.getCoreFactory().buildClass("Foo", model);
-     Object javaListType = project.findType("List", false);
-     assertNotNull(javaListType);
-     Object barOperation = Model.getCoreFactory().buildOperation2(fooClass,
-             javaListType, "bar");
-     assertEquals(barOperation,
-             getFacade().getOperations(fooClass).iterator().next());
-     Object returnParam = getFacade().getParameter(barOperation, 0);
-     assertNotNull(returnParam);
-     Object returnParamType = getFacade().getType(returnParam);
-     checkJavaListTypeExistsAndMatchesReturnParamType(project,
-             returnParamType);
-     // remove the Java profile from the project's profile configuration
-     project.getProfileConfiguration().removeProfile(javaProfile, model);
-     // assert that the project's model elements that had a dependency to
-     // the UML profile for Java don't get inconsistent
-     returnParamType = getFacade().getType(returnParam);
-     checkJavaListTypeExistsAndMatchesReturnParamType(project,
-             returnParamType);
-     assertNotNull(project.findType("Foo", false));
-     // save the project into a new file
-     File file = getFileInTestDir(
-             "testRemoveProfileWithModelThatRefersToProfile.zargo");
-     AbstractFilePersister persister = getProjectPersister(file);
-     project.setVersion(ApplicationVersion.getVersion());
-     persister.save(project, file);
-     project.remove();
+    /**
+     * WARNING: not a unit test, this is more like a functional test, where
+     * several subsystems are tested.
+     * 
+     * This test does:
+     * <ol>
+     * <li>set UML Profile for Java as a default profile</li>
+     * <li>create a new project and assert that it has the UML profile for Java
+     * as part of the project's profile configuration</li>
+     * <li>create a dependency from the project's model to the UML profile for
+     * Java</li>
+     * <li>remove the Java profile from the project's profile configuration</li>
+     * <li>assert that the project's model elements that had a dependency to the
+     * UML profile for Java don't get inconsistent</li>
+     * <li>save the project into a new file</li>
+     * <li>reopen the project and assert that the Java profile isn't part of the
+     * profile configuration</li>
+     * <li>assert that the project's model elements that had a dependency to the
+     * UML profile for Java are consistent</li>
+     * </ol>
+     * 
+     * @throws OpenException if there was an error during a project load
+     * @throws SaveException if there was an error during a project save
+     * @throws InterruptedException if save or load was interrupted
+     */
+    public void testRemoveProfileWithModelThatRefersToProfile()
+        throws OpenException, SaveException, InterruptedException {
+        // set UML Profile for Java as a default profile
+        ProfileManager profileManager = ProfileFacade.getManager();
+        Profile javaProfile = profileManager.getProfileForClass(
+                "org.argouml.language.java.profile.ProfileJava");
+        assertNotNull("The UML profile for Java shouldn't be null.",
+                javaProfile);
+        if (!profileManager.getDefaultProfiles().contains(javaProfile)) {
+            profileManager.addToDefaultProfiles(javaProfile);
+        }
+        // create a new project and assert that it has the UML profile for
+        // Java as part of the project's profile configuration
+        Project project = ProjectManager.getManager().makeEmptyProject();
+        assertTrue(project.getProfileConfiguration().getProfiles().contains(
+                javaProfile));
+        // create a dependency from the project's model to the UML profile for
+        // Java
+        Object model = project.getUserDefinedModelList().get(0);
+        assertNotNull(model);
+        Object fooClass = Model.getCoreFactory().buildClass("Foo", model);
+        Object javaListType = project.findType("List", false);
+        assertNotNull(javaListType);
+        Object barOperation = Model.getCoreFactory().buildOperation2(fooClass,
+                javaListType, "bar");
+        assertEquals(barOperation, getFacade().getOperations(fooClass)
+                .iterator().next());
+        Object returnParam = getFacade().getParameter(barOperation, 0);
+        assertNotNull(returnParam);
+        Object returnParamType = getFacade().getType(returnParam);
+        checkJavaListTypeExistsAndMatchesReturnParamType(project,
+                returnParamType);
+        // remove the Java profile from the project's profile configuration
+        project.getProfileConfiguration().removeProfile(javaProfile, model);
+        // assert that the project's model elements that had a dependency to
+        // the UML profile for Java don't get inconsistent
+        returnParamType = getFacade().getType(returnParam);
+        checkJavaListTypeExistsAndMatchesReturnParamType(project,
+                returnParamType);
+        assertNotNull(project.findType("Foo", false));
+        // save the project into a new file
+        File file = getFileInTestDir(
+                "testRemoveProfileWithModelThatRefersToProfile.zargo");
+        AbstractFilePersister persister = getProjectPersister(file);
+        project.setVersion(ApplicationVersion.getVersion());
+        persister.save(project, file);
+        project.remove();
 
-     // reopen the project and assert that the Java profile isn't part of
-     // the profile configuration, including the fact that the type
-     // java.util.List isn't found
-     project = persister.doLoad(file);
-     project.postLoad();
-     assertFalse(project.getProfileConfiguration().getProfiles().contains(
-             javaProfile));
-     assertNull(project.findType("List", false));
-     // assert that the project's model elements that had a dependency to
-     // the UML profile for Java are consistent
-     fooClass = project.findType("Foo", false);
-     assertNotNull(fooClass);
-     barOperation = getFacade().getOperations(fooClass).iterator().next();
-     returnParam = getFacade().getParameter(barOperation, 0);
-     assertNotNull(returnParam);
-     // Return type was java.util.List from Java profile - should be gone
-     returnParamType = getFacade().getType(returnParam);
-     // TODO: with new reference resolving scheme, the model sub-system will
-     // cache the systemId of the profile, open it and resolve the profile
-     // on its own. Thus, the java.util.List will be found and the return
-     // value will be present again...
-     assertNotNull(returnParamType);
- }
+        // reopen the project and assert that the Java profile isn't part of
+        // the profile configuration, including the fact that the type
+        // java.util.List isn't found
+        project = persister.doLoad(file);
+        project.postLoad();
+        assertFalse(project.getProfileConfiguration().getProfiles().contains(
+                javaProfile));
+        assertNull(project.findType("List", false));
+        // assert that the project's model elements that had a dependency to
+        // the UML profile for Java are consistent
+        fooClass = project.findType("Foo", false);
+        assertNotNull(fooClass);
+        barOperation = getFacade().getOperations(fooClass).iterator().next();
+        returnParam = getFacade().getParameter(barOperation, 0);
+        assertNotNull(returnParam);
+        // Return type was java.util.List from Java profile - should be gone
+        returnParamType = getFacade().getType(returnParam);
+        // TODO: with new reference resolving scheme, the model sub-system will
+        // cache the systemId of the profile, open it and resolve the profile
+        // on its own. Thus, the java.util.List will be found and the return
+        // value will be present again...
+        assertNotNull(returnParamType);
+    }
 
- private void checkJavaListTypeExistsAndMatchesReturnParamType(
-         Project project, Object returnParamType) {
-     Object javaListType = project.findType("List", false);
-     assertNotNull(javaListType);
-     assertEquals(getFacade().getName(javaListType),
-             getFacade().getName(returnParamType));
-     assertEquals(getFacade().getNamespace(javaListType),
-             getFacade().getNamespace(returnParamType));
- }
+    private void checkJavaListTypeExistsAndMatchesReturnParamType(
+            Project project, Object returnParamType) {
+        Object javaListType = project.findType("List", false);
+        assertNotNull(javaListType);
+        assertEquals(getFacade().getName(javaListType), getFacade().getName(
+                returnParamType));
+        assertEquals(getFacade().getNamespace(javaListType), getFacade()
+                .getNamespace(returnParamType));
+    }
 
- private File getFileInTestDir(String fileName) {
-     return new File(testCaseDir, fileName);
- }
+    private File getFileInTestDir(String fileName) {
+        return new File(testCaseDir, fileName);
+    }
 
- private AbstractFilePersister getProjectPersister(File file) {
-     AbstractFilePersister persister =
-         PersistenceManager.getInstance().getPersisterFromFileName(
-                 file.getAbsolutePath());
-     return persister;
- }
+    private AbstractFilePersister getProjectPersister(File file) {
+        AbstractFilePersister persister = PersistenceManager.getInstance()
+                .getPersisterFromFileName(file.getAbsolutePath());
+        return persister;
+    }
 }
