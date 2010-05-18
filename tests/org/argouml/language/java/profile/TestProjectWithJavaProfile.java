@@ -39,15 +39,10 @@
 
 package org.argouml.language.java.profile;
 
-
-import static org.argouml.model.Model.getCoreFactory;
-import static org.argouml.model.Model.getExtensionMechanismsHelper;
 import static org.argouml.model.Model.getFacade;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Method;
-import java.util.Collection;
 
 import junit.framework.TestCase;
 
@@ -65,7 +60,6 @@ import org.argouml.persistence.SaveException;
 import org.argouml.profile.Profile;
 import org.argouml.profile.ProfileFacade;
 import org.argouml.profile.ProfileManager;
-import org.argouml.profile.UserDefinedProfile;
 import org.argouml.profile.init.InitProfileSubsystem;
 
 /**
@@ -217,167 +211,10 @@ public class TestProjectWithJavaProfile extends TestCase {
      return new File(testCaseDir, fileName);
  }
 
- /**
-  * WARNING: not a unit test, this is more like a functional test, where
-  * several subsystems are tested.
-  *
-  * This test does:
-  * <ol>
-  *   <li>setup a user defined profile</li>
-  *   <li>add it to the project configuration</li>
-  *   <li>create a dependency between the project's model and the user
-  *   defined profile</li>
-  *   <li>save the project</li>
-  *   <li>load the project and assert that the model element that depends on
-  *   the profile is consistent</li>
-  * </ol>
-  *
-  * @throws Exception when things go wrong
-  */
- public void testProjectWithUserDefinedProfilePersistency()
-     throws Exception {
-     // setup a user defined profile
-     File userDefinedProfileFile = createUserProfileFile(testCaseDir,
-         "testProjectWithUserDefinedProfilePersistency-TestUserProfile.xmi");
-     // add it to the project configuration
-     ProfileManager profileManager = ProfileFacade.getManager();
-     Profile userDefinedProfile =
-         new UserDefinedProfile(userDefinedProfileFile, profileManager);
-     profileManager.registerProfile(userDefinedProfile);
-     profileManager.addSearchPathDirectory(testCaseDir.getAbsolutePath());
-     Project project = ProjectManager.getManager().makeEmptyProject();
-     Object model = project.getUserDefinedModelList().get(0);
-     // create a dependency between the project's model and the user defined
-     // profile
-     project.getProfileConfiguration().addProfile(userDefinedProfile, model);
-     Model.getCoreHelper().setName(model,
-             "testProjectWithUserDefinedProfilePersistency-model");
-     Object fooClass = getCoreFactory().buildClass(
-             "testProjectWithUserDefinedProfilePersistency-class", model);
-     Collection stereotypes = getExtensionMechanismsHelper().getStereotypes(
-             project.getModels());
-     Object stStereotype = null;
-     for (Object stereotype : stereotypes) {
-         if (Helper.STEREOTYPE_NAME_ST.equals(
-                 getFacade().getName(stereotype))) {
-             stStereotype = stereotype;
-             break;
-         }
-     }
-     assertNotNull("Didn't find stereotype", stStereotype);
-     Model.getCoreHelper().addStereotype(fooClass, stStereotype);
-     assertEquals("Setting stereotype didn't work", 1,
-             getFacade().getStereotypes(fooClass).size());
-     // save the project
-     File file = getFileInTestDir(
-         "testProjectWithUserDefinedProfilePersistency.zargo");
-     AbstractFilePersister persister = getProjectPersister(file);
-     project.setVersion(ApplicationVersion.getVersion());
-     persister.save(project, file);
-     project.remove();
-
-     // load the project
-     project = persister.doLoad(file);
-     project.postLoad();
-     // assert that the model element that depends on the profile is
-     // consistent
-     fooClass = project.findType(
-             "testProjectWithUserDefinedProfilePersistency-class", false);
-     assertNotNull(fooClass);
-     Collection fooStereotypes = getFacade().getStereotypes(fooClass);
-     assertEquals(1, fooStereotypes.size());
-     assertEquals(Helper.STEREOTYPE_NAME_ST,
-             getFacade().getName(fooStereotypes.iterator().next()));
- }
-
-
- /**
-  * WARNING: not a unit test, this is more like a functional test, where
-  * several subsystems are tested.
-  *
-  * This test does:
-  * <ol>
-  *   <li>setup a user defined profile</li>
-  *   <li>add it to the project configuration</li>
-  *   <li>create a dependency between the project's model and the user
-  *   defined profile</li>
-  *   <li>save the project</li>
-  *   <li>remove the directory where the user defined profile was stored in
-  *   order to test the handling of opening a zargo without the user defined
-  *   profile</li>
-  *   <li>initialize the model and profile subsystems to simulate a fresh
-  *   ArgoUML session</li>
-  *   <li>load the project and assert that the model element that depends on
-  *   the profile is consistent</li>
-  * </ol>
-  *
-  * @throws Exception when things go wrong
-  */
- public void testProjectWithRemovedUserDefinedProfilePersistency()
-     throws Exception {
-     final String testName =
-         "testProjectWithRemovedUserDefinedProfilePersistency";
-     File userDefinedProfileFile = createUserProfileFile(testCaseDir,
-         testName + "-TestUserProfile.xmi");
-     // add it to the project configuration
-     ProfileManager profileManager = ProfileFacade.getManager();
-     Profile userDefinedProfile =
-         new UserDefinedProfile(userDefinedProfileFile, profileManager);
-     profileManager.registerProfile(userDefinedProfile);
-     profileManager.addSearchPathDirectory(testCaseDir.getAbsolutePath());
-     Project project = ProjectManager.getManager().makeEmptyProject();
-     Object model = project.getUserDefinedModelList().get(0);
-     // create a dependency between the project's model and the user defined
-     // profile
-     project.getProfileConfiguration().addProfile(userDefinedProfile, model);
-     final String className = "Foo4" + testName;
-     Object fooClass = getCoreFactory().buildClass(className, model);
-     Collection stereotypes = getExtensionMechanismsHelper().getStereotypes(
-             project.getModels());
-     Object stStereotype = null;
-     for (Object stereotype : stereotypes) {
-         if (Helper.STEREOTYPE_NAME_ST.equals(
-                 getFacade().getName(stereotype))) {
-             stStereotype = stereotype;
-             break;
-         }
-     }
-     Model.getCoreHelper().addStereotype(fooClass, stStereotype);
-     // save the project
-     File file = getFileInTestDir(testName + ".zargo");
-     AbstractFilePersister persister = getProjectPersister(file);
-     project.setVersion(ApplicationVersion.getVersion());
-     persister.save(project, file);
-     // remove the user defined profile and the directory where it is
-     profileManager.removeProfile(userDefinedProfile);
-     profileManager.removeSearchPathDirectory(testCaseDir.getAbsolutePath());
-     // initialize the model and profile subsystems to simulate a fresh
-     // ArgoUML session
-     Helper.initializeMDR();
-     new InitProfileSubsystem().init();
-     try {
-         project = persister.doLoad(file);
-         fail("Failed to throw exception for missing user defined profile");
-     } catch (OpenException e) {
-         // Success - expected exception
-     }
- }
-
  private AbstractFilePersister getProjectPersister(File file) {
      AbstractFilePersister persister =
          PersistenceManager.getInstance().getPersisterFromFileName(
                  file.getAbsolutePath());
      return persister;
- }
-
- private File createUserProfileFile(File directory, String filename)
-     throws IOException {
-     Object profileModel = Helper.createSimpleProfileModel();
-     Model.getCoreHelper().setName(profileModel, filename);
-     File userDefinedProfileFile = new File(directory, filename);
-     Helper.saveProfileModel(profileModel, userDefinedProfileFile);
-     // Clean up after ourselves by deleting profile model
-     Model.getUmlFactory().delete(profileModel);
-     return userDefinedProfileFile;
  }
 }
