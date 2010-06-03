@@ -1311,17 +1311,22 @@ public class Modeller {
 
         Object method = getMethod(Model.getFacade().getName(op));
         parseState.feature(method);
-        Model.getCoreHelper().setBody(
+        if (Model.getFacade().getUmlVersion().charAt(0) == '1') {
+            Model.getCoreHelper().setBody(
                 method,
                 Model.getDataTypesFactory().createProcedureExpression("Java",
-                        body));
+                    body));
+        } else {
+            Model.getDataTypesHelper().setBody(method, body);
+            Model.getDataTypesHelper().setLanguage(method, "Java");
+        }
         // Add the method to it's specification.
         Model.getCoreHelper().addMethod(op, method);
 
-        // Add this method as a feature to the classifier that owns
+        // Add this method as an element to the classifier that owns
         // the operation.
         Model.getCoreHelper()
-                .addFeature(Model.getFacade().getOwner(op), method);
+                .addOwnedElement(Model.getFacade().getOwner(op), method);
     }
 
     /**
@@ -1630,8 +1635,11 @@ public class Modeller {
             LOG.info("Creating a new method " + name);
             method = Model.getCoreFactory().buildMethod(name);
             newElements.add(method);
-            Model.getCoreHelper()
+            if (Model.getFacade().getUmlVersion().charAt(0) == '1') {
+                // Is this done twice (see caller of this method)?
+                Model.getCoreHelper()
                     .addFeature(parseState.getClassifier(), method);
+            }
         }
         return method;
     }
