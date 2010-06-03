@@ -104,7 +104,8 @@ class OuterClassifierContext extends Context {
         // Search in classifier
         Object iClassifier = Model.getFacade().lookupIn(mClassifier, name);
 
-        if (iClassifier == null) {
+        if (iClassifier == null || Model.getFacade().isAOperation(iClassifier)) {
+            iClassifier = null;
             Class classifier;
             String clazzName = namePrefix + name;
             // Special case for model
