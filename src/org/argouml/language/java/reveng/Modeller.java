@@ -248,27 +248,28 @@ public class Modeller {
     }
 
     /**
-     * This is a mapping from a Java compilation Unit -> a UML component.
-     * Classes are resident in a component. Imports are relationships between
-     * components and other classes / packages.
+     * This is a mapping from a Java compilation Unit -> a UML artifact.
+     * Classes are resident in a component in UML1, and realizing classifiers
+     * in UML2. Imports are relationships between artifacts and other
+     * classes / packages.
      * <p>
      * 
-     * See JSR 26.
+     * See JSR 26 (for UML1?).
      * <p>
      * 
-     * Adding components is a little messy since there are 2 cases:
+     * Adding artifacts is a little messy since there are 2 cases:
      * 
      * <ol>
      * <li>source file has package statement, will be added several times since
      * lookup in addComponent() only looks in the model since the package
      * namespace is not yet known.
      * 
-     * <li>source file has not package statement: component is added to the
-     * model namespace. the is no package statement so the lookup will always
-     * work.
+     * <li>source file has not package statement: artifact is added to the
+     * model namespace. There is no package statement so the lookup will
+     * always work.
      * 
      * </ol>
-     * Therefore in the case of (1), we need to delete duplicate components in
+     * Therefore in the case of (1), we need to delete duplicate artifacts in
      * the addPackage() method.
      * <p>
      * 
@@ -278,14 +279,14 @@ public class Modeller {
      */
     public void addComponent() {
 
-        // try and find the component in the current package
+        // try and find the artifact in the current package
         // to cope with repeated imports
-        // [this will never work if a package statmeent exists:
+        // [this will never work if a package statement exists:
         // because the package statement is parsed after the component is
         // identified]
-        Object component = Model.getFacade().lookupIn(currentPackage, fileName);
+        Object artifact = Model.getFacade().lookupIn(currentPackage, fileName);
 
-        if (component == null) {
+        if (artifact == null) {
 
             // remove the java specific ending (per JSR 26).
             // BUT we can't do this because then the component will be confused
@@ -296,16 +297,20 @@ public class Modeller {
              * fileName.length()-5);
              */
 
-            component = Model.getCoreFactory().createComponent();
-            Model.getCoreHelper().setName(component, fileName);
-            newElements.add(component);
+            if (Model.getFacade().getUmlVersion().charAt(0) == '1') {
+                artifact = Model.getCoreFactory().createComponent();
+            } else {
+                artifact = Model.getCoreFactory().createArtifact();
+            }
+            Model.getCoreHelper().setName(artifact, fileName);
+            newElements.add(artifact);
         }
 
-        parseState.addComponent(component);
+        parseState.setArtifact(artifact);
 
         // set the namespace of the component, in the event
         // that the source file does not have a package stmt
-        Model.getCoreHelper().setNamespace(parseState.getComponent(), model);
+        Model.getCoreHelper().setNamespace(parseState.getArtifact(), model);
     }
 
     /**
@@ -348,24 +353,24 @@ public class Modeller {
         currentPackage = mPackage;
         parseState.addPackageContext(mPackage);
 
-        // set the namespace of the component
-        // check to see if there is already a component defined:
-        Object component = Model.getFacade().lookupIn(currentPackage, fileName);
+        // set the namespace of the artifact
+        // check to see if there is already a artifact defined:
+        Object artifact = Model.getFacade().lookupIn(currentPackage, fileName);
 
-        if (component == null) {
+        if (artifact == null) {
 
-            // set the namespace of the component
-            Model.getCoreHelper().setNamespace(parseState.getComponent(),
+            // set the namespace of the artifact
+            Model.getCoreHelper().setNamespace(parseState.getArtifact(),
                     currentPackage);
         } else {
 
-            // a component already exists,
+            // an artifact already exists,
             // so delete the latest one(the duplicate)
-            Object oldComponent = parseState.getComponent();
-            Model.getUmlFactory().delete(oldComponent);
-            newElements.remove(oldComponent);
+            Object oldArtifact = parseState.getArtifact();
+            Model.getUmlFactory().delete(oldArtifact);
+            newElements.remove(oldArtifact);
             // change the parse state to the existing one.
-            parseState.addComponent(component);
+            parseState.setArtifact(artifact);
         }
     }
 
@@ -424,7 +429,7 @@ public class Modeller {
         // import on demand
         if (classifierName.equals("*")) {
             parseState.addPackageContext(mPackage);
-            Object srcFile = parseState.getComponent();
+            Object srcFile = parseState.getArtifact();
             buildImport(mPackage, srcFile);
         }
         // single type import
@@ -460,7 +465,7 @@ public class Modeller {
             }
             if (mClassifier != null) {
                 parseState.addClassifierContext(mClassifier);
-                Object srcFile = parseState.getComponent();
+                Object srcFile = parseState.getArtifact();
                 buildImport(mClassifier, srcFile);
             }
         }
@@ -468,7 +473,7 @@ public class Modeller {
 
     /*
      * Build a Java import equivalent in UML. First search for an existing
-     * permission. Create a new one if not found.
+     * dependency. Create a new one if not found.
      */
     private Object buildImport(Object element, Object srcFile) {
         // TODO: add <<javaImport>> stereotype to Java profile - thn
@@ -1015,20 +1020,30 @@ public class Modeller {
 
         parseState.innerClassifier(mClassifier);
 
-        // set up the component residency (only for top level classes)
-        if (parseState.getClassifier() == null
-             && Model.getFacade().getUmlVersion().charAt(0) == '1') {
-            // set the classifier to be a resident in its component:
-            // (before we push a new parse state on the stack)
-
-            // This test is carried over from a previous implementation,
-            // but I'm not sure why it would already be set - tfm
-            if (Model.getFacade().getElementResidences(mClassifier).isEmpty()) {
-                Object resident = Model.getCoreFactory()
-                        .createElementResidence();
-                Model.getCoreHelper().setResident(resident, mClassifier);
-                Model.getCoreHelper().setContainer(resident,
-                        parseState.getComponent());
+        // set up the artifact manifestation (only for top level classes)
+        if (parseState.getClassifier() == null) {
+            if (Model.getFacade().getUmlVersion().charAt(0) == '1') {
+                // set the classifier to be a resident in its component:
+                // (before we push a new parse state on the stack)
+    
+                // This test is carried over from a previous implementation,
+                // but I'm not sure why it would already be set - tfm
+                if (Model.getFacade().getElementResidences(mClassifier).isEmpty()) {
+                    Object resident = Model.getCoreFactory()
+                            .createElementResidence();
+                    Model.getCoreHelper().setResident(resident, mClassifier);
+                    Model.getCoreHelper().setContainer(resident,
+                            parseState.getArtifact());
+                }
+            } else {
+                Object artifact = parseState.getArtifact();
+                Collection c = Model.getCoreHelper().getUtilizedElements(artifact);
+                if (!c.contains(mClassifier)) {
+                    Object manifestation = Model.getCoreFactory()
+                            .buildManifestation(mClassifier);
+                    Model.getCoreHelper()
+                            .addManifestation(artifact, manifestation);
+                }
             }
         }
 

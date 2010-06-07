@@ -7,7 +7,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    thn
+ *    Thomas Neustupny
  *****************************************************************************
  *
  * Some portions of this file was previously release using the BSD License:
@@ -47,7 +47,7 @@ import org.argouml.model.Model;
 /**
  * The parse state keep control of data during parsing.
  *
- * @author Marcus Andersson
+ * @author Marcus Andersson, Thomas Neustupny
  */
 class ParseState {
 
@@ -89,9 +89,10 @@ class ParseState {
     private int anonymousClassCounter;
 
     /**
-     * Represents the source file being parsed.
+     * Represents the source file being parsed. In UML1, this is a component.
+     * In UML2, this is an artifact.
      */
-    private Object component;
+    private Object artifact;
 
     /**
      * Create a new parse state.
@@ -159,16 +160,32 @@ class ParseState {
 
     /**
      * @param c the source file being parsed
+     * @deprecated since 0.30.2
      */
     public void addComponent(Object c) {
-        this.component = c;
+        setArtifact(c);
+    }
+
+    /**
+     * @param c the source file being parsed
+     */
+    public void setArtifact(Object c) {
+        this.artifact = c;
+    }
+
+    /**
+     * @return the source file being parsed
+     * @deprecated since 0.30.2
+     */
+    public Object getComponent() {
+        return getArtifact();
     }
 
     /**
      * @return the source file being parsed
      */
-    public Object getComponent() {
-        return component;
+    public Object getArtifact() {
+        return artifact;
     }
 
     /**
