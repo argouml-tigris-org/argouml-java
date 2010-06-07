@@ -1340,8 +1340,13 @@ public class Modeller {
 
         // Add this method as an element to the classifier that owns
         // the operation.
-        Model.getCoreHelper()
-                .addOwnedElement(Model.getFacade().getOwner(op), method);
+        if (Model.getFacade().getUmlVersion().charAt(0) == '1') {
+            Model.getCoreHelper()
+                    .addFeature(Model.getFacade().getOwner(op), method);
+        } else {
+            Model.getCoreHelper()
+                    .addOwnedElement(Model.getFacade().getOwner(op), method);
+        }
     }
 
     /**
