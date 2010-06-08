@@ -7,7 +7,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    thn
+ *    Thomas Neustupny
  *****************************************************************************
  *
  * Some portions of this file was previously release using the BSD License:
@@ -35,7 +35,6 @@
 // PROVIDED HEREUNDER IS ON AN "AS IS" BASIS, AND THE UNIVERSITY OF
 // CALIFORNIA HAS NO OBLIGATIONS TO PROVIDE MAINTENANCE, SUPPORT,
 // UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
-
 package org.argouml.language.java.profile;
 
 import java.net.MalformedURLException;
@@ -61,23 +60,24 @@ import org.argouml.profile.ResourceModelLoader;
  * the ArgoUML Java module to offer the Java profile to the application by
  * registering it on enable and unregistering on disable.
  * 
- * @author Marcos Aurelio
  * @author Thomas Neustupny (thn@tigris.org)
  */
 public class ProfileJava extends Profile implements ModuleInterface {
 
-    private static final String PROFILE_FILE =
-        "/org/argouml/language/java/profile/default-java.xmi";
+    private static final String UML1_PROFILE_FILE = "/org/argouml/language/java/profile/default-java.xmi";
 
-    private static final String PROFILE_URL =
-        "http://argouml.org/profiles/uml14/default-java.xmi";
+    private static final String UML2_PROFILE_FILE = "/org/argouml/language/java/profile/java-profile-uml2.xmi";
+
+    private static final String UML1_PROFILE_URL = "http://argouml.org/profiles/uml14/default-java.xmi";
+
+    private static final String UML2_PROFILE_URL = "http://argouml.org/profiles/uml2/java-profile-uml2.xmi";
 
     private static final Logger LOG = Logger.getLogger(ProfileJava.class);
 
     static final String NAME = "Java";
 
     private Collection<Object> model = null;
-    
+
     ProfileReference profileReference;
 
     /**
@@ -88,24 +88,39 @@ public class ProfileJava extends Profile implements ModuleInterface {
     @SuppressWarnings("unchecked")
     public ProfileJava() throws ProfileException {
         try {
-            URL profileURL = new URL(PROFILE_URL);
-            profileReference = new ProfileReference(PROFILE_FILE, profileURL);
+            if (Model.getFacade().getUmlVersion().charAt(0) == '1') {
+                URL profileURL = new URL(UML1_PROFILE_URL);
+                profileReference = new ProfileReference(UML1_PROFILE_FILE,
+                        profileURL);
+            } else {
+                URL profileURL = new URL(UML2_PROFILE_URL);
+                profileReference = new ProfileReference(UML2_PROFILE_FILE,
+                        profileURL);
+            }
         } catch (MalformedURLException e) {
             throw new ProfileException(
                     "Exception while creating profile reference.", e);
         }
-        addProfileDependency(ProfileFacade.getManager().getUMLProfile());
-        addProfileDependency("CodeGeneration");
+        if (Model.getFacade().getUmlVersion().charAt(0) == '1') {
+            addProfileDependency(ProfileFacade.getManager().getUMLProfile());
+            addProfileDependency("CodeGeneration");
+        }
     }
 
     private Collection<Object> getModel() {
         if (model == null) {
-            ProfileModelLoader profileModelLoader = 
-                new ResourceModelLoader(ProfileJava.class);
+            ProfileModelLoader profileModelLoader = new ResourceModelLoader(
+                    ProfileJava.class);
             try {
                 model = profileModelLoader.loadModel(profileReference);
             } catch (ProfileException e) {
-                LOG.error("Exception loading profile file " + PROFILE_FILE, e);
+                if (Model.getFacade().getUmlVersion().charAt(0) == '1') {
+                    LOG.error("Exception loading profile file "
+                            + UML1_PROFILE_FILE, e);
+                } else {
+                    LOG.error("Exception loading profile file "
+                            + UML2_PROFILE_FILE, e);
+                }
             }
 
             if (model == null) {
@@ -116,10 +131,10 @@ public class ProfileJava extends Profile implements ModuleInterface {
         return model;
     }
 
-    private Collection getFallbackModel() {
-        Collection result = new ArrayList();
-        Object profile = Model.getModelManagementFactory().createModel();
-        Model.getCoreHelper().setName(profile,"Fallback Java profile");
+    private Collection<Object> getFallbackModel() {
+        Collection<Object> result = new ArrayList<Object>();
+        Object profile = Model.getModelManagementFactory().createProfile();
+        Model.getCoreHelper().setName(profile, "Fallback Java profile");
         result.add(profile);
         return result;
     }
@@ -141,7 +156,7 @@ public class ProfileJava extends Profile implements ModuleInterface {
             return Collections.unmodifiableCollection(model);
         }
     }
-    
+
     @Override
     public DefaultTypeStrategy getDefaultTypeStrategy() {
         return new DefaultTypeStrategy() {
