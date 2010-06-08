@@ -94,6 +94,7 @@ engineering of Java code and support for built-in types and standard libraries.
     <property name="i18n.dir" value="org/argouml/i18n/"/>
     <property name="images.dir" value="org/argouml/Images/"/>
     <property name="profile.file" value="org/argouml/language/java/profile/default-java.xmi"/>
+    <property name="profile2.file" value="org/argouml/language/java/profile/java-profile-uml2.xmi"/>
 
     <!-- Try to figure out where main ArgoUML tools directory is -->
     <property name="tool.test.file" value="checkstyle/java.header"/>
@@ -298,6 +299,8 @@ engineering of Java code and support for built-in types and standard libraries.
     </copy>
     <copy file="${module.src.dir}/${profile.file}" 
     	tofile="${module.build.dest}/${profile.file}"/>
+    <copy file="${module.src.dir}/${profile2.file}" 
+    	tofile="${module.build.dest}/${profile2.file}"/>
   </target>
 
   <!-- =================================================================== -->

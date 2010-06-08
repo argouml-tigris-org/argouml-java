@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uml:Profile xmi:version="2.1"
+    xmlns:xmi="http://schema.omg.org/spec/XMI/2.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:uml="http://schema.omg.org/spec/UML/2.2" xsi:schemaLocation="http://schema.omg.org/spec/UML/2.2 http://www.eclipse.org/uml2/3.0.0/UML" xmi:id="_2VeU8HJQEd-vguPqc1edaw"
+    name="Java UML2 Profile" metaclassReference="_DVdukHJTEd-H5oCKUesaXA">
+  <elementImport xmi:type="uml:ElementImport" xmi:id="_DVdukHJTEd-H5oCKUesaXA" importingNamespace="_2VeU8HJQEd-vguPqc1edaw">
+    <importedElement xmi:type="uml:Class" href="http://schema.omg.org/spec/UML/2.2/uml.xml#Class"/>
+  </elementImport>
+  <packagedElement xmi:type="uml:Package" xmi:id="_LiE1kHJREd-vguPqc1edaw" name="java">
+    <packagedElement xmi:type="uml:Package" xmi:id="_NLki8HJREd-vguPqc1edaw" name="applet">
+      <packagedElement xmi:type="uml:Interface" xmi:id="_RzgXYHJREd-vguPqc1edaw" name="AppletContext"/>
+      <packagedElement xmi:type="uml:Interface" xmi:id="_Uw58oHJREd-vguPqc1edaw" name="AppletStub"/>
+      <packagedElement xmi:type="uml:Interface" xmi:id="_Yd06UHJREd-vguPqc1edaw" name="AudioClip"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="_av3OYHJREd-vguPqc1edaw" name="Applet"/>
+    </packagedElement>
+  </packagedElement>
+  <packagedElement xmi:type="uml:DataType" xmi:id="_f1dPMHJREd-vguPqc1edaw" name="boolean"/>
+  <packagedElement xmi:type="uml:Stereotype" xmi:id="_jv8HwHJREd-vguPqc1edaw" name="argo-module">
+    <ownedAttribute xmi:type="uml:Property" xmi:id="_DVwpgnJTEd-H5oCKUesaXA" name="base_Class" association="_DVwpgHJTEd-H5oCKUesaXA">
+      <type xmi:type="uml:Class" href="http://schema.omg.org/spec/UML/2.2/uml.xml#Class"/>
+    </ownedAttribute>
+    <ownedAttribute xmi:type="uml:Property" xmi:id="__OCwwHJTEd-InvctbcWf7Q" name="module-author">
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="__P-qcXJTEd-InvctbcWf7Q" value="1"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="__P-qcHJTEd-InvctbcWf7Q" value="1"/>
+    </ownedAttribute>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Extension" xmi:id="_DVwpgHJTEd-H5oCKUesaXA" name="Class_argo-module"
+      memberEnd="_DVwpgXJTEd-H5oCKUesaXA _DVwpgnJTEd-H5oCKUesaXA">
+    <ownedEnd xmi:type="uml:ExtensionEnd" xmi:id="_DVwpgXJTEd-H5oCKUesaXA" name="extension_argo-module"
+        type="_jv8HwHJREd-vguPqc1edaw" aggregation="composite" owningAssociation="_DVwpgHJTEd-H5oCKUesaXA"
+        association="_DVwpgHJTEd-H5oCKUesaXA"/>
+  </packagedElement>
+</uml:Profile>
