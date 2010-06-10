@@ -346,13 +346,19 @@ public class GeneratorJava implements CodeGenerator, ModuleInterface {
         Object ns = Model.getFacade().getNamespace(cls);
         if (ns != null) {
             for (Object oe : Model.getFacade().getOwnedElements(ns)) {
-                if (Model.getFacade().isAComponent(oe)) {
+                if (Model.getFacade().getUmlVersion().charAt(0) == '1' &&
+                        Model.getFacade().isAComponent(oe)) {
                     for (Object re
                         : Model.getFacade().getResidentElements(oe)) {
                         Object r = Model.getFacade().getResident(re);
                         if (r.equals(cls)) {
-                            return generateComponentImports(oe);
+                            return generateArtifactImports(oe);
                         }
+                    }
+                } else if (Model.getFacade().isAArtifact(oe)) {
+                    if (Model.getCoreHelper().getUtilizedElements(oe)
+                            .contains(cls)) {
+                        return generateArtifactImports(oe);
                     }
                 }
             }
@@ -467,11 +473,11 @@ public class GeneratorJava implements CodeGenerator, ModuleInterface {
         return sb.toString();
     }
 
-    private String generateComponentImports(Object component) {
+    private String generateArtifactImports(Object artifact) {
         StringBuffer ret = new StringBuffer();
-        Object compNamespace = Model.getFacade().getNamespace(component);
+        Object compNamespace = Model.getFacade().getNamespace(artifact);
         boolean found = false;
-        for (Object o : Model.getFacade().getClientDependencies(component)) {
+        for (Object o : Model.getFacade().getClientDependencies(artifact)) {
             boolean isJavaImport = false;
             for (Object stereotype : Model.getFacade().getStereotypes(o)) {
                 if ("javaImport".equals(Model.getFacade()
