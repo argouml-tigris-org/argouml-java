@@ -1795,7 +1795,8 @@ public class Modeller {
             // only in profiles.
             throw new IllegalArgumentException("Could not find "
                 + "a suitable stereotype for " + Model.getFacade().getName(me)
-                + " -  stereotype: <<" + name + ">> base: " + baseClass);
+                + " -  stereotype: <<" + name + ">> base: " + baseClass
+                + ".\nCheck if environment variable eUML.resources is correctly set.");
         }
         // (UML 1.x only from here)
         // Instead of failing, this should create any stereotypes that it
