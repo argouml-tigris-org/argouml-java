@@ -38,8 +38,6 @@
 
 package org.argouml.language.java.reveng;
 
-import static org.argouml.Helper.newModel;
-
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -48,8 +46,15 @@ import junit.framework.TestCase;
 import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
+import org.argouml.Helper;
 import org.argouml.application.api.Argo;
+import org.argouml.kernel.Project;
+import org.argouml.kernel.ProjectManager;
+import org.argouml.language.java.profile.ProfileJava;
 import org.argouml.model.Model;
+import org.argouml.profile.Profile;
+import org.argouml.profile.ProfileException;
+import org.argouml.profile.ProfileFacade;
 import org.argouml.profile.init.InitProfileSubsystem;
 
 /**
@@ -70,14 +75,13 @@ public class TestJavaImportClass extends TestCase {
      */
     public TestJavaImportClass(String str) {
         super(str);
-        newModel();
     }
 
     /*
      * @see junit.framework.TestCase#setUp()
      */
     @Override
-    protected void setUp() {
+    protected void setUp() throws Exception {
         if (isParsed) {
             return;
         }
@@ -87,15 +91,16 @@ public class TestJavaImportClass extends TestCase {
 
         JavaParser parser = new JavaParser(tokens);
         assertNotNull("Creation of parser failed.", parser);
-
-        parsedModel = Model.getModelManagementFactory().createModel();
-        assertNotNull("Creation of model failed.", parsedModel);
-
-        Model.getModelManagementFactory().setRootModel(parsedModel);
+        
+        Helper.initializeMDR();
         new InitProfileSubsystem().init();
+        ProfileJava profileJava = new ProfileJava();
+        profileJava.enable();
+        Project project = ProjectManager.getManager().makeEmptyProject();
+        parsedModel = project.getUserDefinedModelList().iterator().next();
 
         Modeller modeller =
-            new Modeller(parsedModel, false, false, "TestClass.java");
+            new Modeller(parsedModel, profileJava, false, false, "TestClass.java");
         assertNotNull("Creation of Modeller instance failed.", modeller);
 
         try {
@@ -123,8 +128,10 @@ public class TestJavaImportClass extends TestCase {
 
     /**
      * Test if the import was processed correctly.
+     * @throws ProfileException if Profile subsystem operations throw errors
      */
-    public void testImport() {
+    @SuppressWarnings("unchecked")
+    public void testImport() throws ProfileException {
         if (parsedPackage == null) {
             parsedPackage =
                 Model.getFacade().lookupIn(parsedModel, "testpackage");
@@ -181,13 +188,19 @@ public class TestJavaImportClass extends TestCase {
         assertNotNull("The namespace \"util\" has no namespace.", namespace);
         assertEquals("Expected namespace name \"java\".",
             "java", Model.getFacade().getName(namespace));
-        assertEquals("The namespace of \"java\" should be the model.",
-            parsedModel, Model.getFacade().getNamespace(namespace));
+        Profile profileJava = ProfileFacade.getManager().getProfileForClass(
+            ProfileJava.class.getName());
+        Object javaProfileModel =
+            profileJava.getProfilePackages().iterator().next();
+        assertEquals(
+            "The namespace of \"java\" should be the Java profile model.",
+            javaProfileModel, Model.getFacade().getNamespace(namespace));
     }
 
     /**
      * Test if the import was processed correctly.
      */
+    @SuppressWarnings("unchecked")
     public void testClass() {
         if (parsedPackage == null) {
             parsedPackage =
@@ -255,6 +268,7 @@ public class TestJavaImportClass extends TestCase {
     /**
      * Test if the attributes were processed correctly.
      */
+    @SuppressWarnings("unchecked")
     public void testAttributes() {
         if (parsedPackage == null) {
             parsedPackage =
@@ -319,6 +333,7 @@ public class TestJavaImportClass extends TestCase {
     /**
      * Test if the association was processed correctly.
      */
+    @SuppressWarnings("unchecked")
     public void testAssociation() {
         if (parsedPackage == null) {
             parsedPackage =
@@ -373,6 +388,7 @@ public class TestJavaImportClass extends TestCase {
     /**
      * Test if the operations were processed correctly.
      */
+    @SuppressWarnings("unchecked")
     public void testOperations() {
         if (parsedPackage == null) {
             parsedPackage =
@@ -438,6 +454,7 @@ public class TestJavaImportClass extends TestCase {
     /**
      * Test if the Javadoc was imported correctly.
      */
+    @SuppressWarnings("unchecked")
     public void testJavadoc() {
         if (parsedClass == null) {
             parsedClass =
@@ -473,6 +490,7 @@ public class TestJavaImportClass extends TestCase {
      * @param operation The operation.
      * @return The first body.
      */
+    @SuppressWarnings("unchecked")
     private static String getBody(Object operation) {
         String body = null;
         Collection methods = Model.getFacade().getMethods(operation);

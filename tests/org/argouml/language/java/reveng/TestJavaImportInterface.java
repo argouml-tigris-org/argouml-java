@@ -39,8 +39,6 @@
 
 package org.argouml.language.java.reveng;
 
-import static org.argouml.Helper.newModel;
-
 import java.util.Collection;
 import java.util.Iterator;
 

@@ -39,8 +39,7 @@
 
 package org.argouml.language.java.reveng;
 
-import static org.argouml.Helper.newModel;
-
+import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -49,6 +48,8 @@ import junit.framework.TestCase;
 import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
+import org.argouml.Helper;
+import org.argouml.application.helpers.ApplicationVersion;
 import org.argouml.kernel.Project;
 import org.argouml.kernel.ProjectManager;
 import org.argouml.language.java.profile.ProfileJava;
@@ -72,26 +73,32 @@ public class TestJavaImportEnumeration extends TestCase {
      */
     public TestJavaImportEnumeration(String str) {
         super(str);
-        newModel();
     }
 
     /*
      * @see junit.framework.TestCase#setUp()
      */
+    @SuppressWarnings("unchecked")
     protected void setUp() throws Exception {
-        if (isParsed) {
-            return;
-        }
-
         JavaLexer lexer = new JavaLexer(new ANTLRStringStream(PARSERINPUT));
        	CommonTokenStream tokens = new CommonTokenStream(lexer);
 
         JavaParser parser = new JavaParser(tokens);
         assertNotNull("Creation of parser failed.", parser);
 
+        Helper.initializeMDR();
         new InitProfileSubsystem().init();
         profileJava = new ProfileJava();
         profileJava.enable();
+
+        if (ApplicationVersion.getVersion() == null) {
+            Class argoVersionClass = Class
+                    .forName("org.argouml.application.ArgoVersion");
+            Method initMethod = argoVersionClass.getDeclaredMethod("init");
+            initMethod.setAccessible(true);
+            initMethod.invoke(null);
+            assertNotNull(ApplicationVersion.getVersion());
+        }
 
         Project project = ProjectManager.getManager().makeEmptyProject();
         parsedModel = project.getUserDefinedModelList().get(0);
@@ -103,7 +110,6 @@ public class TestJavaImportEnumeration extends TestCase {
 
         try {
             parser.compilationUnit(modeller, lexer);
-            isParsed = true;
         } catch (RecognitionException e) {
             fail("Parsing of Java source failed." + e);
         }
@@ -119,6 +125,7 @@ public class TestJavaImportEnumeration extends TestCase {
     /**
      * Test if the class with the enumeration stereotype was created
      */
+    @SuppressWarnings("unchecked")
     public void testSimpleEnumeration() {
         if (parsedPackage == null) {
             parsedPackage =
@@ -133,7 +140,6 @@ public class TestJavaImportEnumeration extends TestCase {
         parsedClass = getEnumeration(mainClass, "Color");
 
         // Attributes
-
         Collection attributes = Model.getFacade().getAttributes(parsedClass);
         assertNotNull("No attributes found in class.", attributes);
         assertEquals("Number of attributes is wrong", 3, attributes.size());
@@ -170,6 +176,7 @@ public class TestJavaImportEnumeration extends TestCase {
      * Look up an enumeration by name in its parent namespace
      * and check that it's properly formed.
      */
+    @SuppressWarnings("unchecked")
     private Object getEnumeration(Object namespace, String name) {
         Object enumeration = Model.getFacade().lookupIn(namespace, name);
         assertNotNull("failed to find enumeration" + name, enumeration);
@@ -188,13 +195,12 @@ public class TestJavaImportEnumeration extends TestCase {
     /**
      * Test if the class with the enumeration stereotype was created
      */
+    @SuppressWarnings("unchecked")
     public void testEnumeration() {
-        if (parsedPackage == null) {
-            parsedPackage =
-                Model.getFacade().lookupIn(parsedModel, "testpackage");
-            assertNotNull("No package \"testpackage\" found in model.",
-                    parsedPackage);
-        }
+        parsedPackage =
+            Model.getFacade().lookupIn(parsedModel, "testpackage");
+        assertNotNull("No package \"testpackage\" found in model.",
+            parsedPackage);
         parsedClass = Model.getFacade().lookupIn(parsedPackage, "TestClass");
         assertNotNull("No class \"TestClass\" found.", parsedClass);
         assertEquals("Inconsistent class name.",
@@ -207,7 +213,6 @@ public class TestJavaImportEnumeration extends TestCase {
         parsedClass = getEnumeration(mainClass, "MessagePriority");
 
         // Attributes
-
         Collection attributes = Model.getFacade().getAttributes(parsedClass);
         assertNotNull("No attributes found in class.", attributes);
         assertEquals("Number of attributes is wrong", 4, attributes.size());
@@ -245,11 +250,12 @@ public class TestJavaImportEnumeration extends TestCase {
         assertFalse("Attribute valuePersist should not be final.",
                 Model.getFacade().isReadOnly(attributeVP));
         Object attribType = Model.getFacade().getType(attributeVP);
+        // FIXME: fails here and shouldn't!
+        assertNotNull("Attribute valuePersist is null.", attribType);
         assertTrue("Attribute valuePersist should have type short.",
                 "short".equals(Model.getFacade().getName(attribType)));
 
         // Operations
-
         Collection operations = Model.getFacade().getOperations(parsedClass);
         assertNotNull("No operations found in class.", operations);
         assertEquals("Number of operations is wrong", 3, operations.size());
@@ -304,6 +310,7 @@ public class TestJavaImportEnumeration extends TestCase {
      * @param operation The operation.
      * @return The first body.
      */
+    @SuppressWarnings("unchecked")
     private static String getBody(Object operation) {
         String body = null;
         Collection methods = Model.getFacade().getMethods(operation);
@@ -314,11 +321,6 @@ public class TestJavaImportEnumeration extends TestCase {
         }
         return body;
     }
-
-    /**
-     * Flag, if the Java source is parsed already.
-     */
-    private static boolean isParsed;
 
     /**
      * Instances of the model and it's components.
