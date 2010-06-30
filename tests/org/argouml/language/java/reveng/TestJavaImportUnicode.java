@@ -38,8 +38,6 @@
 
 package org.argouml.language.java.reveng;
 
-import static org.argouml.Helper.newModel;
-
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -48,9 +46,13 @@ import junit.framework.TestCase;
 import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
+import org.argouml.Helper;
 import org.argouml.kernel.Project;
 import org.argouml.kernel.ProjectManager;
+import org.argouml.language.java.profile.ProfileJava;
 import org.argouml.model.Model;
+import org.argouml.profile.ProfileException;
+import org.argouml.profile.ProfileFacade;
 import org.argouml.profile.init.InitProfileSubsystem;
 
 /**
@@ -60,7 +62,7 @@ import org.argouml.profile.init.InitProfileSubsystem;
  * The content of the Java source file is a private constant at the
  * bottom of the source of this class.
  *
- * The constant is written using the ISO8859-1 encoding so this class
+ * The constant is written using the ISO-8859-1 encoding so this class
  * needs to be compiled using that encoding.
  */
 public class TestJavaImportUnicode extends TestCase {
@@ -69,41 +71,31 @@ public class TestJavaImportUnicode extends TestCase {
      */
     public TestJavaImportUnicode(String str) {
         super(str);
-        newModel();
-        new InitProfileSubsystem().init();
     }
 
     /*
      * @see junit.framework.TestCase#setUp()
      */
-    protected void setUp() {
-        if (isParsed) {
-            return;
-        }
-
-        // This shouldn't be necessary, but the Modeller is going to look in
-        // the project to find the default type for attributes
-        Project project = ProjectManager.getManager().getCurrentProject();
-        assertNotNull("Failed to get/create project context", project);
-
+    protected void setUp() throws ProfileException {
         JavaLexer lexer = new JavaLexer(new ANTLRStringStream(PARSERINPUT));
-       	CommonTokenStream tokens = new CommonTokenStream(lexer);
+        CommonTokenStream tokens = new CommonTokenStream(lexer);
 
         JavaParser parser = new JavaParser(tokens);
         assertNotNull("Creation of parser failed.", parser);
+        
+        Helper.initializeMDR();
+        new InitProfileSubsystem().init();
+        profileJava = new ProfileJava();
+        profileJava.enable();
 
-        Object parsedModel = Model.getModelManagementFactory().createModel();
+        // This shouldn't be necessary, but the Modeller is going to look in
+        // the project to find the default type for attributes
+        Project project = ProjectManager.getManager().makeEmptyProject();
+        Object parsedModel = project.getUserDefinedModelList().get(0);
         assertNotNull("Creation of model failed.", parsedModel);
 
-        Model.getModelManagementFactory().setRootModel(parsedModel);
-        new InitProfileSubsystem().init();
-
-        assertEquals("Setting Root Model failed",
-                Model.getModelManagementFactory().getRootModel(),
-                parsedModel);
-
-        Modeller modeller =
-            new Modeller(parsedModel, false, false, "TestClass.java");
+        Modeller modeller = new Modeller(parsedModel, profileJava,
+                false, false, "TestClass.java");
         assertNotNull("Creation of Modeller instance failed.", modeller);
 
         try {
@@ -112,6 +104,13 @@ public class TestJavaImportUnicode extends TestCase {
         } catch (RecognitionException e) {
             fail("Parsing of Java source failed." + e);
         }
+    }
+
+    @Override
+    protected void tearDown() throws Exception {
+        profileJava.disable();
+        ProfileFacade.reset();
+        super.tearDown();
     }
 
     /**
@@ -339,4 +338,6 @@ public class TestJavaImportUnicode extends TestCase {
             + "    }\n"
 
             + "}";
+
+    private ProfileJava profileJava;
 }

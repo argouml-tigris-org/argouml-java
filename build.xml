@@ -409,6 +409,20 @@ engineering of Java code and support for built-in types and standard libraries.
            destdir="${module.tests.classes}"
            debug="true"
            deprecation="false"
+    	   excludes="org/argouml/language/java/reveng/TestJavaImportUnicode.java"
+           optimize="false"
+           source="1.5"
+           target="1.5">
+      <classpath>
+        <path refid="module.compile-tests.classpath"/>
+      </classpath>
+     </javac>
+    <javac srcdir="${module.tests.src}"
+           destdir="${module.tests.classes}"
+           debug="true"
+           deprecation="false"
+    	   includes="org/argouml/language/java/reveng/TestJavaImportUnicode.java"
+    	   encoding="ISO-8859-1"
            optimize="false"
            source="1.5"
            target="1.5">

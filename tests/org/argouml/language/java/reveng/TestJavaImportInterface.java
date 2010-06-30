@@ -52,6 +52,7 @@ import org.argouml.kernel.Project;
 import org.argouml.kernel.ProjectManager;
 import org.argouml.language.java.profile.ProfileJava;
 import org.argouml.model.Model;
+import org.argouml.profile.ProfileFacade;
 import org.argouml.profile.init.InitProfileSubsystem;
 
 /**
@@ -80,10 +81,6 @@ public class TestJavaImportInterface extends TestCase {
      */
     @Override
     protected void setUp() throws Exception {
-        if (isParsed) {
-            return;
-        }
-
         JavaLexer lexer = new JavaLexer(new ANTLRStringStream(PARSERINPUT));
        	CommonTokenStream tokens = new CommonTokenStream(lexer);
 
@@ -92,7 +89,7 @@ public class TestJavaImportInterface extends TestCase {
 
         Helper.initializeMDR();
         new InitProfileSubsystem().init();
-        ProfileJava profileJava = new ProfileJava();
+        profileJava = new ProfileJava();
         profileJava.enable();
 
         Project project = ProjectManager.getManager().makeEmptyProfileProject();
@@ -102,10 +99,16 @@ public class TestJavaImportInterface extends TestCase {
                 false, "TestInterface.java");
         try {
             parser.compilationUnit(modeller, lexer);
-            isParsed = true;
         } catch (RecognitionException e) {
             fail("Parsing of Java source failed." + e);
         }
+    }
+
+    @Override
+    protected void tearDown() throws Exception {
+        profileJava.disable();
+        ProfileFacade.reset();
+        super.tearDown();
     }
 
     /**
@@ -127,12 +130,10 @@ public class TestJavaImportInterface extends TestCase {
      * Test if the import was processed correctly.
      */
     public void testImport() {
-        if (parsedPackage == null) {
-            parsedPackage =
-                Model.getFacade().lookupIn(parsedModel, "testpackage");
-            assertNotNull("No package \"testpackage\" found in model.",
-                    parsedPackage);
-        }
+        parsedPackage =
+            Model.getFacade().lookupIn(parsedModel, "testpackage");
+        assertNotNull("No package \"testpackage\" found in model.",
+                parsedPackage);
         Collection ownedElements =
             Model.getFacade().getOwnedElements(parsedPackage);
         assertNotNull("No elements owned by  \"testpackage\".", ownedElements);
@@ -183,20 +184,21 @@ public class TestJavaImportInterface extends TestCase {
         assertNotNull("The namespace \"util\" has no namespace.", namespace);
         assertEquals("Expected namespace name \"java\".",
             "java", Model.getFacade().getName(namespace));
-        assertEquals("The namespace of \"java\" should be the model.",
-            parsedModel, Model.getFacade().getNamespace(namespace));
+        Object javaProfileModel =
+            profileJava.getProfilePackages().iterator().next();
+        assertEquals(
+            "The namespace of \"java\" should be the java profile model.",
+            javaProfileModel, Model.getFacade().getNamespace(namespace));
     }
 
     /**
      * Test if the import was processed correctly.
      */
     public void testInterface() {
-        if (parsedPackage == null) {
-            parsedPackage =
-                Model.getFacade().lookupIn(parsedModel, "testpackage");
-            assertNotNull("No package \"testpackage\" found in model.",
-                    parsedPackage);
-        }
+        parsedPackage =
+            Model.getFacade().lookupIn(parsedModel, "testpackage");
+        assertNotNull("No package \"testpackage\" found in model.",
+                parsedPackage);
         parsedInterface =
             Model.getFacade().lookupIn(parsedPackage, "TestInterface");
         assertNotNull("No interface \"TestInterface\" found.", parsedInterface);
@@ -231,18 +233,14 @@ public class TestJavaImportInterface extends TestCase {
      * Test if the operations were processed correctly.
      */
     public void testOperations() {
-        if (parsedPackage == null) {
-            parsedPackage =
-                Model.getFacade().lookupIn(parsedModel, "testpackage");
-            assertNotNull("No package \"testpackage\" found in model.",
-                    parsedPackage);
-        }
-        if (parsedInterface == null) {
-            parsedInterface =
-                Model.getFacade().lookupIn(parsedPackage, "TestInterface");
-            assertNotNull("No interface \"TestInterface\" found.",
-                    parsedInterface);
-        }
+        parsedPackage =
+            Model.getFacade().lookupIn(parsedModel, "testpackage");
+        assertNotNull("No package \"testpackage\" found in model.",
+                parsedPackage);
+        parsedInterface =
+            Model.getFacade().lookupIn(parsedPackage, "TestInterface");
+        assertNotNull("No interface \"TestInterface\" found.",
+                parsedInterface);
         Collection operations =
             Model.getFacade().getOperations(parsedInterface);
         assertNotNull("No operations found ib interface.", operations);
@@ -270,11 +268,6 @@ public class TestJavaImportInterface extends TestCase {
     }
 
     /**
-     * Flag, if the Java source is parsed already.
-     */
-    private static boolean isParsed;
-
-    /**
      * Instances of the model and it's components.
      */
     private static Object parsedModel;
@@ -294,4 +287,6 @@ public class TestJavaImportInterface extends TestCase {
             + "    public void x(String a);\n"
             + "    public int y();\n"
             + "}";
+
+    private ProfileJava profileJava;
 }

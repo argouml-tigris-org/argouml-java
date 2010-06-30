@@ -39,7 +39,6 @@
 
 package org.argouml.language.java.reveng;
 
-import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -49,7 +48,6 @@ import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
 import org.argouml.Helper;
-import org.argouml.application.helpers.ApplicationVersion;
 import org.argouml.kernel.Project;
 import org.argouml.kernel.ProjectManager;
 import org.argouml.language.java.profile.ProfileJava;
@@ -78,7 +76,6 @@ public class TestJavaImportEnumeration extends TestCase {
     /*
      * @see junit.framework.TestCase#setUp()
      */
-    @SuppressWarnings("unchecked")
     protected void setUp() throws Exception {
         JavaLexer lexer = new JavaLexer(new ANTLRStringStream(PARSERINPUT));
        	CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -90,15 +87,6 @@ public class TestJavaImportEnumeration extends TestCase {
         new InitProfileSubsystem().init();
         profileJava = new ProfileJava();
         profileJava.enable();
-
-        if (ApplicationVersion.getVersion() == null) {
-            Class argoVersionClass = Class
-                    .forName("org.argouml.application.ArgoVersion");
-            Method initMethod = argoVersionClass.getDeclaredMethod("init");
-            initMethod.setAccessible(true);
-            initMethod.invoke(null);
-            assertNotNull(ApplicationVersion.getVersion());
-        }
 
         Project project = ProjectManager.getManager().makeEmptyProject();
         parsedModel = project.getUserDefinedModelList().get(0);
@@ -114,7 +102,7 @@ public class TestJavaImportEnumeration extends TestCase {
             fail("Parsing of Java source failed." + e);
         }
     }
-    
+
     @Override
     protected void tearDown() throws Exception {
         profileJava.disable();
@@ -250,7 +238,6 @@ public class TestJavaImportEnumeration extends TestCase {
         assertFalse("Attribute valuePersist should not be final.",
                 Model.getFacade().isReadOnly(attributeVP));
         Object attribType = Model.getFacade().getType(attributeVP);
-        // FIXME: fails here and shouldn't!
         assertNotNull("Attribute valuePersist is null.", attribType);
         assertTrue("Attribute valuePersist should have type short.",
                 "short".equals(Model.getFacade().getName(attribType)));
