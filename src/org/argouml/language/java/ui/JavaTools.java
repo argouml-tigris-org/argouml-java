@@ -67,12 +67,13 @@ public class JavaTools implements ModuleInterface {
      * @see org.argouml.moduleloader.ModuleInterface#enable()
      */
     public boolean enable() {
-        ProjectBrowser pb = ProjectBrowser.getInstance();
-        GenericArgoMenuBar mb = (GenericArgoMenuBar) pb.getJMenuBar();
-        JMenu menu = mb.getTools();
-        if (menu != null) {
-            menu.add(new JavaSequencesMenu());
-        }
+        // disabled because it's not yet working:
+//        ProjectBrowser pb = ProjectBrowser.getInstance();
+//        GenericArgoMenuBar mb = (GenericArgoMenuBar) pb.getJMenuBar();
+//        JMenu menu = mb.getTools();
+//        if (menu != null) {
+//            menu.add(new JavaSequencesMenu());
+//        }
         return true;
     }
 
