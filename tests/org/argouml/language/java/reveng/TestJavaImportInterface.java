@@ -1,13 +1,13 @@
 /* $Id$
  *****************************************************************************
- * Copyright (c) 2009 Contributors - see below
+ * Copyright (c) 2009-2010 Contributors - see below
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    thn
+ *    Thomas Neustupny (thn)
  *    Luis Sergio Oliveira (euluis)
 *****************************************************************************
  *
@@ -89,6 +89,11 @@ public class TestJavaImportInterface extends TestCase {
 
         Helper.initializeMDR();
         new InitProfileSubsystem().init();
+        // TODO: When running offline, the indirect lazy loading of UML profile
+        // model fails when the Java module is loading. This is only fixable
+        // by forcing the direct loading of the UML model, which does work.
+        // Eventually this should be fixed in XmiReferenceResolverImpl.
+        ProfileFacade.getManager().getUMLProfile().getProfilePackages();
         profileJava = new ProfileJava();
         profileJava.enable();
 
@@ -129,6 +134,7 @@ public class TestJavaImportInterface extends TestCase {
     /**
      * Test if the import was processed correctly.
      */
+    @SuppressWarnings("unchecked")
     public void testImport() {
         parsedPackage =
             Model.getFacade().lookupIn(parsedModel, "testpackage");
@@ -194,6 +200,7 @@ public class TestJavaImportInterface extends TestCase {
     /**
      * Test if the import was processed correctly.
      */
+    @SuppressWarnings("unchecked")
     public void testInterface() {
         parsedPackage =
             Model.getFacade().lookupIn(parsedModel, "testpackage");
@@ -232,6 +239,7 @@ public class TestJavaImportInterface extends TestCase {
     /**
      * Test if the operations were processed correctly.
      */
+    @SuppressWarnings("unchecked")
     public void testOperations() {
         parsedPackage =
             Model.getFacade().lookupIn(parsedModel, "testpackage");

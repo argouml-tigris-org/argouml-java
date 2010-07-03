@@ -1,13 +1,13 @@
 /* $Id$
  *****************************************************************************
- * Copyright (c) 2009 Contributors - see below
+ * Copyright (c) 2009-2010 Contributors - see below
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    thn
+ *    Thomas Neustupny (thn)
  *    Luis Sergio Oliveira (euluis)
  *****************************************************************************
  *
@@ -61,6 +61,9 @@ import antlr.ASTFactory;
 import antlr.CommonAST;
 import antlr.debug.misc.ASTFrame;
 
+/**
+ * Test case for the import of source code with generics.
+ */
 public class TestClassImportGenerics extends TestCase {
 
     private static Object parsedModel;
@@ -68,8 +71,9 @@ public class TestClassImportGenerics extends TestCase {
     private static Object parsedClass;
     private static Project project;
     private static Profile profileJava;
-    private static final String TESTED_CLASS="build/tests/classes/org/argouml/language/java/reveng/TestClassImportGenerics$TestedClass.class";
-
+    private static final String TESTED_CLASS =
+        "build/tests/classes/org/argouml/language/java/reveng/"
+        + "TestClassImportGenerics$TestedClass.class";
 
     public TestClassImportGenerics(String str) {
         super(str);
@@ -82,76 +86,75 @@ public class TestClassImportGenerics extends TestCase {
             Helper.initializeMDR();
         }
         new InitProfileSubsystem().init();
-        ProjectManager.getManager().makeEmptyProject();
-        project = (Project) ProjectManager.getManager().getOpenProjects().toArray()[0];
+        project = ProjectManager.getManager().makeEmptyProject();
     }
 
+    @SuppressWarnings("unchecked")
     public void testParsing() {
         try {
-            SimpleByteLexer lexer = new SimpleByteLexer(new DataInputStream(new FileInputStream(TESTED_CLASS)));
+            SimpleByteLexer lexer = new SimpleByteLexer(new DataInputStream(
+                    new FileInputStream(TESTED_CLASS)));
             ClassfileParser parser = new ClassfileParser(lexer);
             parser.classfile();
-            CommonAST t = (CommonAST) parser.getAST();
-            for (Profile profile : project.getProfileConfiguration().getProfiles()) {
+            parser.getAST();
+            for (Profile profile : project.getProfileConfiguration().
+                    getProfiles()) {
                 if ("Java".equals(profile.getDisplayName())) {
-                    System.err.println("profile is " + profile.getDisplayName());
+                    System.err.println("profile is "
+                            + profile.getDisplayName());
                     profileJava = profile;
                 }
             }
             parsedModel = Model.getModelManagementFactory().createModel();
             assertNotNull("Creation of model failed.", parsedModel);
-            Modeller modeller =
-                    new Modeller(parsedModel, profileJava, true, true, TESTED_CLASS);
+            Modeller modeller = new Modeller(parsedModel, profileJava, true,
+                    true, TESTED_CLASS);
             assertNotNull("Creation of Modeller instance failed.", modeller);
             ClassfileTreeParser p = new ClassfileTreeParser();
             p.classfile(parser.getAST(), modeller);
 
             if (parsedPackage == null) {
                 parsedPackage = parsedModel;
-                for (String s : "org.argouml.language.java.reveng".split("\\.")) {
-                    parsedPackage = Model.getFacade().lookupIn(parsedPackage, s);
+                for (String s : "org.argouml.language.java.reveng".split(
+                        "\\.")) {
+                    parsedPackage = Model.getFacade().lookupIn(
+                            parsedPackage, s);
                 }
-                assertNotNull("No package \"org.argouml.language.java.reveng\" found in model.",
-                        parsedPackage);
+                assertNotNull("No package \"org.argouml.language.java.reveng\""
+                        + " found in model.", parsedPackage);
             }
             if (parsedClass == null) {
                 parsedClass =
-                        Model.getFacade().lookupIn(parsedPackage, "TestClassImportGenerics$TestedClass");
-                assertNotNull("No class \"TestClassImportGenerics$TestedClass\" found.", parsedClass);
+                        Model.getFacade().lookupIn(parsedPackage,
+                                "TestClassImportGenerics$TestedClass");
+                assertNotNull(
+                    "No class \"TestClassImportGenerics$TestedClass\" found.",
+                    parsedClass);
             }
-            Iterator iter =Model.getFacade().getTemplateParameters(parsedClass)
-                .iterator();
+            Iterator iter = Model.getFacade().getTemplateParameters(
+                    parsedClass).iterator();
             while (iter.hasNext()) {
             	String name = Model.getFacade().getName(Model.getFacade()
             	    .getParameter(iter.next()));
-            	System.err.println("name found:"+name);
+            	System.err.println("name found:" + name);
             }
-//            Collection attributes = Model.getFacade().getAttributes(parsedClass);
-//            assertNotNull("No attributes found in class.", attributes);
-//            assertEquals("Number of attributes is wrong", 3, attributes.size());
-//            Object attribute = null;
-//            Iterator iter = attributes.iterator();
-//            while (iter.hasNext()) {
-//                attribute = iter.next();
-//                CoreHelper h = Model.getCoreHelper();
-//                assertTrue("The attribute should be recognized as an attribute.",
-//                        Model.getFacade().isAAttribute(attribute));
-//            //Object attribType = Model.getFacade().getType(attribute);
-//            }
         } catch (Exception e) {
             e.printStackTrace();
             fail(e.toString());
         }
     }
-
-//    public static class TestedClass<X extends List<String>&Comparable<X>, Y extends ArrayList<Integer>> {
-//    }
     
+    /**
+     * Test generic class.
+     * @param <X> example
+     * @param <Y> example
+     */
     public static class TestedClass<X, Y> {
     }
     
     public static void main(String[] args) throws Exception {
-        SimpleByteLexer lexer = new SimpleByteLexer(new DataInputStream(new FileInputStream(TESTED_CLASS)));
+        SimpleByteLexer lexer = new SimpleByteLexer(new DataInputStream(
+                new FileInputStream(TESTED_CLASS)));
         ClassfileParser parser = new ClassfileParser(lexer);
         parser.classfile();
         CommonAST t = (CommonAST) parser.getAST();

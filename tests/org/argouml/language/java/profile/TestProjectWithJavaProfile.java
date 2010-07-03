@@ -7,7 +7,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    thn
+ *    Thomas Neustupny (thn)
  *    Luis Sergio Oliveira (euluis)
  *****************************************************************************
  *
@@ -47,9 +47,7 @@ import junit.framework.TestCase;
 
 import org.argouml.Helper;
 import org.argouml.application.helpers.ApplicationVersion;
-import org.argouml.kernel.ProfileConfiguration;
 import org.argouml.kernel.Project;
-import org.argouml.kernel.ProjectImpl;
 import org.argouml.kernel.ProjectManager;
 import org.argouml.model.Model;
 import org.argouml.persistence.AbstractFilePersister;
@@ -83,7 +81,7 @@ public class TestProjectWithJavaProfile extends TestCase {
         new ProfileJava().enable();
 
         if (ApplicationVersion.getVersion() == null) {
-            Class argoVersionClass = Class
+            Class<?> argoVersionClass = Class
                     .forName("org.argouml.application.ArgoVersion");
             Method initMethod = argoVersionClass.getDeclaredMethod("init");
             initMethod.setAccessible(true);

@@ -1,13 +1,14 @@
 /* $Id$
  *****************************************************************************
- * Copyright (c) 2009 Contributors - see below
+ * Copyright (c) 2009-2010 Contributors - see below
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    thn
+ *    Thomas Neustupny (thn)
+ *    Luis Sergio Oliveira (euluis)
  *****************************************************************************
  *
  * Some portions of this file was previously release using the BSD License:
@@ -91,7 +92,7 @@ public class TestJavaImportUnicode extends TestCase {
         // This shouldn't be necessary, but the Modeller is going to look in
         // the project to find the default type for attributes
         Project project = ProjectManager.getManager().makeEmptyProject();
-        Object parsedModel = project.getUserDefinedModelList().get(0);
+        parsedModel = project.getUserDefinedModelList().get(0);
         assertNotNull("Creation of model failed.", parsedModel);
 
         Modeller modeller = new Modeller(parsedModel, profileJava,
@@ -100,7 +101,6 @@ public class TestJavaImportUnicode extends TestCase {
 
         try {
             parser.compilationUnit(modeller, lexer);
-            isParsed = true;
         } catch (RecognitionException e) {
             fail("Parsing of Java source failed." + e);
         }
@@ -121,16 +121,15 @@ public class TestJavaImportUnicode extends TestCase {
         assertEquals("Inconsistent package name.",
                 "téstpackage", Model.getFacade().getName(parsedPackage));
         assertEquals("The namespace of the package should be the model.",
-                Model.getModelManagementFactory().getRootModel(),
-                Model.getFacade().getNamespace(parsedPackage));
+                parsedModel, Model.getFacade().getNamespace(parsedPackage));
         assertTrue("The package should be recognized as a package.",
                 Model.getFacade().isAPackage(parsedPackage));
     }
 
-
     /**
      * Test if the import was processed correctly.
      */
+    @SuppressWarnings("unchecked")
     public void testClass() {
         Object parsedPackage = lookupPackage();
         Object parsedClass = lookupClass(parsedPackage);
@@ -167,10 +166,9 @@ public class TestJavaImportUnicode extends TestCase {
      */
     private Object lookupPackage() {
         Object parsedPackage = Model.getFacade().lookupIn(
-                Model.getModelManagementFactory().getRootModel(),
-                "téstpackage");
+            parsedModel, "téstpackage");
         assertNotNull("No package \"téstpackage\" found in model.",
-                parsedPackage);
+            parsedPackage);
         return parsedPackage;
     }
 
@@ -187,6 +185,7 @@ public class TestJavaImportUnicode extends TestCase {
     /**
      * Test if the attributes were processed correctly.
      */
+    @SuppressWarnings("unchecked")
     public void testAttributes() {
         Object parsedPackage = lookupPackage();
         Object parsedClass = lookupClass(parsedPackage);
@@ -215,11 +214,10 @@ public class TestJavaImportUnicode extends TestCase {
             " \"final String objéct\"", Model.getFacade().getBody(initializer));
     }
 
-
-
     /**
      * Test if the association was processed correctly.
      */
+    @SuppressWarnings("unchecked")
     public void testAssociation() {
         Object parsedPackage = lookupPackage();
         Object parsedClass = lookupClass(parsedPackage);
@@ -265,6 +263,7 @@ public class TestJavaImportUnicode extends TestCase {
     /**
      * Test if the operations were processed correctly.
      */
+    @SuppressWarnings("unchecked")
     public void testOperations() {
         Object parsedPackage = lookupPackage();
         Object parsedClass = lookupClass(parsedPackage);
@@ -300,6 +299,7 @@ public class TestJavaImportUnicode extends TestCase {
      * @param operation The operation.
      * @return The first body.
      */
+    @SuppressWarnings("unchecked")
     private static String getBody(Object operation) {
         String body = null;
         Collection methods = Model.getFacade().getMethods(operation);
@@ -310,11 +310,6 @@ public class TestJavaImportUnicode extends TestCase {
         }
         return body;
     }
-
-    /**
-     * Flag, if the Java source is parsed already.
-     */
-    private static boolean isParsed;
 
     private static final String BODY1 =
         "\n        if (arg instanceof TéstClass) téstClass = (TéstClass)arg;\n";
@@ -340,4 +335,6 @@ public class TestJavaImportUnicode extends TestCase {
             + "}";
 
     private ProfileJava profileJava;
+
+    private Object parsedModel;
 }
