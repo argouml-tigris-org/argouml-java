@@ -35,12 +35,12 @@ fi
 # 	| Add Java's tools.jar to the classpath for running Ant              |
 #	+--------------------------------------------------------------------+
 
-if [ -s $JAVA_HOME/lib/tools.jar ] ; then
+if [ -s "$JAVA_HOME/lib/tools.jar" ] ; then
 	LOCAL_CLASSPATH=$LOCAL_CLASSPATH:$JAVA_HOME/lib/tools.jar
 fi
 
 # For JDK1.1 only
-#if [ -s $JAVA_HOME/jre/lib/classes.zip ] ; then
+#if [ -s "$JAVA_HOME/jre/lib/classes.zip" ] ; then
 #	LOCAL_CLASSPATH=$LOCAL_CLASSPATH:$JAVA_HOME/jre/lib/classes.zip
 #fi
 

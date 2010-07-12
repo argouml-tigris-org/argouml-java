@@ -275,9 +275,9 @@ engineering of Java code and support for built-in types and standard libraries.
   <target name="compile" depends="generateparser" 
           description="compiles the module source code"> 
   	
-    <available file="${argo.build.dir}/argouml.jar" property="argo.is.packaged"/>
-    <fail unless="argo.is.packaged" 
-      message="You must package ArgoUML first, e.g., argouml/src> build package"/>
+    <available file="${argo.build.dir}/argouml.jar" property="argouml.is.prepared"/>
+    <fail unless="argouml.is.prepared" 
+      message="You must prepare the argouml project first, e.g., ../argouml> build install"/>
 
     <javac destdir="${module.build.dest}"
            debug="${debug}"
@@ -457,11 +457,15 @@ engineering of Java code and support for built-in types and standard libraries.
   <!-- =================================================================== -->
   <!-- Run the module unit tests                                           -->
   <!-- =================================================================== -->
-  <target name="tests" depends="init, compile-tests" 
+  <target name="tests" depends="init" 
           description="run the module unit tests"> 
 
     <echo message="running the unit tests"/>
-    
+    <antcall target="tests-xml"/>    
+    <antcall target="create-tests-report"/>
+  </target>
+  
+  <target name="tests-xml" depends="init, compile-tests" >
     <junit errorproperty="junit.failure" fork="yes" haltonfailure="false" 
            maxmemory="128M" printsummary="true">
           <!-- use different log4j configuration for testing -->
@@ -480,9 +484,8 @@ engineering of Java code and support for built-in types and standard libraries.
         </fileset>
       </batchtest>
     </junit>
-    <antcall target="create-tests-report"/>
   </target>
-  
+
   <target name="create-tests-report">
     <echo message="Creating unit tests report to ${module.tests.reports}/html/index.html"/>
     
