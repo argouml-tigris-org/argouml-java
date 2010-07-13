@@ -42,6 +42,7 @@ package org.argouml.language.java.reveng;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.DataInputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.util.Iterator;
 
@@ -92,6 +93,13 @@ public class TestClassImportGenerics extends TestCase {
     @SuppressWarnings("unchecked")
     public void testParsing() {
         try {
+            File testedClassFile = new File(TESTED_CLASS);
+            File testedClassAbsoluteFile = testedClassFile.getAbsoluteFile();
+            System.out.println("Absolute path of TESTED_CLASS (\""
+                    + TESTED_CLASS + "\") is \""
+                    + testedClassAbsoluteFile.getPath() + "\".");
+            assertTrue("The testedClassAbsoluteFile doesn't exist.",
+                    testedClassAbsoluteFile.exists());
             SimpleByteLexer lexer = new SimpleByteLexer(new DataInputStream(
                     new FileInputStream(TESTED_CLASS)));
             ClassfileParser parser = new ClassfileParser(lexer);

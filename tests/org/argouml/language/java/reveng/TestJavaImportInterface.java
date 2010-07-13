@@ -44,16 +44,8 @@ import java.util.Iterator;
 
 import junit.framework.TestCase;
 
-import org.antlr.runtime.ANTLRStringStream;
-import org.antlr.runtime.CommonTokenStream;
-import org.antlr.runtime.RecognitionException;
-import org.argouml.Helper;
-import org.argouml.kernel.Project;
-import org.argouml.kernel.ProjectManager;
 import org.argouml.language.java.profile.ProfileJava;
 import org.argouml.model.Model;
-import org.argouml.profile.ProfileFacade;
-import org.argouml.profile.init.InitProfileSubsystem;
 
 /**
  * Test case to test the import of a Java source file. The content of the Java
@@ -65,7 +57,7 @@ import org.argouml.profile.init.InitProfileSubsystem;
  * setUp method need not be changed).<p>
  */
 public class TestJavaImportInterface extends TestCase {
-
+    private ImportFixture importFixture;
 
     /**
      * Construct an import Java interface test with the given name.
@@ -81,38 +73,15 @@ public class TestJavaImportInterface extends TestCase {
      */
     @Override
     protected void setUp() throws Exception {
-        JavaLexer lexer = new JavaLexer(new ANTLRStringStream(PARSERINPUT));
-       	CommonTokenStream tokens = new CommonTokenStream(lexer);
-
-        JavaParser parser = new JavaParser(tokens);
-        assertNotNull("Creation of parser failed.", parser);
-
-        Helper.initializeMDR();
-        new InitProfileSubsystem().init();
-        // TODO: When running offline, the indirect lazy loading of UML profile
-        // model fails when the Java module is loading. This is only fixable
-        // by forcing the direct loading of the UML model, which does work.
-        // Eventually this should be fixed in XmiReferenceResolverImpl.
-        ProfileFacade.getManager().getUMLProfile().getProfilePackages();
-        profileJava = new ProfileJava();
-        profileJava.enable();
-
-        Project project = ProjectManager.getManager().makeEmptyProfileProject();
-        parsedModel = project.getUserDefinedModelList().iterator().next();
-
-        Modeller modeller = new Modeller(parsedModel, profileJava, false,
-                false, "TestInterface.java");
-        try {
-            parser.compilationUnit(modeller, lexer);
-        } catch (RecognitionException e) {
-            fail("Parsing of Java source failed." + e);
-        }
+        importFixture = new ImportFixture(PARSERINPUT, "TestInterface.java");
+        importFixture.setUp();
+        profileJava = importFixture.getProfileJava();
+        parsedModel = importFixture.getParsedModel();
     }
 
     @Override
     protected void tearDown() throws Exception {
-        profileJava.disable();
-        ProfileFacade.reset();
+        importFixture.tearDown();
         super.tearDown();
     }
 

@@ -43,17 +43,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import junit.framework.TestCase;
-
-import org.antlr.runtime.ANTLRStringStream;
-import org.antlr.runtime.CommonTokenStream;
-import org.antlr.runtime.RecognitionException;
-import org.argouml.Helper;
-import org.argouml.kernel.Project;
-import org.argouml.kernel.ProjectManager;
-import org.argouml.language.java.profile.ProfileJava;
 import org.argouml.model.Model;
-import org.argouml.profile.ProfileFacade;
-import org.argouml.profile.init.InitProfileSubsystem;
 
 /**
  * Test case to test the import of a Java source file containing a Java 5 enum.
@@ -66,6 +56,8 @@ import org.argouml.profile.init.InitProfileSubsystem;
  * @author Tom Morris
  */
 public class TestJavaImportEnumeration extends TestCase {
+    private ImportFixture importFixture;
+
     /*
      * @see junit.framework.TestCase#TestCase(String)
      */
@@ -77,36 +69,14 @@ public class TestJavaImportEnumeration extends TestCase {
      * @see junit.framework.TestCase#setUp()
      */
     protected void setUp() throws Exception {
-        JavaLexer lexer = new JavaLexer(new ANTLRStringStream(PARSERINPUT));
-       	CommonTokenStream tokens = new CommonTokenStream(lexer);
-
-        JavaParser parser = new JavaParser(tokens);
-        assertNotNull("Creation of parser failed.", parser);
-
-        Helper.initializeMDR();
-        new InitProfileSubsystem().init();
-        profileJava = new ProfileJava();
-        profileJava.enable();
-
-        Project project = ProjectManager.getManager().makeEmptyProject();
-        parsedModel = project.getUserDefinedModelList().get(0);
-        assertNotNull("Creation of model failed.", parsedModel);
-
-        Modeller modeller = new Modeller(parsedModel, profileJava, false, false,
-                "TestClass.java");
-        assertNotNull("Creation of Modeller instance failed.", modeller);
-
-        try {
-            parser.compilationUnit(modeller, lexer);
-        } catch (RecognitionException e) {
-            fail("Parsing of Java source failed." + e);
-        }
+        importFixture = new ImportFixture(PARSERINPUT, "TheClass.java");
+        importFixture.setUp();
+        parsedModel = importFixture.getParsedModel();
     }
 
     @Override
     protected void tearDown() throws Exception {
-        profileJava.disable();
-        ProfileFacade.reset();
+        importFixture.tearDown();
         super.tearDown();
     }
 
@@ -362,7 +332,5 @@ public class TestJavaImportEnumeration extends TestCase {
             + "    }\n"
 
             + "}";
-
-    private ProfileJava profileJava;
 
 }
