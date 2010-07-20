@@ -74,7 +74,8 @@ class ImportFixture {
         // TODO: When running offline, the indirect lazy loading of UML profile
         // model fails when the Java module is loading. This is only fixable
         // by forcing the direct loading of the UML model, which does work.
-        // Eventually this should be fixed in XmiReferenceResolverImpl.
+        // Eventually this should be fixed in XmiReferenceResolverImpl (see 
+        // issue 6101 (http://argouml.tigris.org/issues/show_bug.cgi?id=6101)).
         ProfileFacade.getManager().getUMLProfile().getProfilePackages();
         profileJava = new ProfileJava();
         profileJava.enable();

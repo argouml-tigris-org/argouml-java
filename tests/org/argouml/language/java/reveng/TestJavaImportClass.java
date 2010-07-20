@@ -44,19 +44,10 @@ import java.util.Iterator;
 
 import junit.framework.TestCase;
 
-import org.antlr.runtime.ANTLRStringStream;
-import org.antlr.runtime.CommonTokenStream;
-import org.antlr.runtime.RecognitionException;
-import org.argouml.Helper;
 import org.argouml.application.api.Argo;
-import org.argouml.kernel.Project;
-import org.argouml.kernel.ProjectManager;
-import org.argouml.language.java.profile.ProfileJava;
 import org.argouml.model.Model;
 import org.argouml.profile.Profile;
 import org.argouml.profile.ProfileException;
-import org.argouml.profile.ProfileFacade;
-import org.argouml.profile.init.InitProfileSubsystem;
 
 /**
  * Test case to test the import of a Java source file. The content of the Java
@@ -68,6 +59,7 @@ import org.argouml.profile.init.InitProfileSubsystem;
  * setUp method need not be changed).<p>
  */
 public class TestJavaImportClass extends TestCase {
+    private ImportFixture importFixture;
 
     /**
      * Construct a test case with the given name to test import of a Java class.
@@ -83,33 +75,16 @@ public class TestJavaImportClass extends TestCase {
      */
     @Override
     protected void setUp() throws Exception {
-        if (isParsed) {
-            return;
-        }
+        importFixture = new ImportFixture(PARSERINPUT, "TestClass.java");
+        importFixture.setUp();
+        profileJava = importFixture.getProfileJava();
+        parsedModel = importFixture.getParsedModel();
+    }
 
-        JavaLexer lexer = new JavaLexer(new ANTLRStringStream(PARSERINPUT));
-       	CommonTokenStream tokens = new CommonTokenStream(lexer);
-
-        JavaParser parser = new JavaParser(tokens);
-        assertNotNull("Creation of parser failed.", parser);
-        
-        Helper.initializeMDR();
-        new InitProfileSubsystem().init();
-        ProfileJava profileJava = new ProfileJava();
-        profileJava.enable();
-        Project project = ProjectManager.getManager().makeEmptyProject();
-        parsedModel = project.getUserDefinedModelList().iterator().next();
-
-        Modeller modeller = new Modeller(parsedModel, profileJava, false,
-            false, "TestClass.java");
-        assertNotNull("Creation of Modeller instance failed.", modeller);
-
-        try {
-            parser.compilationUnit(modeller, lexer);
-            isParsed = true;
-        } catch (RecognitionException e) {
-            fail("Parsing of Java source failed." + e);
-        }
+    @Override
+    protected void tearDown() throws Exception {
+        importFixture.tearDown();
+        super.tearDown();
     }
 
     /**
@@ -133,12 +108,9 @@ public class TestJavaImportClass extends TestCase {
      */
     @SuppressWarnings("unchecked")
     public void testImport() throws ProfileException {
-        if (parsedPackage == null) {
-            parsedPackage =
-                Model.getFacade().lookupIn(parsedModel, "testpackage");
-            assertNotNull("No package \"testpackage\" found in model.",
-                    parsedPackage);
-        }
+        parsedPackage = Model.getFacade().lookupIn(parsedModel, "testpackage");
+        assertNotNull("No package \"testpackage\" found in model.",
+            parsedPackage);
         Collection ownedElements =
             Model.getFacade().getOwnedElements(parsedPackage);
         assertNotNull("No elements owned by  \"testpackage\".", ownedElements);
@@ -189,8 +161,6 @@ public class TestJavaImportClass extends TestCase {
         assertNotNull("The namespace \"util\" has no namespace.", namespace);
         assertEquals("Expected namespace name \"java\".",
             "java", Model.getFacade().getName(namespace));
-        Profile profileJava = ProfileFacade.getManager().getProfileForClass(
-            ProfileJava.class.getName());
         Object javaProfileModel =
             profileJava.getProfilePackages().iterator().next();
         assertEquals(
@@ -203,12 +173,9 @@ public class TestJavaImportClass extends TestCase {
      */
     @SuppressWarnings("unchecked")
     public void testClass() {
-        if (parsedPackage == null) {
-            parsedPackage =
-                Model.getFacade().lookupIn(parsedModel, "testpackage");
-            assertNotNull("No package \"testpackage\" found in model.",
-                    parsedPackage);
-        }
+        parsedPackage = Model.getFacade().lookupIn(parsedModel, "testpackage");
+        assertNotNull("No package \"testpackage\" found in model.",
+            parsedPackage);
         parsedClass = Model.getFacade().lookupIn(parsedPackage, "TestClass");
         assertNotNull("No class \"TestClass\" found.", parsedClass);
         assertEquals("Inconsistent class name.",
@@ -250,17 +217,17 @@ public class TestJavaImportClass extends TestCase {
         try {
             assertEquals("The client of the abstraction should be the class.",
                 parsedClass,
-                Model.getFacade().getClients(abstraction)
-                            .iterator().next());
+                Model.getFacade().getClients(abstraction).iterator().next());
         } catch (IllegalArgumentException ex) {
             fail("The implementation dependency has no clients.");
         }
         try {
             assertEquals(
-                    "The supplier of the abstraction should be \"Observer\".",
-                    "Observer", Model.getFacade().getName(
-                            Model.getFacade().getSuppliers(abstraction)
-                                    .iterator().next()));
+                "The supplier of the abstraction should be \"Observer\".",
+                "Observer",
+                Model.getFacade().getName(
+                    Model.getFacade().getSuppliers(abstraction)
+                    .iterator().next()));
         } catch (IllegalArgumentException ex) {
             fail("The abstraction has no suppliers.");
         }
@@ -271,17 +238,11 @@ public class TestJavaImportClass extends TestCase {
      */
     @SuppressWarnings("unchecked")
     public void testAttributes() {
-        if (parsedPackage == null) {
-            parsedPackage =
-                Model.getFacade().lookupIn(parsedModel, "testpackage");
-            assertNotNull("No package \"testpackage\" found in model.",
-                    parsedPackage);
-        }
-        if (parsedClass == null) {
-            parsedClass =
-                Model.getFacade().lookupIn(parsedPackage, "TestClass");
-            assertNotNull("No class \"TestClass\" found.", parsedClass);
-        }
+        parsedPackage = Model.getFacade().lookupIn(parsedModel, "testpackage");
+        assertNotNull("No package \"testpackage\" found in model.",
+            parsedPackage);
+        parsedClass = Model.getFacade().lookupIn(parsedPackage, "TestClass");
+        assertNotNull("No class \"TestClass\" found.", parsedClass);
         Collection attributes = Model.getFacade().getAttributes(parsedClass);
         assertNotNull("No attributes found ib class.", attributes);
         assertEquals("Number of attributes is wrong", 2, attributes.size());
@@ -292,7 +253,7 @@ public class TestJavaImportClass extends TestCase {
         while (iter.hasNext()) {
             attribute = iter.next();
             assertTrue("The attribute should be recognized as an attribute.",
-                    Model.getFacade().isAAttribute(attribute));
+                Model.getFacade().isAAttribute(attribute));
             if ("n".equals(Model.getFacade().getName(attribute))) {
                 attributeForn = attribute;
             } else if ("s".equals(Model.getFacade().getName(attribute))) {
@@ -300,35 +261,36 @@ public class TestJavaImportClass extends TestCase {
             }
         }
         assertTrue("The attributes have wrong names.",
-                attributeForn != null && attributeFors != null);
+            attributeForn != null && attributeFors != null);
         Object attribType = Model.getFacade().getType(attributeForn);
         Object initializer = Model.getFacade().getInitialValue(attributeForn);
         assertTrue("Attribute n should be private.",
-                Model.getFacade().isPrivate(attributeForn));
+            Model.getFacade().isPrivate(attributeForn));
         assertFalse("Attribute n should not be final.",
-                Model.getFacade().isReadOnly(attributeForn));
+            Model.getFacade().isReadOnly(attributeForn));
         assertTrue("Attribute n should have type int.",
-                "int".equals(Model.getFacade().getName(attribType)));
+            "int".equals(Model.getFacade().getName(attribType)));
         assertTrue("Attribute n has no initializer.",
-                Model.getFacade().isInitialized(attributeForn)
-                && initializer != null);
+            Model.getFacade().isInitialized(attributeForn)
+            && initializer != null);
         assertEquals("The initializer of attribute n is wrong.",
             " 0", Model.getFacade().getBody(initializer));
         attribType = Model.getFacade().getType(attributeFors);
         initializer = Model.getFacade().getInitialValue(attributeFors);
         assertTrue("Attribute s should be public.",
-                Model.getFacade().isPublic(attributeFors));
+            Model.getFacade().isPublic(attributeFors));
         assertTrue("Attribute s should be static.",
-                Model.getFacade().isStatic(attributeFors));
+            Model.getFacade().isStatic(attributeFors));
         assertTrue("Attribute s should be final.",
-                Model.getFacade().isReadOnly(attributeFors));
+            Model.getFacade().isReadOnly(attributeFors));
         assertTrue("Attribute s should have type String.",
-                "String".equals(Model.getFacade().getName(attribType)));
+            "String".equals(Model.getFacade().getName(attribType)));
         assertTrue("Attribute s has no initializer.",
-                Model.getFacade().isInitialized(attributeFors)
-                && initializer != null);
+            Model.getFacade().isInitialized(attributeFors)
+            && initializer != null);
         assertEquals("The initializer of attribute s is wrong.",
-            " \"final String object\"", Model.getFacade().getBody(initializer));
+            " \"final String object\"",
+            Model.getFacade().getBody(initializer));
     }
 
     /**
@@ -336,54 +298,47 @@ public class TestJavaImportClass extends TestCase {
      */
     @SuppressWarnings("unchecked")
     public void testAssociation() {
-        if (parsedPackage == null) {
-            parsedPackage =
-                Model.getFacade().lookupIn(parsedModel, "testpackage");
-            assertNotNull("No package \"testpackage\" found in model.",
-                    parsedPackage);
-        }
-        if (parsedClass == null) {
-            parsedClass =
-                Model.getFacade().lookupIn(parsedPackage, "TestClass");
-            assertNotNull("No class \"TestClass\" found.", parsedClass);
-        }
+        parsedPackage = Model.getFacade().lookupIn(parsedModel, "testpackage");
+        assertNotNull("No package \"testpackage\" found in model.",
+            parsedPackage);
+        parsedClass = Model.getFacade().lookupIn(parsedPackage, "TestClass");
+        assertNotNull("No class \"TestClass\" found.", parsedClass);
         Collection associationEnds =
             Model.getFacade().getAssociationEnds(parsedClass);
         assertNotNull("No association ends found ib class.", associationEnds);
         assertEquals("Number of association ends is wrong", 2,
-                associationEnds.size());
+            associationEnds.size());
         Object associationEnd = null;
         Object association = null;
         int navigableCount = 0;
         Iterator iter = associationEnds.iterator();
         while (iter.hasNext()) {
             associationEnd = iter.next();
-            assertTrue(
-                    "The attribute end should be recognized as "
-                    + "an attribute end.",
-                    Model.getFacade().isAAssociationEnd(associationEnd));
+            assertTrue("The attribute end should be recognized as "
+                + "an attribute end.",
+                Model.getFacade().isAAssociationEnd(associationEnd));
             assertEquals("The type of both association ends must be the class.",
                 parsedClass, Model.getFacade().getType(associationEnd));
             if (association == null) {
                 association = Model.getFacade().getAssociation(associationEnd);
                 assertTrue(
-                        "The attribute should be recognized as an attribute.",
-                        Model.getFacade().isAAssociation(association));
+                    "The attribute should be recognized as an attribute.",
+                    Model.getFacade().isAAssociation(association));
                 assertEquals("The association name is wrong.",
                     "TestClass -> TestClass",
                     Model.getFacade().getName(association));
             } else {
                 assertEquals(
-                        "Association end must belong to the same association.",
-                        association,
-                        Model.getFacade().getAssociation(associationEnd));
+                    "Association end must belong to the same association.",
+                    association,
+                    Model.getFacade().getAssociation(associationEnd));
             }
             if (Model.getFacade().isNavigable(associationEnd)) {
                 ++navigableCount;
             }
         }
         assertEquals("Only one association end must be navigable.",
-                1, navigableCount);
+            1, navigableCount);
     }
 
     /**
@@ -391,17 +346,11 @@ public class TestJavaImportClass extends TestCase {
      */
     @SuppressWarnings("unchecked")
     public void testOperations() {
-        if (parsedPackage == null) {
-            parsedPackage =
-                Model.getFacade().lookupIn(parsedModel, "testpackage");
-            assertNotNull("No package \"testpackage\" found in model.",
-                    parsedPackage);
-        }
-        if (parsedClass == null) {
-            parsedClass =
-                Model.getFacade().lookupIn(parsedPackage, "TestClass");
-            assertNotNull("No class \"TestClass\" found.", parsedClass);
-        }
+        parsedPackage = Model.getFacade().lookupIn(parsedModel, "testpackage");
+        assertNotNull("No package \"testpackage\" found in model.",
+            parsedPackage);
+        parsedClass = Model.getFacade().lookupIn(parsedPackage, "TestClass");
+        assertNotNull("No class \"TestClass\" found.", parsedClass);
         Collection operations = Model.getFacade().getOperations(parsedClass);
         assertNotNull("No operations found in class.", operations);
         assertEquals("Number of operations is wrong", 4, operations.size());
@@ -413,7 +362,7 @@ public class TestJavaImportClass extends TestCase {
         while (iter.hasNext()) {
             operation = iter.next();
             assertTrue("The operation should be recognized as an operation.",
-                    Model.getFacade().isAOperation(operation));
+                Model.getFacade().isAOperation(operation));
             if ("TestClass".equals(Model.getFacade().getName(operation))) {
                 operationForTestClass = operation;
             } else if ("update".equals(Model.getFacade().getName(operation))) {
@@ -431,25 +380,23 @@ public class TestJavaImportClass extends TestCase {
             && operationForgetString != null
             && operationForx != null);
         assertTrue("Operation TestClass should be protected.",
-                Model.getFacade().isProtected(operationForTestClass));
+            Model.getFacade().isProtected(operationForTestClass));
         assertEquals("The body of operation TestClass is wrong.",
-                BODY2, getBody(operationForTestClass));
+            BODY2, getBody(operationForTestClass));
         assertTrue("Operation update should be public.",
-                Model.getFacade().isPublic(operationForupdate));
-        assertEquals("The body of operation update is wrong.",
-                BODY1,
-                getBody(operationForupdate));
+            Model.getFacade().isPublic(operationForupdate));
+        assertEquals("The body of operation update is wrong.", BODY1,
+            getBody(operationForupdate));
         assertTrue("Operation getString should be static.",
-                Model.getFacade().isStatic(operationForgetString));
+            Model.getFacade().isStatic(operationForgetString));
         assertTrue("Operation getString should be private.",
-                Model.getFacade().isPrivate(operationForgetString));
-        assertEquals("The body of operation getString is wrong.",
-                BODY3,
-                getBody(operationForgetString));
+            Model.getFacade().isPrivate(operationForgetString));
+        assertEquals("The body of operation getString is wrong.", BODY3,
+            getBody(operationForgetString));
         assertTrue("Operation x should be abstract.",
-                Model.getFacade().isAbstract(operationForx));
+            Model.getFacade().isAbstract(operationForx));
         assertTrue("Operation x should have package visibility.",
-                Model.getFacade().isPackage(operationForx));
+            Model.getFacade().isPackage(operationForx));
     }
 
     /**
@@ -457,26 +404,22 @@ public class TestJavaImportClass extends TestCase {
      */
     @SuppressWarnings("unchecked")
     public void testJavadoc() {
-        if (parsedClass == null) {
-            parsedClass =
-                Model.getFacade().lookupIn(parsedPackage, "TestClass");
-            assertNotNull("No class \"TestClass\" found.", parsedClass);
-        }
+        parsedPackage = Model.getFacade().lookupIn(parsedModel, "testpackage");
+        assertNotNull("No package \"testpackage\" found in model.",
+            parsedPackage);
+        parsedClass = Model.getFacade().lookupIn(parsedPackage, "TestClass");
+        assertNotNull("No class \"TestClass\" found.", parsedClass);
     	String doc = Model.getFacade().getTaggedValueValue(parsedClass,
             Argo.DOCUMENTATION_TAG);
         assertEquals("The class has the wrong documentation.", JAVADOC1, doc);
-        if (operationForgetString == null) {
-            Collection operations = Model.getFacade()
-                .getOperations(parsedClass);
-            assertNotNull("No operations found in class.", operations);
-            Object operation = null;
-            Iterator iter = operations.iterator();
-            while (iter.hasNext()) {
-                operation = iter.next();
-                if ("getString".equals(
-                        Model.getFacade().getName(operation))) {
-                    operationForgetString = operation;
-                }
+        Collection operations = Model.getFacade().getOperations(parsedClass);
+        assertNotNull("No operations found in class.", operations);
+        Object operation = null;
+        Iterator iter = operations.iterator();
+        while (iter.hasNext()) {
+            operation = iter.next();
+            if ("getString".equals(Model.getFacade().getName(operation))) {
+                operationForgetString = operation;
             }
         }
     	doc = Model.getFacade().getTaggedValueValue(operationForgetString,
@@ -502,11 +445,6 @@ public class TestJavaImportClass extends TestCase {
         }
         return body;
     }
-
-    /**
-     * Flag, if the Java source is parsed already.
-     */
-    private static boolean isParsed;
 
     /**
      * Instances of the model and its components.
@@ -560,4 +498,6 @@ public class TestJavaImportClass extends TestCase {
             + "       comment\n"
             + "    */\n"
             + "}";
+
+    private Profile profileJava;
 }
