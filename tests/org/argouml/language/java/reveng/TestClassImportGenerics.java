@@ -44,6 +44,7 @@ import java.awt.event.WindowEvent;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.net.URL;
 import java.util.Iterator;
 
 import junit.framework.TestCase;
@@ -72,9 +73,19 @@ public class TestClassImportGenerics extends TestCase {
     private static Object parsedClass;
     private static Project project;
     private static Profile profileJava;
-    private static final String TESTED_CLASS =
-        "build/tests/classes/org/argouml/language/java/reveng/"
-        + "TestClassImportGenerics$TestedClass.class";
+
+    private static final String TESTED_CLASS_CANONICAL_NAME = 
+        TestedClass.class.getCanonicalName();
+    private static String getTestedFilename() {
+        ClassLoader classLoader = 
+            TestClassImportGenerics.class.getClassLoader();
+        URL resource = 
+            classLoader.getResource("org/argouml/language/java/reveng/"
+                    + "TestClassImportGenerics$TestedClass.class");
+        String fileName = resource.getFile();
+        return fileName;
+    }
+    
 
     public TestClassImportGenerics(String str) {
         super(str);
@@ -93,15 +104,17 @@ public class TestClassImportGenerics extends TestCase {
     @SuppressWarnings("unchecked")
     public void testParsing() {
         try {
-            File testedClassFile = new File(TESTED_CLASS);
+            String fileName = getTestedFilename();
+
+            File testedClassFile = new File(fileName);
             File testedClassAbsoluteFile = testedClassFile.getAbsoluteFile();
-            System.out.println("Absolute path of TESTED_CLASS (\""
-                    + TESTED_CLASS + "\") is \""
+            System.out.println("Absolute path of the tested class (\""
+                    + TESTED_CLASS_CANONICAL_NAME + "\") is \""
                     + testedClassAbsoluteFile.getPath() + "\".");
             assertTrue("The testedClassAbsoluteFile doesn't exist.",
                     testedClassAbsoluteFile.exists());
             SimpleByteLexer lexer = new SimpleByteLexer(new DataInputStream(
-                    new FileInputStream(TESTED_CLASS)));
+                    new FileInputStream(fileName)));
             ClassfileParser parser = new ClassfileParser(lexer);
             parser.classfile();
             parser.getAST();
@@ -116,7 +129,7 @@ public class TestClassImportGenerics extends TestCase {
             parsedModel = Model.getModelManagementFactory().createModel();
             assertNotNull("Creation of model failed.", parsedModel);
             Modeller modeller = new Modeller(parsedModel, profileJava, true,
-                    true, TESTED_CLASS);
+                    true, fileName);
             assertNotNull("Creation of Modeller instance failed.", modeller);
             ClassfileTreeParser p = new ClassfileTreeParser();
             p.classfile(parser.getAST(), modeller);
@@ -162,7 +175,7 @@ public class TestClassImportGenerics extends TestCase {
     
     public static void main(String[] args) throws Exception {
         SimpleByteLexer lexer = new SimpleByteLexer(new DataInputStream(
-                new FileInputStream(TESTED_CLASS)));
+                new FileInputStream(getTestedFilename())));
         ClassfileParser parser = new ClassfileParser(lexer);
         parser.classfile();
         CommonAST t = (CommonAST) parser.getAST();
