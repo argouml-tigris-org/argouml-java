@@ -94,9 +94,15 @@ classfile[org.argouml.language.java.reveng.Modeller modeller]
 	  typeDefinition
  	  attribute_block
 	  method_block
+	  ( sourcefile )?
 	  class_signature
 	    {  getModeller().popClassifier(); }
 	;
+
+sourcefile
+    :SOURCEFILE
+    {System.err.println("SOURCEFILE: "+#SOURCEFILE.getText());}
+    ;
 
 class_signature
     :SIGNATURE 
