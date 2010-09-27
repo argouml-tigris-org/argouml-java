@@ -478,9 +478,18 @@ engineering of Java code and support for built-in types and standard libraries.
         <enable package="org.argouml"/>
       </assertions>
       <formatter type="xml"/>
+      <!-- TODO: how to switch this on and off without lots of duplication?
+           Further indirection?
+      <jvmarg value="-Xdebug"/>
+      <jvmarg value="-Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n"/>
+      -->
       <batchtest todir="${module.tests.reports}">
         <fileset dir="${module.tests.src}">
           <include name="org/argouml/**/Test*.java"/>
+          <!-- TODO: ditto, see above. argouml-cpp's build.xml has some kind of
+               solution to this.
+          <include name="org/argouml/**/TestClassImportGenerics.java"/>
+          -->
         </fileset>
       </batchtest>
     </junit>
