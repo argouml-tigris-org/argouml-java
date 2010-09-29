@@ -470,6 +470,7 @@ engineering of Java code and support for built-in types and standard libraries.
            maxmemory="128M" printsummary="true">
           <!-- use different log4j configuration for testing -->
       <sysproperty key="log4j.configuration" value="org/argouml/resource/full_console.lcf"/>
+      <sysproperty key="java.awt.headless" value="true"/>
       <classpath>
         <path refid="module.run-tests.classpath"/>
         <pathelement location="${module.tests.classes}"/>
