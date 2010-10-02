@@ -48,15 +48,16 @@ public final class JavaModuleGlobals {
     /**
      * The version info of a module in the Java module project.
      */
-    public final static String MODULE_VERSION = "0.30.2";
+    public static final String MODULE_VERSION = "0.30.2";
 
     /**
      * The author info of a module in the Java module project.
      */
-    public final static String MODULE_AUTHOR = "The ArgoUML project team";
+    public static final String MODULE_AUTHOR = "The ArgoUML project team";
 
     /**
      * The download info of a module in the Java module project.
      */
-    public final static String MODULE_DOWNLOADSITE = "http://argouml-java.tigris.org/";
+    public static final String MODULE_DOWNLOADSITE =
+        "http://argouml-java.tigris.org/";
 }

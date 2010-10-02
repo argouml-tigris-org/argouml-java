@@ -145,18 +145,21 @@ public class JavaImport implements ImportInterface {
                 StringWriter sw = new StringWriter();
                 PrintWriter pw = new java.io.PrintWriter(sw);
                 e.printStackTrace(pw);
-                monitor.notifyMessage(Translator
-                        .localize("dialog.title.import-problems"), //$NON-NLS-1$
-                        Translator.localize("label.import-problems"), //$NON-NLS-1$
-                        sw.toString());
+                monitor.notifyMessage(
+                    Translator.localize(
+                            "dialog.title.import-problems"), //$NON-NLS-1$
+                    Translator.localize("label.import-problems"), //$NON-NLS-1$
+                    sw.toString());
                 if (monitor.isCanceled()) {
                     break;
                 }
             }
             monitor.updateProgress(count++);
             monitor.updateSubTask(Translator.localize(
-                    "dialog.import.parsingAction", new Object[] { file
-                            .getAbsolutePath() }));
+                    "dialog.import.parsingAction", 
+                    new Object[] { 
+                        file.getAbsolutePath() 
+                    }));
 
         }
 
@@ -253,8 +256,10 @@ public class JavaImport implements ImportInterface {
      * @see org.argouml.uml.reveng.ImportInterface#getSuffixFilters()
      */
     public SuffixFilter[] getSuffixFilters() {
-        SuffixFilter[] result = { new SuffixFilter("java", Translator
-                .localize("java.filefilter.java")), };
+        SuffixFilter[] result = {
+            new SuffixFilter("java", 
+                    Translator.localize("java.filefilter.java")),
+        };
         return result;
     }
 

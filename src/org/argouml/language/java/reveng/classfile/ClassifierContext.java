@@ -78,7 +78,7 @@ class ClassifierContext extends Context
      * @return A classifier for the name.
      */
     public Object get(String classifierName)
-    throws ClassifierNotFoundException {
+        throws ClassifierNotFoundException {
         return get(classifierName, false);
     }
 

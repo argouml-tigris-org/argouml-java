@@ -87,7 +87,6 @@ import org.argouml.uml.diagram.DiagramFactory;
 import org.argouml.uml.diagram.DiagramFactory.DiagramType;
 import org.argouml.uml.ui.ActionDeleteModelElements;
 import org.argouml.util.ArgoDialog;
-import org.tigris.gef.base.Layer;
 import org.tigris.gef.graph.MutableGraphModel;
 import org.tigris.gef.presentation.Fig;
 
@@ -144,8 +143,6 @@ public class RESequenceDiagramDialog
     private JPanel manuPanel;
     private JPanel autoPanel;
     private int maxXPos = -X_OFFSET;
-    private int maxPort;
-    private int portCnt;
     private int anonCnt;
     private final boolean isNewSequenceDiagram;
 
@@ -218,9 +215,10 @@ public class RESequenceDiagramDialog
             figClassifierRole = getFigClassifierRole(classifier, "obj");
             // TODO: There is only a single port on new implementation of SD
             // so how do we resolve this?
-            Layer layer = diagram.getLayer();
+            // Layer layer =
+            diagram.getLayer();
             // TODO: Fix for new sequence diagrams
-            portCnt = 0;
+            // portCnt = 0;
 //            portCnt 
 //                = layer.getNodeIndex(
 //                    figMessage.getDestFigNode().getFigMessagePort().getY());
@@ -550,12 +548,13 @@ public class RESequenceDiagramDialog
             if (fig instanceof Fig) {
                 Object elem = ((Fig) fig).getOwner();
                 if (Model.getFacade().isAClassifierRole(elem)) {
-                    // TODO: Do we really need to test for name here if we know we
-                    // have the right classifier role?
+                    // TODO: Do we really need to test for name here 
+                    // if we know we have the right classifier role?
                     if (Model.getFacade().getName(elem).equals(objName)) {
-                        final Collection bases = Model.getFacade().getBases(elem);
-                        // TODO: Do we really have to test for null here? I suspect
-                        // not, I'd expect an empty collection.
+                        final Collection bases =
+                            Model.getFacade().getBases(elem);
+                        // TODO: Do we really have to test for null here?
+                        // I suspect not, I'd expect an empty collection.
                         if (bases != null && bases.contains(theClassifier)) {
                             // yes found, so this will be returned
                             crFig = (Fig) fig;
@@ -753,7 +752,8 @@ public class RESequenceDiagramDialog
 //        Object messageType = Model.getMetaTypes().getMessage();
 //
 //        // TODO: This has a bad smell. I don't think we should be using Modes
-//        // here. Modes are for user interactions. Find a better way to do this.
+//        // here. Modes are for user interactions.
+//        // Find a better way to do this.
 //        Editor ce = Globals.curEditor();
 //        Hashtable<String, Object> args = new Hashtable<String, Object>();
 //        args.put("action", callType);
@@ -762,7 +762,8 @@ public class RESequenceDiagramDialog
 //
 //        SequenceDiagramGraphModel graphModel =
 //            (SequenceDiagramGraphModel) diagram.getGraphModel();
-//        Object newEdge = graphModel.connect(startPort, foundPort, messageType);
+//        Object newEdge =
+//            graphModel.connect(startPort, foundPort, messageType);
 //        if (null != newEdge) {
 //            Model.getCoreHelper().setName(newEdge, call);
 //            final FigMessage figMessage =

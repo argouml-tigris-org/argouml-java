@@ -81,8 +81,9 @@ public class ParserUtils {
      * @param desc The signature as a string.
      * @return The signature as it would appear in a Java sourcefile.
      */
-    public static String convertFieldTypeSignature(String s) {
-        return convertFieldTypeSignature(new FieldTypeSignatureLexer(s).parse());
+    public static String convertFieldTypeSignature(String desc) {
+        List<Token> lexer = new FieldTypeSignatureLexer(desc).parse();
+        return convertFieldTypeSignature(lexer);
     }
 
     /**
@@ -92,8 +93,9 @@ public class ParserUtils {
      * @param desc The signature as a string.
      * @return The signature as it would appear in a Java sourcefile.
      */
-    public static String convertClassTypeSignature(String s) {
-        return convertClassTypeSignature(new ClassTypeSignatureLexer(s).parse());
+    public static String convertClassTypeSignature(String desc) {
+        List<Token> lexer = new ClassTypeSignatureLexer(desc).parse();
+        return convertClassTypeSignature(lexer);
     }
 
     /**
@@ -103,8 +105,8 @@ public class ParserUtils {
      * @param desc The signature as a string.
      * @return The signature as it would appear in a Java sourcefile.
      */
-    public static String convertClassSignature(String s) {
-        return convertClassSignature(new ClassSignatureLexer(s).parse());
+    public static String convertClassSignature(String desc) {
+        return convertClassSignature(new ClassSignatureLexer(desc).parse());
     }
 
     /**
@@ -114,19 +116,21 @@ public class ParserUtils {
      * @param desc The signature as a string in a java source .
      * @return A list of type parameters.
      */
-    public static List<String> extractTypeParameters(String s) {
+    public static List<String> extractTypeParameters(String desc) {
         List<String> result = new LinkedList<String>();
-        if (s.startsWith("<")) {
-            int endIndex = AbstractLexer.balancedBracketPosition(s, '<', '>');
-            s = s.substring(1, endIndex);
-            while (s.length() > 0) {
-                int index = AbstractLexer.firstIndexNotInside(',', '<', '>', s);
-                if (index == 0 || index == s.length()) {
-                    result.add(s.trim());
-                    s = "";
+        if (desc.startsWith("<")) {
+            int endIndex =
+                AbstractLexer.balancedBracketPosition(desc, '<', '>');
+            desc = desc.substring(1, endIndex);
+            while (desc.length() > 0) {
+                int index =
+                    AbstractLexer.firstIndexNotInside(',', '<', '>', desc);
+                if (index == 0 || index == desc.length()) {
+                    result.add(desc.trim());
+                    desc = "";
                 } else {
-                    result.add(s.substring(0, index).trim());
-                    s = s.substring(index + 1);
+                    result.add(desc.substring(0, index).trim());
+                    desc = desc.substring(index + 1);
                 }
             }
         }
@@ -216,55 +220,122 @@ public class ParserUtils {
         throw new IllegalArgumentException(s + " is not a base type");
     }
 
+    /**
+     * Tokens.
+     */
+    /**
+     *
+     * @author Linus
+     */
     public static class Token {
 
+        /**
+         * B|C|D
+         */
         public static final int BASE_TYPE = 0; // B|C|D...
 
+        /**
+         * V
+         */
         public static final int VOID_TYPE = 1; // V
 
+        /**
+         * with slashes
+         */
         public static final int CLASS_NAME = 2; // with slashes
 
+        /**
+         * [
+         */
         public static final int ARRAY_BRACKET = 3; // [
 
+        /**
+         * method parameter
+         */
         public static final int FIELD_DESCRIPTOR = 4; // method parameter
 
+        /**
+         * as a.b.c
+         */
         public static final int PACKAGE = 5; // as a.b.c
 
+        /**
+         * identifier
+         */
         public static final int IDENTIFIER = 6; // 
 
+        /**
+         * &lt;
+         */
         public static final int LABRACKET = 7; // <
 
+        /**
+         * &gt;
+         */
         public static final int RABRACKET = 8; // >
 
+        /**
+         * +-*
+         */
         public static final int WILDCARD = 9; // +-*
 
+        /**
+         * ,
+         */
         public static final int COMMA = 10; // ,
 
+        /**
+         * .
+         */
         public static final int POINT = 11; // .
 
+        /**
+         * :
+         */
         public static final int COLON = 12; // .
 
+        /**
+         * extends
+         */
         public static final int SUPERCLASS = 13; // extends
 
+        /**
+         * implements
+         */
         public static final int SUPERINTERFACE = 15; // implements
 
+        /**
+         * (
+         */
         public static final int LBRACKET = 16; // (
 
+        /**
+         * )
+         */
         public static final int RBRACKET = 17; // )
 
+        /**
+         * throws
+         */
         public static final int THROWS = 18; // throws
 
+        /**
+         * return
+         */
         public static final int RETURN = 19; // return
 
+        /**
+         * &amp;
+         */
         public static final int AMPERSAND = 20; // &
 
         private String value;
 
         private int type;
 
-        public Token(int type, String value) {
-            this.type = type;
-            this.value = value;
+        public Token(int t, String v) {
+            type = t;
+            value = v;
         }
 
         public int getType() {
@@ -282,7 +353,8 @@ public class ParserUtils {
 
     }
 
-    protected static class FieldDescriptorLexer extends AbstractLexer {
+    protected static class FieldDescriptorLexer 
+        extends AbstractLexer {
 
         public FieldDescriptorLexer(String desc) {
             super(desc);
@@ -303,7 +375,8 @@ public class ParserUtils {
             // Object type?
             Matcher m = Pattern.compile("^(L)(.+)(;)").matcher(desc);
             if (m.matches()) {
-                result.add(new Token(Token.CLASS_NAME, m.group(2))); // Classname
+                // Classname
+                result.add(new Token(Token.CLASS_NAME, m.group(2)));
                 desc = desc.substring(m.group(0).length()); // the rest after ;
                 return result;
             }
@@ -386,7 +459,9 @@ public class ParserUtils {
          * Parse FieldTypeSignature according the grammar:
          * 
          * <pre>
-         * FieldTypeSignature: ClassTypeSignature|ArrayTypeSignature|TypeVariableSignature
+         * FieldTypeSignature: ClassTypeSignature
+         *                     |ArrayTypeSignature
+         *                     |TypeVariableSignature
          * </pre>
          */
         @Override
@@ -652,8 +727,7 @@ public class ParserUtils {
                 FormalTypeParameterLexer l = new FormalTypeParameterLexer(
                         formalTypeParameters);
                 result.addAll(l.parse());
-                Matcher m = Pattern.compile("([^:]*):((.*))").matcher(
-                        formalTypeParameters);
+                Pattern.compile("([^:]*):((.*))").matcher(formalTypeParameters);
                 result.add(new Token(Token.RABRACKET, ">"));
             }
             // parse super type
@@ -717,7 +791,8 @@ public class ParserUtils {
                         // interface bounds begins here
                         while (other.startsWith(":")) {
                             result.add(new Token(Token.AMPERSAND, " & "));
-                            FieldTypeSignatureLexer l = new FieldTypeSignatureLexer(
+                            FieldTypeSignatureLexer l =
+                                new FieldTypeSignatureLexer(
                                     other.substring(1));
                             result.addAll(l.parse());
                             other = l.getRest();
@@ -748,8 +823,8 @@ public class ParserUtils {
          * 
          * <pre>
          * MethodTypeSignature:  FormalTypeParametersopt (TypeSignature*) ReturnType ThrowsSignature*
-         * 	ReturnType:  TypeSignature VoidDescriptor
-         * 	ThrowsSignature:   &circ;ClassTypeSignature &circ;TypeVariableSignature
+         *          ReturnType:  TypeSignature VoidDescriptor
+         *     ThrowsSignature:   &circ;ClassTypeSignature &circ;TypeVariableSignature
          * </pre>
          */
         @Override
@@ -764,13 +839,14 @@ public class ParserUtils {
                 FormalTypeParameterLexer l = new FormalTypeParameterLexer(
                         formalTypeParameters);
                 result.addAll(l.parse());
-                Matcher m = Pattern.compile("([^:]*):((.*))").matcher(
-                        formalTypeParameters);
+                Pattern.compile("([^:]*):((.*))")
+                    .matcher(formalTypeParameters);
                 result.add(new Token(Token.RABRACKET, ">"));
             }
             // parse type signatures
             result.add(new Token(Token.LBRACKET, "("));
-            int typeSignaturesEndIndex = balancedBracketPosition(desc, '(', ')');
+            int typeSignaturesEndIndex =
+                balancedBracketPosition(desc, '(', ')');
             String typeSignatures = desc.substring(1, typeSignaturesEndIndex);
             desc = desc.substring(typeSignaturesEndIndex + 1);
             if (typeSignatures.length() > 0) {
@@ -823,7 +899,7 @@ public class ParserUtils {
          * Parse throws signature according the grammar:
          * 
          * <pre>
-         * 	ThrowsSignature:   &circ;ClassTypeSignature &circ;TypeVariableSignature
+         * ThrowsSignature: &circ;ClassTypeSignature &circ;TypeVariableSignature
          * </pre>
          */
         @Override
@@ -831,8 +907,8 @@ public class ParserUtils {
             if (desc.charAt(0) == '^') {
                 desc = desc.substring(1);
                 if (desc.charAt(0) == 'T') {
-                    TypeVariableSignatureLexer l = new TypeVariableSignatureLexer(
-                            desc);
+                    TypeVariableSignatureLexer l =
+                        new TypeVariableSignatureLexer(desc);
                     result.addAll(l.parse());
                     desc = l.getRest();
                 } else {
@@ -854,8 +930,8 @@ public class ParserUtils {
 
         protected List<Token> result;
 
-        public AbstractLexer(String desc) {
-            this.desc = desc;
+        public AbstractLexer(String d) {
+            desc = d;
             result = new LinkedList<Token>();
         }
 

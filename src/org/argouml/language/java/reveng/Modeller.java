@@ -73,9 +73,6 @@ import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.antlr.runtime.ANTLRStringStream;
-import org.antlr.runtime.CommonTokenStream;
-import org.antlr.runtime.RecognitionException;
 import org.apache.log4j.Logger;
 import org.argouml.application.api.Argo;
 import org.argouml.kernel.ProjectManager;
@@ -85,7 +82,6 @@ import org.argouml.model.Facade;
 import org.argouml.model.Model;
 import org.argouml.ocl.OCLUtil;
 import org.argouml.profile.Profile;
-import org.argouml.uml.StereotypeUtility;
 import org.argouml.uml.reveng.ImportCommon;
 import org.argouml.uml.reveng.ImportInterface;
 
@@ -161,7 +157,8 @@ public class Modeller {
     /**
      * Arbitrary attributes.
      */
-    private Hashtable<String, Object> attributes = new Hashtable<String, Object>();
+    private Hashtable<String, Object> attributes =
+        new Hashtable<String, Object>();
 
     /**
      * List of the names of parsed method calls.
@@ -172,7 +169,8 @@ public class Modeller {
      * HashMap of parsed local variables. Indexed by variable name with string
      * representation of the type stored as the value.
      */
-    private Hashtable<String, String> localVariables = new Hashtable<String, String>();
+    private Hashtable<String, String> localVariables =
+        new Hashtable<String, String>();
 
     /**
      * New model elements that were created during this reverse engineering
@@ -340,7 +338,9 @@ public class Modeller {
                 && importSession.getSrcPath() != null
                 && Model.getFacade().getTaggedValue(mPackage,
                         ImportInterface.SOURCE_PATH_TAG) == null) {
-            String[] srcPaths = { importSession.getSrcPath() };
+            String[] srcPaths = {
+                importSession.getSrcPath()
+            };
             buildTaggedValue(mPackage, ImportInterface.SOURCE_PATH_TAG,
                     srcPaths);
         }
@@ -395,7 +395,8 @@ public class Modeller {
      * InterfaceType
      */
     public void addClassSignature(String signature) {
-        addTypeParameters(parseState.getClassifier(), ParserUtils.extractTypeParameters(signature));
+        addTypeParameters(parseState.getClassifier(),
+                ParserUtils.extractTypeParameters(signature));
     }
 
     /**
@@ -481,7 +482,8 @@ public class Modeller {
                 element, srcFile);
         for (Object dep : dependencies) {
             for (Object stereotype : Model.getFacade().getStereotypes(dep)) {
-                if ("javaImport".equals(Model.getFacade().getName(stereotype))) {
+                if ("javaImport".equals(
+                        Model.getFacade().getName(stereotype))) {
                     return dep;
                 }
             }
@@ -789,7 +791,8 @@ public class Modeller {
 
             setVisibility(mEnum, modifiers);
 
-            // Add classifier documentation tags during first (or only) pass only
+            // Add classifier documentation tags during 
+            // first (or only) pass only
             if (getLevel() <= 0) {
                 addDocumentationTag(mEnum, javadoc);
             }
@@ -956,18 +959,24 @@ public class Modeller {
         if (Model.getFacade().getTemplateParameters(modelElement).size() == 0) {
             for (String parameter : typeParameters) {
                 // parse parameter to name and bounds
-                Pattern p = Pattern.compile("([^ ]*)( super | extends )?((.*))");
+                Pattern p =
+                    Pattern.compile("([^ ]*)( super | extends )?((.*))");
                 Matcher m = p.matcher(parameter);
                 if (m.matches()) {
                     String templateParameterName = m.group(1);
                     Object param = Model.getCoreFactory().createParameter();
                     Model.getCoreHelper().setName(param, templateParameterName);
-                    Object templateParameter = Model.getCoreFactory().buildTemplateParameter(modelElement, param, null);
+                    Object templateParameter =
+                        Model.getCoreFactory()
+                            .buildTemplateParameter(modelElement, param, null);
                     if (m.group(2) != null) {
                         // bounds are saved as tagged value in param
-                        buildTaggedValue(param, m.group(2).trim(), new String[]{m.group(3)});
+                        buildTaggedValue(param, 
+                                m.group(2).trim(), 
+                                new String[]{m.group(3)});
                     }
-                    Model.getCoreHelper().addTemplateParameter(modelElement, templateParameter);
+                    Model.getCoreHelper()
+                        .addTemplateParameter(modelElement, templateParameter);
                 } 
             }
         }
@@ -1028,7 +1037,8 @@ public class Modeller {
     
                 // This test is carried over from a previous implementation,
                 // but I'm not sure why it would already be set - tfm
-                if (Model.getFacade().getElementResidences(mClassifier).isEmpty()) {
+                if (Model.getFacade()
+                        .getElementResidences(mClassifier).isEmpty()) {
                     Object resident = Model.getCoreFactory()
                             .createElementResidence();
                     Model.getCoreHelper().setResident(resident, mClassifier);
@@ -1037,7 +1047,8 @@ public class Modeller {
                 }
             } else {
                 Object artifact = parseState.getArtifact();
-                Collection c = Model.getCoreHelper().getUtilizedElements(artifact);
+                Collection c =
+                    Model.getCoreHelper().getUtilizedElements(artifact);
                 if (!c.contains(mClassifier)) {
                     Object manifestation = Model.getCoreFactory()
                             .buildManifestation(mClassifier);
@@ -1164,9 +1175,9 @@ public class Modeller {
         } else {
             try {
                 mClassifier =
-                // FIXME: This can't throw away the fully qualified
-                // name before starting the search!
-                getContext(returnType).get(getClassifierName(returnType),
+                    // FIXME: This can't throw away the fully qualified
+                    // name before starting the search!
+                    getContext(returnType).get(getClassifierName(returnType),
                         false, javaProfile);
             } catch (ClassifierNotFoundException e) {
                 if (forceIt && returnType != null && model != null) {
@@ -1570,7 +1581,8 @@ public class Modeller {
                 String rname = st.nextToken();
                 mPackage = Model.getFacade().lookupIn(currentNs, rname);
                 // the actual package might already exist in the user model
-                if (mPackage == null || !Model.getFacade().isAPackage(mPackage)) {
+                if (mPackage == null
+                        || !Model.getFacade().isAPackage(mPackage)) {
                     mPackage = Model.getModelManagementFactory().buildPackage(
                             getRelativePackageName(rname));
                     // set the owner for this package.
@@ -1796,7 +1808,9 @@ public class Modeller {
             throw new IllegalArgumentException("Could not find "
                 + "a suitable stereotype for " + Model.getFacade().getName(me)
                 + " -  stereotype: <<" + name + ">> base: " + baseClass
-                + ".\nCheck if environment variable eUML.resources is correctly set.");
+                + ".\n"
+                + "Check if environment variable eUML.resources "
+                + "is correctly set.");
         }
         // (UML 1.x only from here)
         // Instead of failing, this should create any stereotypes that it
@@ -1823,7 +1837,9 @@ public class Modeller {
     private Object getTaggedValue(Object element, String name) {
         Object tv = Model.getFacade().getTaggedValue(element, name);
         if (tv == null) {
-            String[] empties = { "" };
+            String[] empties = {
+                ""
+            };
             buildTaggedValue(element, name, empties);
             tv = Model.getFacade().getTaggedValue(element, name);
         }
@@ -1956,7 +1972,8 @@ public class Modeller {
         // TODO: the context need not be a package, so here is a bug!
         String packageName = getPackageName(name);
         if (!"".equals(packageName)) {
-            context = new PackageContext(context, getPackage(packageName, true));
+            context =
+                new PackageContext(context, getPackage(packageName, true));
         }
         return context;
     }
@@ -1980,8 +1997,8 @@ public class Modeller {
         int colonPos = (sTagData != null) ? sTagData[0].indexOf(':') : -1;
         if (colonPos != -1
                 && (("invariant".equals(sTagName))
-                        || ("pre-condition".equals(sTagName)) || ("post-condition"
-                        .equals(sTagName)))) {
+                        || ("pre-condition".equals(sTagName))
+                        || ("post-condition".equals(sTagName)))) {
 
             // add as OCL constraint
             String sContext = OCLUtil.getContextString(me);
@@ -2040,7 +2057,9 @@ public class Modeller {
         }
     }
 
-    private void buildTaggedValue(Object me, String sTagName, String[] sTagData) {
+    private void buildTaggedValue(Object me, 
+            String sTagName, 
+            String[] sTagData) {
         Object tv = Model.getFacade().getTaggedValue(me, sTagName);
         if (tv == null) {
             // using deprecated buildTaggedValue here, because getting the tag
@@ -2049,8 +2068,8 @@ public class Modeller {
             // but not as a public method:
             Model.getExtensionMechanismsHelper().addTaggedValue(
                     me,
-                    Model.getExtensionMechanismsFactory().buildTaggedValue(
-                            sTagName, sTagData[0]));
+                    Model.getExtensionMechanismsFactory()
+                    .buildTaggedValue(sTagName, sTagData[0]));
         } else {
             Model.getExtensionMechanismsHelper().setDataValues(tv, sTagData);
         }
@@ -2070,7 +2089,9 @@ public class Modeller {
         if ((sJavaDocs != null) && (sJavaDocs.trim().length() >= 5)) {
             StringBuffer sbPureDocs = new StringBuffer(80);
             String sCurrentTagName = null;
-            String[] sCurrentTagData = { null };
+            String[] sCurrentTagData = {
+                null
+            };
             int nStartPos = 3; // skip the leading /**
             boolean fHadAsterisk = true;
 
@@ -2170,7 +2191,9 @@ public class Modeller {
             }
 
             // Now store documentation text in a tagged value
-            String[] javadocs = { sJavaDocs };
+            String[] javadocs = {
+                sJavaDocs
+            };
             buildTaggedValue(modelElement, Argo.DOCUMENTATION_TAG, javadocs);
             addStereotypes(modelElement);
         }

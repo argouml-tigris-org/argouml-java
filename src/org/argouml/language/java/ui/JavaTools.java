@@ -38,12 +38,8 @@
 
 package org.argouml.language.java.ui;
 
-import javax.swing.JMenu;
-
 import org.argouml.language.java.JavaModuleGlobals;
 import org.argouml.moduleloader.ModuleInterface;
-import org.argouml.ui.ProjectBrowser;
-import org.argouml.ui.cmd.GenericArgoMenuBar;
 
 /**
  * Java tools.

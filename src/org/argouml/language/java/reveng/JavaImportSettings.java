@@ -80,7 +80,8 @@ public class JavaImportSettings {
      * associations
      */
     private static final ConfigurationKey
-    KEY_IMPORT_EXTENDED_MODEL_ATTR = Configuration
+    KEY_IMPORT_EXTENDED_MODEL_ATTR =
+        Configuration
             .makeKey("import", "extended", "java", "model", "attributes");
 
     /**
@@ -88,7 +89,8 @@ public class JavaImportSettings {
      * associations
      */
     private static final ConfigurationKey
-    KEY_IMPORT_EXTENDED_MODEL_ARRAYS = Configuration
+    KEY_IMPORT_EXTENDED_MODEL_ARRAYS =
+        Configuration
             .makeKey("import", "extended", "java", "model", "arrays");
 
     /**
@@ -96,7 +98,8 @@ public class JavaImportSettings {
      * to model them as associations with multiplicity *.
      */
     private static final ConfigurationKey
-    KEY_IMPORT_EXTENDED_COLLECTIONS_FLAG = Configuration
+    KEY_IMPORT_EXTENDED_COLLECTIONS_FLAG =
+        Configuration
             .makeKey("import", "extended", "java", "collections", "flag");
 
     /**
@@ -104,15 +107,17 @@ public class JavaImportSettings {
      * as associations with multiplicity *.
      */
     private static final ConfigurationKey
-    KEY_IMPORT_EXTENDED_COLLECTIONS_LIST = Configuration
+    KEY_IMPORT_EXTENDED_COLLECTIONS_LIST =
+        Configuration
             .makeKey("import", "extended", "java", "collections", "list");
 
     /**
-     * Key for RE extended settings: flag for modelling of listed collections,
+     * Key for RE extended settings: flag for modeling of listed collections,
      * if to model them as ordered associations with multiplicity *.
      */
     private static final ConfigurationKey
-    KEY_IMPORT_EXTENDED_ORDEREDCOLLS_FLAG = Configuration
+    KEY_IMPORT_EXTENDED_ORDEREDCOLLS_FLAG =
+        Configuration
             .makeKey("import", "extended", "java", "orderedcolls", "flag");
 
     /**
@@ -120,7 +125,8 @@ public class JavaImportSettings {
      * as ordered associations with multiplicity *.
      */
     private static final ConfigurationKey
-        KEY_IMPORT_EXTENDED_ORDEREDCOLLS_LIST = Configuration
+    KEY_IMPORT_EXTENDED_ORDEREDCOLLS_LIST =
+        Configuration
             .makeKey("import", "extended", "java", "orderedcolls", "list");
 
     /**
@@ -172,7 +178,7 @@ public class JavaImportSettings {
     /*
      * Provides the implementation of
      * org.argouml.uml.reveng.ImportInterface#getImportSettings() for
-     * implemetors of ImportInterface.
+     * implementors of ImportInterface.
      * 
      * @return the list of import settings
      */

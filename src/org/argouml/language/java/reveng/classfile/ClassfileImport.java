@@ -83,8 +83,6 @@ public class ClassfileImport implements ImportInterface {
     /** The files that needs a second RE pass. */
     private Collection secondPassFiles;
 
-    private Project currentProject = null;
-
     /**
      * Java profile model.
      */
@@ -105,7 +103,6 @@ public class ClassfileImport implements ImportInterface {
         throws ImportException {
 
         secondPassFiles = new ArrayList();
-        currentProject = p;
         newElements = new HashSet();
 
         // get the Java profile from project, if available
@@ -342,6 +339,7 @@ public class ClassfileImport implements ImportInterface {
     /**
      * This method parses 1 Java classfile.
      *
+     * @param p The current project.
      * @param is The inputStream for the file to parse.
      * @param fileName the name of the file to parse
      * @throws RecognitionException ANTLR parser error
@@ -364,7 +362,8 @@ public class ClassfileImport implements ImportInterface {
         parser.classfile();
 
         // Create a modeller for the parser
-        org.argouml.language.java.reveng.Modeller modeller = new org.argouml.language.java.reveng.Modeller(
+        org.argouml.language.java.reveng.Modeller modeller =
+            new org.argouml.language.java.reveng.Modeller(
                 p.getUserDefinedModelList().get(0),
                 javaProfile,
                 JavaImportSettings.getInstance().isAttributeSelected(),

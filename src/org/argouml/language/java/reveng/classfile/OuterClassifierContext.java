@@ -38,7 +38,6 @@
 
 package org.argouml.language.java.reveng.classfile;
 
-import org.apache.log4j.Logger;
 import org.argouml.model.Model;
 
 /**
@@ -47,9 +46,6 @@ import org.argouml.model.Model;
  * @author Marcus Andersson
  */
 class OuterClassifierContext extends Context {
-
-    private static final Logger LOG =
-        Logger.getLogger(OuterClassifierContext.class);
 
     /** The classifier this context represents. */
     private Object mClassifier;

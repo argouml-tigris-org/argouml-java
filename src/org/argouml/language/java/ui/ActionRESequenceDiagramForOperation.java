@@ -68,8 +68,6 @@ public class ActionRESequenceDiagramForOperation extends AbstractAction {
      * The constructor. If a figure is given, then it is invoked inside of a
      * sequence diagram, so it will work with this diagram. If figure is null,
      * then this causes the creation of a new sequence diagram.
-     * 
-     * @param fig the figure the action is performed on
      */
     public ActionRESequenceDiagramForOperation() {
         super(Translator.localize("java.action.create-seq-operation"));
@@ -118,9 +116,11 @@ public class ActionRESequenceDiagramForOperation extends AbstractAction {
                 DiagramType.Sequence, collaboration,
                 settings);
         // create an anonymous classifier role in the diagram
-        Object node = Model.getCollaborationsFactory().buildClassifierRole(
-                collaboration);
-        //Fig crFig = new FigClassifierRole(node, new Rectangle(10, 10, 50, 200), settings);
+        // Object node = 
+        Model.getCollaborationsFactory().buildClassifierRole(collaboration);
+        //Fig crFig =
+        //    new FigClassifierRole(node,
+        //        new Rectangle(10, 10, 50, 200), settings);
         //diagram.add(crFig);
         //((MutableGraphModel)
         //        (diagram.getGraphModel())).addNode(node);
