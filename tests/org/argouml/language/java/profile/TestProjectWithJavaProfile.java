@@ -70,9 +70,6 @@ public class TestProjectWithJavaProfile extends TestCase {
 
     private File testCaseDir;
 
-    /*
-     * @see junit.framework.TestCase#setUp()
-     */
     @Override
     protected void setUp() throws Exception {
         super.setUp();
@@ -170,6 +167,7 @@ public class TestProjectWithJavaProfile extends TestCase {
         project.setVersion(ApplicationVersion.getVersion());
         persister.save(project, file);
         project.remove();
+        file.deleteOnExit();
 
         // reopen the project and assert that the Java profile isn't part of
         // the profile configuration, including the fact that the type
@@ -193,6 +191,7 @@ public class TestProjectWithJavaProfile extends TestCase {
         // on its own. Thus, the java.util.List will be found and the return
         // value will be present again...
         assertNotNull(returnParamType);
+        project.remove();
     }
 
     private void checkJavaListTypeExistsAndMatchesReturnParamType(

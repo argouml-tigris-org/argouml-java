@@ -137,6 +137,7 @@ public class Helper {
     public static File setUpDir4Test(String dirName) {
         File generationDir = new File(getTmpDir(), dirName);
         generationDir.mkdirs();
+        generationDir.deleteOnExit();
         return generationDir;
     }
 

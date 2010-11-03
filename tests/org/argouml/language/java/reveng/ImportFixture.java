@@ -15,9 +15,6 @@ package org.argouml.language.java.reveng;
 
 import junit.framework.Assert;
 
-import org.antlr.runtime.ANTLRStringStream;
-import org.antlr.runtime.CommonTokenStream;
-import org.antlr.runtime.RecognitionException;
 import org.argouml.Helper;
 import org.argouml.kernel.Project;
 import org.argouml.kernel.ProjectManager;
@@ -32,17 +29,29 @@ import org.argouml.profile.init.InitProfileSubsystem;
  */
 class ImportFixture {
     private String parserInput;
+    private String fileName;
     private ProfileJava profileJava;
+    private Object parsedModel;
+    private Modeller modeller;
 
     ProfileJava getProfileJava() {
         return profileJava;
     }
 
-    private Object parsedModel;
-    private String fileName;
-
     Object getParsedModel() {
         return parsedModel;
+    }
+    
+    String getFileName() {
+        return fileName;
+    }
+    
+    String getParserInput() {
+        return parserInput;
+    }
+    
+    Modeller getModeller() {
+        return modeller;
     }
     
     private static void checkNullArgument(String argName, Object arg) {
@@ -63,12 +72,6 @@ class ImportFixture {
      * @throws Exception if a setup step goes wrong
      */
     void setUp() throws Exception {
-        JavaLexer lexer = new JavaLexer(new ANTLRStringStream(parserInput));
-        CommonTokenStream tokens = new CommonTokenStream(lexer);
-
-        JavaParser parser = new JavaParser(tokens);
-        Assert.assertNotNull("Creation of parser failed.", parser);
-        
         Helper.initializeMDR();
         new InitProfileSubsystem().init();
         // TODO: When running offline, the indirect lazy loading of UML profile
@@ -86,15 +89,8 @@ class ImportFixture {
         parsedModel = project.getUserDefinedModelList().get(0);
         Assert.assertNotNull("Creation of model failed.", parsedModel);
 
-        Modeller modeller = new Modeller(parsedModel, profileJava,
+        modeller = new Modeller(parsedModel, profileJava,
                 false, false, fileName);
-        Assert.assertNotNull("Creation of Modeller instance failed.", modeller);
-
-        try {
-            parser.compilationUnit(modeller, lexer);
-        } catch (RecognitionException e) {
-            Assert.fail("Parsing of Java source failed." + e);
-        }
     }
 
     /**

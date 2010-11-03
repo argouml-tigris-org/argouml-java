@@ -56,7 +56,7 @@ import org.argouml.profile.ProfileException;
  * Feeding of the diagram subsystem is disabled; only model elements are
  * created and checked. For testing with another Java source file, copy this
  * test case, change the Java source constant and modify the test method (the
- * setUp method need not be changed).<p>
+ * setUp method need not be changed).
  */
 public class TestJavaImportClass extends TestCase {
     private ImportFixture importFixture;
@@ -70,12 +70,10 @@ public class TestJavaImportClass extends TestCase {
         super(str);
     }
 
-    /*
-     * @see junit.framework.TestCase#setUp()
-     */
     @Override
     protected void setUp() throws Exception {
-        importFixture = new ImportFixture(PARSERINPUT, "TestClass.java");
+        super.setUp();
+        importFixture = new JavaImportFixture(PARSERINPUT, "TestClass.java");
         importFixture.setUp();
         profileJava = importFixture.getProfileJava();
         parsedModel = importFixture.getParsedModel();

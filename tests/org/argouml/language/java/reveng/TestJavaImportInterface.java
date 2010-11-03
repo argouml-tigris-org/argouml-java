@@ -68,12 +68,11 @@ public class TestJavaImportInterface extends TestCase {
         super(str);
     }
 
-    /*
-     * @see junit.framework.TestCase#setUp()
-     */
     @Override
     protected void setUp() throws Exception {
-        importFixture = new ImportFixture(PARSERINPUT, "TestInterface.java");
+        super.setUp();
+        importFixture = new JavaImportFixture(PARSERINPUT,
+                "TestInterface.java");
         importFixture.setUp();
         profileJava = importFixture.getProfileJava();
         parsedModel = importFixture.getParsedModel();

@@ -47,14 +47,14 @@ import junit.framework.TestCase;
 import org.argouml.model.Model;
 
 /**
- * Test the import of Java sources which have Unicode characters in
- * various locations, including in identifiers.
+ * <p>Test the import of Java sources which have Unicode characters in
+ * various locations, including in identifiers.</p>
  *
- * The content of the Java source file is a private constant at the
- * bottom of the source of this class.
+ * <p>The content of the Java source file is a private constant at the
+ * bottom of the source of this class.</p>
  *
- * The constant is written using the ISO-8859-1 encoding so this class
- * needs to be compiled using that encoding.
+ * <p>The constant is written using the ISO-8859-1 encoding so this class
+ * needs to be compiled using that encoding.</p>
  */
 public class TestJavaImportUnicode extends TestCase {
     private ImportFixture importFixture;
@@ -65,11 +65,10 @@ public class TestJavaImportUnicode extends TestCase {
         super(str);
     }
 
-    /*
-     * @see junit.framework.TestCase#setUp()
-     */
+    @Override
     protected void setUp() throws Exception {
-        importFixture = new ImportFixture(PARSERINPUT, "TestClass.java");
+        super.setUp();
+        importFixture = new JavaImportFixture(PARSERINPUT, "TestClass.java");
         importFixture.setUp();
         parsedModel = importFixture.getParsedModel();
     }

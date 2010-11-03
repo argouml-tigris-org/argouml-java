@@ -42,22 +42,15 @@ package org.argouml.language.java.reveng;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.DataInputStream;
-import java.io.File;
 import java.io.FileInputStream;
 import java.net.URL;
 import java.util.Iterator;
 
 import junit.framework.TestCase;
 
-import org.argouml.Helper;
-import org.argouml.kernel.Project;
-import org.argouml.kernel.ProjectManager;
 import org.argouml.language.java.reveng.classfile.ClassfileParser;
-import org.argouml.language.java.reveng.classfile.ClassfileTreeParser;
 import org.argouml.language.java.reveng.classfile.SimpleByteLexer;
 import org.argouml.model.Model;
-import org.argouml.profile.Profile;
-import org.argouml.profile.init.InitProfileSubsystem;
 
 import antlr.ASTFactory;
 import antlr.CommonAST;
@@ -68,14 +61,8 @@ import antlr.debug.misc.ASTFrame;
  */
 public class TestClassImportGenerics extends TestCase {
 
-    private static Object parsedModel;
-    private static Object parsedPackage;
-    private static Object parsedClass;
-    private static Project project;
-    private static Profile profileJava;
+    private Object parsedModel;
 
-    private static final String TESTED_CLASS_CANONICAL_NAME = 
-        TestedClass.class.getCanonicalName();
     private static String getTestedFilename() {
         ClassLoader classLoader = 
             TestClassImportGenerics.class.getClassLoader();
@@ -85,83 +72,45 @@ public class TestClassImportGenerics extends TestCase {
         String fileName = resource.getFile();
         return fileName;
     }
-    
 
-    public TestClassImportGenerics(String str) {
-        super(str);
-    }
+    private ImportFixture importFixture;
     
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        if (!Model.isInitiated()) {
-            Helper.initializeMDR();
-        }
-        new InitProfileSubsystem().init();
-        project = ProjectManager.getManager().makeEmptyProject();
+        importFixture = new ClassfileImportFixture("", getTestedFilename());
+        importFixture.setUp();
+        parsedModel = importFixture.getParsedModel();
+    }
+
+    @Override
+    protected void tearDown() throws Exception {
+        importFixture.tearDown();
+        super.tearDown();
     }
 
     @SuppressWarnings("unchecked")
-    public void testParsing() {
-        try {
-            String fileName = getTestedFilename();
-
-            File testedClassFile = new File(fileName);
-            File testedClassAbsoluteFile = testedClassFile.getAbsoluteFile();
-            System.out.println("Absolute path of the tested class (\""
-                    + TESTED_CLASS_CANONICAL_NAME + "\") is \""
-                    + testedClassAbsoluteFile.getPath() + "\".");
-            assertTrue("The testedClassAbsoluteFile doesn't exist.",
-                    testedClassAbsoluteFile.exists());
-            SimpleByteLexer lexer = new SimpleByteLexer(new DataInputStream(
-                    new FileInputStream(fileName)));
-            ClassfileParser parser = new ClassfileParser(lexer);
-            parser.classfile();
-            parser.getAST();
-            for (Profile profile : project.getProfileConfiguration().
-                    getProfiles()) {
-                if ("Java".equals(profile.getDisplayName())) {
-                    System.err.println("profile is "
-                            + profile.getDisplayName());
-                    profileJava = profile;
-                }
-            }
-            parsedModel = Model.getModelManagementFactory().createModel();
-            assertNotNull("Creation of model failed.", parsedModel);
-            Modeller modeller = new Modeller(parsedModel, profileJava, true,
-                    true, fileName);
-            assertNotNull("Creation of Modeller instance failed.", modeller);
-            ClassfileTreeParser p = new ClassfileTreeParser();
-            p.classfile(parser.getAST(), modeller);
-
-            if (parsedPackage == null) {
-                parsedPackage = parsedModel;
-                for (String s : "org.argouml.language.java.reveng".split(
-                        "\\.")) {
-                    parsedPackage = Model.getFacade().lookupIn(
-                            parsedPackage, s);
-                }
-                assertNotNull("No package \"org.argouml.language.java.reveng\""
-                        + " found in model.", parsedPackage);
-            }
-            if (parsedClass == null) {
-                parsedClass =
-                        Model.getFacade().lookupIn(parsedPackage,
-                                "TestClassImportGenerics$TestedClass");
-                assertNotNull(
-                    "No class \"TestClassImportGenerics$TestedClass\" found.",
-                    parsedClass);
-            }
-            Iterator iter = Model.getFacade().getTemplateParameters(
-                    parsedClass).iterator();
-            while (iter.hasNext()) {
-            	String name = Model.getFacade().getName(Model.getFacade()
-            	    .getParameter(iter.next()));
-            	System.err.println("name found:" + name);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail(e.toString());
+    public void testParsing() throws Exception {
+        Object parsedPackage = parsedModel;
+        for (String s : "org.argouml.language.java.reveng".split("\\.")) {
+            parsedPackage = Model.getFacade().lookupIn(
+                    parsedPackage, s);
+        }
+        assertNotNull("No package \"org.argouml.language.java.reveng\""
+                + " found in model.", parsedPackage);
+        Object parsedClass = Model.getFacade().lookupIn(parsedPackage,
+                "TestClassImportGenerics$TestedClass");
+        assertNotNull(
+                "No class \"TestClassImportGenerics$TestedClass\" found.",
+                parsedClass);
+        Iterator iter = Model.getFacade().getTemplateParameters(
+                parsedClass).iterator();
+        // FIXME: this should assert that the template parameters exist instead
+        // of printing to System.err.
+        while (iter.hasNext()) {
+            String name = Model.getFacade().getName(Model.getFacade()
+                .getParameter(iter.next()));
+            System.err.println("name found:" + name);
         }
     }
     
