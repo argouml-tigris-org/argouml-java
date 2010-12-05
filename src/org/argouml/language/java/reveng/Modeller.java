@@ -75,7 +75,6 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 import org.argouml.application.api.Argo;
-import org.argouml.kernel.Project;
 import org.argouml.kernel.ProjectManager;
 import org.argouml.language.java.reveng.classfile.ParserUtils;
 import org.argouml.model.CoreFactory;
@@ -497,9 +496,7 @@ public class Modeller {
             // TODO: support for stereotypes in eUML
             Model.getCoreHelper().addStereotype(pkgImport,
                     getUML1Stereotype("javaImport"));
-            for (Project p : ProjectManager.getManager().getOpenProjects()) {
-                p.updateRoots();
-            }
+            ProjectManager.getManager().updateRoots();
         }
         String newName = makeDependencyName(srcFile, element);
         Model.getCoreHelper().setName(pkgImport, newName);
@@ -769,9 +766,7 @@ public class Modeller {
                                                               // for now
             Model.getCoreHelper().addStereotype(mEnum,
                     getUML1Stereotype("enumeration"));
-            for (Project p : ProjectManager.getManager().getOpenProjects()) {
-                p.updateRoots();
-            }
+            ProjectManager.getManager().updateRoots();
         } else {
             // TODO: always use UML Enumerations, like this:
             mEnum = Model.getCoreFactory().createEnumeration();
@@ -881,9 +876,7 @@ public class Modeller {
                         .setNamespace(mAbstraction, currentPackage);
                     Model.getCoreHelper().addStereotype(mAbstraction,
                         getUML1Stereotype(CoreFactory.REALIZE_STEREOTYPE));
-                    for (Project p : ProjectManager.getManager().getOpenProjects()) {
-                        p.updateRoots();
-                    }
+                    ProjectManager.getManager().updateRoots();
                 }
                 newElements.add(mAbstraction);
             }
@@ -1182,9 +1175,7 @@ public class Modeller {
             // Constructor
             Model.getCoreHelper().addStereotype(mOperation,
                     getStereotype(mOperation, "create", "BehavioralFeature"));
-            for (Project p : ProjectManager.getManager().getOpenProjects()) {
-                p.updateRoots();
-            }
+            ProjectManager.getManager().updateRoots();
         } else {
             try {
                 mClassifier =
@@ -2244,9 +2235,7 @@ public class Modeller {
                         Model.getCoreHelper().addStereotype(modelElement,
                                 getUML1Stereotype(st.nextToken().trim()));
                     }
-                    for (Project p : ProjectManager.getManager().getOpenProjects()) {
-                        p.updateRoots();
-                    }
+                    ProjectManager.getManager().updateRoots();
                 }
                 Model.getUmlFactory().delete(tv);
             }
