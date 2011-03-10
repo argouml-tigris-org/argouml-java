@@ -1495,6 +1495,9 @@ public class GeneratorJava implements CodeGenerator, ModuleInterface {
         if (Model.getFacade().isStatic(ae)) {
             sb.append("static ");
         }
+        if (Model.getFacade().isFrozen(ae)) {
+            sb.append("final ");
+        }
         //     String n = ae.getName();
         //     if (n != null && !String.UNSPEC.equals(n))
 	//         s += generateName(n) + " ";
