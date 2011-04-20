@@ -87,8 +87,8 @@ import org.argouml.uml.diagram.DiagramFactory;
 import org.argouml.uml.diagram.DiagramFactory.DiagramType;
 import org.argouml.uml.ui.ActionDeleteModelElements;
 import org.argouml.util.ArgoDialog;
-import org.tigris.gef.graph.MutableGraphModel;
-import org.tigris.gef.presentation.Fig;
+//import org.tigris.gef.graph.MutableGraphModel;
+//import org.tigris.gef.presentation.Fig;
 
 /**
  * The dialog that starts the reverse engineering of operations.<p>
@@ -128,7 +128,7 @@ public class RESequenceDiagramDialog
     private final Object operation;
 
     // TODO: Need to remove knowledge of GEF.
-    private final Fig figClassifierRole;
+    //private final Fig figClassifierRole;
 
     private final List<String> calls = new ArrayList<String>();
     private final List<String> calldata = new ArrayList<String>();
@@ -212,6 +212,7 @@ public class RESequenceDiagramDialog
         if (figMessage != null) {
             diagram = aDiagram;
             isNewSequenceDiagram = false;
+            /*
             figClassifierRole = getFigClassifierRole(classifier, "obj");
             // TODO: There is only a single port on new implementation of SD
             // so how do we resolve this?
@@ -247,11 +248,12 @@ public class RESequenceDiagramDialog
 //                    }
                 }
             }
+            */
         } else {
             isNewSequenceDiagram = true;
             this.diagram = buildSequenceDiagram(classifier);
-            figClassifierRole = getFigClassifierRole(classifier, "obj");
-            maxXPos = figClassifierRole.getX();
+            //figClassifierRole = getFigClassifierRole(classifier, "obj");
+            //maxXPos = figClassifierRole.getX();
         }
         parseBody();
 
@@ -268,10 +270,12 @@ public class RESequenceDiagramDialog
         if (e.getSource() == getOkButton()) {
             for (int i = 0; i < callTable.getRowCount(); i++) {
                 if (Boolean.TRUE.equals(callTable.getValueAt(i, 1))) {
+                    /*
                     buildAction(
                             (String) callTable.getValueAt(i, 0),
                             figClassifierRole,
                             figClassifierRole);
+                    */
                 }
             }
         } else if (e.getSource() == getCancelButton()
@@ -315,10 +319,10 @@ public class RESequenceDiagramDialog
      */
     private Object getNewTarget(Object target) {
         Object newTarget = null;
-        if (target instanceof Fig) {
+        //if (target instanceof Fig) {
             // TODO: common method for getting the model element of a fig
-            target = ((Fig) target).getOwner();
-        }
+            //target = ((Fig) target).getOwner();
+        //}
         if (Model.getFacade().isAModelElement(target)
                 && Model.getFacade().getNamespace(target) != null) {
             newTarget = Model.getFacade().getNamespace(target);
@@ -536,6 +540,7 @@ public class RESequenceDiagramDialog
      * TODO: Hide this method elsewhere and use it in the implementation of a
      * to be defined method (see usage of this method in this class)
      */
+    /*
     private Fig getFigClassifierRole(
             Object theClassifier,
             String objName) {
@@ -599,6 +604,7 @@ public class RESequenceDiagramDialog
         }
         return crFig;
     }
+    */
 
     /**
      * Parses a body of the actual operation.
@@ -665,6 +671,7 @@ public class RESequenceDiagramDialog
      * classifier role (if not existing).
      * TODO: Put a similar method in a to be defined interface.
      */
+    /*
     private void buildAction(
             String call,
             Fig startFig,
@@ -720,6 +727,7 @@ public class RESequenceDiagramDialog
             // }
         }
     }
+    */
 
     /**
      * Builds the edge figure for an action.<p>
@@ -730,6 +738,7 @@ public class RESequenceDiagramDialog
      * above can then find the Figs itself without such diagram knowledge being
      * in RE.
      */
+    /*
     private void buildEdge(
             String call,
             Fig startFig,
@@ -778,6 +787,7 @@ public class RESequenceDiagramDialog
 //            }
 //        }
     }
+    */
 
     /**
      * Gets or builds a classifier role from a type. The type is a classifier

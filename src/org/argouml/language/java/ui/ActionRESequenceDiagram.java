@@ -51,8 +51,8 @@ import org.argouml.model.Model;
 import org.argouml.ui.targetmanager.TargetManager;
 import org.argouml.uml.diagram.ArgoDiagram;
 import org.argouml.uml.diagram.DiagramElement;
-import org.tigris.gef.base.Globals;
-import org.tigris.gef.graph.GraphModel;
+//import org.tigris.gef.base.Globals;
+//import org.tigris.gef.graph.GraphModel;
 
 /**
  * Action to reverse engineer a sequence diagram from the operation bodies.
@@ -98,15 +98,15 @@ public class ActionRESequenceDiagram extends AbstractAction {
             dialog.setVisible(true);
         } else if (Model.getFacade().isAMessage(target) && messageFig != null) {
             final Object action = Model.getFacade().getAction(target);
-            final GraphModel sequenceDiagramGraphModel =
-                 Globals.curEditor().getGraphModel();
+            //final GraphModel sequenceDiagramGraphModel =
+            //     Globals.curEditor().getGraphModel();
             ArgoDiagram diagram = null;
             Iterator<ArgoDiagram> iter = project.getDiagramList().iterator();
             while (iter.hasNext()) {
                 diagram = iter.next();
-                if (sequenceDiagramGraphModel == diagram.getGraphModel()) {
-                    break;
-                }
+                //if (sequenceDiagramGraphModel == diagram.getGraphModel()) {
+                //    break;
+                //}
             }
             if (Model.getFacade().isACallAction(action)) {
                 final Object operation = Model.getFacade().getOperation(action);
