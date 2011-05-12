@@ -7,7 +7,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    thn
+ *    Thomas Neustupny
  *****************************************************************************
  *
  * Some portions of this file was previously release using the BSD License:
@@ -102,7 +102,13 @@ class OuterClassifierContext extends Context {
     public Object get(String name, boolean interfacesOnly, Profile profile)
         throws ClassifierNotFoundException {
         // Search in classifier
-        Object iClassifier = Model.getFacade().lookupIn(mClassifier, name);
+        Object iClassifier = null;
+        for (Object c : Model.getCoreHelper().getAllClassifiers(mClassifier)) {
+            if (name.equals(Model.getFacade().getName(c))) {
+                iClassifier = c;
+                break;
+            }
+        }
 
         if (iClassifier == null
                 || Model.getFacade().isAOperation(iClassifier)) {

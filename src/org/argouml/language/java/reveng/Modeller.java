@@ -1568,6 +1568,29 @@ public class Modeller {
     }
 
     /**
+     * Find a class in a package. If it does not exist, a new class is
+     * created.
+     * 
+     * @param mPackage Look in this package.
+     * @param name The name of the class.
+     * @return The class found or created.
+     */
+    private Object getClass(Object mPackage, String name) {
+        Object mClass = null;
+        for (Object c : Model.getCoreHelper().getAllClasses(mPackage)) {
+            if (name.equals(Model.getFacade().getName(c))) {
+                mClass = c;
+                break;
+            }
+        }
+        if (mClass == null) {
+            mClass = Model.getCoreFactory().buildClass(name, mPackage);
+            newElements.add(mClass);
+        }
+        return mClass;
+    }
+
+    /**
      * Find a package in the project. If it does not exist, a new package is
      * created in the user model.
      * 
@@ -1966,18 +1989,30 @@ public class Modeller {
     /**
      * Get the context for a classifier name that may or may not be fully
      * qualified. The context contains either the user model, or a package
-     * inside the user model, or a package in the Java profile.
+     * or class inside the user model, or a package or class in the Java
+     * profile.
      * 
      * @param name the classifier name
      * @return the context
      */
     private Context getContext(String name) {
         Context context = parseState.getContext();
-        // TODO: the context need not be a package, so here is a bug!
         String packageName = getPackageName(name);
+        Object pkg = model;
         if (!"".equals(packageName)) {
-            context =
-                new PackageContext(context, getPackage(packageName, true));
+            pkg = getPackage(packageName, true);
+        }
+        String classifierName = name.substring(packageName.length());
+        if (classifierName.charAt(0) == '.') {
+            classifierName = classifierName.substring(1);
+        }
+        int lastDot = classifierName.lastIndexOf('.');
+        if (lastDot != -1) {
+            String clsName = classifierName.substring(0, lastDot);
+            Object cls = getClass(pkg, clsName);
+            context = new OuterClassifierContext(context.getContext(), cls, pkg, clsName + '$');
+        } else if (!"".equals(packageName)) {
+            context = new PackageContext(context, pkg);
         }
         return context;
     }
