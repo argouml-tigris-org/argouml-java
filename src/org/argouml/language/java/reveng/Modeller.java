@@ -1896,6 +1896,10 @@ public class Modeller {
      * @return The package name.
      */
     private String getPackageName(String name) {
+        if (name.endsWith("...")) {
+            // handle vararg
+            name = name.substring(0, name.length() - 3);
+        }
         int lastDot = name.lastIndexOf('.');
         if (lastDot == -1) {
             return "";
@@ -1944,6 +1948,10 @@ public class Modeller {
      * @return The classifier name.
      */
     private String getClassifierName(String name) {
+        if (name.endsWith("...")) {
+            // handle vararg
+            name = name.substring(0, name.length() - 3);
+        }
         int lastDot = name.lastIndexOf('.');
         if (lastDot == -1) {
             return name;
@@ -2005,6 +2013,10 @@ public class Modeller {
         String classifierName = name.substring(packageName.length());
         if (classifierName.charAt(0) == '.') {
             classifierName = classifierName.substring(1);
+        }
+        if (classifierName.endsWith("...")) {
+            // handle vararg
+            classifierName = classifierName.substring(0, classifierName.length() - 3);
         }
         int lastDot = classifierName.lastIndexOf('.');
         if (lastDot != -1) {
