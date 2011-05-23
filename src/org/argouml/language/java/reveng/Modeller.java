@@ -1896,10 +1896,7 @@ public class Modeller {
      * @return The package name.
      */
     private String getPackageName(String name) {
-        if (name.endsWith("...")) {
-            // handle vararg
-            name = name.substring(0, name.length() - 3);
-        }
+        name = stripVarargAndGenerics(name);
         int lastDot = name.lastIndexOf('.');
         if (lastDot == -1) {
             return "";
@@ -1948,10 +1945,7 @@ public class Modeller {
      * @return The classifier name.
      */
     private String getClassifierName(String name) {
-        if (name.endsWith("...")) {
-            // handle vararg
-            name = name.substring(0, name.length() - 3);
-        }
+        name = stripVarargAndGenerics(name);
         int lastDot = name.lastIndexOf('.');
         if (lastDot == -1) {
             return name;
@@ -2014,10 +2008,7 @@ public class Modeller {
         if (classifierName.charAt(0) == '.') {
             classifierName = classifierName.substring(1);
         }
-        if (classifierName.endsWith("...")) {
-            // handle vararg
-            classifierName = classifierName.substring(0, classifierName.length() - 3);
-        }
+        classifierName = stripVarargAndGenerics(classifierName);
         int lastDot = classifierName.lastIndexOf('.');
         if (lastDot != -1) {
             String clsName = classifierName.substring(0, lastDot);
@@ -2262,6 +2253,34 @@ public class Modeller {
         } else {
             return s;
         }
+    }
+
+    /*
+     * Remove information that currently is not handled.
+     * TODO: Handle them instead.
+     */
+    private String stripVarargAndGenerics(String name) {
+        if (name != null) {
+            if (name.endsWith("...")) {
+                // handle vararg
+                name = name.substring(0, name.length() - 3);
+            }
+            if (name.endsWith(">")) {
+                // handle generics
+                int i = name.length() - 2;
+                int cnt = 1;
+                while (i >= 0 && cnt > 0) {
+                    if (name.charAt(i) == '<') {
+                        cnt--;
+                    } else if (name.charAt(i) == '>') {
+                        cnt++;
+                    }
+                    i--;
+                }
+                name = name.substring(0, i + 1);
+            }
+        }
+        return name;
     }
 
     /*
