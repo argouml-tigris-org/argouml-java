@@ -7,7 +7,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    thn
+ *    Thomas Neustupny
  *****************************************************************************
  *
  * Some portions of this file was previously release using the BSD License:
@@ -91,6 +91,9 @@ abstract class Context {
      * @return Package name in java format
      */
     protected String getJavaName(Object mPackage) {
+        if (mPackage == null) {
+            return "";
+        }
         Object parent = Model.getFacade().getNamespace(mPackage);
         if (Model.getFacade().isAModel(parent)) {
             return Model.getFacade().getName(mPackage);
