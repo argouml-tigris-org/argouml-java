@@ -413,7 +413,7 @@ public class Modeller {
 
         String packageName = getPackageName(name);
 
-        if (packageName == null) {
+        if (packageName == null || "".equals(packageName)) {
             // TODO: This won't happen and can be removed when there is a
             // real symbol table for name lookup instead of guessing based
             // on parsing "." strings
