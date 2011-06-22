@@ -68,6 +68,7 @@ public class CrMultipleInheritance extends CrUML {
      * @see org.argouml.uml.cognitive.critics.CrUML#predicate2(
      * java.lang.Object, org.argouml.cognitive.Designer)
      */
+    @Override
     public boolean predicate2(Object designMaterial, Designer dsgr) {
 	if (!(Model.getFacade().isAClassifier(designMaterial))) {
 	    return NO_PROBLEM;
@@ -84,6 +85,7 @@ public class CrMultipleInheritance extends CrUML {
      * @see org.argouml.cognitive.critics.Critic#initWizard(
      *         org.argouml.cognitive.ui.Wizard)
      */
+    @Override
     public void initWizard(Wizard w) {
 	if (w instanceof WizCueCards) {
 	    WizCueCards wcc = (WizCueCards) w;
@@ -104,6 +106,7 @@ public class CrMultipleInheritance extends CrUML {
     /*
      * @see org.argouml.cognitive.critics.Critic#getWizardClass(org.argouml.cognitive.ToDoItem)
      */
+    @Override
     public Class getWizardClass(ToDoItem item) {
         return WizCueCards.class;
     }

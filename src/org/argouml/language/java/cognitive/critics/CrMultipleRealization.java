@@ -68,6 +68,7 @@ public class CrMultipleRealization extends CrUML {
      * @see org.argouml.uml.cognitive.critics.CrUML#predicate2(
      * java.lang.Object, org.argouml.cognitive.Designer)
      */
+    @Override
     public boolean predicate2(Object dm, Designer dsgr) {
 	if (!(Model.getFacade().isAInterface(dm))) {
 	    return NO_PROBLEM;
