@@ -7,7 +7,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    thn
+ *    Thomas Neustupny
  *****************************************************************************
  *
  * Some portions of this file was previously release using the BSD License:
@@ -709,6 +709,24 @@ public class GeneratorJava implements CodeGenerator, ModuleInterface {
         return sb.toString();
     }
 
+    private String generateEnumerationLiteral(Object literal, boolean documented, char sep) {
+        if (isFileGeneration) {
+            documented = true; // always "documented" if we generate file.
+        }
+        StringBuffer sb = new StringBuffer(80);
+        if (documented) {
+            String s =
+                generateConstraintEnrichedDocComment(literal, documented, INDENT);
+            if (s != null && s.trim().length() > 0) {
+                sb.append(s).append(INDENT);
+            }
+        }
+        sb.append(generateName(Model.getFacade().getName(literal)));
+        sb.append(sep).append(LINE_SEPARATOR);
+
+        return sb.toString();
+    }
+
     private String generateParameter(Object parameter) {
         StringBuffer sb = new StringBuffer(20);
         //TODO: qualifiers (e.g., const)
@@ -754,6 +772,8 @@ public class GeneratorJava implements CodeGenerator, ModuleInterface {
             sClassifierKeyword = "class";
         } else if (Model.getFacade().isAInterface(cls)) {
             sClassifierKeyword = "interface";
+        } else if (Model.getFacade().isAEnumeration(cls)) {
+            sClassifierKeyword = "enum";
         } else {
             return null; // actors, use cases etc.
         }
@@ -857,7 +877,8 @@ public class GeneratorJava implements CodeGenerator, ModuleInterface {
     private StringBuffer generateClassifierEnd(Object cls) {
         StringBuffer sb = new StringBuffer();
         if (Model.getFacade().isAClass(cls)
-                || Model.getFacade().isAInterface(cls)) {
+                || Model.getFacade().isAInterface(cls)
+                || Model.getFacade().isAEnumeration(cls)) {
             if (verboseDocs) {
                 String classifierkeyword = null;
                 if (Model.getFacade().isAClass(cls)) {
@@ -926,7 +947,8 @@ public class GeneratorJava implements CodeGenerator, ModuleInterface {
     private StringBuffer generateClassifierBody(Object cls) {
         StringBuffer sb = new StringBuffer();
         if (Model.getFacade().isAClass(cls)
-                || Model.getFacade().isAInterface(cls)) {
+                || Model.getFacade().isAInterface(cls)
+                || Model.getFacade().isAEnumeration(cls)) {
             String tv = null; // helper for tagged values
 
             // add attributes
@@ -954,6 +976,38 @@ public class GeneratorJava implements CodeGenerator, ModuleInterface {
                         sb.append(INDENT).append(tv);
                     }
 		    first = false;
+                }
+            }
+
+            // add literals
+            if (Model.getFacade().isAEnumeration(cls)) {
+                Collection literals = Model.getFacade().getEnumerationLiterals(cls);
+
+                if (!literals.isEmpty()) {
+                    sb.append(LINE_SEPARATOR);
+                    if (verboseDocs) {
+                        sb.append(INDENT).append("// Literals");
+                        sb.append(LINE_SEPARATOR);
+                    }
+
+                    boolean first = true;
+                    int size = literals.size();
+                    int cnt = 0;
+                    for (Object literal : literals) {
+                        cnt++;
+                        if (!first) {
+                            sb.append(LINE_SEPARATOR);
+                        }
+                        sb.append(INDENT);
+                        char sep = cnt != size ? ',' : ';';
+                        sb.append(generateEnumerationLiteral(literal, false, sep));
+
+                        tv = generateTaggedValues(literal);
+                        if (tv != null && tv.length() > 0) {
+                            sb.append(INDENT).append(tv);
+                        }
+                        first = false;
+                    }
                 }
             }
 
