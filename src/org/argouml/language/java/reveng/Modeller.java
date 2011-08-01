@@ -9,6 +9,7 @@
  * Contributors:
  *    Thomas Neustupny
  *    Alexander Lepekhine
+ *    Laurent Braud
  *****************************************************************************
  *
  * Some portions of this file was previously release using the BSD License:
@@ -2247,6 +2248,9 @@ public class Modeller {
      */
     private String removeTrailingSlash(String s) {
         if (s.endsWith("\n/")) {
+            return s.substring(0, s.length() - 2);
+        } else if (s.endsWith("*/")) {
+            // need if end comment in the same line than comment
             return s.substring(0, s.length() - 2);
         } else if (s.endsWith("/")) {
             return s.substring(0, s.length() - 1);
