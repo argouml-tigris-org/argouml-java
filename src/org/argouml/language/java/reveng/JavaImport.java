@@ -107,8 +107,9 @@ public class JavaImport implements ImportInterface {
         javaProfile = getJavaProfile(p);
 
         try {
-            if (settings.getImportLevel() == ImportSettings.DETAIL_CLASSIFIER_FEATURE
-                    || settings.getImportLevel() == ImportSettings.DETAIL_FULL) {
+            if ((settings.getImportLevel() 
+                    == ImportSettings.DETAIL_CLASSIFIER_FEATURE)
+                || settings.getImportLevel() == ImportSettings.DETAIL_FULL) {
                 monitor.setMaximumProgress(files.size() * 2);
                 doImportPass(p, files, settings, monitor, 0, 0);
                 if (!monitor.isCanceled()) {

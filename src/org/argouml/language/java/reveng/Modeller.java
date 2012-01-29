@@ -2014,7 +2014,10 @@ public class Modeller {
         if (lastDot != -1) {
             String clsName = classifierName.substring(0, lastDot);
             Object cls = getClass(pkg, clsName);
-            context = new OuterClassifierContext(context.getContext(), cls, pkg, clsName + '$');
+            context = 
+                new OuterClassifierContext(
+                        context.getContext(), cls, pkg, 
+                        clsName + '$');
         } else if (!"".equals(packageName)) {
             context = new PackageContext(context, pkg);
         }

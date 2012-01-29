@@ -79,7 +79,6 @@ import org.argouml.language.java.reveng.Modeller;
 import org.argouml.model.Model;
 import org.argouml.profile.Profile;
 import org.argouml.ui.CheckboxTableModel;
-import org.argouml.ui.explorer.ExplorerEventAdaptor;
 import org.argouml.ui.targetmanager.TargetManager;
 import org.argouml.uml.diagram.ArgoDiagram;
 import org.argouml.uml.diagram.DiagramElement;

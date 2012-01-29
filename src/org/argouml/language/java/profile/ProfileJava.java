@@ -64,13 +64,17 @@ import org.argouml.profile.ResourceModelLoader;
  */
 public class ProfileJava extends Profile implements ModuleInterface {
 
-    private static final String UML1_PROFILE_FILE = "/org/argouml/language/java/profile/default-java.xmi";
+    private static final String UML1_PROFILE_FILE =
+        "/org/argouml/language/java/profile/default-java.xmi";
 
-    private static final String UML2_PROFILE_FILE = "/org/argouml/language/java/profile/java-profile-uml2.xmi";
+    private static final String UML2_PROFILE_FILE =
+        "/org/argouml/language/java/profile/java-profile-uml2.xmi";
 
-    private static final String UML1_PROFILE_URL = "http://argouml.org/profiles/uml14/default-java.xmi";
+    private static final String UML1_PROFILE_URL =
+        "http://argouml.org/profiles/uml14/default-java.xmi";
 
-    private static final String UML2_PROFILE_URL = "http://argouml.org/profiles/uml2/java-profile-uml2.xmi";
+    private static final String UML2_PROFILE_URL =
+        "http://argouml.org/profiles/uml2/java-profile-uml2.xmi";
 
     private static final Logger LOG = Logger.getLogger(ProfileJava.class);
 

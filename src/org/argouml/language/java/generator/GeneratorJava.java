@@ -331,10 +331,6 @@ public class GeneratorJava implements CodeGenerator, ModuleInterface {
             return generateName(Model.getFacade().getName(o));
         }
 
-        if (o == null) {
-            return "";
-        }
-
         return o.toString();
     }
 
@@ -346,8 +342,8 @@ public class GeneratorJava implements CodeGenerator, ModuleInterface {
         Object ns = Model.getFacade().getNamespace(cls);
         if (ns != null) {
             for (Object oe : Model.getFacade().getOwnedElements(ns)) {
-                if (Model.getFacade().getUmlVersion().charAt(0) == '1' &&
-                        Model.getFacade().isAComponent(oe)) {
+                if (Model.getFacade().getUmlVersion().charAt(0) == '1' 
+                    && Model.getFacade().isAComponent(oe)) {
                     for (Object re
                         : Model.getFacade().getResidentElements(oe)) {
                         Object r = Model.getFacade().getResident(re);
@@ -709,14 +705,18 @@ public class GeneratorJava implements CodeGenerator, ModuleInterface {
         return sb.toString();
     }
 
-    private String generateEnumerationLiteral(Object literal, boolean documented, char sep) {
+    private String generateEnumerationLiteral(
+            Object literal, 
+            boolean documented, 
+            char sep) {
         if (isFileGeneration) {
             documented = true; // always "documented" if we generate file.
         }
         StringBuffer sb = new StringBuffer(80);
         if (documented) {
             String s =
-                generateConstraintEnrichedDocComment(literal, documented, INDENT);
+                generateConstraintEnrichedDocComment(
+                        literal, documented, INDENT);
             if (s != null && s.trim().length() > 0) {
                 sb.append(s).append(INDENT);
             }
@@ -831,10 +831,10 @@ public class GeneratorJava implements CodeGenerator, ModuleInterface {
 	    Object param = Model.getFacade().getParameter(
 	            templateParameters.get(i));
 	    sb.append(Model.getFacade().getName(param));
-	    for (String bound : new String[]{"extends","super"}) {
+	    for (String bound : new String[]{"extends", "super"}) {
 	        Object s = Model.getFacade().getTaggedValueValue(param, bound);
 	        if (s != null && s.toString().trim().length() > 0) {
-	            sb.append(" "+bound+" "+s);
+	            sb.append(" " + bound + " " + s);
 	        }
 	    }
 	    if (i ==  templateParameters.size() - 1 ) {
@@ -891,7 +891,7 @@ public class GeneratorJava implements CodeGenerator, ModuleInterface {
 		sb.append(" ").append(Model.getFacade().getName(cls));
 		sb.append(LINE_SEPARATOR);
             }
-    		sb.append(LINE_SEPARATOR);
+    	    sb.append(LINE_SEPARATOR);
             sb.append("}");
         }
         return sb;
@@ -979,59 +979,13 @@ public class GeneratorJava implements CodeGenerator, ModuleInterface {
                 }
             }
 
-            // add literals
             if (Model.getFacade().isAEnumeration(cls)) {
-                Collection literals = Model.getFacade().getEnumerationLiterals(cls);
-
-                if (!literals.isEmpty()) {
-                    sb.append(LINE_SEPARATOR);
-                    if (verboseDocs) {
-                        sb.append(INDENT).append("// Literals");
-                        sb.append(LINE_SEPARATOR);
-                    }
-
-                    boolean first = true;
-                    int size = literals.size();
-                    int cnt = 0;
-                    for (Object literal : literals) {
-                        cnt++;
-                        if (!first) {
-                            sb.append(LINE_SEPARATOR);
-                        }
-                        sb.append(INDENT);
-                        char sep = cnt != size ? ',' : ';';
-                        sb.append(generateEnumerationLiteral(literal, false, sep));
-
-                        tv = generateTaggedValues(literal);
-                        if (tv != null && tv.length() > 0) {
-                            sb.append(INDENT).append(tv);
-                        }
-                        first = false;
-                    }
-                }
+                addLiterals(cls, sb);
             }
 
-            // add attributes implementing associations
             Collection ends = Model.getFacade().getAssociationEnds(cls);
             if (!ends.isEmpty()) {
-                sb.append(LINE_SEPARATOR);
-                if (verboseDocs && Model.getFacade().isAClass(cls)) {
-                    sb.append(INDENT).append("// Associations");
-		    sb.append(LINE_SEPARATOR);
-                }
-
-                for (Object associationEnd : ends) {
-                    Object association =
-			Model.getFacade().getAssociation(associationEnd);
-
-                    sb.append(generateAssociationFrom(association,
-						      associationEnd));
-
-                    tv = generateTaggedValues(association);
-                    if (tv != null && tv.length() > 0) {
-                        sb.append(INDENT).append(tv);
-                    }
-                }
+                addAttributesImplementingAssociations(cls, sb, ends);
             }
 
             // Inner classes
@@ -1050,56 +1004,122 @@ public class GeneratorJava implements CodeGenerator, ModuleInterface {
             Collection bFeatures = Model.getFacade().getOperations(cls);
 
             if (!bFeatures.isEmpty()) {
-                sb.append(LINE_SEPARATOR);
-                if (verboseDocs) {
-                    sb.append(INDENT).append("// Operations");
-		    sb.append(LINE_SEPARATOR);
-                }
-
-		boolean first = true;
-		for (Object behavioralFeature : bFeatures) {
-
-		    if (!first) {
-                        sb.append(LINE_SEPARATOR);
-                    }
-		    sb.append(INDENT);
-                    sb.append(generateOperation(behavioralFeature, false));
-
-                    tv = generateTaggedValues(behavioralFeature);
-
-                    if ((Model.getFacade().isAClass(cls))
-                            && (Model.getFacade()
-                                    .isAOperation(behavioralFeature))
-                            && (!Model.getFacade()
-                                    .isAbstract(behavioralFeature))) {
-                        if (lfBeforeCurly) {
-                            sb.append(LINE_SEPARATOR).append(INDENT);
-                        } else {
-                            sb.append(' ');
-                        }
-                        sb.append('{');
-
-                        if (tv.length() > 0) {
-                            sb.append(LINE_SEPARATOR).append(INDENT).append(tv);
-                        }
-
-                        // there is no ReturnType in behavioral feature (UML)
-                        sb.append(LINE_SEPARATOR);
-			sb.append(generateMethodBody(behavioralFeature));
-			sb.append(INDENT);
-			sb.append("}").append(LINE_SEPARATOR);
-                    } else {
-                        sb.append(";").append(LINE_SEPARATOR);
-                        if (tv.length() > 0) {
-                            sb.append(INDENT).append(tv).append(LINE_SEPARATOR);
-                        }
-                    }
-
-		    first = false;
-                }
+                addOperations(cls, sb, bFeatures);
             }
         }
         return sb;
+    }
+
+    private void addOperations(
+            Object cls, 
+            StringBuffer sb, 
+            Collection bFeatures) {
+        String tv;
+        sb.append(LINE_SEPARATOR);
+        if (verboseDocs) {
+            sb.append(INDENT).append("// Operations");
+            sb.append(LINE_SEPARATOR);
+        }
+
+        boolean first = true;
+        for (Object behavioralFeature : bFeatures) {
+
+            if (!first) {
+                sb.append(LINE_SEPARATOR);
+            }
+            sb.append(INDENT);
+            sb.append(generateOperation(behavioralFeature, false));
+
+            tv = generateTaggedValues(behavioralFeature);
+
+            if ((Model.getFacade().isAClass(cls))
+                    && (Model.getFacade()
+                            .isAOperation(behavioralFeature))
+                    && (!Model.getFacade()
+                            .isAbstract(behavioralFeature))) {
+                if (lfBeforeCurly) {
+                    sb.append(LINE_SEPARATOR).append(INDENT);
+                } else {
+                    sb.append(' ');
+                }
+                sb.append('{');
+
+                if (tv.length() > 0) {
+                    sb.append(LINE_SEPARATOR).append(INDENT).append(tv);
+                }
+
+                // there is no ReturnType in behavioral feature (UML)
+                sb.append(LINE_SEPARATOR);
+                sb.append(generateMethodBody(behavioralFeature));
+                sb.append(INDENT);
+                sb.append("}").append(LINE_SEPARATOR);
+            } else {
+                sb.append(";").append(LINE_SEPARATOR);
+                if (tv.length() > 0) {
+                    sb.append(INDENT).append(tv).append(LINE_SEPARATOR);
+                }
+            }
+
+            first = false;
+        }
+    }
+
+    private void addAttributesImplementingAssociations(Object cls,
+            StringBuffer sb, Collection ends) {
+        String tv;
+        sb.append(LINE_SEPARATOR);
+        if (verboseDocs && Model.getFacade().isAClass(cls)) {
+            sb.append(INDENT).append("// Associations");
+            sb.append(LINE_SEPARATOR);
+        }
+
+        for (Object associationEnd : ends) {
+            Object association =
+                Model.getFacade().getAssociation(associationEnd);
+
+            sb.append(generateAssociationFrom(association,
+        		      associationEnd));
+
+            tv = generateTaggedValues(association);
+            if (tv != null && tv.length() > 0) {
+                sb.append(INDENT).append(tv);
+            }
+        }
+    }
+
+    private void addLiterals(Object cls, StringBuffer sb) {
+        String tv;
+        Collection literals = 
+            Model.getFacade().getEnumerationLiterals(cls);
+
+        if (!literals.isEmpty()) {
+            sb.append(LINE_SEPARATOR);
+            if (verboseDocs) {
+                sb.append(INDENT).append("// Literals");
+                sb.append(LINE_SEPARATOR);
+            }
+
+            boolean first = true;
+            int size = literals.size();
+            int cnt = 0;
+            for (Object literal : literals) {
+                cnt++;
+                if (!first) {
+                    sb.append(LINE_SEPARATOR);
+                }
+                sb.append(INDENT);
+                char sep = cnt != size ? ',' : ';';
+                sb.append(
+                        generateEnumerationLiteral(
+                                literal, false, sep));
+
+                tv = generateTaggedValues(literal);
+                if (tv != null && tv.length() > 0) {
+                    sb.append(INDENT).append(tv);
+                }
+                first = false;
+            }
+        }
     }
 
     /*
@@ -1743,6 +1763,7 @@ public class GeneratorJava implements CodeGenerator, ModuleInterface {
         return Model.getFacade().getName(m);
     }
 
+    /*
     private String generateSubmachine(Object m) {
         Object c = Model.getFacade().getSubmachine(m);
         if (c == null) {
@@ -1765,7 +1786,6 @@ public class GeneratorJava implements CodeGenerator, ModuleInterface {
         return Model.getFacade().getName(c);
     }
 
-    /*
     private String generateStateBody(Object m) {
         LOG.info("GeneratorJava: generating state body");
         StringBuffer sb = new StringBuffer(80);
