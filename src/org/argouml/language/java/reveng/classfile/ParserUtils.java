@@ -1,6 +1,6 @@
 /* $Id$
  *****************************************************************************
- * Copyright (c) 2009 Contributors - see below
+ * Copyright (c) 2009-2012 Contributors - see below
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -45,26 +45,6 @@ import java.util.regex.Pattern;
  * Contains methods used in Classfile.g to parse descriptors and signatures.
  * 
  * @author Alexander Lepekhin
- */
-/**
- *
- * @author Linus
- */
-/**
- *
- * @author Linus
- */
-/**
- *
- * @author Linus
- */
-/**
- *
- * @author Linus
- */
-/**
- *
- * @author Linus
  */
 public class ParserUtils {
 
@@ -411,7 +391,8 @@ public class ParserUtils {
             if (m.matches()) {
                 result.add(new Token(Token.ARRAY_BRACKET, "[]"));
                 desc = desc.substring(1);
-                parse();
+                result.addAll(parse());
+                return result;
             }
             // Base type?
             m = Pattern.compile("^(B|C|D|F|I|J|S|Z)((.*))").matcher(desc);
