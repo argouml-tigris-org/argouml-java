@@ -453,10 +453,10 @@ public class TestJavaImportClass extends TestCase {
     private static Object operationForgetString;
 
     private static final String JAVADOC1 =
-        " A Javadoc comment *";
+        " A Javadoc comment ";
 
     private static final String JAVADOC2 =
-        " Another Javadoc comment *";
+        " Another Javadoc comment ";
 
     private static final String BODY1 =
         "\n        if (arg instanceof TestClass) testClass = (TestClass)arg;\n";
@@ -475,7 +475,7 @@ public class TestJavaImportClass extends TestCase {
     private static final String PARSERINPUT =
               "package testpackage;\n"
             + "import java.util.Observer;\n"
-            + "/**" + JAVADOC1 + "/\n"
+            + "/**" + JAVADOC1 + "*/\n"
             + "public abstract class TestClass "
             + "extends Object implements Observer {\n"
             + "    private int n = 0;\n"
@@ -487,7 +487,7 @@ public class TestJavaImportClass extends TestCase {
             + "    public void update(java.util.Observable o, Object arg) {"
             + BODY1
             + "    }\n"
-            + "    /**" + JAVADOC2 + "/\n"
+            + "    /**" + JAVADOC2 + "*/\n"
             + "    private static String getString() {"
             + BODY3
             + "    }\n"
