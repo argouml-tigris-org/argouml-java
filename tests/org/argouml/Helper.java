@@ -174,6 +174,11 @@ public class Helper {
                     throw new IOException("Unable to delete file: " + file);
                 }
             } catch (IOException ioe) {
+		if (e != null) {
+		    // There are multiple problems errors.
+		    // Dump out the previous one before forgetting about it.
+		    e.printStackTrace();
+		}
                 e = ioe;
             }
         }
