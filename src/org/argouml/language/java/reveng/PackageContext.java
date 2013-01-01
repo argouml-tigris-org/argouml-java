@@ -1,6 +1,6 @@
 /* $Id$
  *****************************************************************************
- * Copyright (c) 2009 Contributors - see below
+ * Copyright (c) 2009-2013 Contributors - see below
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -38,7 +38,6 @@
 
 package org.argouml.language.java.reveng;
 
-import org.apache.log4j.Logger;
 import org.argouml.model.Facade;
 import org.argouml.model.Model;
 import org.argouml.profile.Profile;
@@ -49,8 +48,6 @@ import org.argouml.profile.Profile;
  * @author Marcus Andersson
  */
 class PackageContext extends Context {
-
-    static final Logger LOG = Logger.getLogger(PackageContext.class);
 
     /** The package this context represents. */
     private Object mPackage;

@@ -75,7 +75,19 @@ public class TestJavaImportEnumeration extends TestCase {
 
     @Override
     protected void tearDown() throws Exception {
+        // These forgetting of the member variables was added in
+        // an attempt to avoid a strange bug in the test
+        // that sometimes appeared and sometimes not.
+        // If this is some kind of race condition between the taking down
+        // of the previous fixture and the creation of the next one, then
+        // forgetting them here will give the taking down more time.
+        parsedModel = null;
+        parsedPackage = null;
+        parsedClass = null;
+
         importFixture.tearDown();
+        importFixture = null;
+
         super.tearDown();
     }
 

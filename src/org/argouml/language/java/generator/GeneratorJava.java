@@ -1,6 +1,6 @@
 /* $Id$
  *****************************************************************************
- * Copyright (c) 2009-2012 Contributors - see below
+ * Copyright (c) 2009-2013 Contributors - see below
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -52,8 +52,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import org.apache.log4j.Logger;
 import org.argouml.application.api.Argo;
 import org.argouml.application.helpers.ResourceLoaderWrapper;
 import org.argouml.configuration.Configuration;
@@ -82,7 +83,8 @@ public class GeneratorJava implements CodeGenerator, ModuleInterface {
     /**
      * Logger.
      */
-    private static final Logger LOG = Logger.getLogger(GeneratorJava.class);
+    private static final Logger LOG =
+        Logger.getLogger(GeneratorJava.class.getName());
 
     private boolean verboseDocs;
 
@@ -161,11 +163,9 @@ public class GeneratorJava implements CodeGenerator, ModuleInterface {
         int lastIndex = -1;
         do {
             File f = new File(sbPath.toString());
-            if (!f.isDirectory()) {
-                if (!f.mkdir()) {
-                    LOG.error(" could not make directory " + path);
-                    return null;
-                }
+            if (!f.isDirectory() && !f.mkdir()) {
+                LOG.severe(" could not make directory " + path);
+                return null;
             }
 
             if (lastIndex == packagePath.length()) {
@@ -208,13 +208,13 @@ public class GeneratorJava implements CodeGenerator, ModuleInterface {
                 fos = new BufferedWriter(
                         new OutputStreamWriter(
                                 new FileOutputStream(f),
-                                Configuration
-                                        .getString(Argo.KEY_INPUT_SOURCE_ENCODING)));
+                                Configuration.getString(
+                                        Argo.KEY_INPUT_SOURCE_ENCODING)));
             }
             fos.write(header);
             fos.write(src);
         } catch (IOException exp) {
-            LOG.error("IO Exception: " + exp + ", for file: " + f.getPath());
+            LOG.severe("IO Exception: " + exp + ", for file: " + f.getPath());
         } finally {
             isFileGeneration = false;
             try {
@@ -222,7 +222,7 @@ public class GeneratorJava implements CodeGenerator, ModuleInterface {
                     fos.close();
                 }
             } catch (IOException exp) {
-                LOG.error("FAILED: " + f.getPath());
+                LOG.severe("FAILED: " + f.getPath());
             }
         }
 
@@ -348,17 +348,17 @@ public class GeneratorJava implements CodeGenerator, ModuleInterface {
             for (Object oe : Model.getFacade().getOwnedElements(ns)) {
                 if (Model.getFacade().getUmlVersion().charAt(0) == '1'
                         && Model.getFacade().isAComponent(oe)) {
-                    for (Object re : Model.getFacade().getResidentElements(oe)) {
+                    for (Object re
+                             : Model.getFacade().getResidentElements(oe)) {
                         Object r = Model.getFacade().getResident(re);
                         if (r.equals(cls)) {
                             return generateArtifactImports(oe);
                         }
                     }
-                } else if (Model.getFacade().isAArtifact(oe)) {
-                    if (Model.getCoreHelper().getUtilizedElements(oe)
-                            .contains(cls)) {
-                        return generateArtifactImports(oe);
-                    }
+                } else if (Model.getFacade().isAArtifact(oe)
+                           && (Model.getCoreHelper().getUtilizedElements(oe)
+                               .contains(cls))) {
+                    return generateArtifactImports(oe);
                 }
             }
         }
@@ -434,7 +434,8 @@ public class GeneratorJava implements CodeGenerator, ModuleInterface {
         }
 
         // check association end types
-        for (Object associationEnd : Model.getFacade().getAssociationEnds(cls)) {
+        for (Object associationEnd
+                 : Model.getFacade().getAssociationEnds(cls)) {
             Object association = Model.getFacade().getAssociation(
                     associationEnd);
             for (Object associationEnd2 : Model.getFacade().getConnections(
@@ -476,7 +477,8 @@ public class GeneratorJava implements CodeGenerator, ModuleInterface {
         for (Object o : Model.getFacade().getClientDependencies(artifact)) {
             boolean isJavaImport = false;
             for (Object stereotype : Model.getFacade().getStereotypes(o)) {
-                if ("javaImport".equals(Model.getFacade().getName(stereotype))) {
+                if ("javaImport".equals(
+                        Model.getFacade().getName(stereotype))) {
                     isJavaImport = true;
                     break;
                 }
@@ -596,7 +598,7 @@ public class GeneratorJava implements CodeGenerator, ModuleInterface {
             rp = returnParams.iterator().next();
         }
         if (returnParams.size() > 1) {
-            LOG.warn("Java generator only handles one return parameter"
+            LOG.warning("Java generator only handles one return parameter"
                     + " - Found " + returnParams.size() + " for "
                     + Model.getFacade().getName(op));
         }
@@ -851,7 +853,7 @@ public class GeneratorJava implements CodeGenerator, ModuleInterface {
             Object param = Model.getFacade().getParameter(
                     templateParameters.get(i));
             sb.append(Model.getFacade().getName(param));
-            for (String bound : new String[] { "extends", "super" }) {
+            for (String bound : new String[] {"extends", "super"}) {
                 Object s = Model.getFacade().getTaggedValueValue(param, bound);
                 if (s != null && s.toString().trim().length() > 0) {
                     sb.append(" " + bound + " " + s);
@@ -875,7 +877,7 @@ public class GeneratorJava implements CodeGenerator, ModuleInterface {
         // UML: realizations!
         if (Model.getFacade().isAClass(cls)) {
             String interfaces = generateSpecification(cls);
-            LOG.debug("Specification: " + interfaces);
+            LOG.fine("Specification: " + interfaces);
             if (!interfaces.equals("")) {
                 sb.append(" ").append("implements ").append(interfaces);
             }
@@ -1046,7 +1048,9 @@ public class GeneratorJava implements CodeGenerator, ModuleInterface {
      * @param sb The StringBuffer to which the operations will be added
      * @param bFeatures a collection of behavioral features
      */
-    private void addOperations(Object cls, StringBuffer sb, Collection bFeatures) {
+    private void addOperations(Object cls,
+                               StringBuffer sb,
+                               Collection bFeatures) {
         String tv;
         sb.append(LINE_SEPARATOR);
         if (verboseDocs) {
@@ -1212,9 +1216,9 @@ public class GeneratorJava implements CodeGenerator, ModuleInterface {
                 rp = returnParams.iterator().next();
             }
             if (returnParams.size() > 1) {
-                LOG.warn("Java generator only handles one return parameter"
-                        + " - Found " + returnParams.size() + " for "
-                        + Model.getFacade().getName(op));
+                LOG.warning("Java generator only handles one return parameter"
+                            + " - Found " + returnParams.size() + " for "
+                            + Model.getFacade().getName(op));
             }
             if (rp != null) {
                 Object returnType = Model.getFacade().getType(rp);
@@ -1442,14 +1446,15 @@ public class GeneratorJava implements CodeGenerator, ModuleInterface {
             documented = true; // always "documented" if we generate file
         }
         // Retrieve any existing doc comment
-        String s = (VERBOSE_DOCS || DocumentationManager.hasDocs(me)) ? DocumentationManager
-                .getDocs(me, indent) : null;
+        String s = (VERBOSE_DOCS || DocumentationManager.hasDocs(me))
+            ? DocumentationManager.getDocs(me, indent)
+            : null;
         StringBuffer sDocComment = new StringBuffer(80);
 
         if (s != null && s.trim().length() > 0) {
             sDocComment.append(s).append(LINE_SEPARATOR);
         }
-        LOG.debug("documented=" + documented);
+        LOG.fine("documented=" + documented);
         if (!documented) {
             return sDocComment.toString();
         }
@@ -1497,9 +1502,7 @@ public class GeneratorJava implements CodeGenerator, ModuleInterface {
             }
 
             /*
-             * @see
-             * tudresden.ocl.parser.analysis.Analysis#caseAConstraintBody(tudresden
-             * .ocl.parser.node.AConstraintBody)
+             * @see tudresden.ocl.parser.analysis.Analysis#caseAConstraintBody(tudresden.ocl.parser.node.AConstraintBody)
              */
             @Override
             public void caseAConstraintBody(AConstraintBody node) {
@@ -1549,7 +1552,9 @@ public class GeneratorJava implements CodeGenerator, ModuleInterface {
                     sDocComment.append(INDENT).append(" *");
                 }
             } catch (IOException ioe) {
-                // Nothing to be done, should not happen anyway ;-)
+                LOG.log(Level.SEVERE,
+                        "Nothing to be done, should not happen",
+                        ioe);
             }
         }
 
@@ -1593,7 +1598,8 @@ public class GeneratorJava implements CodeGenerator, ModuleInterface {
         if (!Model.getFacade().isNavigable(ae)) {
             return "";
         }
-        if (Model.getFacade().isAbstract(Model.getFacade().getAssociation(ae))) {
+        if (Model.getFacade().isAbstract(
+                Model.getFacade().getAssociation(ae))) {
             return "";
         }
         // String s = INDENT + "protected ";
@@ -1660,7 +1666,9 @@ public class GeneratorJava implements CodeGenerator, ModuleInterface {
     }
 
     /**
-     * Generates the code for a specification (usually the classifier references).
+     * Generates the code for a specification
+     * (usually the classifier references).
+     *
      * @param cls  the class object
      * @return  
      */
@@ -1669,7 +1677,7 @@ public class GeneratorJava implements CodeGenerator, ModuleInterface {
         if (realizations == null) {
             return "";
         }
-        LOG.debug("realizations: " + realizations.size());
+        LOG.fine("realizations: " + realizations.size());
         StringBuffer sb = new StringBuffer(80);
         Iterator clsEnum = realizations.iterator();
         while (clsEnum.hasNext()) {
@@ -1789,7 +1797,8 @@ public class GeneratorJava implements CodeGenerator, ModuleInterface {
     /**
      * Generates the changeability for the object
      * @param sf indicates whether the object is read-only i.e. "static final"
-     * @return a String containing the "final" keyword if necessary, an empty string otherwise
+     * @return a String containing the "final" keyword if necessary,
+     *           an empty string otherwise
      */
     private String generateChangability(Object sf) {
         if (Model.getFacade().isReadOnly(sf)) {
@@ -1859,8 +1868,11 @@ public class GeneratorJava implements CodeGenerator, ModuleInterface {
 
         if (m != null) {
             Object script = Model.getFacade().getScript(m);
-            if ((script != null) && (Model.getFacade().getBody(script) != null)) {
+            if ((script != null)
+                && (Model.getFacade().getBody(script) != null)) {
+
                 return Model.getFacade().getBody(script).toString();
+
             }
         }
         return "";
@@ -1953,7 +1965,8 @@ public class GeneratorJava implements CodeGenerator, ModuleInterface {
         if (packagePath == null) {
             return "";
         }
-        while ((namespace = Model.getFacade().getNamespace(namespace)) != null) {
+        while ((namespace = Model.getFacade().getNamespace(namespace))
+               != null) {
             // omit root package name; it's the model's root
             if (Model.getFacade().getNamespace(namespace) != null) {
                 packagePath = Model.getFacade().getName(namespace) + '.'
@@ -2141,7 +2154,7 @@ public class GeneratorJava implements CodeGenerator, ModuleInterface {
      * boolean)
      */
     public Collection generate(Collection elements, boolean deps) {
-        LOG.debug("generate() called");
+        LOG.fine("generate() called");
         File tmpdir = null;
         try {
             tmpdir = TempFileUtils.createTempDir();
@@ -2154,18 +2167,17 @@ public class GeneratorJava implements CodeGenerator, ModuleInterface {
             if (tmpdir != null) {
                 TempFileUtils.deleteDir(tmpdir);
             }
-            LOG.debug("generate() terminated");
+            LOG.fine("generate() terminated");
         }
     }
 
     /*
-     * @see
-     * org.argouml.uml.generator.CodeGenerator#generateFiles(java.util.Collection
-     * , java.lang.String, boolean)
+     * @see org.argouml.uml.generator.CodeGenerator#generateFiles(
+     *         java.util.Collection, java.lang.String, boolean)
      */
     public Collection generateFiles(Collection elements, String path,
             boolean deps) {
-        LOG.debug("generateFiles() called");
+        LOG.fine("generateFiles() called");
         // TODO: 'deps' is ignored here
         for (Object element : elements) {
             generateFile(element, path);
@@ -2174,12 +2186,11 @@ public class GeneratorJava implements CodeGenerator, ModuleInterface {
     }
 
     /*
-     * @see
-     * org.argouml.uml.generator.CodeGenerator#generateFileList(java.util.Collection
-     * , boolean)
+     * @see org.argouml.uml.generator.CodeGenerator#generateFileList(
+     *         java.util.Collection, boolean)
      */
     public Collection generateFileList(Collection elements, boolean deps) {
-        LOG.debug("generateFileList() called");
+        LOG.fine("generateFileList() called");
         // TODO: 'deps' is ignored here
         File tmpdir = null;
         try {

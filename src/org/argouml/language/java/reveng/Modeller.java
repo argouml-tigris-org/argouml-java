@@ -1,6 +1,6 @@
 /* $Id$
  *****************************************************************************
- * Copyright (c) 2009 Contributors - see below
+ * Copyright (c) 2009-2013 Contributors - see below
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -69,12 +69,14 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 import java.util.StringTokenizer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
 import org.argouml.application.api.Argo;
 import org.argouml.kernel.ProjectManager;
 import org.argouml.language.java.reveng.classfile.ParserUtils;
@@ -103,12 +105,13 @@ import org.argouml.uml.reveng.ImportInterface;
  */
 public class Modeller {
 
-    private static final Logger LOG = Logger.getLogger(Modeller.class);
+    private static final Logger LOG =
+        Logger.getLogger(Modeller.class.getName());
 
     private static final String JAVA_PACKAGE = "java.lang";
 
-    private static final List<String> EMPTY_STRING_LIST = Collections
-            .emptyList();
+    private static final List<String> EMPTY_STRING_LIST =
+        Collections.emptyList();
 
     /**
      * Current working model.
@@ -226,7 +229,8 @@ public class Modeller {
         parseStateStack = new Stack<ParseState>();
         fileName = theFileName;
         if (javaProfile == null) {
-            LOG.warn("No Java profile activated for Java source import. Why?");
+            LOG.warning("No Java profile activated for Java source import. "
+                        + "Why?");
         }
     }
 
@@ -418,7 +422,9 @@ public class Modeller {
             // TODO: This won't happen and can be removed when there is a
             // real symbol table for name lookup instead of guessing based
             // on parsing "." strings
-            LOG.warn("Import skipped - unable to get package name for " + name);
+            LOG.log(Level.WARNING,
+                    "Import skipped - unable to get package name for {0}",
+                    name);
             return;
         }
 
@@ -780,9 +786,9 @@ public class Modeller {
                 parseState.outerClassifier();
                 mNamespace = currentPackage;
             }
-            if (LOG.isInfoEnabled()) {
-                LOG.info("Created new enumeration for " + name);
-            }
+
+            LOG.log(Level.INFO, "Created new enumeration for {0}", name);
+
             Model.getCoreHelper().setName(mEnum, name);
             Model.getCoreHelper().setNamespace(mEnum, mNamespace);
             newElements.add(mEnum);
@@ -1015,18 +1021,16 @@ public class Modeller {
 
         if (mClassifier == null) {
             // if the classifier could not be found in the model
-            if (LOG.isInfoEnabled()) {
-                LOG.info("Created new classifier for " + name);
-            }
+            LOG.log(Level.INFO, "Created new classifier for {0}", name);
+
             mClassifier = newClassifier;
             Model.getCoreHelper().setName(mClassifier, name);
             Model.getCoreHelper().setNamespace(mClassifier, mNamespace);
             newElements.add(mClassifier);
         } else {
             // it was found and we delete any existing tagged values.
-            if (LOG.isInfoEnabled()) {
-                LOG.info("Found existing classifier for " + name);
-            }
+            LOG.log(Level.INFO, "Found existing classifier for {0}", name);
+
             // TODO: Rewrite existing elements instead? - tfm
             cleanModelElement(mClassifier);
         }
@@ -1167,7 +1171,6 @@ public class Modeller {
         }
 
         Object mParameter;
-        String typeName;
         Object mClassifier = null;
 
         if (returnType == null
@@ -1213,7 +1216,7 @@ public class Modeller {
         }
 
         for (ParameterDeclaration parameter : parameters) {
-            typeName = parameter.getType();
+            String typeName = parameter.getType();
             // TODO: A type name with a trailing "..." represents
             // a variable length parameter list. It can only be
             // the last parameter and it gets converted to an array
@@ -1228,7 +1231,7 @@ public class Modeller {
                 mClassifier = getContext(typeName).get(
                         getClassifierName(typeName), false, javaProfile);
             } catch (ClassifierNotFoundException e) {
-                if (forceIt && typeName != null && model != null) {
+                if (forceIt && model != null) {
                     LOG.info("Modeller.java: "
                             + "forced creation of unknown classifier "
                             + typeName);
@@ -1316,7 +1319,7 @@ public class Modeller {
      * problem down.
      */
     private void logError(String message, String identifier) {
-        LOG.warn(message + " : " + identifier);
+        LOG.warning(message + " : " + identifier);
     }
 
     /**
@@ -1777,13 +1780,13 @@ public class Modeller {
      * @return The stereotype.
      */
     private Object getUML1Stereotype(String name) {
-        LOG.debug("Trying to find a stereotype of name <<" + name + ">>");
+        LOG.fine("Trying to find a stereotype of name <<" + name + ">>");
         // Is this line really safe wouldn't it just return the first
         // model element of the same name whether or not it is a stereotype
         Object stereotype = Model.getFacade().lookupIn(model, name);
 
         if (stereotype == null) {
-            LOG.debug("Couldn't find so creating it");
+            LOG.fine("Couldn't find so creating it");
             return Model.getExtensionMechanismsFactory().buildStereotype(name,
                     model);
         }
@@ -1791,12 +1794,12 @@ public class Modeller {
         if (!Model.getFacade().isAStereotype(stereotype)) {
             // and so this piece of code may create an existing stereotype
             // in error.
-            LOG.debug("Found something that isn't a stereotype so creating it");
+            LOG.fine("Found something that isn't a stereotype so creating it");
             return Model.getExtensionMechanismsFactory().buildStereotype(name,
                     model);
         }
 
-        LOG.debug("Found it");
+        LOG.fine("Found it");
         return stereotype;
     }
 
@@ -2036,8 +2039,9 @@ public class Modeller {
      */
     private void addJavadocTagContents(Object me, String sTagName,
             String[] sTagData) {
-        if (sTagData.length == 0 || sTagData[0] == null) {
-            LOG.debug("Called addJavadocTagContents with no tag data!");
+        if (sTagData != null 
+            && (sTagData.length == 0 || sTagData[0] == null)) {
+            LOG.fine("Called addJavadocTagContents with no tag data!");
             return;
         }
         int colonPos = (sTagData != null) ? sTagData[0].indexOf(':') : -1;
@@ -2356,11 +2360,15 @@ public class Modeller {
 
     /**
      * Return the collected set of local variable declarations.
+     *
+     * This is read from
+     * {@link org.argouml.language.java.ui.RESequenceDiagramDialog#parseBody()}
+     *
      * 
      * @return hash table containing all local variable declarations.
      */
-    public Hashtable<String, String> getLocalVariableDeclarations() {
-        return localVariables;
+    public Map<String, String> getLocalVariableDeclarations() {
+        return Collections.unmodifiableMap(localVariables);
     }
 
     /**

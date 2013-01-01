@@ -1,6 +1,6 @@
 /* $Id$
  *****************************************************************************
- * Copyright (c) 2009 Contributors - see below
+ * Copyright (c) 2009-2013 Contributors - see below
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -44,8 +44,9 @@
 package org.argouml.language.java.reveng.classfile;
 
 import java.net.MalformedURLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import org.apache.log4j.Logger;
 import org.argouml.model.Model;
 import org.argouml.uml.reveng.ImportClassLoader;
 
@@ -55,9 +56,13 @@ import org.argouml.uml.reveng.ImportClassLoader;
    context can be based on the current context with an
    additional namespace.
 */
+// TODO: This file is similar to the ../Context.java file. The difference
+// seems to be that this file doesn't handle profiles. I hope this is
+// deliberate. /Linus 2013-01-01.
 abstract class Context
 {
-    private static final Logger LOG = Logger.getLogger(Context.class);
+    private static final Logger LOG =
+        Logger.getLogger(Context.class.getName());
 
     /** The parent context. May be null. */
     private Context context;
@@ -146,7 +151,9 @@ abstract class Context
             // most likely a missing dependency on the class path, but could
             // be wrong class file version or something else
             // TODO: Need to make this visible to the user
-            LOG.warn("Linkage error loading found class " + name, e);
+            LOG.log(Level.WARNING,
+                    "Linkage error loading found class " + name,
+                    e);
             // We'll continue the search, but this is probably the one we wanted
             clazz = findClassOnUserClasspath(name, interfacesOnly);
         }
@@ -164,14 +171,16 @@ abstract class Context
             clazz = ImportClassLoader.getInstance().loadClass(name);
         } catch (MalformedURLException e) {
             // TODO: Need to make this visible to the user
-            LOG.warn("Classpath configuration error", e);
+            LOG.log(Level.WARNING, "Classpath configuration error", e);
         } catch (ClassNotFoundException e) {
             return null;
         } catch (LinkageError e) {
             // We found the class, but we couldn't load it for some reason
             // most likely a missing dependency on the class path
             // TODO: Need to make this visible to the user
-            LOG.warn("Linkage error loading found class " + name, e);
+            LOG.log(Level.WARNING,
+                    "Linkage error loading found class " + name,
+                    e);
             return null;
         }
         if (clazz != null && interfacesOnly && !clazz.isInterface()) {

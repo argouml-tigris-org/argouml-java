@@ -1,6 +1,6 @@
 /* $Id$
  *****************************************************************************
- * Copyright (c) 2009 Contributors - see below
+ * Copyright (c) 2009-2013 Contributors - see below
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -50,10 +50,11 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.antlr.runtime.ANTLRReaderStream;
 import org.antlr.runtime.CommonTokenStream;
-import org.apache.log4j.Logger;
 import org.argouml.i18n.Translator;
 import org.argouml.kernel.Project;
 import org.argouml.language.java.JavaModuleGlobals;
@@ -76,8 +77,9 @@ import org.argouml.util.SuffixFilter;
  */
 public class JavaImport implements ImportInterface {
 
-    /** logger */
-    private static final Logger LOG = Logger.getLogger(JavaImport.class);
+    /** Logger. */
+    private static final Logger LOG =
+        Logger.getLogger(JavaImport.class.getName());
 
     /**
      * Java profile model.
@@ -161,10 +163,7 @@ public class JavaImport implements ImportInterface {
                     new Object[] { 
                         file.getAbsolutePath() 
                     }));
-
         }
-
-        return;
     }
 
     /**
@@ -232,7 +231,9 @@ public class JavaImport implements ImportInterface {
                 parser.compilationUnit(modeller, lexer);
             } catch (Exception e) {
                 String errorString = buildErrorString(f);
-                LOG.error(e.getClass().getName() + errorString, e);
+                LOG.log(Level.SEVERE, 
+                        e.getClass().getName() + errorString,
+                        e);
                 throw new ImportException(errorString, e);
             } finally {
                 newElements.addAll(modeller.getNewElements());
@@ -249,6 +250,9 @@ public class JavaImport implements ImportInterface {
             path = f.getCanonicalPath();
         } catch (IOException e) {
             // Just ignore - we'll use the simple file name
+            LOG.log(Level.FINEST,
+                    "Cannot get the Canonical Path, using name without path",
+                    e);
         }
         return "Exception in file: " + path + " " + f.getName();
     }
@@ -328,7 +332,7 @@ public class JavaImport implements ImportInterface {
             try {
                 urls[i++] = new File(path).toURI().toURL();
             } catch (MalformedURLException e) {
-                LOG.error("Bad path in classpath " + path);
+                LOG.severe("Bad path in classpath " + path);
             }
         }
 
@@ -336,7 +340,7 @@ public class JavaImport implements ImportInterface {
             ImportClassLoader.getInstance(urls);
             ImportClassLoader.getInstance().saveUserPath();
         } catch (MalformedURLException e) {
-
+            LOG.log(Level.FINEST, "Bad path in classpaths", e);
         }
     }
 

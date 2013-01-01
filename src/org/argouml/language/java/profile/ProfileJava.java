@@ -1,6 +1,6 @@
 /* $Id$
  *****************************************************************************
- * Copyright (c) 2009 Contributors - see below
+ * Copyright (c) 2009-2013 Contributors - see below
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -42,8 +42,9 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import org.apache.log4j.Logger;
 import org.argouml.language.java.JavaModuleGlobals;
 import org.argouml.model.Model;
 import org.argouml.moduleloader.ModuleInterface;
@@ -76,18 +77,19 @@ public class ProfileJava extends Profile implements ModuleInterface {
     private static final String UML2_PROFILE_URL =
         "http://argouml.org/profiles/uml2/java-profile-uml2.xmi";
 
-    private static final Logger LOG = Logger.getLogger(ProfileJava.class);
+    private static final Logger LOG =
+        Logger.getLogger(ProfileJava.class.getName());
 
     static final String NAME = "Java";
 
     private Collection<Object> model = null;
 
-    ProfileReference profileReference;
+    private ProfileReference profileReference;
 
     /**
      * The default constructor for this class
      * 
-     * @throws ProfileException
+     * @throws ProfileException if the UML URL is invalid.
      */
     @SuppressWarnings("unchecked")
     public ProfileJava() throws ProfileException {
@@ -119,17 +121,21 @@ public class ProfileJava extends Profile implements ModuleInterface {
                 model = profileModelLoader.loadModel(profileReference);
             } catch (ProfileException e) {
                 if (Model.getFacade().getUmlVersion().charAt(0) == '1') {
-                    LOG.error("Exception loading profile file "
-                            + UML1_PROFILE_FILE, e);
+                    LOG.log(Level.SEVERE,
+                            "Exception loading profile file "
+                            + UML1_PROFILE_FILE,
+                            e);
                 } else {
-                    LOG.error("Exception loading profile file "
-                            + UML2_PROFILE_FILE, e);
+                    LOG.log(Level.SEVERE,
+                            "Exception loading profile file "
+                            + UML2_PROFILE_FILE,
+                            e);
                 }
             }
 
             if (model == null) {
                 model = getFallbackModel();
-                LOG.error("Using fallback profile");
+                LOG.severe("Using fallback profile");
             }
         }
         return model;
@@ -191,7 +197,7 @@ public class ProfileJava extends Profile implements ModuleInterface {
         try {
             ProfileFacade.register(this);
         } catch (Exception e) {
-            LOG.error("Failed to enable the Java profile.", e);
+            LOG.log(Level.SEVERE, "Failed to enable the Java profile.", e);
             return false;
         }
         return true;
@@ -207,7 +213,7 @@ public class ProfileJava extends Profile implements ModuleInterface {
             ProfileFacade.remove(this);
             removed = true;
         } catch (Exception e) {
-            LOG.error("Failed to remove the Java profile.", e);
+            LOG.log(Level.SEVERE, "Failed to remove the Java profile.", e);
         }
         return removed;
     }

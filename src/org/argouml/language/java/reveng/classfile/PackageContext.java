@@ -1,6 +1,6 @@
 /* $Id$
  *****************************************************************************
- * Copyright (c) 2009 Contributors - see below
+ * Copyright (c) 2009-2013 Contributors - see below
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -38,7 +38,6 @@
 
 package org.argouml.language.java.reveng.classfile;
 
-import org.apache.log4j.Logger;
 import org.argouml.model.Facade;
 import org.argouml.model.Model;
 
@@ -47,9 +46,10 @@ import org.argouml.model.Model;
  *
  * @author Marcus Andersson
  */
+// TODO: This file is similar to the ../PackageContext.java file.
+// The difference seems to be that this file doesn't handle profiles.
+// I hope this is deliberate. /Linus 2013-01-01.
 class PackageContext extends Context {
-
-    static final Logger LOG = Logger.getLogger(PackageContext.class);
 
     /** The package this context represents. */
     private Object mPackage;

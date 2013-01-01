@@ -1,6 +1,6 @@
 /* $Id$
  *****************************************************************************
- * Copyright (c) 2009 Contributors - see below
+ * Copyright (c) 2009-2013 Contributors - see below
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -40,8 +40,8 @@ package org.argouml.language.java.reveng.classfile;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.logging.Logger;
 
-import org.apache.log4j.Logger;
 import org.argouml.model.Model;
 
 /**
@@ -54,7 +54,8 @@ class ParseState {
     /**
      * Logger.
      */
-    private static final Logger LOG = Logger.getLogger(ParseState.class);
+    private static final Logger LOG =
+        Logger.getLogger(ParseState.class.getName());
 
     /**
      * When the classifier parse is finished, these features will be

@@ -1,6 +1,6 @@
 /* $Id$
  *****************************************************************************
- * Copyright (c) 2009 Contributors - see below
+ * Copyright (c) 2009-2013 Contributors - see below
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -43,6 +43,7 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.util.logging.Logger;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -52,7 +53,6 @@ import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 
-import org.apache.log4j.Logger;
 import org.argouml.application.api.GUISettingsTabInterface;
 import org.argouml.i18n.Translator;
 import org.argouml.moduleloader.ModuleInterface;
@@ -67,7 +67,8 @@ public class SettingsTabJava implements ModuleInterface, GUISettingsTabInterface
     private static final String REVISION_DATE =
         "$Date$"; //$NON-NLS-1$
 
-    private static final Logger LOG = Logger.getLogger(SettingsTabJava.class);
+    private static final Logger LOG =
+        Logger.getLogger(SettingsTabJava.class.getName());
 
     private JPanel topPanel;
     private JSpinner indent;
@@ -80,7 +81,7 @@ public class SettingsTabJava implements ModuleInterface, GUISettingsTabInterface
      * Build the panel to be used for our settings tab.
      */
     private JPanel buildPanel() {
-        LOG.debug("SettingsTabJava being created...");
+        LOG.fine("SettingsTabJava being created...");
         JPanel top = new JPanel();
         top.setLayout(new BorderLayout());
         JPanel panel = new JPanel();
@@ -133,7 +134,7 @@ public class SettingsTabJava implements ModuleInterface, GUISettingsTabInterface
 
         top.add(panel, BorderLayout.NORTH);
 
-        LOG.debug("SettingsTabJava created!");
+        LOG.fine("SettingsTabJava created!");
         return top;
     }
 

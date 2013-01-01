@@ -1,6 +1,6 @@
 /* $Id$
  *****************************************************************************
- * Copyright (c) 2009 Contributors - see below
+ * Copyright (c) 2009-2013 Contributors - see below
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -43,7 +43,6 @@ import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -53,7 +52,8 @@ import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
-import java.util.StringTokenizer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -69,7 +69,6 @@ import javax.swing.SpinnerNumberModel;
 
 import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CommonTokenStream;
-import org.apache.log4j.Logger;
 import org.argouml.i18n.Translator;
 import org.argouml.kernel.Project;
 import org.argouml.kernel.ProjectManager;
@@ -107,13 +106,15 @@ public class RESequenceDiagramDialog
     implements ActionListener, ItemListener {
 
     private static final Logger LOG =
-        Logger.getLogger(RESequenceDiagramDialog.class);
+        Logger.getLogger(RESequenceDiagramDialog.class.getName());
 
     private static final long serialVersionUID = -8595714827064181907L;
 
     private static final int X_OFFSET = 10;
 
-    private static final Rectangle DEFAULT_BOUNDS = new Rectangle(10, 10);
+    // Connected to commented-out code below:
+    // private static final Rectangle DEFAULT_BOUNDS = new Rectangle(10, 10);
+
     /**
      * The project this dialog is operating within
      */
@@ -141,8 +142,11 @@ public class RESequenceDiagramDialog
     private JPanel changingPanel;
     private JPanel manuPanel;
     private JPanel autoPanel;
-    private int maxXPos = -X_OFFSET;
-    private int anonCnt;
+
+    // Connected to commented-out code below:
+    // private int maxXPos = -X_OFFSET;
+    // private int anonCnt;
+
     private final boolean isNewSequenceDiagram;
 
 
@@ -202,7 +206,8 @@ public class RESequenceDiagramDialog
             modeller = new Modeller(model, javaProfile, true, true, null);
         } catch (Exception ex) {
             // the only chance we have is to finish the current operation
-            LOG.warn("Modeller not ready, so no more generation of calls", ex);
+            LOG.log(Level.WARNING,
+                    "Modeller not ready, so no more generation of calls", ex);
             // TODO: Why do we continue here as if nothing has gone wrong?
             // Can we really continue correctly without a modeller?
         }
@@ -267,16 +272,16 @@ public class RESequenceDiagramDialog
         super.actionPerformed(e);
 
         if (e.getSource() == getOkButton()) {
-            for (int i = 0; i < callTable.getRowCount(); i++) {
-                if (Boolean.TRUE.equals(callTable.getValueAt(i, 1))) {
-                    /*
-                    buildAction(
-                            (String) callTable.getValueAt(i, 0),
-                            figClassifierRole,
-                            figClassifierRole);
-                    */
-                }
-            }
+            //for (int i = 0; i < callTable.getRowCount(); i++) {
+            //    if (Boolean.TRUE.equals(callTable.getValueAt(i, 1))) {
+            //        /*
+            //        buildAction(
+            //                (String) callTable.getValueAt(i, 0),
+            //                figClassifierRole,
+            //                figClassifierRole);
+            //        */
+            //    }
+            //}
         } else if (e.getSource() == getCancelButton()
                 && isNewSequenceDiagram) {
             // remove SD and clean up everything
@@ -629,20 +634,19 @@ public class RESequenceDiagramDialog
             parser.setParserMode(JavaParser.MODE_REVENG_SEQUENCE);
         } catch (Exception ex) {
             // the only chance we have is to finish the current operation
-            LOG.warn("Parser not ready, so no more generation of calls", ex);
+            LOG.log(Level.WARNING,
+                    "Parser not ready, so no more generation of calls", ex);
         }
         if (modeller != null && parser != null) {
             try {
                 parser.block();
             } catch (Exception ex) {
-                LOG.debug("Parsing method body failed:", ex);
+                LOG.log(Level.FINE, "Parsing method body failed:", ex);
             }
             Collection<String> methodCalls = modeller.getMethodCalls();
             if (methodCalls != null) {
                 calls.addAll(methodCalls);
-                if (modeller.getLocalVariableDeclarations() != null) {
-                    types.putAll(modeller.getLocalVariableDeclarations());
-                }
+                types.putAll(modeller.getLocalVariableDeclarations());
             }
         }
     }
@@ -788,88 +792,89 @@ public class RESequenceDiagramDialog
     }
     */
 
-    /**
-     * Gets or builds a classifier role from a type. The type is a classifier
-     * name, either fully qualified (with whole package path) or not.
-     * Also ensures that there is an association to the actual classifier.<p>
-     * TODO: Hide this method in the implementation of a to be defined
-     * interface.
-     * TODO: objName is not used. Are there plans for this?
-     */
-    private Object getClassifierFromModel(
-            final String type,
-            final String objName) {
-        Object theClassifier = null;
-        int pos = type.lastIndexOf(".");
-        if (pos != -1) {
-            // full package path given, so let's get it from the model
-            Object namespace = model;
-            pos = 0;
-            StringTokenizer st = new StringTokenizer(type, ".");
-            while (st.hasMoreTokens()) {
-                String s = st.nextToken();
-                pos += s.length();
-                Object element = Model.getFacade().lookupIn(namespace, s);
-                if (element == null) {
-                    // package/classifier is missing, so create one
-                    if (st.hasMoreTokens()) {
-                        // must be a package
-                        element =
-                            Model.getModelManagementFactory()
-                                .buildPackage(s);
-                    } else {
-                        // must be a classifier, let's assume a class
-                        element = Model.getCoreFactory().buildClass(s);
-                    }
-                    Model.getCoreHelper().setNamespace(element, namespace);
-                    Model.getCoreHelper().addOwnedElement(namespace, element);
-                }
-                namespace = element;
-                pos++;
-            }
-            theClassifier = namespace;
-        } else {
-            // classifier without package information given
-            // first, let's look in the namespace of the actual classifier
-            Object namespace = Model.getFacade().getNamespace(classifier);
-            theClassifier = Model.getFacade().lookupIn(namespace, type);
-            if (!Model.getFacade().isAClassifier(theClassifier)) {
-                theClassifier = null;
-                // let's search for it in the imports (component dependencies)
-                Collection sdeps =
-                    Model.getFacade().getSupplierDependencies(classifier);
-                Iterator iter1 = sdeps != null ? sdeps.iterator() : null;
-                while (theClassifier == null
-                        && iter1 != null
-                        && iter1.hasNext()) {
-                    Object dep = iter1.next();
-                    if (Model.getFacade().isADependency(dep)) {
-                        Collection clients = Model.getFacade().getClients(dep);
-                        Iterator iter2 =
-                            clients != null ? clients.iterator() : null;
-                        while (theClassifier == null
-                                && iter2 != null
-                                && iter2.hasNext()) {
-                            Object comp = iter2.next();
-                            if (Model.getFacade().isAComponent(comp)) {
-                                theClassifier = permissionLookup(comp, type);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        if (theClassifier == null) {
-            // not found any matching classifier, so create one, and put it
-            // into the namespace of the actual classifier
-            theClassifier = Model.getCoreFactory().buildClass(type);
-            Object namespace = Model.getFacade().getNamespace(classifier);
-            Model.getCoreHelper().setNamespace(theClassifier, namespace);
-            Model.getCoreHelper().addOwnedElement(namespace, theClassifier);
-        }
-        ensureDirectedAssociation(classifier, theClassifier);
-        return theClassifier;
-    }
+//    /**
+//     * Gets or builds a classifier role from a type. The type is a classifier
+//     * name, either fully qualified (with whole package path) or not.
+//     * Also ensures that there is an association to the actual classifier.<p>
+//     * TODO: Hide this method in the implementation of a to be defined
+//     * interface.
+//     * TODO: objName is not used. Are there plans for this?
+//     */
+//    private Object getClassifierFromModel(
+//            final String type,
+//            final String objName) {
+//        Object theClassifier = null;
+//        int pos = type.lastIndexOf(".");
+//        if (pos != -1) {
+//            // full package path given, so let's get it from the model
+//            Object namespace = model;
+//            pos = 0;
+//            StringTokenizer st = new StringTokenizer(type, ".");
+//            while (st.hasMoreTokens()) {
+//                String s = st.nextToken();
+//                pos += s.length();
+//                Object element = Model.getFacade().lookupIn(namespace, s);
+//                if (element == null) {
+//                    // package/classifier is missing, so create one
+//                    if (st.hasMoreTokens()) {
+//                        // must be a package
+//                        element =
+//                            Model.getModelManagementFactory()
+//                                .buildPackage(s);
+//                    } else {
+//                        // must be a classifier, let's assume a class
+//                        element = Model.getCoreFactory().buildClass(s);
+//                    }
+//                    Model.getCoreHelper().setNamespace(element, namespace);
+//                    Model.getCoreHelper().addOwnedElement(namespace, element);
+//                }
+//                namespace = element;
+//                pos++;
+//            }
+//            theClassifier = namespace;
+//        } else {
+//            // classifier without package information given
+//            // first, let's look in the namespace of the actual classifier
+//            Object namespace = Model.getFacade().getNamespace(classifier);
+//            theClassifier = Model.getFacade().lookupIn(namespace, type);
+//            if (!Model.getFacade().isAClassifier(theClassifier)) {
+//                theClassifier = null;
+//                // let's search for it in the imports (component dependencies)
+//                Collection sdeps =
+//                    Model.getFacade().getSupplierDependencies(classifier);
+//                Iterator iter1 = sdeps != null ? sdeps.iterator() : null;
+//                while (theClassifier == null
+//                        && iter1 != null
+//                        && iter1.hasNext()) {
+//                    Object dep = iter1.next();
+//                    if (Model.getFacade().isADependency(dep)) {
+//                        Collection clients =
+//                            Model.getFacade().getClients(dep);
+//                        Iterator iter2 =
+//                            clients != null ? clients.iterator() : null;
+//                        while (theClassifier == null
+//                                && iter2 != null
+//                                && iter2.hasNext()) {
+//                            Object comp = iter2.next();
+//                            if (Model.getFacade().isAComponent(comp)) {
+//                                theClassifier = permissionLookup(comp, type);
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//        if (theClassifier == null) {
+//            // not found any matching classifier, so create one, and put it
+//            // into the namespace of the actual classifier
+//            theClassifier = Model.getCoreFactory().buildClass(type);
+//            Object namespace = Model.getFacade().getNamespace(classifier);
+//            Model.getCoreHelper().setNamespace(theClassifier, namespace);
+//            Model.getCoreHelper().addOwnedElement(namespace, theClassifier);
+//        }
+//        ensureDirectedAssociation(classifier, theClassifier);
+//        return theClassifier;
+//    }
 
     /**
      * Checks if there is a directed association between two classifiers, and
