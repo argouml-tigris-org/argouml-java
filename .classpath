@@ -4,10 +4,12 @@
 	<classpathentry kind="src" path="src_generated"/>
 	<classpathentry kind="src" path="tests"/>
 	<classpathentry exported="true" kind="lib" path="lib/easymock-1.1.jar"/>
-    <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
 	<classpathentry kind="lib" path="lib/antlr-runtime-3.1.1.jar"/>
 	<classpathentry kind="lib" path="lib/antlr-2.7.7.jar" sourcepath="lib/antlr-2.7.7-src.zip"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/argouml-app"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/argouml-core-model"/>
 	<classpathentry kind="output" path="build-eclipse"/>
 </classpath>
