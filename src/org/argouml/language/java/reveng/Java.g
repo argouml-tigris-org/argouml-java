@@ -1255,7 +1255,15 @@ localVariableDeclarationStatement
     ;
 
 localVariableDeclaration
-    :   variableModifiers type variableDeclarators["", (short)0, null]
+    :   variableModifiers t=type
+    	{
+    		// simple dependency algorithm: if t is found in the model,
+    		// then build a dependency, otherwise ignore
+            if (parserMode == MODE_IMPORT_PASS2) {
+                getModeller().addClassifierDependency(t);
+            }
+    	}
+    	variableDeclarators["", (short)0, null]
     ;
     
 variableModifiers returns [short mods = 0]

@@ -438,7 +438,7 @@ public class Modeller {
         if (classifierName.equals("*")) {
             parseState.addPackageContext(mPackage);
             Object srcFile = parseState.getArtifact();
-            buildImport(mPackage, srcFile);
+            buildDependency(mPackage, srcFile, "javaImport");
         }
         // single type import
         else {
@@ -474,22 +474,60 @@ public class Modeller {
             if (mClassifier != null) {
                 parseState.addClassifierContext(mClassifier);
                 Object srcFile = parseState.getArtifact();
-                buildImport(mClassifier, srcFile);
+                buildDependency(mClassifier, srcFile, "javaImport");
             }
         }
     }
 
-    /*
-     * Build a Java import equivalent in UML. First search for an existing
-     * dependency. Create a new one if not found.
+    /**
+     * Called from the parser to add a dependency to a classifier.
+     * 
+     * @param name The name of the classifier candidate.
      */
-    private Object buildImport(Object element, Object srcFile) {
+    void addClassifierDependency(String name) {
+        String classifierName = stripVarargAndGenerics(name);
+        Object clientObj = parseState.getClassifier();
+        if (clientObj == null) {
+            return;
+        }
+        Object supplierObj = null;
+        
+        // first try: lookup classifierName in same namespace
+        Object ns = Model.getFacade().getNamespace(clientObj);
+        if (ns != null) {
+            supplierObj = Model.getFacade().lookupIn(ns, classifierName);
+        }
+
+        // second try: lookup in imports
+        if (supplierObj == null) {
+            String packageName = getPackageName(name);
+            // ...
+        }
+        
+        // third try: resolve fully qualified classifier (xxx.yyy.Zzz)
+        String packageName = getPackageName(name);
+        if (supplierObj == null && packageName.length() > 0) {
+            classifierName = this.getClassifierName(name);
+            // ...
+        }
+        
+        // finally build the dependency
+        if (supplierObj != null) {
+            buildDependency(supplierObj, clientObj, null);
+        }
+    }
+
+    /*
+     * Build a dependency, e.g. a Java import equivalent in UML. First search
+     * for an existing dependency. Create a new one if not found.
+     */
+    private Object buildDependency(Object supplier, Object client, String stereoname) {
         // TODO: add <<javaImport>> stereotype to Java profile - thn
         Collection dependencies = Model.getCoreHelper().getDependencies(
-                element, srcFile);
+                supplier, client);
         for (Object dep : dependencies) {
             for (Object stereotype : Model.getFacade().getStereotypes(dep)) {
-                if ("javaImport".equals(
+                if (stereoname == null || stereoname.equals(
                         Model.getFacade().getName(stereotype))) {
                     return dep;
                 }
@@ -497,18 +535,18 @@ public class Modeller {
         }
 
         // Didn't find it. Let's create one.
-        Object pkgImport = Model.getCoreFactory().buildDependency(srcFile,
-                element);
-        if (Model.getFacade().getUmlVersion().charAt(0) == '1') {
+        Object dependency = Model.getCoreFactory().buildDependency(client,
+                supplier);
+        if (stereoname != null && Model.getFacade().getUmlVersion().charAt(0) == '1') {
             // TODO: support for stereotypes in eUML
-            Model.getCoreHelper().addStereotype(pkgImport,
-                    getUML1Stereotype("javaImport"));
+            Model.getCoreHelper().addStereotype(dependency,
+                    getUML1Stereotype(stereoname));
             ProjectManager.getManager().updateRoots();
         }
-        String newName = makeDependencyName(srcFile, element);
-        Model.getCoreHelper().setName(pkgImport, newName);
-        newElements.add(pkgImport);
-        return pkgImport;
+        String newName = makeDependencyName(client, supplier);
+        Model.getCoreHelper().setName(dependency, newName);
+        newElements.add(dependency);
+        return dependency;
     }
 
     private String makeAbstractionName(Object child, Object parent) {
