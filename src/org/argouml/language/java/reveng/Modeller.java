@@ -497,18 +497,31 @@ public class Modeller {
         if (ns != null) {
             supplierObj = Model.getFacade().lookupIn(ns, classifierName);
         }
-
-        // second try: lookup in imports
-        if (supplierObj == null) {
-            String packageName = getPackageName(name);
-            // ...
-        }
         
-        // third try: resolve fully qualified classifier (xxx.yyy.Zzz)
+        // second try: resolve fully qualified classifier (xxx.yyy.Zzz)
         String packageName = getPackageName(name);
-        if (supplierObj == null && packageName.length() > 0) {
+        if (supplierObj == null && packageName != null && packageName.length() > 0) {
             classifierName = this.getClassifierName(name);
-            // ...
+            Object mPackage = getPackage(packageName, true);
+            supplierObj = Model.getFacade().lookupIn(mPackage, classifierName);
+        }
+
+        // third try: lookup in imports
+        Object srcFile = parseStateStack.lastElement().getArtifact();
+        if (supplierObj == null && srcFile != null) {
+            Collection dependencies = Model.getFacade().getClientDependencies(srcFile);
+            for (Object dep : dependencies) {
+                for (Object suppl : Model.getFacade().getSuppliers(dep)) {
+                    if (Model.getFacade().isAPackage(suppl)) {
+                        supplierObj = Model.getFacade().lookupIn(suppl, classifierName);
+                    } else if (classifierName.equals(Model.getFacade().getName(suppl))) {
+                        supplierObj = suppl;
+                    }
+                }
+                if (supplierObj != null) {
+                    break;
+                }
+            }
         }
         
         // finally build the dependency
