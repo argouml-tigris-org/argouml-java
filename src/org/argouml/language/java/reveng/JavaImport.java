@@ -50,7 +50,6 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -60,7 +59,6 @@ import org.argouml.i18n.Translator;
 import org.argouml.kernel.Project;
 import org.argouml.language.java.JavaModuleGlobals;
 import org.argouml.model.IllegalModelElementConnectionException;
-import org.argouml.model.Model;
 import org.argouml.moduleloader.ModuleInterface;
 import org.argouml.profile.Profile;
 import org.argouml.taskmgmt.ProgressMonitor;
@@ -70,6 +68,7 @@ import org.argouml.uml.reveng.ImportInterface;
 import org.argouml.uml.reveng.ImportSettings;
 import org.argouml.uml.reveng.ImporterManager;
 import org.argouml.uml.reveng.SettingsTypes;
+import org.argouml.uml.util.ModelUtil;
 import org.argouml.util.SuffixFilter;
 
 /**
@@ -127,7 +126,7 @@ public class JavaImport implements ImportInterface {
                 doImportPass(p, files, settings, monitor, 0, 0);
             }
             
-            generatePackageDependencies(p);
+            ModelUtil.generatePackageDependencies(p);
         } catch (IllegalModelElementConnectionException e) {
         } finally {
             //this prevents parse problems to be displayed, so I disabled it:
@@ -363,44 +362,5 @@ public class JavaImport implements ImportInterface {
             }
         }
         return null;
-    }
-    
-    /**
-     * Create package dependencies based on classifier relationships.
-     * Basically of class A depends on class B then the package containing class A
-     * will be made to depend on the package containing class B.
-     * @param project
-     * @throws IllegalModelElementConnectionException
-     */
-    private void generatePackageDependencies(Project project) throws IllegalModelElementConnectionException {
-        List models = project.getUserDefinedModelList();
-        
-        for (Object model : models) {
-            
-            for (Object classifier : Model.getModelManagementHelper().getAllModelElementsOfKindWithModel(model, Model.getMetaTypes().getClassifier())) {
-                
-                Object namespace = Model.getFacade().getNamespace(classifier);
-                Set dependentNamespaces = new HashSet();
-                
-                for (Object dependency : Model.getFacade().getClientDependencies(classifier)) {
-                    for (Object dependentClass : Model.getFacade().getSuppliers(dependency)) {
-                        dependentNamespaces.add(Model.getFacade().getNamespace(dependentClass));
-                    }
-                }
-                for (Object generalization : Model.getFacade().getGeneralizations(classifier)) {
-                    Object superClass = Model.getFacade().getGeneral(generalization);
-                    dependentNamespaces.add(Model.getFacade().getNamespace(superClass));
-                }
-                for (Object associatedClassifier : Model.getFacade().getAssociatedClasses(classifier)) {
-                    dependentNamespaces.add(Model.getFacade().getNamespace(associatedClassifier));
-                }
-
-                for (Object dependentNamespace : dependentNamespaces) {
-                    if (Model.getCoreHelper().getDependencies(dependentNamespace, namespace).isEmpty()) {
-                        Model.getUmlFactory().buildConnection(Model.getMetaTypes().getDependency(), namespace, null, dependentNamespace, null, true, namespace);
-                    }
-                }
-            }
-        }
     }
 }
