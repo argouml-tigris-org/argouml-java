@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<pmd version="4.3" timestamp="2019-11-25T23:59:08.257">
-<file name="/var/jenkins_home/workspace/organization_argouml-java_master/src/org/argouml/language/java/codesync/ui/CodeSyncJPanel.java">
+<pmd version="4.3" timestamp="2019-12-04T22:52:28.803">
+<file name="/var/jenkins_home/workspace/organization_argouml-java_master@2/src/org/argouml/language/java/codesync/ui/CodeSyncJPanel.java">
 <violation beginline="29" endline="29" begincolumn="33" endcolumn="35" rule="UnusedPrivateField" ruleset="Unused Code Rules" package="org.argouml.language.java.codesync.ui" class="CodeSyncJPanel" variable="LOG" externalInfoUrl="http://pmd.sourceforge.net/rules/unusedcode.html#UnusedPrivateField" priority="3">
 Avoid unused private fields such as 'LOG'.
 </violation>
@@ -11,7 +11,7 @@ Avoid unused local variables such as 'sp'.
 Avoid unused local variables such as 'titleLabel'.
 </violation>
 </file>
-<file name="/var/jenkins_home/workspace/organization_argouml-java_master/src/org/argouml/language/java/generator/GeneratorJava.java">
+<file name="/var/jenkins_home/workspace/organization_argouml-java_master@2/src/org/argouml/language/java/generator/GeneratorJava.java">
 <violation beginline="542" endline="544" begincolumn="13" endcolumn="5" rule="UnusedFormalParameter" ruleset="Unused Code Rules" package="org.argouml.language.java.generator" class="GeneratorJava" externalInfoUrl="http://pmd.sourceforge.net/rules/unusedcode.html#UnusedFormalParameter" priority="3">
 Avoid unused method parameters such as 'ep'.
 </violation>
@@ -19,7 +19,7 @@ Avoid unused method parameters such as 'ep'.
 Avoid unused method parameters such as 'st'.
 </violation>
 </file>
-<file name="/var/jenkins_home/workspace/organization_argouml-java_master/src/org/argouml/language/java/reveng/JavaImport.java">
+<file name="/var/jenkins_home/workspace/organization_argouml-java_master@2/src/org/argouml/language/java/reveng/JavaImport.java">
 <violation beginline="130" endline="131" begincolumn="11" endcolumn="9" rule="EmptyCatchBlock" ruleset="Basic Rules" package="org.argouml.language.java.reveng" class="JavaImport" method="parseFiles" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#EmptyCatchBlock" priority="3">
 Avoid empty catch blocks
 </violation>
@@ -30,7 +30,7 @@ Avoid empty finally blocks
 Avoid using java.lang.ThreadGroup; it is not thread safe
 </violation>
 </file>
-<file name="/var/jenkins_home/workspace/organization_argouml-java_master/src/org/argouml/language/java/reveng/JavaImportSettings.java">
+<file name="/var/jenkins_home/workspace/organization_argouml-java_master@2/src/org/argouml/language/java/reveng/JavaImportSettings.java">
 <violation beginline="101" endline="101" begincolumn="5" endcolumn="40" rule="UnusedPrivateField" ruleset="Unused Code Rules" package="org.argouml.language.java.reveng" class="JavaImportSettings" variable="KEY_IMPORT_EXTENDED_COLLECTIONS_FLAG" externalInfoUrl="http://pmd.sourceforge.net/rules/unusedcode.html#UnusedPrivateField" priority="3">
 Avoid unused private fields such as 'KEY_IMPORT_EXTENDED_COLLECTIONS_FLAG'.
 </violation>
@@ -44,7 +44,7 @@ Avoid unused private fields such as 'KEY_IMPORT_EXTENDED_ORDEREDCOLLS_FLAG'.
 Avoid unused private fields such as 'KEY_IMPORT_EXTENDED_ORDEREDCOLLS_LIST'.
 </violation>
 </file>
-<file name="/var/jenkins_home/workspace/organization_argouml-java_master/src/org/argouml/language/java/reveng/classfile/ByteTokenStream.java">
+<file name="/var/jenkins_home/workspace/organization_argouml-java_master@2/src/org/argouml/language/java/reveng/classfile/ByteTokenStream.java">
 <violation beginline="58" endline="60" begincolumn="15" endcolumn="13" rule="EmptyCatchBlock" ruleset="Basic Rules" package="org.argouml.language.java.reveng.classfile" class="ByteTokenStream" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#EmptyCatchBlock" priority="3">
 Avoid empty catch blocks
 </violation>
@@ -55,17 +55,17 @@ Avoid empty if statements
 Avoid empty if statements
 </violation>
 </file>
-<file name="/var/jenkins_home/workspace/organization_argouml-java_master/src/org/argouml/language/java/reveng/classfile/ClassfileImport.java">
+<file name="/var/jenkins_home/workspace/organization_argouml-java_master@2/src/org/argouml/language/java/reveng/classfile/ClassfileImport.java">
 <violation beginline="197" endline="206" begincolumn="13" endcolumn="5" rule="UnusedFormalParameter" ruleset="Unused Code Rules" package="org.argouml.language.java.reveng.classfile" class="ClassfileImport" externalInfoUrl="http://pmd.sourceforge.net/rules/unusedcode.html#UnusedFormalParameter" priority="3">
 Avoid unused method parameters such as 'buffer'.
 </violation>
 </file>
-<file name="/var/jenkins_home/workspace/organization_argouml-java_master/src/org/argouml/language/java/reveng/classfile/ParserUtils.java">
+<file name="/var/jenkins_home/workspace/organization_argouml-java_master@2/src/org/argouml/language/java/reveng/classfile/ParserUtils.java">
 <violation beginline="861" endline="871" begincolumn="21" endcolumn="21" rule="CollapsibleIfStatements" ruleset="Basic Rules" package="org.argouml.language.java.reveng.classfile" class="ParserUtils$FormalTypeParameterLexer" method="parse" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#CollapsibleIfStatements" priority="3">
 These nested if statements could be combined
 </violation>
 </file>
-<file name="/var/jenkins_home/workspace/organization_argouml-java_master/src/org/argouml/language/java/ui/RESequenceDiagramDialog.java">
+<file name="/var/jenkins_home/workspace/organization_argouml-java_master@2/src/org/argouml/language/java/ui/RESequenceDiagramDialog.java">
 <violation beginline="113" endline="113" begincolumn="30" endcolumn="37" rule="UnusedPrivateField" ruleset="Unused Code Rules" package="org.argouml.language.java.ui" class="RESequenceDiagramDialog" variable="X_OFFSET" externalInfoUrl="http://pmd.sourceforge.net/rules/unusedcode.html#UnusedPrivateField" priority="3">
 Avoid unused private fields such as 'X_OFFSET'.
 </violation>
@@ -79,7 +79,7 @@ Avoid unused private methods such as 'ensureDirectedAssociation(Object,Object)'.
 Avoid unused private methods such as 'permissionLookup(Object,String)'.
 </violation>
 </file>
-<file name="/var/jenkins_home/workspace/organization_argouml-java_master/src/org/argouml/language/java/ui/SettingsTabJava.java">
+<file name="/var/jenkins_home/workspace/organization_argouml-java_master@2/src/org/argouml/language/java/ui/SettingsTabJava.java">
 <violation beginline="67" endline="67" begincolumn="33" endcolumn="45" rule="UnusedPrivateField" ruleset="Unused Code Rules" package="org.argouml.language.java.ui" class="SettingsTabJava" variable="REVISION_DATE" externalInfoUrl="http://pmd.sourceforge.net/rules/unusedcode.html#UnusedPrivateField" priority="3">
 Avoid unused private fields such as 'REVISION_DATE'.
 </violation>
