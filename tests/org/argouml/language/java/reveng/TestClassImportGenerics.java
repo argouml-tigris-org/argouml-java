@@ -43,7 +43,9 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.DataInputStream;
 import java.io.FileInputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.Iterator;
 
 import junit.framework.TestCase;
@@ -69,7 +71,8 @@ public class TestClassImportGenerics extends TestCase {
         URL resource = 
             classLoader.getResource("org/argouml/language/java/reveng/"
                     + "TestClassImportGenerics$TestedClass.class");
-        String fileName = resource.getFile();
+        assertNotNull(resource);
+        String fileName = URLDecoder.decode(resource.getFile());
         return fileName;
     }
 
