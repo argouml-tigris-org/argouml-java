@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <pmd-cpd>
 <duplication lines="177" tokens="462">
-<file line="190" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/src/org/argouml/language/java/reveng/ParseState.java"/>
-<file line="173" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/src/org/argouml/language/java/reveng/classfile/ParseState.java"/>
+<file line="190" path="/var/jenkins_home/workspace/organization_argouml-java_master/src/org/argouml/language/java/reveng/ParseState.java"/>
+<file line="173" path="/var/jenkins_home/workspace/organization_argouml-java_master/src/org/argouml/language/java/reveng/classfile/ParseState.java"/>
 <codefragment>
 <![CDATA[
     }
@@ -186,8 +186,8 @@
 </codefragment>
 </duplication>
 <duplication lines="63" tokens="177">
-<file line="104" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/src/org/argouml/language/java/reveng/ParseState.java"/>
-<file line="103" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/src/org/argouml/language/java/reveng/classfile/ParseState.java"/>
+<file line="104" path="/var/jenkins_home/workspace/organization_argouml-java_master/src/org/argouml/language/java/reveng/ParseState.java"/>
+<file line="103" path="/var/jenkins_home/workspace/organization_argouml-java_master/src/org/argouml/language/java/reveng/classfile/ParseState.java"/>
 <codefragment>
 <![CDATA[
     public ParseState(Object model, Object javaLangPackage) {
@@ -257,8 +257,8 @@
 </codefragment>
 </duplication>
 <duplication lines="36" tokens="136">
-<file line="761" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/src/org/argouml/language/java/reveng/classfile/ParserUtils.java"/>
-<file line="891" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/src/org/argouml/language/java/reveng/classfile/ParserUtils.java"/>
+<file line="761" path="/var/jenkins_home/workspace/organization_argouml-java_master/src/org/argouml/language/java/reveng/classfile/ParserUtils.java"/>
+<file line="891" path="/var/jenkins_home/workspace/organization_argouml-java_master/src/org/argouml/language/java/reveng/classfile/ParserUtils.java"/>
 <codefragment>
 <![CDATA[
         public ClassSignatureLexer(String desc) {
@@ -301,8 +301,8 @@
 </codefragment>
 </duplication>
 <duplication lines="20" tokens="115">
-<file line="116" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/src/org/argouml/language/java/reveng/OuterClassifierContext.java"/>
-<file line="106" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/src/org/argouml/language/java/reveng/classfile/OuterClassifierContext.java"/>
+<file line="116" path="/var/jenkins_home/workspace/organization_argouml-java_master/src/org/argouml/language/java/reveng/OuterClassifierContext.java"/>
+<file line="106" path="/var/jenkins_home/workspace/organization_argouml-java_master/src/org/argouml/language/java/reveng/classfile/OuterClassifierContext.java"/>
 <codefragment>
 <![CDATA[
             Class classifier;
@@ -329,8 +329,8 @@
 </codefragment>
 </duplication>
 <duplication lines="26" tokens="111">
-<file line="136" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/src/org/argouml/language/java/reveng/Context.java"/>
-<file line="165" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/src/org/argouml/language/java/reveng/classfile/Context.java"/>
+<file line="136" path="/var/jenkins_home/workspace/organization_argouml-java_master/src/org/argouml/language/java/reveng/Context.java"/>
+<file line="165" path="/var/jenkins_home/workspace/organization_argouml-java_master/src/org/argouml/language/java/reveng/classfile/Context.java"/>
 <codefragment>
 <![CDATA[
     }
@@ -363,8 +363,8 @@
 </codefragment>
 </duplication>
 <duplication lines="26" tokens="109">
-<file line="99" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/src/org/argouml/language/java/reveng/Context.java"/>
-<file line="113" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/src/org/argouml/language/java/reveng/classfile/Context.java"/>
+<file line="99" path="/var/jenkins_home/workspace/organization_argouml-java_master/src/org/argouml/language/java/reveng/Context.java"/>
+<file line="113" path="/var/jenkins_home/workspace/organization_argouml-java_master/src/org/argouml/language/java/reveng/classfile/Context.java"/>
 <codefragment>
 <![CDATA[
         Object parent = Model.getFacade().getNamespace(mPackage);
@@ -397,8 +397,8 @@
 </codefragment>
 </duplication>
 <duplication lines="34" tokens="102">
-<file line="142" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/src/org/argouml/language/java/reveng/PackageContext.java"/>
-<file line="149" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/src/org/argouml/language/java/reveng/classfile/PackageContext.java"/>
+<file line="142" path="/var/jenkins_home/workspace/organization_argouml-java_master/src/org/argouml/language/java/reveng/PackageContext.java"/>
+<file line="149" path="/var/jenkins_home/workspace/organization_argouml-java_master/src/org/argouml/language/java/reveng/classfile/PackageContext.java"/>
 <codefragment>
 <![CDATA[
                 }
