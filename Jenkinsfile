@@ -17,11 +17,17 @@ if (env.GERRIT_API_URL == null) {
 }
 
 pipeline {
+  options {
+    buildDiscarder(logRotator(numToKeepStr: '10', daysToKeepStr: '100'))
+  }
+  triggers {
+    snapshotDependencies()
+  }
   agent {
-      docker {
-        image 'maven:3-ibmjava-8'
-        args '-v maven-repo:/.m2 -v maven-repo:/root/.m2'
-      }
+    docker {
+      image 'maven:3-ibmjava-8'
+      args '-v maven-repo:/.m2 -v maven-repo:/root/.m2'
+    }
   }
   environment {
     GERRIT_CREDENTIALS_ID = 'gerrithub-user'
