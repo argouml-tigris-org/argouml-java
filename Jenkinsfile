@@ -37,14 +37,15 @@ pipeline {
       steps {
         gerritReview labels: [Verified:0], message: """Build starts.
 
-Build has two steps:
+Build has these steps:
 1. Compile (corresponding to mvn compile).
 2. Run tests (corresponding to mvn test).
+3. Generate site (corresponding to mvn site).
 
 If these are all successful, it is scored as Verified."""
         timeout(time:1, unit: 'HOURS') {
           withMaven() {
-            sh 'mvn -B compile'
+            sh '$MVN_CMD -B compile'
           }
         }
         gerritReview labels: [:], message: "Compiled without error."
@@ -54,10 +55,21 @@ If these are all successful, it is scored as Verified."""
       steps {
         timeout(time:1, unit: 'HOURS') {
           withMaven() {
-            sh 'mvn -B test'
+            sh '$MVN_CMD -B test'
           }
         }
         gerritReview labels: [:], message: "Tests run without error."
+      }
+    }
+    stage('site') {
+      steps {
+        timeout(time:1, unit: 'HOURS') {
+          withMaven(options: [junitPublisher(disabled: true,
+                                             healthScaleFactor: 0.0)]) {
+            sh '$MVN_CMD -B site'
+          }
+        }
+        gerritReview labels: [:], message: "Site generated without error."
       }
     }
   }
