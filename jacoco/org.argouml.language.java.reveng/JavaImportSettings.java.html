@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JavaImportSettings.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">argo_java</a> &gt; <a href="index.source.html" class="el_package">org.argouml.language.java.reveng</a> &gt; <span class="el_source">JavaImportSettings.java</span></div><h1>JavaImportSettings.java</h1><pre class="source lang-java linenums">/* $Id$
+ *****************************************************************************
+ * Copyright (c) 2009 Contributors - see below
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    thn
+ *****************************************************************************
+ *
+ * Some portions of this file was previously release using the BSD License:
+ */
+
+// Copyright (c) 1996-2008 The Regents of the University of California. All
+// Rights Reserved. Permission to use, copy, modify, and distribute this
+// software and its documentation without fee, and without a written
+// agreement is hereby granted, provided that the above copyright notice
+// and this paragraph appear in all copies.  This software program and
+// documentation are copyrighted by The Regents of the University of
+// California. The software program and documentation are supplied &quot;AS
+// IS&quot;, without any accompanying services from The Regents. The Regents
+// does not warrant that the operation of the program will be
+// uninterrupted or error-free. The end-user understands that the program
+// was developed for research purposes and is advised not to rely
+// exclusively on the program for any reason.  IN NO EVENT SHALL THE
+// UNIVERSITY OF CALIFORNIA BE LIABLE TO ANY PARTY FOR DIRECT, INDIRECT,
+// SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES, INCLUDING LOST PROFITS,
+// ARISING OUT OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF
+// THE UNIVERSITY OF CALIFORNIA HAS BEEN ADVISED OF THE POSSIBILITY OF
+// SUCH DAMAGE. THE UNIVERSITY OF CALIFORNIA SPECIFICALLY DISCLAIMS ANY
+// WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+// MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE SOFTWARE
+// PROVIDED HEREUNDER IS ON AN &quot;AS IS&quot; BASIS, AND THE UNIVERSITY OF
+// CALIFORNIA HAS NO OBLIGATIONS TO PROVIDE MAINTENANCE, SUPPORT,
+// UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
+
+package org.argouml.language.java.reveng;
+
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.argouml.application.api.Argo;
+import org.argouml.configuration.Configuration;
+import org.argouml.configuration.ConfigurationKey;
+import org.argouml.i18n.Translator;
+import org.argouml.uml.reveng.ImportClassLoader;
+import org.argouml.uml.reveng.Setting;
+import org.argouml.uml.reveng.SettingsTypes;
+
+/**
+ * Singleton class for managing the settings for the Java sources and classfile
+ * import. These settings objects implement the SettingsTypes.* interfaces.
+ * &lt;p&gt;
+ * The caller must determine what interface an object is implementing iterating
+ * the interfaces SettingsTypes.*
+ * &lt;p&gt;
+ * This is done this way to eliminate the need to use GUI elements. The settings
+ * can easily be mapped into any GUI elements, this way we are independent from
+ * the type of GUI.
+ * 
+ * @author Thomas Neustupny &lt;thn@tigris.org&gt;
+ */
+<span class="nc" id="L66">public class JavaImportSettings {</span>
+
+    private static JavaImportSettings theInstance;
+
+    private List&lt;SettingsTypes.Setting&gt; settingsList;
+
+    private SettingsTypes.UniqueSelection2 attributeSetting;
+
+    private SettingsTypes.UniqueSelection2 datatypeSetting;
+
+    private SettingsTypes.PathListSelection pathlistSetting;
+
+    /**
+     * Key for RE extended settings: model attributes as: 0: attributes 1:
+     * associations
+     */
+    private static final ConfigurationKey
+<span class="nc" id="L83">    KEY_IMPORT_EXTENDED_MODEL_ATTR =</span>
+        Configuration
+<span class="nc" id="L85">            .makeKey(&quot;import&quot;, &quot;extended&quot;, &quot;java&quot;, &quot;model&quot;, &quot;attributes&quot;);</span>
+
+    /**
+     * Key for RE extended settings: model arrays as: 0: datatype 1:
+     * associations
+     */
+    private static final ConfigurationKey
+<span class="nc" id="L92">    KEY_IMPORT_EXTENDED_MODEL_ARRAYS =</span>
+        Configuration
+<span class="nc" id="L94">            .makeKey(&quot;import&quot;, &quot;extended&quot;, &quot;java&quot;, &quot;model&quot;, &quot;arrays&quot;);</span>
+
+    /**
+     * Key for RE extended settings: flag for modeling of listed collections, if
+     * to model them as associations with multiplicity *.
+     */
+    private static final ConfigurationKey
+<span class="nc" id="L101">    KEY_IMPORT_EXTENDED_COLLECTIONS_FLAG =</span>
+        Configuration
+<span class="nc" id="L103">            .makeKey(&quot;import&quot;, &quot;extended&quot;, &quot;java&quot;, &quot;collections&quot;, &quot;flag&quot;);</span>
+
+    /**
+     * Key for RE extended settings: list of collections, that will be modelled
+     * as associations with multiplicity *.
+     */
+    private static final ConfigurationKey
+<span class="nc" id="L110">    KEY_IMPORT_EXTENDED_COLLECTIONS_LIST =</span>
+        Configuration
+<span class="nc" id="L112">            .makeKey(&quot;import&quot;, &quot;extended&quot;, &quot;java&quot;, &quot;collections&quot;, &quot;list&quot;);</span>
+
+    /**
+     * Key for RE extended settings: flag for modeling of listed collections,
+     * if to model them as ordered associations with multiplicity *.
+     */
+    private static final ConfigurationKey
+<span class="nc" id="L119">    KEY_IMPORT_EXTENDED_ORDEREDCOLLS_FLAG =</span>
+        Configuration
+<span class="nc" id="L121">            .makeKey(&quot;import&quot;, &quot;extended&quot;, &quot;java&quot;, &quot;orderedcolls&quot;, &quot;flag&quot;);</span>
+
+    /**
+     * Key for RE extended settings: list of collections, that will be modelled
+     * as ordered associations with multiplicity *.
+     */
+    private static final ConfigurationKey
+<span class="nc" id="L128">    KEY_IMPORT_EXTENDED_ORDEREDCOLLS_LIST =</span>
+        Configuration
+<span class="nc" id="L130">            .makeKey(&quot;import&quot;, &quot;extended&quot;, &quot;java&quot;, &quot;orderedcolls&quot;, &quot;list&quot;);</span>
+
+    /**
+     * Gets the singleton instance.
+     * 
+     * @return the instance
+     */
+    public static synchronized JavaImportSettings getInstance() {
+<span class="nc bnc" id="L138" title="All 2 branches missed.">        if (theInstance == null) {</span>
+<span class="nc" id="L139">            theInstance = new JavaImportSettings();</span>
+        }
+<span class="nc" id="L141">        return theInstance;</span>
+    }
+
+    /**
+     * Returns if references should be modeled as UML Attributes instead of UML
+     * Associations.
+     * 
+     * @return true if references should be modeled as UML Attributes instead of
+     *         UML Associations.
+     */
+    public boolean isAttributeSelected() {
+<span class="nc bnc" id="L152" title="All 2 branches missed.">        return attributeSetting.getSelection() == 0;</span>
+    }
+
+    /**
+     * Returns if arrays should be modeled as datatypes instead of using UML's
+     * multiplicities.
+     * 
+     * @return true if arrays should be modeled as datatypes instead of using
+     *         UML's multiplicities.
+     */
+    public boolean isDatatypeSelected() {
+<span class="nc bnc" id="L163" title="All 2 branches missed.">        return datatypeSetting.getSelection() == 0;</span>
+    }
+
+    /**
+     * Returns the path list as a list of String objects.
+     * 
+     * @return the path list
+     */
+    public List&lt;String&gt; getPathList() {
+<span class="nc bnc" id="L172" title="All 2 branches missed.">        if (pathlistSetting == null) {</span>
+<span class="nc" id="L173">            return new ArrayList&lt;String&gt;();</span>
+        }
+<span class="nc" id="L175">        return pathlistSetting.getPathList();</span>
+    }
+
+    /*
+     * Provides the implementation of
+     * org.argouml.uml.reveng.ImportInterface#getImportSettings() for
+     * implementors of ImportInterface.
+     * 
+     * @return the list of import settings
+     */
+    public List&lt;SettingsTypes.Setting&gt; getImportSettings() {
+
+<span class="nc" id="L187">        settingsList = new ArrayList&lt;SettingsTypes.Setting&gt;();</span>
+
+        // Settings from ConfigPanelExtension
+<span class="nc" id="L190">        List&lt;String&gt; options = new ArrayList&lt;String&gt;();</span>
+<span class="nc" id="L191">        options.add(Translator.localize(&quot;action.import-java-UML-attr&quot;));</span>
+<span class="nc" id="L192">        options.add(Translator.localize(&quot;action.import-java-UML-assoc&quot;));</span>
+
+        int selected;
+<span class="nc" id="L195">        String modelattr = Configuration.getString(</span>
+                KEY_IMPORT_EXTENDED_MODEL_ATTR, &quot;0&quot;);
+<span class="nc" id="L197">        selected = Integer.parseInt(modelattr);</span>
+
+<span class="nc" id="L199">        attributeSetting = new Setting.UniqueSelection(Translator</span>
+<span class="nc" id="L200">                .localize(&quot;action.import-java-attr-model&quot;), options, selected);</span>
+<span class="nc" id="L201">        settingsList.add(attributeSetting);</span>
+
+<span class="nc" id="L203">        options.clear();</span>
+<span class="nc" id="L204">        options.add(Translator</span>
+<span class="nc" id="L205">                .localize(&quot;action.import-java-array-model-datatype&quot;));</span>
+<span class="nc" id="L206">        options</span>
+<span class="nc" id="L207">                .add(Translator</span>
+<span class="nc" id="L208">                        .localize(&quot;action.import-java-array-model-multi&quot;));</span>
+
+<span class="nc" id="L210">        String modelarrays = Configuration.getString(</span>
+                KEY_IMPORT_EXTENDED_MODEL_ARRAYS, &quot;0&quot;);
+<span class="nc" id="L212">        selected = Integer.parseInt(modelarrays);</span>
+
+<span class="nc" id="L214">        datatypeSetting = new Setting.UniqueSelection(Translator</span>
+<span class="nc" id="L215">                .localize(&quot;action.import-java-array-model&quot;), options, selected);</span>
+<span class="nc" id="L216">        settingsList.add(datatypeSetting);</span>
+
+<span class="nc" id="L218">        List&lt;String&gt; paths = new ArrayList&lt;String&gt;();</span>
+<span class="nc" id="L219">        URL[] urls = ImportClassLoader.getURLs(Configuration.getString(</span>
+                Argo.KEY_USER_IMPORT_CLASSPATH, &quot;&quot;));
+
+<span class="nc bnc" id="L222" title="All 2 branches missed.">        for (URL url : urls) {</span>
+<span class="nc" id="L223">            paths.add(url.getFile());</span>
+        }
+<span class="nc" id="L225">        pathlistSetting = new Setting.PathListSelection(Translator</span>
+<span class="nc" id="L226">                .localize(&quot;dialog.import.classpath.title&quot;), Translator</span>
+<span class="nc" id="L227">                .localize(&quot;dialog.import.classpath.text&quot;), paths);</span>
+<span class="nc" id="L228">        settingsList.add(pathlistSetting);</span>
+
+<span class="nc" id="L230">        return settingsList;</span>
+    }
+
+    /**
+     * Saves the settings in the configuration.
+     */
+    public void saveSettings() {
+<span class="nc bnc" id="L237" title="All 2 branches missed.">        if (attributeSetting != null) {</span>
+<span class="nc" id="L238">            Configuration.setString(KEY_IMPORT_EXTENDED_MODEL_ATTR, String</span>
+<span class="nc" id="L239">                .valueOf(attributeSetting.getSelection()));</span>
+        }
+<span class="nc bnc" id="L241" title="All 2 branches missed.">        if (datatypeSetting != null) {</span>
+<span class="nc" id="L242">            Configuration.setString(KEY_IMPORT_EXTENDED_MODEL_ARRAYS, String</span>
+<span class="nc" id="L243">                .valueOf(datatypeSetting.getSelection()));</span>
+        }
+<span class="nc" id="L245">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

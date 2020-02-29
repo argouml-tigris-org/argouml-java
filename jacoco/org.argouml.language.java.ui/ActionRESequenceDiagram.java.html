@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ActionRESequenceDiagram.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">argo_java</a> &gt; <a href="index.source.html" class="el_package">org.argouml.language.java.ui</a> &gt; <span class="el_source">ActionRESequenceDiagram.java</span></div><h1>ActionRESequenceDiagram.java</h1><pre class="source lang-java linenums">/* $Id$
+ *****************************************************************************
+ * Copyright (c) 2009 Contributors - see below
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    bobtarling
+ *****************************************************************************
+ *
+ * Some portions of this file was previously release using the BSD License:
+ */
+
+// Copyright (c) 1996-2008 The Regents of the University of California. All
+// Rights Reserved. Permission to use, copy, modify, and distribute this
+// software and its documentation without fee, and without a written
+// agreement is hereby granted, provided that the above copyright notice
+// and this paragraph appear in all copies.  This software program and
+// documentation are copyrighted by The Regents of the University of
+// California. The software program and documentation are supplied &quot;AS
+// IS&quot;, without any accompanying services from The Regents. The Regents
+// does not warrant that the operation of the program will be
+// uninterrupted or error-free. The end-user understands that the program
+// was developed for research purposes and is advised not to rely
+// exclusively on the program for any reason.  IN NO EVENT SHALL THE
+// UNIVERSITY OF CALIFORNIA BE LIABLE TO ANY PARTY FOR DIRECT, INDIRECT,
+// SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES, INCLUDING LOST PROFITS,
+// ARISING OUT OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF
+// THE UNIVERSITY OF CALIFORNIA HAS BEEN ADVISED OF THE POSSIBILITY OF
+// SUCH DAMAGE. THE UNIVERSITY OF CALIFORNIA SPECIFICALLY DISCLAIMS ANY
+// WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+// MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE SOFTWARE
+// PROVIDED HEREUNDER IS ON AN &quot;AS IS&quot; BASIS, AND THE UNIVERSITY OF
+// CALIFORNIA HAS NO OBLIGATIONS TO PROVIDE MAINTENANCE, SUPPORT,
+// UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
+
+package org.argouml.language.java.ui;
+
+import java.awt.event.ActionEvent;
+import java.util.Collection;
+import java.util.Iterator;
+
+import javax.swing.AbstractAction;
+
+import org.argouml.i18n.Translator;
+import org.argouml.kernel.Project;
+import org.argouml.kernel.ProjectManager;
+import org.argouml.model.Model;
+import org.argouml.ui.targetmanager.TargetManager;
+import org.argouml.uml.diagram.ArgoDiagram;
+import org.argouml.uml.diagram.DiagramElement;
+//import org.tigris.gef.base.Globals;
+//import org.tigris.gef.graph.GraphModel;
+
+/**
+ * Action to reverse engineer a sequence diagram from the operation bodies.
+ */
+public class ActionRESequenceDiagram extends AbstractAction {
+
+    /**
+     * The UID.
+     */
+    private static final long serialVersionUID = 2915509413708666273L;
+
+    // TODO: We later cast this to FigMessage so why define as Object here?
+    private DiagramElement messageFig;
+    
+    /**
+     * The constructor. If a figure is given, then it is invoked inside of a
+     * sequence diagram, so it will work with this diagram. If figure is null,
+     * then this causes the creation of a new sequence diagram.
+     *
+     * @param fig the figure the action is performed on
+     */
+    public ActionRESequenceDiagram(Object fig) {
+<span class="nc" id="L78">        super(Translator.localize(&quot;action.reverse-engineer-sequence-diagram&quot;));</span>
+<span class="nc" id="L79">        messageFig = (DiagramElement) fig;</span>
+<span class="nc" id="L80">    }</span>
+
+    /**
+     * The constructor. Invoked from the explorer, so no figure is available.
+     */
+    public ActionRESequenceDiagram() {
+<span class="nc" id="L86">        this(null);</span>
+<span class="nc" id="L87">    }</span>
+
+    /*
+     * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+     */
+    public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L93">        Project project = ProjectManager.getManager().getCurrentProject();</span>
+<span class="nc" id="L94">        final Object target = TargetManager.getInstance().getTarget();</span>
+<span class="nc bnc" id="L95" title="All 2 branches missed.">        if (Model.getFacade().isAOperation(target)) {</span>
+<span class="nc" id="L96">            RESequenceDiagramDialog dialog =</span>
+                new RESequenceDiagramDialog(target);
+<span class="nc" id="L98">            dialog.setVisible(true);</span>
+<span class="nc bnc" id="L99" title="All 4 branches missed.">        } else if (Model.getFacade().isAMessage(target) &amp;&amp; messageFig != null) {</span>
+<span class="nc" id="L100">            final Object action = Model.getFacade().getAction(target);</span>
+            //final GraphModel sequenceDiagramGraphModel =
+            //     Globals.curEditor().getGraphModel();
+<span class="nc" id="L103">            ArgoDiagram diagram = null;</span>
+<span class="nc" id="L104">            Iterator&lt;ArgoDiagram&gt; iter = project.getDiagramList().iterator();</span>
+<span class="nc bnc" id="L105" title="All 2 branches missed.">            while (iter.hasNext()) {</span>
+<span class="nc" id="L106">                diagram = iter.next();</span>
+                //if (sequenceDiagramGraphModel == diagram.getGraphModel()) {
+                //    break;
+                //}
+            }
+<span class="nc bnc" id="L111" title="All 2 branches missed.">            if (Model.getFacade().isACallAction(action)) {</span>
+<span class="nc" id="L112">                final Object operation = Model.getFacade().getOperation(action);</span>
+                // it is highly desirable that the message action
+                // already knows it's operation
+                // TODO: There is a cyclic dependency between
+                // ActionRESequenceDiagram and FigMessage
+<span class="nc" id="L117">                RESequenceDiagramDialog dialog = new RESequenceDiagramDialog(</span>
+                        operation,
+                        (DiagramElement) messageFig,
+                        diagram);
+<span class="nc" id="L121">                dialog.setVisible(true);</span>
+<span class="nc" id="L122">            } else {</span>
+                // the hard way: try to determine the operation
+                // from the message name
+<span class="nc" id="L125">                final Object receiver = Model.getFacade().getReceiver(target);</span>
+                // TODO: Do we really need to test for null here? I would
+                // expect an empty array which is safe.
+<span class="nc bnc" id="L128" title="All 2 branches missed.">                final Collection c =</span>
+                    receiver != null
+<span class="nc" id="L130">                    ? Model.getFacade().getBases(receiver)</span>
+                            : null;
+<span class="nc bnc" id="L132" title="All 2 branches missed.">                final Object cls =</span>
+<span class="nc bnc" id="L133" title="All 2 branches missed.">                    c != null &amp;&amp; !c.isEmpty() ? c.iterator().next() : null;</span>
+<span class="nc bnc" id="L134" title="All 4 branches missed.">                if (cls != null &amp;&amp; Model.getFacade().isAClassifier(cls)) {</span>
+                    // too primitive (just gets the first method
+                    // with matching name)
+<span class="nc" id="L137">                    String opName = Model.getFacade().getName(target);</span>
+<span class="nc" id="L138">                    int pos1 = opName.lastIndexOf(&quot;.&quot;);</span>
+<span class="nc" id="L139">                    int pos2 = opName.lastIndexOf(&quot;(&quot;);</span>
+<span class="nc bnc" id="L140" title="All 2 branches missed.">                    if (pos1 == -1) {</span>
+<span class="nc" id="L141">                        pos1 = opName.lastIndexOf(&quot;new &quot;);</span>
+<span class="nc bnc" id="L142" title="All 2 branches missed.">                        pos1 = pos1 != -1 ? pos1 + 4 : 0;</span>
+                    } else {
+<span class="nc" id="L144">                        pos1++;</span>
+                    }
+<span class="nc bnc" id="L146" title="All 2 branches missed.">                    pos2 = pos2 != -1 ? pos2 : opName.length();</span>
+<span class="nc" id="L147">                    opName = opName.substring(pos1, pos2);</span>
+
+                    for (Object operation
+<span class="nc bnc" id="L150" title="All 2 branches missed.">                        : Model.getCoreHelper().getOperationsInh(cls)) {</span>
+<span class="nc bnc" id="L151" title="All 2 branches missed.">                        if (opName.equals(</span>
+<span class="nc" id="L152">                                Model.getFacade().getName(operation))) {</span>
+                            // TODO: There is a cyclic dependency between
+                            // ActionRESequenceDiagram and FigMessage
+<span class="nc" id="L155">                            RESequenceDiagramDialog dialog =</span>
+                                new RESequenceDiagramDialog(
+                                        operation,
+                                        (DiagramElement) messageFig,
+                                        diagram);
+<span class="nc" id="L160">                            dialog.setVisible(true);</span>
+<span class="nc" id="L161">                            break;</span>
+                        }
+<span class="nc" id="L163">                    }</span>
+                }
+            }
+        }
+<span class="nc" id="L167">    }</span>
+
+    /*
+     * @see javax.swing.Action#isEnabled()
+     */
+    @Override
+    public boolean isEnabled() {
+<span class="nc" id="L174">        Object target = TargetManager.getInstance().getModelTarget();</span>
+<span class="nc bnc" id="L175" title="All 2 branches missed.">        return Model.getFacade().isAOperation(target)</span>
+<span class="nc bnc" id="L176" title="All 2 branches missed.">            || Model.getFacade().isAMessage(target);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

@@ -1,0 +1,654 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ClassfileTreeParser.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">argo_java</a> &gt; <a href="index.source.html" class="el_package">org.argouml.language.java.reveng.classfile</a> &gt; <span class="el_source">ClassfileTreeParser.java</span></div><h1>ClassfileTreeParser.java</h1><pre class="source lang-java linenums">// $ANTLR 2.7.7 (20060930): &quot;classfile.tree.g&quot; -&gt; &quot;ClassfileTreeParser.java&quot;$
+
+package org.argouml.language.java.reveng.classfile;
+
+import org.argouml.language.java.reveng.*;
+import java.util.*;
+
+import antlr.TreeParser;
+import antlr.Token;
+import antlr.collections.AST;
+import antlr.RecognitionException;
+import antlr.ANTLRException;
+import antlr.NoViableAltException;
+import antlr.MismatchedTokenException;
+import antlr.SemanticException;
+import antlr.collections.impl.BitSet;
+import antlr.ASTPair;
+import antlr.collections.impl.ASTArray;
+
+
+/*************************************
+ * A tree parser for a Java classfile.
+ *************************************/
+public class ClassfileTreeParser extends antlr.TreeParser       implements ClassfileTreeParserTokenTypes
+ {
+
+    // The modeller to create the meta model objects.
+    private org.argouml.language.java.reveng.Modeller _modeller;
+
+    /**
+     * Return the modeller of this parser.
+     *
+     * @return The modeller of this parser.
+     */
+    public final org.argouml.language.java.reveng.Modeller getModeller() {
+<span class="fc" id="L36">        return _modeller;</span>
+    }
+
+    /**
+     * Set the modeller of this parser.
+     *
+     * @param modeller The new modeller of this parser.
+     */
+    public final void setModeller(org.argouml.language.java.reveng.Modeller modeller) {
+<span class="fc" id="L45">        _modeller = modeller;</span>
+<span class="fc" id="L46">    }</span>
+
+    /**
+     * Split class and package name and set package.
+     * 
+     * @param classname The fully qualified classname.
+     *
+     * @return The class name.
+     */
+    private final String splitPackageFromClass(String classname) {
+<span class="fc" id="L56">	int lastDot = classname.lastIndexOf('/');</span>
+<span class="pc bpc" id="L57" title="1 of 2 branches missed.">	if(lastDot != -1) {</span>
+<span class="fc" id="L58">	    getModeller().addPackage(classname.substring(0,lastDot).replaceAll(&quot;/&quot;,&quot;.&quot;));</span>
+<span class="fc" id="L59">	    classname = classname.substring(lastDot + 1);</span>
+	}
+<span class="fc" id="L61">	return classname;</span>
+    }
+<span class="fc" id="L63">public ClassfileTreeParser() {</span>
+<span class="fc" id="L64">	tokenNames = _tokenNames;</span>
+<span class="fc" id="L65">}</span>
+
+	public final void classfile(AST _t,
+		org.argouml.language.java.reveng.Modeller modeller
+	) throws RecognitionException {
+		
+<span class="pc bpc" id="L71" title="1 of 2 branches missed.">		AST classfile_AST_in = (_t == ASTNULL) ? null : (AST)_t;</span>
+<span class="fc" id="L72">		setModeller(modeller);</span>
+		
+<span class="fc" id="L74">		magic_number(_t);</span>
+<span class="fc" id="L75">		_t = _retTree;</span>
+<span class="fc" id="L76">		version_number(_t);</span>
+<span class="fc" id="L77">		_t = _retTree;</span>
+<span class="fc" id="L78">		typeDefinition(_t);</span>
+<span class="fc" id="L79">		_t = _retTree;</span>
+<span class="fc" id="L80">		attribute_block(_t);</span>
+<span class="fc" id="L81">		_t = _retTree;</span>
+<span class="fc" id="L82">		method_block(_t);</span>
+<span class="fc" id="L83">		_t = _retTree;</span>
+		{
+<span class="pc bpc" id="L85" title="1 of 2 branches missed.">		if (_t==null) _t=ASTNULL;</span>
+<span class="pc bpc" id="L86" title="2 of 3 branches missed.">		switch ( _t.getType()) {</span>
+		case SOURCEFILE:
+		{
+<span class="nc" id="L89">			sourcefile(_t);</span>
+<span class="nc" id="L90">			_t = _retTree;</span>
+<span class="nc" id="L91">			break;</span>
+		}
+		case SIGNATURE:
+		{
+<span class="fc" id="L95">			break;</span>
+		}
+		default:
+		{
+<span class="nc" id="L99">			throw new NoViableAltException(_t);</span>
+		}
+		}
+		}
+<span class="fc" id="L103">		class_signature(_t);</span>
+<span class="fc" id="L104">		_t = _retTree;</span>
+<span class="fc" id="L105">		getModeller().popClassifier();</span>
+<span class="fc" id="L106">		_retTree = _t;</span>
+<span class="fc" id="L107">	}</span>
+	
+	public final void magic_number(AST _t) throws RecognitionException {
+		
+<span class="pc bpc" id="L111" title="1 of 2 branches missed.">		AST magic_number_AST_in = (_t == ASTNULL) ? null : (AST)_t;</span>
+		
+<span class="fc" id="L113">		AST tmp1_AST_in = (AST)_t;</span>
+<span class="fc" id="L114">		match(_t,MAGIC);</span>
+<span class="fc" id="L115">		_t = _t.getNextSibling();</span>
+<span class="fc" id="L116">		System.err.println(&quot;MAGIC &quot;+tmp1_AST_in.getText());</span>
+<span class="fc" id="L117">		_retTree = _t;</span>
+<span class="fc" id="L118">	}</span>
+	
+	public final void version_number(AST _t) throws RecognitionException {
+		
+<span class="pc bpc" id="L122" title="1 of 2 branches missed.">		AST version_number_AST_in = (_t == ASTNULL) ? null : (AST)_t;</span>
+		
+<span class="fc" id="L124">		AST tmp2_AST_in = (AST)_t;</span>
+<span class="fc" id="L125">		match(_t,VERSION);</span>
+<span class="fc" id="L126">		_t = _t.getNextSibling();</span>
+<span class="fc" id="L127">		_retTree = _t;</span>
+<span class="fc" id="L128">	}</span>
+	
+	public final void typeDefinition(AST _t) throws RecognitionException {
+		
+<span class="pc bpc" id="L132" title="1 of 2 branches missed.">		AST typeDefinition_AST_in = (_t == ASTNULL) ? null : (AST)_t;</span>
+		
+<span class="fc" id="L134">		short modifiers=0;</span>
+<span class="fc" id="L135">		String class_name=null;</span>
+<span class="fc" id="L136">		String superclass_name=null;</span>
+<span class="fc" id="L137">		String classSignature = null;</span>
+<span class="fc" id="L138">		List&lt;String&gt; interfaces = new ArrayList&lt;String&gt;();</span>
+		
+		
+<span class="pc bpc" id="L141" title="1 of 2 branches missed.">		if (_t==null) _t=ASTNULL;</span>
+<span class="pc bpc" id="L142" title="2 of 3 branches missed.">		switch ( _t.getType()) {</span>
+		case INTERFACE_DEF:
+		{
+<span class="nc" id="L145">			AST __t8 = _t;</span>
+<span class="nc" id="L146">			AST tmp3_AST_in = (AST)_t;</span>
+<span class="nc" id="L147">			match(_t,INTERFACE_DEF);</span>
+<span class="nc" id="L148">			_t = _t.getFirstChild();</span>
+<span class="nc" id="L149">			modifiers=access_modifiers(_t);</span>
+<span class="nc" id="L150">			_t = _retTree;</span>
+<span class="nc" id="L151">			class_name=class_info(_t);</span>
+<span class="nc" id="L152">			_t = _retTree;</span>
+<span class="nc" id="L153">			AST __t9 = _t;</span>
+<span class="nc" id="L154">			AST tmp4_AST_in = (AST)_t;</span>
+<span class="nc" id="L155">			match(_t,EXTENDS_CLAUSE);</span>
+<span class="nc" id="L156">			_t = _t.getFirstChild();</span>
+<span class="nc" id="L157">			interface_block(_t,interfaces);</span>
+<span class="nc" id="L158">			_t = _retTree;</span>
+<span class="nc" id="L159">			_t = __t9;</span>
+<span class="nc" id="L160">			_t = _t.getNextSibling();</span>
+<span class="nc" id="L161">			_t = __t8;</span>
+<span class="nc" id="L162">			_t = _t.getNextSibling();</span>
+			
+<span class="nc" id="L164">			getModeller().addComponent();</span>
+<span class="nc" id="L165">				       getModeller().addInterface( splitPackageFromClass(class_name), modifiers, interfaces, null);</span>
+			
+<span class="nc" id="L167">			break;</span>
+		}
+		case CLASS_DEF:
+		{
+<span class="fc" id="L171">			AST __t10 = _t;</span>
+<span class="fc" id="L172">			AST tmp5_AST_in = (AST)_t;</span>
+<span class="fc" id="L173">			match(_t,CLASS_DEF);</span>
+<span class="fc" id="L174">			_t = _t.getFirstChild();</span>
+<span class="fc" id="L175">			modifiers=access_modifiers(_t);</span>
+<span class="fc" id="L176">			_t = _retTree;</span>
+<span class="fc" id="L177">			class_name=class_info(_t);</span>
+<span class="fc" id="L178">			_t = _retTree;</span>
+<span class="fc" id="L179">			AST __t11 = _t;</span>
+<span class="fc" id="L180">			AST tmp6_AST_in = (AST)_t;</span>
+<span class="fc" id="L181">			match(_t,EXTENDS_CLAUSE);</span>
+<span class="fc" id="L182">			_t = _t.getFirstChild();</span>
+<span class="fc" id="L183">			superclass_name=class_info(_t);</span>
+<span class="fc" id="L184">			_t = _retTree;</span>
+<span class="fc" id="L185">			_t = __t11;</span>
+<span class="fc" id="L186">			_t = _t.getNextSibling();</span>
+<span class="fc" id="L187">			AST __t12 = _t;</span>
+<span class="fc" id="L188">			AST tmp7_AST_in = (AST)_t;</span>
+<span class="fc" id="L189">			match(_t,IMPLEMENTS_CLAUSE);</span>
+<span class="fc" id="L190">			_t = _t.getFirstChild();</span>
+<span class="fc" id="L191">			interface_block(_t,interfaces);</span>
+<span class="fc" id="L192">			_t = _retTree;</span>
+<span class="fc" id="L193">			_t = __t12;</span>
+<span class="fc" id="L194">			_t = _t.getNextSibling();</span>
+<span class="fc" id="L195">			_t = __t10;</span>
+<span class="fc" id="L196">			_t = _t.getNextSibling();</span>
+			
+<span class="pc bpc" id="L198" title="1 of 2 branches missed.">				       if( &quot;java.lang.Object&quot;.equals(superclass_name)) {</span>
+<span class="nc" id="L199">					   superclass_name=null;  </span>
+				       }
+<span class="fc" id="L201">			getModeller().addComponent();</span>
+			
+			
+<span class="fc" id="L204">				       getModeller().addClass( splitPackageFromClass(class_name), modifiers, superclass_name, interfaces, null);</span>
+				
+<span class="fc" id="L206">			break;</span>
+		}
+		default:
+		{
+<span class="nc" id="L210">			throw new NoViableAltException(_t);</span>
+		}
+		}
+<span class="fc" id="L213">		_retTree = _t;</span>
+<span class="fc" id="L214">	}</span>
+	
+	public final void attribute_block(AST _t) throws RecognitionException {
+		
+<span class="pc bpc" id="L218" title="1 of 2 branches missed.">		AST attribute_block_AST_in = (_t == ASTNULL) ? null : (AST)_t;</span>
+		
+		{
+		_loop20:
+		do {
+<span class="pc bpc" id="L223" title="1 of 2 branches missed.">			if (_t==null) _t=ASTNULL;</span>
+<span class="pc bpc" id="L224" title="1 of 2 branches missed.">			if ((_t.getType()==VARIABLE_DEF)) {</span>
+<span class="nc" id="L225">				attribute_info(_t);</span>
+<span class="nc" id="L226">				_t = _retTree;</span>
+			}
+			else {
+				break _loop20;
+			}
+			
+		} while (true);
+		}
+<span class="fc" id="L234">		_retTree = _t;</span>
+<span class="fc" id="L235">	}</span>
+	
+	public final void method_block(AST _t) throws RecognitionException {
+		
+<span class="pc bpc" id="L239" title="1 of 2 branches missed.">		AST method_block_AST_in = (_t == ASTNULL) ? null : (AST)_t;</span>
+		
+		{
+		_loop26:
+		do {
+<span class="pc bpc" id="L244" title="1 of 2 branches missed.">			if (_t==null) _t=ASTNULL;</span>
+<span class="pc bpc" id="L245" title="1 of 3 branches missed.">			switch ( _t.getType()) {</span>
+			case CTOR_DEF:
+			{
+<span class="fc" id="L248">				ctorDef(_t);</span>
+<span class="fc" id="L249">				_t = _retTree;</span>
+<span class="fc" id="L250">				break;</span>
+			}
+			case METHOD_DEF:
+			{
+<span class="nc" id="L254">				methodDecl(_t);</span>
+<span class="nc" id="L255">				_t = _retTree;</span>
+<span class="nc" id="L256">				break;</span>
+			}
+			default:
+			{
+<span class="fc" id="L260">				break _loop26;</span>
+			}
+			}
+		} while (true);
+		}
+<span class="fc" id="L265">		_retTree = _t;</span>
+<span class="fc" id="L266">	}</span>
+	
+	public final void sourcefile(AST _t) throws RecognitionException {
+		
+<span class="nc bnc" id="L270" title="All 2 branches missed.">		AST sourcefile_AST_in = (_t == ASTNULL) ? null : (AST)_t;</span>
+		
+<span class="nc" id="L272">		AST tmp8_AST_in = (AST)_t;</span>
+<span class="nc" id="L273">		match(_t,SOURCEFILE);</span>
+<span class="nc" id="L274">		_t = _t.getNextSibling();</span>
+<span class="nc" id="L275">		System.err.println(&quot;SOURCEFILE: &quot;+tmp8_AST_in.getText());</span>
+<span class="nc" id="L276">		_retTree = _t;</span>
+<span class="nc" id="L277">	}</span>
+	
+	public final void class_signature(AST _t) throws RecognitionException {
+		
+<span class="pc bpc" id="L281" title="1 of 2 branches missed.">		AST class_signature_AST_in = (_t == ASTNULL) ? null : (AST)_t;</span>
+		
+<span class="fc" id="L283">		AST tmp9_AST_in = (AST)_t;</span>
+<span class="fc" id="L284">		match(_t,SIGNATURE);</span>
+<span class="fc" id="L285">		_t = _t.getNextSibling();</span>
+<span class="fc" id="L286">		getModeller().addClassSignature(ParserUtils.convertClassSignature(tmp9_AST_in.getText()));</span>
+<span class="fc" id="L287">		_retTree = _t;</span>
+<span class="fc" id="L288">	}</span>
+	
+	public final short  access_modifiers(AST _t) throws RecognitionException {
+		short modifiers;
+		
+<span class="pc bpc" id="L293" title="1 of 2 branches missed.">		AST access_modifiers_AST_in = (_t == ASTNULL) ? null : (AST)_t;</span>
+		
+<span class="fc" id="L295">		AST tmp10_AST_in = (AST)_t;</span>
+<span class="fc" id="L296">		match(_t,ACCESS_MODIFIERS);</span>
+<span class="fc" id="L297">		_t = _t.getNextSibling();</span>
+<span class="fc" id="L298">		modifiers=((ShortAST)tmp10_AST_in).getShortValue();</span>
+<span class="fc" id="L299">		_retTree = _t;</span>
+<span class="fc" id="L300">		return modifiers;</span>
+	}
+	
+	public final String  class_info(AST _t) throws RecognitionException {
+		String name;
+		
+<span class="pc bpc" id="L306" title="1 of 2 branches missed.">		AST class_info_AST_in = (_t == ASTNULL) ? null : (AST)_t;</span>
+		
+<span class="fc" id="L308">		AST tmp11_AST_in = (AST)_t;</span>
+<span class="fc" id="L309">		match(_t,IDENT);</span>
+<span class="fc" id="L310">		_t = _t.getNextSibling();</span>
+<span class="fc" id="L311">		name = tmp11_AST_in.getText();</span>
+<span class="fc" id="L312">		_retTree = _t;</span>
+<span class="fc" id="L313">		return name;</span>
+	}
+	
+	public final void interface_block(AST _t,
+		List&lt;String&gt; interfaces
+	) throws RecognitionException {
+		
+<span class="pc bpc" id="L320" title="1 of 2 branches missed.">		AST interface_block_AST_in = (_t == ASTNULL) ? null : (AST)_t;</span>
+		
+		{
+		_loop17:
+		do {
+<span class="pc bpc" id="L325" title="1 of 2 branches missed.">			if (_t==null) _t=ASTNULL;</span>
+<span class="pc bpc" id="L326" title="1 of 2 branches missed.">			if ((_t.getType()==IDENT)) {</span>
+<span class="nc" id="L327">				AST tmp12_AST_in = (AST)_t;</span>
+<span class="nc" id="L328">				match(_t,IDENT);</span>
+<span class="nc" id="L329">				_t = _t.getNextSibling();</span>
+<span class="nc" id="L330">				interfaces.add( tmp12_AST_in.getText());</span>
+<span class="nc" id="L331">			}</span>
+			else {
+				break _loop17;
+			}
+			
+		} while (true);
+		}
+<span class="fc" id="L338">		_retTree = _t;</span>
+<span class="fc" id="L339">	}</span>
+	
+	public final void attribute_info(AST _t) throws RecognitionException {
+		
+<span class="nc bnc" id="L343" title="All 2 branches missed.">		AST attribute_info_AST_in = (_t == ASTNULL) ? null : (AST)_t;</span>
+		
+<span class="nc" id="L345">		String signature=null;</span>
+		
+		
+<span class="nc" id="L348">		AST __t22 = _t;</span>
+<span class="nc" id="L349">		AST tmp13_AST_in = (AST)_t;</span>
+<span class="nc" id="L350">		match(_t,VARIABLE_DEF);</span>
+<span class="nc" id="L351">		_t = _t.getFirstChild();</span>
+<span class="nc" id="L352">		AST tmp14_AST_in = (AST)_t;</span>
+<span class="nc" id="L353">		match(_t,ACCESS_MODIFIERS);</span>
+<span class="nc" id="L354">		_t = _t.getNextSibling();</span>
+<span class="nc" id="L355">		AST tmp15_AST_in = (AST)_t;</span>
+<span class="nc" id="L356">		match(_t,TYPE);</span>
+<span class="nc" id="L357">		_t = _t.getNextSibling();</span>
+<span class="nc" id="L358">		AST tmp16_AST_in = (AST)_t;</span>
+<span class="nc" id="L359">		match(_t,IDENT);</span>
+<span class="nc" id="L360">		_t = _t.getNextSibling();</span>
+		{
+<span class="nc bnc" id="L362" title="All 2 branches missed.">		if (_t==null) _t=ASTNULL;</span>
+<span class="nc bnc" id="L363" title="All 3 branches missed.">		switch ( _t.getType()) {</span>
+		case SIGNATURE:
+		{
+<span class="nc" id="L366">			AST tmp17_AST_in = (AST)_t;</span>
+<span class="nc" id="L367">			match(_t,SIGNATURE);</span>
+<span class="nc" id="L368">			_t = _t.getNextSibling();</span>
+<span class="nc" id="L369">			signature = tmp17_AST_in.getText();</span>
+<span class="nc" id="L370">			break;</span>
+		}
+		case 3:
+		{
+<span class="nc" id="L374">			break;</span>
+		}
+		default:
+		{
+<span class="nc" id="L378">			throw new NoViableAltException(_t);</span>
+		}
+		}
+		}
+<span class="nc" id="L382">		_t = __t22;</span>
+<span class="nc" id="L383">		_t = _t.getNextSibling();</span>
+		// Add the attribute to the model element, that holds
+			      // the class/interface info.
+<span class="nc" id="L386">			      getModeller().addAttribute( ((ShortAST)tmp14_AST_in).getShortValue(), </span>
+<span class="nc" id="L387">							  tmp15_AST_in.getText(),</span>
+<span class="nc" id="L388">							  tmp16_AST_in.getText(),</span>
+							  null,	     // I parse no initializers yet.
+							  null);     // And there's no javadoc info available.
+			
+<span class="nc" id="L392">		_retTree = _t;</span>
+<span class="nc" id="L393">	}</span>
+	
+	public final void ctorDef(AST _t) throws RecognitionException {
+		
+<span class="pc bpc" id="L397" title="1 of 2 branches missed.">		AST ctorDef_AST_in = (_t == ASTNULL) ? null : (AST)_t;</span>
+<span class="fc" id="L398">		List&lt;ParameterDeclaration&gt; params = null;</span>
+<span class="fc" id="L399">		String signature=null;</span>
+		
+		
+<span class="fc" id="L402">		AST __t28 = _t;</span>
+<span class="fc" id="L403">		AST tmp18_AST_in = (AST)_t;</span>
+<span class="fc" id="L404">		match(_t,CTOR_DEF);</span>
+<span class="fc" id="L405">		_t = _t.getFirstChild();</span>
+<span class="fc" id="L406">		AST tmp19_AST_in = (AST)_t;</span>
+<span class="fc" id="L407">		match(_t,ACCESS_MODIFIERS);</span>
+<span class="fc" id="L408">		_t = _t.getNextSibling();</span>
+<span class="fc" id="L409">		AST tmp20_AST_in = (AST)_t;</span>
+<span class="fc" id="L410">		match(_t,IDENT);</span>
+<span class="fc" id="L411">		_t = _t.getNextSibling();</span>
+<span class="fc" id="L412">		params=parameters(_t);</span>
+<span class="fc" id="L413">		_t = _retTree;</span>
+		{
+<span class="pc bpc" id="L415" title="1 of 2 branches missed.">		if (_t==null) _t=ASTNULL;</span>
+<span class="pc bpc" id="L416" title="2 of 3 branches missed.">		switch ( _t.getType()) {</span>
+		case THROWS:
+		{
+<span class="fc" id="L419">			exceptions(_t);</span>
+<span class="fc" id="L420">			_t = _retTree;</span>
+<span class="fc" id="L421">			break;</span>
+		}
+		case 3:
+		{
+<span class="nc" id="L425">			break;</span>
+		}
+		default:
+		{
+<span class="nc" id="L429">			throw new NoViableAltException(_t);</span>
+		}
+		}
+		}
+<span class="fc" id="L433">		_t = __t28;</span>
+<span class="fc" id="L434">		_t = _t.getNextSibling();</span>
+		
+<span class="fc" id="L436">			    getModeller().addOperation( ((ShortAST)tmp19_AST_in).getShortValue(),</span>
+							null,
+<span class="fc" id="L438">							tmp20_AST_in.getText(),</span>
+							params,
+							null);
+			
+<span class="fc" id="L442">		_retTree = _t;</span>
+<span class="fc" id="L443">	}</span>
+	
+	public final void methodDecl(AST _t) throws RecognitionException {
+		
+<span class="nc bnc" id="L447" title="All 2 branches missed.">		AST methodDecl_AST_in = (_t == ASTNULL) ? null : (AST)_t;</span>
+<span class="nc" id="L448">		List&lt;ParameterDeclaration&gt; params = null;</span>
+<span class="nc" id="L449">		String signature=null;</span>
+		
+		
+<span class="nc" id="L452">		AST __t31 = _t;</span>
+<span class="nc" id="L453">		AST tmp21_AST_in = (AST)_t;</span>
+<span class="nc" id="L454">		match(_t,METHOD_DEF);</span>
+<span class="nc" id="L455">		_t = _t.getFirstChild();</span>
+<span class="nc" id="L456">		AST tmp22_AST_in = (AST)_t;</span>
+<span class="nc" id="L457">		match(_t,ACCESS_MODIFIERS);</span>
+<span class="nc" id="L458">		_t = _t.getNextSibling();</span>
+<span class="nc" id="L459">		AST tmp23_AST_in = (AST)_t;</span>
+<span class="nc" id="L460">		match(_t,TYPE);</span>
+<span class="nc" id="L461">		_t = _t.getNextSibling();</span>
+<span class="nc" id="L462">		AST tmp24_AST_in = (AST)_t;</span>
+<span class="nc" id="L463">		match(_t,IDENT);</span>
+<span class="nc" id="L464">		_t = _t.getNextSibling();</span>
+<span class="nc" id="L465">		params=parameters(_t);</span>
+<span class="nc" id="L466">		_t = _retTree;</span>
+		{
+<span class="nc bnc" id="L468" title="All 2 branches missed.">		if (_t==null) _t=ASTNULL;</span>
+<span class="nc bnc" id="L469" title="All 3 branches missed.">		switch ( _t.getType()) {</span>
+		case THROWS:
+		{
+<span class="nc" id="L472">			exceptions(_t);</span>
+<span class="nc" id="L473">			_t = _retTree;</span>
+<span class="nc" id="L474">			break;</span>
+		}
+		case 3:
+		case SIGNATURE:
+		{
+<span class="nc" id="L479">			break;</span>
+		}
+		default:
+		{
+<span class="nc" id="L483">			throw new NoViableAltException(_t);</span>
+		}
+		}
+		}
+		{
+<span class="nc bnc" id="L488" title="All 2 branches missed.">		if (_t==null) _t=ASTNULL;</span>
+<span class="nc bnc" id="L489" title="All 3 branches missed.">		switch ( _t.getType()) {</span>
+		case SIGNATURE:
+		{
+<span class="nc" id="L492">			AST tmp25_AST_in = (AST)_t;</span>
+<span class="nc" id="L493">			match(_t,SIGNATURE);</span>
+<span class="nc" id="L494">			_t = _t.getNextSibling();</span>
+<span class="nc" id="L495">			signature = tmp25_AST_in.getText();</span>
+<span class="nc" id="L496">			break;</span>
+		}
+		case 3:
+		{
+<span class="nc" id="L500">			break;</span>
+		}
+		default:
+		{
+<span class="nc" id="L504">			throw new NoViableAltException(_t);</span>
+		}
+		}
+		}
+<span class="nc" id="L508">		_t = __t31;</span>
+<span class="nc" id="L509">		_t = _t.getNextSibling();</span>
+		
+<span class="nc" id="L511">			    getModeller().addOperation( ((ShortAST)tmp22_AST_in).getShortValue(),</span>
+<span class="nc" id="L512">							tmp23_AST_in.getText(),</span>
+<span class="nc" id="L513">							tmp24_AST_in.getText(),</span>
+							params,
+							null);
+			
+<span class="nc" id="L517">		_retTree = _t;</span>
+<span class="nc" id="L518">	}</span>
+	
+	public final List&lt;ParameterDeclaration&gt;  parameters(AST _t) throws RecognitionException {
+		List&lt;ParameterDeclaration&gt; params;
+		
+<span class="pc bpc" id="L523" title="1 of 2 branches missed.">		AST parameters_AST_in = (_t == ASTNULL) ? null : (AST)_t;</span>
+		
+<span class="fc" id="L525">		params = new ArrayList&lt;ParameterDeclaration&gt;(); </span>
+<span class="fc" id="L526">		ParameterDeclaration currentParam = null;</span>
+		
+		
+<span class="fc" id="L529">		AST __t35 = _t;</span>
+<span class="fc" id="L530">		AST tmp26_AST_in = (AST)_t;</span>
+<span class="fc" id="L531">		match(_t,PARAMETERS);</span>
+<span class="fc" id="L532">		_t = _t.getFirstChild();</span>
+		{
+		_loop37:
+		do {
+<span class="pc bpc" id="L536" title="1 of 2 branches missed.">			if (_t==null) _t=ASTNULL;</span>
+<span class="pc bpc" id="L537" title="1 of 2 branches missed.">			if ((_t.getType()==PARAMETER_DEF)) {</span>
+<span class="nc" id="L538">				currentParam=parameterDef(_t);</span>
+<span class="nc" id="L539">				_t = _retTree;</span>
+<span class="nc" id="L540">				params.add(currentParam);</span>
+			}
+			else {
+				break _loop37;
+			}
+			
+		} while (true);
+		}
+<span class="fc" id="L548">		_t = __t35;</span>
+<span class="fc" id="L549">		_t = _t.getNextSibling();</span>
+<span class="fc" id="L550">		_retTree = _t;</span>
+<span class="fc" id="L551">		return params;</span>
+	}
+	
+	public final void exceptions(AST _t) throws RecognitionException {
+		
+<span class="pc bpc" id="L556" title="1 of 2 branches missed.">		AST exceptions_AST_in = (_t == ASTNULL) ? null : (AST)_t;</span>
+		
+<span class="fc" id="L558">		AST __t41 = _t;</span>
+<span class="fc" id="L559">		AST tmp27_AST_in = (AST)_t;</span>
+<span class="fc" id="L560">		match(_t,THROWS);</span>
+<span class="fc" id="L561">		_t = _t.getFirstChild();</span>
+		{
+		_loop43:
+		do {
+<span class="pc bpc" id="L565" title="1 of 2 branches missed.">			if (_t==null) _t=ASTNULL;</span>
+<span class="pc bpc" id="L566" title="1 of 2 branches missed.">			if ((_t.getType()==IDENT)) {</span>
+<span class="nc" id="L567">				AST tmp28_AST_in = (AST)_t;</span>
+<span class="nc" id="L568">				match(_t,IDENT);</span>
+<span class="nc" id="L569">				_t = _t.getNextSibling();</span>
+<span class="nc" id="L570">			}</span>
+			else {
+				break _loop43;
+			}
+			
+		} while (true);
+		}
+<span class="fc" id="L577">		_t = __t41;</span>
+<span class="fc" id="L578">		_t = _t.getNextSibling();</span>
+<span class="fc" id="L579">		_retTree = _t;</span>
+<span class="fc" id="L580">	}</span>
+	
+	public final ParameterDeclaration  parameterDef(AST _t) throws RecognitionException {
+		ParameterDeclaration param;
+		
+<span class="nc bnc" id="L585" title="All 2 branches missed.">		AST parameterDef_AST_in = (_t == ASTNULL) ? null : (AST)_t;</span>
+<span class="nc" id="L586">		param = null;</span>
+		
+<span class="nc" id="L588">		AST __t39 = _t;</span>
+<span class="nc" id="L589">		AST tmp29_AST_in = (AST)_t;</span>
+<span class="nc" id="L590">		match(_t,PARAMETER_DEF);</span>
+<span class="nc" id="L591">		_t = _t.getFirstChild();</span>
+<span class="nc" id="L592">		AST tmp30_AST_in = (AST)_t;</span>
+<span class="nc" id="L593">		match(_t,ACCESS_MODIFIERS);</span>
+<span class="nc" id="L594">		_t = _t.getNextSibling();</span>
+<span class="nc" id="L595">		AST tmp31_AST_in = (AST)_t;</span>
+<span class="nc" id="L596">		match(_t,TYPE);</span>
+<span class="nc" id="L597">		_t = _t.getNextSibling();</span>
+<span class="nc" id="L598">		AST tmp32_AST_in = (AST)_t;</span>
+<span class="nc" id="L599">		match(_t,IDENT);</span>
+<span class="nc" id="L600">		_t = _t.getNextSibling();</span>
+<span class="nc" id="L601">		_t = __t39;</span>
+<span class="nc" id="L602">		_t = _t.getNextSibling();</span>
+		
+<span class="nc" id="L604">			   param = new ParameterDeclaration(</span>
+<span class="nc" id="L605">			              ((ShortAST)tmp30_AST_in).getShortValue(),</span>
+<span class="nc" id="L606">		tmp31_AST_in.getText(),</span>
+<span class="nc" id="L607">		tmp32_AST_in.getText());</span>
+			
+<span class="nc" id="L609">		_retTree = _t;</span>
+<span class="nc" id="L610">		return param;</span>
+	}
+	
+	
+<span class="fc" id="L614">	public static final String[] _tokenNames = {</span>
+		&quot;&lt;0&gt;&quot;,
+		&quot;EOF&quot;,
+		&quot;&lt;2&gt;&quot;,
+		&quot;NULL_TREE_LOOKAHEAD&quot;,
+		&quot;ACCESS_MODIFIERS&quot;,
+		&quot;ATTRIBUTE_CONSTANT&quot;,
+		&quot;CLASS_DEF&quot;,
+		&quot;CONSTANT_CLASSINFO&quot;,
+		&quot;CONSTANT_DOUBLEINFO&quot;,
+		&quot;CONSTANT_FIELDINFO&quot;,
+		&quot;CONSTANT_FLOATINFO&quot;,
+		&quot;CONSTANT_INTEGERINFO&quot;,
+		&quot;CONSTANT_INTERFACE_METHODINFO&quot;,
+		&quot;CONSTANT_LONGINFO&quot;,
+		&quot;CONSTANT_METHODINFO&quot;,
+		&quot;CONSTANT_NAME_TYPE_INFO&quot;,
+		&quot;CONSTANT_STRINGINFO&quot;,
+		&quot;CONSTANT_UTF8STRING&quot;,
+		&quot;CTOR_DEF&quot;,
+		&quot;EXTENDS_CLAUSE&quot;,
+		&quot;IDENT&quot;,
+		&quot;IMPLEMENTS_CLAUSE&quot;,
+		&quot;INTERFACE_DEF&quot;,
+		&quot;MAGIC&quot;,
+		&quot;METHOD_DEF&quot;,
+		&quot;PARAMETERS&quot;,
+		&quot;PARAMETER_DEF&quot;,
+		&quot;SOURCEFILE&quot;,
+		&quot;THROWS&quot;,
+		&quot;TYPE&quot;,
+		&quot;UNKNOWN_ATTRIBUTE&quot;,
+		&quot;VARIABLE_DEF&quot;,
+		&quot;VERSION&quot;,
+		&quot;SIGNATURE&quot;,
+		&quot;BYTE&quot;
+	};
+	
+	}
+	
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SettingsTabJava.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">argo_java</a> &gt; <a href="index.source.html" class="el_package">org.argouml.language.java.ui</a> &gt; <span class="el_source">SettingsTabJava.java</span></div><h1>SettingsTabJava.java</h1><pre class="source lang-java linenums">/* $Id$
+ *****************************************************************************
+ * Copyright (c) 2009-2013 Contributors - see below
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    tfmorris
+ *****************************************************************************
+ *
+ * Some portions of this file was previously release using the BSD License:
+ */
+
+// Copyright (c) 1996-2008 The Regents of the University of California. All
+// Rights Reserved. Permission to use, copy, modify, and distribute this
+// software and its documentation without fee, and without a written
+// agreement is hereby granted, provided that the above copyright notice
+// and this paragraph appear in all copies.  This software program and
+// documentation are copyrighted by The Regents of the University of
+// California. The software program and documentation are supplied &quot;AS
+// IS&quot;, without any accompanying services from The Regents. The Regents
+// does not warrant that the operation of the program will be
+// uninterrupted or error-free. The end-user understands that the program
+// was developed for research purposes and is advised not to rely
+// exclusively on the program for any reason.  IN NO EVENT SHALL THE
+// UNIVERSITY OF CALIFORNIA BE LIABLE TO ANY PARTY FOR DIRECT, INDIRECT,
+// SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES, INCLUDING LOST PROFITS,
+// ARISING OUT OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF
+// THE UNIVERSITY OF CALIFORNIA HAS BEEN ADVISED OF THE POSSIBILITY OF
+// SUCH DAMAGE. THE UNIVERSITY OF CALIFORNIA SPECIFICALLY DISCLAIMS ANY
+// WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+// MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE SOFTWARE
+// PROVIDED HEREUNDER IS ON AN &quot;AS IS&quot; BASIS, AND THE UNIVERSITY OF
+// CALIFORNIA HAS NO OBLIGATIONS TO PROVIDE MAINTENANCE, SUPPORT,
+// UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
+
+package org.argouml.language.java.ui;
+
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.util.logging.Logger;
+
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
+
+import org.argouml.application.api.GUISettingsTabInterface;
+import org.argouml.i18n.Translator;
+import org.argouml.moduleloader.ModuleInterface;
+import org.argouml.ui.GUI;
+
+
+/**
+ * Settings tab for the Java generator module.
+ */
+<span class="nc" id="L65">public class SettingsTabJava implements ModuleInterface, GUISettingsTabInterface</span>
+{
+    private static final String REVISION_DATE =
+        &quot;$Date$&quot;; //$NON-NLS-1$
+
+<span class="nc" id="L70">    private static final Logger LOG =</span>
+<span class="nc" id="L71">        Logger.getLogger(SettingsTabJava.class.getName());</span>
+
+    private JPanel topPanel;
+    private JSpinner indent;
+    private JCheckBox verboseDocs;
+    private JCheckBox lfBeforeCurly;
+    private JCheckBox headerGuardUpperCase;
+    private JCheckBox headerGuardGUID;
+
+    /*
+     * Build the panel to be used for our settings tab.
+     */
+    private JPanel buildPanel() {
+<span class="nc" id="L84">        LOG.fine(&quot;SettingsTabJava being created...&quot;);</span>
+<span class="nc" id="L85">        JPanel top = new JPanel();</span>
+<span class="nc" id="L86">        top.setLayout(new BorderLayout());</span>
+<span class="nc" id="L87">        JPanel panel = new JPanel();</span>
+<span class="nc" id="L88">        panel.setLayout(new GridBagLayout());</span>
+
+<span class="nc" id="L90">        GridBagConstraints constraints = new GridBagConstraints();</span>
+<span class="nc" id="L91">        constraints.anchor = GridBagConstraints.WEST;</span>
+<span class="nc" id="L92">        constraints.fill = GridBagConstraints.HORIZONTAL;</span>
+<span class="nc" id="L93">        constraints.gridy = GridBagConstraints.RELATIVE;</span>
+<span class="nc" id="L94">        constraints.gridx = 0;</span>
+<span class="nc" id="L95">        constraints.gridwidth = 1;</span>
+<span class="nc" id="L96">        constraints.gridheight = 1;</span>
+<span class="nc" id="L97">        constraints.weightx = 1.0;</span>
+<span class="nc" id="L98">        constraints.insets = new Insets(0, 30, 0, 5);</span>
+
+        // adds indent width spinner
+<span class="nc" id="L101">        JLabel label = new JLabel(Translator.localize(&quot;java.indent&quot;));</span>
+        // The actual value is loaded in handleSettingsTabRefresh()
+<span class="nc" id="L103">        Integer spinVal = Integer.valueOf(4);</span>
+<span class="nc" id="L104">        Integer spinMin = Integer.valueOf(0);</span>
+<span class="nc" id="L105">        Integer spinStep = Integer.valueOf(1);</span>
+<span class="nc" id="L106">        indent = new JSpinner(</span>
+                new SpinnerNumberModel(spinVal, spinMin, null, spinStep));
+<span class="nc" id="L108">        label.setLabelFor(indent);</span>
+
+<span class="nc" id="L110">        JPanel indentPanel = new JPanel();</span>
+<span class="nc" id="L111">        indentPanel.setLayout(new BoxLayout(indentPanel, BoxLayout.LINE_AXIS));</span>
+<span class="nc" id="L112">        indentPanel.add(label);</span>
+<span class="nc" id="L113">        indentPanel.add(Box.createRigidArea(new Dimension(5, 0)));</span>
+<span class="nc" id="L114">        indentPanel.add(indent);</span>
+<span class="nc" id="L115">        indentPanel.add(Box.createHorizontalGlue());</span>
+<span class="nc" id="L116">        panel.add(indentPanel, constraints);</span>
+
+<span class="nc" id="L118">        verboseDocs = new JCheckBox(Translator.localize(&quot;java.verbose-docs&quot;));</span>
+<span class="nc" id="L119">        panel.add(verboseDocs, constraints);</span>
+
+<span class="nc" id="L121">        lfBeforeCurly = new JCheckBox(Translator</span>
+<span class="nc" id="L122">                .localize(&quot;java.lf-before-curly&quot;));</span>
+<span class="nc" id="L123">        panel.add(lfBeforeCurly, constraints);</span>
+
+<span class="nc" id="L125">        headerGuardUpperCase = new JCheckBox(Translator</span>
+<span class="nc" id="L126">                .localize(&quot;java.header-guard-case&quot;));</span>
+<span class="nc" id="L127">        panel.add(headerGuardUpperCase, constraints);</span>
+
+<span class="nc" id="L129">        headerGuardGUID = new JCheckBox(Translator</span>
+<span class="nc" id="L130">                .localize(&quot;java.header-guard-guid&quot;));</span>
+<span class="nc" id="L131">        panel.add(headerGuardGUID, constraints);</span>
+
+        // TODO: add more options
+
+<span class="nc" id="L135">        top.add(panel, BorderLayout.NORTH);</span>
+
+<span class="nc" id="L137">        LOG.fine(&quot;SettingsTabJava created!&quot;);</span>
+<span class="nc" id="L138">        return top;</span>
+    }
+
+    /*
+     * @see org.argouml.ui.GUISettingsTabInterface#handleSettingsTabSave()
+     */
+    public void handleSettingsTabSave() {
+		/*
+        GeneratorJava gen = GeneratorJava.getInstance();
+        int indWidth = ((Integer) indent.getValue()).intValue();
+        gen.setIndent(indWidth);
+        gen.setLfBeforeCurly(lfBeforeCurly.isSelected());
+        gen.setVerboseDocs(verboseDocs.isSelected());
+        gen.setHeaderGuardUpperCase(headerGuardUpperCase.isSelected());
+        gen.setHeaderGuardGUID(headerGuardGUID.isSelected());
+        */
+<span class="nc" id="L154">    }</span>
+
+    /*
+     * @see org.argouml.ui.GUISettingsTabInterface#handleSettingsTabCancel()
+     */
+    public void handleSettingsTabCancel() {
+<span class="nc" id="L160">    }</span>
+
+    /*
+     * @see org.argouml.ui.GUISettingsTabInterface#handleSettingsTabRefresh()
+     */
+    public void handleSettingsTabRefresh() {
+		/*
+        GeneratorJava gen = GeneratorJava.getInstance();
+        lfBeforeCurly.setSelected(gen.isLfBeforeCurly());
+        verboseDocs.setSelected(gen.isVerboseDocs());
+        indent.setValue(Integer.valueOf(gen.getIndent()));
+        headerGuardUpperCase.setSelected(gen.isHeaderGuardUpperCase());
+        headerGuardGUID.setSelected(gen.isHeaderGuardGUID());
+        */
+<span class="nc" id="L174">    }</span>
+
+    /*
+     * @see org.argouml.ui.GUISettingsTabInterface#handleResetToDefault()
+     */
+    public void handleResetToDefault() {
+        // Do nothing - these buttons are not shown.
+<span class="nc" id="L181">    }</span>
+
+    /*
+     * @see org.argouml.ui.GUISettingsTabInterface#getTabKey()
+     */
+<span class="nc" id="L186">    public String getTabKey() { return &quot;java.tabname&quot;; }</span>
+
+    /*
+     * @see org.argouml.ui.GUISettingsTabInterface#getTabPanel()
+     */
+    public JPanel getTabPanel() {
+        // defer building this until needed
+<span class="nc bnc" id="L193" title="All 2 branches missed.">        if (topPanel == null) {</span>
+<span class="nc" id="L194">            topPanel = buildPanel();</span>
+        }
+<span class="nc" id="L196">        return topPanel;</span>
+    }
+
+
+    /*
+     * @see org.argouml.moduleloader.ModuleInterface#getName()
+     */
+    public String getName() {
+<span class="nc" id="L204">        return &quot;SettingsTabJava&quot;;</span>
+    }
+
+    /*
+     * @see org.argouml.moduleloader.ModuleInterface#getInfo(int)
+     */
+    public String getInfo(int type) {
+<span class="nc bnc" id="L211" title="All 5 branches missed.">        switch (type) {</span>
+        case ModuleInterface.DESCRIPTION:
+<span class="nc" id="L213">            return &quot;Java Generator Settings&quot;;</span>
+        case ModuleInterface.AUTHOR:
+<span class="nc" id="L215">            return &quot;The ArgoUML project team&quot;;</span>
+        case ModuleInterface.VERSION:
+<span class="nc" id="L217">            return &quot;0.28&quot;;</span>
+        case ModuleInterface.DOWNLOADSITE:
+<span class="nc" id="L219">            return &quot;http://argouml-java.tigris.org/&quot;;</span>
+        default:
+<span class="nc" id="L221">            return null;</span>
+        }
+    }
+
+    /*
+     * @see org.argouml.moduleloader.ModuleInterface#enable()
+     */
+    public boolean enable() {
+<span class="nc" id="L229">        GUI.getInstance().addSettingsTab(this);</span>
+<span class="nc" id="L230">        return true;</span>
+    }
+
+    /*
+     * Does nothing.  Settings tabs can't be removed after they've been added.
+     *
+     * @see org.argouml.moduleloader.ModuleInterface#disable()
+     */
+    public boolean disable() {
+<span class="nc" id="L239">        return false;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ProfileJava.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">argo_java</a> &gt; <a href="index.source.html" class="el_package">org.argouml.language.java.profile</a> &gt; <span class="el_source">ProfileJava.java</span></div><h1>ProfileJava.java</h1><pre class="source lang-java linenums">/* $Id$
+ *****************************************************************************
+ * Copyright (c) 2009-2013 Contributors - see below
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Thomas Neustupny
+ *****************************************************************************
+ *
+ * Some portions of this file was previously release using the BSD License:
+ */
+
+// Copyright (c) 2007 The Regents of the University of California. All
+// Rights Reserved. Permission to use, copy, modify, and distribute this
+// software and its documentation without fee, and without a written
+// agreement is hereby granted, provided that the above copyright notice
+// and this paragraph appear in all copies.  This software program and
+// documentation are copyrighted by The Regents of the University of
+// California. The software program and documentation are supplied &quot;AS
+// IS&quot;, without any accompanying services from The Regents. The Regents
+// does not warrant that the operation of the program will be
+// uninterrupted or error-free. The end-user understands that the program
+// was developed for research purposes and is advised not to rely
+// exclusively on the program for any reason.  IN NO EVENT SHALL THE
+// UNIVERSITY OF CALIFORNIA BE LIABLE TO ANY PARTY FOR DIRECT, INDIRECT,
+// SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES, INCLUDING LOST PROFITS,
+// ARISING OUT OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF
+// THE UNIVERSITY OF CALIFORNIA HAS BEEN ADVISED OF THE POSSIBILITY OF
+// SUCH DAMAGE. THE UNIVERSITY OF CALIFORNIA SPECIFICALLY DISCLAIMS ANY
+// WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+// MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE SOFTWARE
+// PROVIDED HEREUNDER IS ON AN &quot;AS IS&quot; BASIS, AND THE UNIVERSITY OF
+// CALIFORNIA HAS NO OBLIGATIONS TO PROVIDE MAINTENANCE, SUPPORT,
+// UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
+package org.argouml.language.java.profile;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.argouml.language.java.JavaModuleGlobals;
+import org.argouml.model.Model;
+import org.argouml.moduleloader.ModuleInterface;
+import org.argouml.profile.DefaultTypeStrategy;
+import org.argouml.profile.Profile;
+import org.argouml.profile.ProfileException;
+import org.argouml.profile.ProfileFacade;
+import org.argouml.profile.ProfileModelLoader;
+import org.argouml.profile.ProfileReference;
+import org.argouml.profile.ResourceModelLoader;
+
+/**
+ * This class represents the Java default Profile. This being a module, provides
+ * the ArgoUML Java module to offer the Java profile to the application by
+ * registering it on enable and unregistering on disable.
+ * 
+ * @author Thomas Neustupny (thn@tigris.org)
+ */
+public class ProfileJava extends Profile implements ModuleInterface {
+
+    private static final String UML1_PROFILE_FILE =
+        &quot;/org/argouml/language/java/profile/default-java.xmi&quot;;
+
+    private static final String UML2_PROFILE_FILE =
+        &quot;/org/argouml/language/java/profile/java-profile-uml2.xmi&quot;;
+
+    private static final String UML1_PROFILE_URL =
+        &quot;http://argouml.org/profiles/uml14/default-java.xmi&quot;;
+
+    private static final String UML2_PROFILE_URL =
+        &quot;http://argouml.org/profiles/uml2/java-profile-uml2.xmi&quot;;
+
+<span class="fc" id="L80">    private static final Logger LOG =</span>
+<span class="fc" id="L81">        Logger.getLogger(ProfileJava.class.getName());</span>
+
+    static final String NAME = &quot;Java&quot;;
+
+<span class="fc" id="L85">    private Collection&lt;Object&gt; model = null;</span>
+
+    private ProfileReference profileReference;
+
+    /**
+     * The default constructor for this class
+     * 
+     * @throws ProfileException if the UML URL is invalid.
+     */
+    @SuppressWarnings(&quot;unchecked&quot;)
+<span class="fc" id="L95">    public ProfileJava() throws ProfileException {</span>
+        try {
+<span class="pc bpc" id="L97" title="1 of 2 branches missed.">            if (Model.getFacade().getUmlVersion().charAt(0) == '1') {</span>
+<span class="fc" id="L98">                URL profileURL = new URL(UML1_PROFILE_URL);</span>
+<span class="fc" id="L99">                profileReference = new ProfileReference(UML1_PROFILE_FILE,</span>
+                        profileURL);
+<span class="fc" id="L101">            } else {</span>
+<span class="nc" id="L102">                URL profileURL = new URL(UML2_PROFILE_URL);</span>
+<span class="nc" id="L103">                profileReference = new ProfileReference(UML2_PROFILE_FILE,</span>
+                        profileURL);
+            }
+<span class="nc" id="L106">        } catch (MalformedURLException e) {</span>
+<span class="nc" id="L107">            throw new ProfileException(</span>
+                    &quot;Exception while creating profile reference.&quot;, e);
+<span class="fc" id="L109">        }</span>
+<span class="pc bpc" id="L110" title="1 of 2 branches missed.">        if (Model.getFacade().getUmlVersion().charAt(0) == '1') {</span>
+<span class="fc" id="L111">            addProfileDependency(ProfileFacade.getManager().getUMLProfile());</span>
+<span class="fc" id="L112">            addProfileDependency(&quot;CodeGeneration&quot;);</span>
+        }
+<span class="fc" id="L114">    }</span>
+
+    private Collection&lt;Object&gt; getModel() {
+<span class="fc bfc" id="L117" title="All 2 branches covered.">        if (model == null) {</span>
+<span class="fc" id="L118">            ProfileModelLoader profileModelLoader = new ResourceModelLoader(</span>
+                    ProfileJava.class);
+            try {
+<span class="fc" id="L121">                model = profileModelLoader.loadModel(profileReference);</span>
+<span class="nc" id="L122">            } catch (ProfileException e) {</span>
+<span class="nc bnc" id="L123" title="All 2 branches missed.">                if (Model.getFacade().getUmlVersion().charAt(0) == '1') {</span>
+<span class="nc" id="L124">                    LOG.log(Level.SEVERE,</span>
+                            &quot;Exception loading profile file &quot;
+                            + UML1_PROFILE_FILE,
+                            e);
+                } else {
+<span class="nc" id="L129">                    LOG.log(Level.SEVERE,</span>
+                            &quot;Exception loading profile file &quot;
+                            + UML2_PROFILE_FILE,
+                            e);
+                }
+<span class="fc" id="L134">            }</span>
+
+<span class="pc bpc" id="L136" title="1 of 2 branches missed.">            if (model == null) {</span>
+<span class="nc" id="L137">                model = getFallbackModel();</span>
+<span class="nc" id="L138">                LOG.severe(&quot;Using fallback profile&quot;);</span>
+            }
+        }
+<span class="fc" id="L141">        return model;</span>
+    }
+
+    private Collection&lt;Object&gt; getFallbackModel() {
+<span class="nc" id="L145">        Collection&lt;Object&gt; result = new ArrayList&lt;Object&gt;();</span>
+<span class="nc" id="L146">        Object profile = Model.getModelManagementFactory().createProfile();</span>
+<span class="nc" id="L147">        Model.getCoreHelper().setName(profile, &quot;Fallback Java profile&quot;);</span>
+<span class="nc" id="L148">        result.add(profile);</span>
+<span class="nc" id="L149">        return result;</span>
+    }
+
+    public String getDisplayName() {
+<span class="fc" id="L153">        return NAME;</span>
+    }
+
+    @Override
+    public Collection&lt;Object&gt; getProfilePackages() {
+<span class="fc" id="L158">        return getModel();</span>
+    }
+
+    @Override
+    public Collection&lt;Object&gt; getLoadedPackages() {
+<span class="pc bpc" id="L163" title="1 of 2 branches missed.">        if (model == null) {</span>
+<span class="nc" id="L164">            return Collections.emptyList();</span>
+        } else {
+<span class="fc" id="L166">            return Collections.unmodifiableCollection(model);</span>
+        }
+    }
+
+    @Override
+    public DefaultTypeStrategy getDefaultTypeStrategy() {
+<span class="fc" id="L172">        return new DefaultTypeStrategy() {</span>
+            public Object getDefaultAttributeType() {
+<span class="nc" id="L174">                return ModelUtils.findTypeInModel(&quot;int&quot;, getModel().iterator()</span>
+<span class="nc" id="L175">                        .next());</span>
+            }
+
+            public Object getDefaultParameterType() {
+<span class="nc" id="L179">                return ModelUtils.findTypeInModel(&quot;int&quot;, getModel().iterator()</span>
+<span class="nc" id="L180">                        .next());</span>
+            }
+
+            public Object getDefaultReturnType() {
+<span class="nc" id="L184">                return ModelUtils.findTypeInModel(&quot;void&quot;, getModel().iterator()</span>
+<span class="nc" id="L185">                        .next());</span>
+            }
+
+        };
+    }
+
+    /**
+     * @return &lt;code&gt;false&lt;/code&gt; either if constructing the {@link ProfileJava}
+     *         or registering it fails.
+     * @see org.argouml.moduleloader.ModuleInterface#enable()
+     */
+    public boolean enable() {
+        try {
+<span class="fc" id="L198">            ProfileFacade.register(this);</span>
+<span class="nc" id="L199">        } catch (Exception e) {</span>
+<span class="nc" id="L200">            LOG.log(Level.SEVERE, &quot;Failed to enable the Java profile.&quot;, e);</span>
+<span class="nc" id="L201">            return false;</span>
+<span class="fc" id="L202">        }</span>
+<span class="fc" id="L203">        return true;</span>
+    }
+
+    /**
+     * @return &lt;code&gt;false&lt;/code&gt; if unregistering the ProfileJava fails.
+     * @see org.argouml.moduleloader.ModuleInterface#disable()
+     */
+    public boolean disable() {
+<span class="fc" id="L211">        boolean removed = false;</span>
+        try {
+<span class="fc" id="L213">            ProfileFacade.remove(this);</span>
+<span class="fc" id="L214">            removed = true;</span>
+<span class="nc" id="L215">        } catch (Exception e) {</span>
+<span class="nc" id="L216">            LOG.log(Level.SEVERE, &quot;Failed to remove the Java profile.&quot;, e);</span>
+<span class="fc" id="L217">        }</span>
+<span class="fc" id="L218">        return removed;</span>
+    }
+
+    /*
+     * @see org.argouml.moduleloader.ModuleInterface#getName()
+     */
+    public String getName() {
+<span class="nc" id="L225">        return &quot;Java profile&quot;;</span>
+    }
+
+    /*
+     * @see org.argouml.moduleloader.ModuleInterface#getInfo(int)
+     */
+    public String getInfo(int type) {
+<span class="nc bnc" id="L232" title="All 5 branches missed.">        switch (type) {</span>
+        case DESCRIPTION:
+<span class="nc" id="L234">            return &quot;Java profile.&quot;;</span>
+        case AUTHOR:
+<span class="nc" id="L236">            return JavaModuleGlobals.MODULE_AUTHOR;</span>
+        case VERSION:
+<span class="nc" id="L238">            return JavaModuleGlobals.MODULE_VERSION;</span>
+        case ModuleInterface.DOWNLOADSITE:
+<span class="nc" id="L240">            return JavaModuleGlobals.MODULE_DOWNLOADSITE;</span>
+        default:
+<span class="nc" id="L242">            return null;</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

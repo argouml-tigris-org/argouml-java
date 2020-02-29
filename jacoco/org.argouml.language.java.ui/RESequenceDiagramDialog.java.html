@@ -1,0 +1,949 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RESequenceDiagramDialog.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">argo_java</a> &gt; <a href="index.source.html" class="el_package">org.argouml.language.java.ui</a> &gt; <span class="el_source">RESequenceDiagramDialog.java</span></div><h1>RESequenceDiagramDialog.java</h1><pre class="source lang-java linenums">/* $Id$
+ *****************************************************************************
+ * Copyright (c) 2009-2013 Contributors - see below
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    bobtarling
+ *****************************************************************************
+ *
+ * Some portions of this file was previously release using the BSD License:
+ */
+
+// Copyright (c) 1996-2008 The Regents of the University of California. All
+// Rights Reserved. Permission to use, copy, modify, and distribute this
+// software and its documentation without fee, and without a written
+// agreement is hereby granted, provided that the above copyright notice
+// and this paragraph appear in all copies.  This software program and
+// documentation are copyrighted by The Regents of the University of
+// California. The software program and documentation are supplied &quot;AS
+// IS&quot;, without any accompanying services from The Regents. The Regents
+// does not warrant that the operation of the program will be
+// uninterrupted or error-free. The end-user understands that the program
+// was developed for research purposes and is advised not to rely
+// exclusively on the program for any reason.  IN NO EVENT SHALL THE
+// UNIVERSITY OF CALIFORNIA BE LIABLE TO ANY PARTY FOR DIRECT, INDIRECT,
+// SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES, INCLUDING LOST PROFITS,
+// ARISING OUT OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF
+// THE UNIVERSITY OF CALIFORNIA HAS BEEN ADVISED OF THE POSSIBILITY OF
+// SUCH DAMAGE. THE UNIVERSITY OF CALIFORNIA SPECIFICALLY DISCLAIMS ANY
+// WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+// MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE SOFTWARE
+// PROVIDED HEREUNDER IS ON AN &quot;AS IS&quot; BASIS, AND THE UNIVERSITY OF
+// CALIFORNIA HAS NO OBLIGATIONS TO PROVIDE MAINTENANCE, SUPPORT,
+// UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
+
+package org.argouml.language.java.ui;
+
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
+import javax.swing.JTable;
+import javax.swing.SpinnerNumberModel;
+
+import org.antlr.runtime.ANTLRStringStream;
+import org.antlr.runtime.CommonTokenStream;
+import org.argouml.i18n.Translator;
+import org.argouml.kernel.Project;
+import org.argouml.kernel.ProjectManager;
+import org.argouml.language.java.reveng.JavaLexer;
+import org.argouml.language.java.reveng.JavaParser;
+import org.argouml.language.java.reveng.Modeller;
+import org.argouml.model.Model;
+import org.argouml.profile.Profile;
+import org.argouml.ui.CheckboxTableModel;
+import org.argouml.ui.targetmanager.TargetManager;
+import org.argouml.uml.diagram.ArgoDiagram;
+import org.argouml.uml.diagram.DiagramElement;
+import org.argouml.uml.diagram.DiagramFactory;
+import org.argouml.uml.diagram.DiagramFactory.DiagramType;
+import org.argouml.uml.ui.ActionDeleteModelElements;
+import org.argouml.util.ArgoDialog;
+//import org.tigris.gef.graph.MutableGraphModel;
+//import org.tigris.gef.presentation.Fig;
+
+/**
+ * The dialog that starts the reverse engineering of operations.&lt;p&gt;
+ *
+ * TODO: subsequent parsing of further operation bodies &lt;p&gt;
+ * TODO: suppressing multiple creation of already created messages&lt;p&gt;
+ * TODO: processing of non-constructor-calls to other classifiers&lt;p&gt;
+ * TODO: refactoring into many classes depending on their purpose.
+ * At the very least split dialog from processing and remove knowledge
+ * of sequence diagram implementation&lt;p&gt;
+ * TODO: work with import modules instead of the internal Java import&lt;p&gt;
+ * TODO: use java5 style for loops
+ * TODO: i18n&lt;p&gt;
+ */
+public class RESequenceDiagramDialog
+    extends ArgoDialog
+    implements ActionListener, ItemListener {
+
+<span class="nc" id="L108">    private static final Logger LOG =</span>
+<span class="nc" id="L109">        Logger.getLogger(RESequenceDiagramDialog.class.getName());</span>
+
+    private static final long serialVersionUID = -8595714827064181907L;
+
+    private static final int X_OFFSET = 10;
+
+    // Connected to commented-out code below:
+    // private static final Rectangle DEFAULT_BOUNDS = new Rectangle(10, 10);
+
+    /**
+     * The project this dialog is operating within
+     */
+    private final Project project;
+
+    private final Object model;
+    
+    // TODO: Why is this not final?
+    private Modeller modeller;
+    private final Object classifier;
+    private final Object operation;
+
+    // TODO: Need to remove knowledge of GEF.
+    //private final Fig figClassifierRole;
+
+<span class="nc" id="L133">    private final List&lt;String&gt; calls = new ArrayList&lt;String&gt;();</span>
+<span class="nc" id="L134">    private final List&lt;String&gt; calldata = new ArrayList&lt;String&gt;();</span>
+<span class="nc" id="L135">    private final Hashtable&lt;String, String&gt; types</span>
+        = new Hashtable&lt;String, String&gt;();
+
+    private final ArgoDiagram diagram;
+
+    private CheckboxTableModel callTable;
+    private JComboBox modeChoice;
+    private JPanel changingPanel;
+    private JPanel manuPanel;
+    private JPanel autoPanel;
+
+    // Connected to commented-out code below:
+    // private int maxXPos = -X_OFFSET;
+    // private int anonCnt;
+
+    private final boolean isNewSequenceDiagram;
+
+
+    /**
+     * Constructor. A new sequence diagram will be created and the work
+     * happens in that new sequence diagram.
+     *
+     * @param oper The operation that should be reverse engineered.
+     */
+    public RESequenceDiagramDialog(Object oper) {
+<span class="nc" id="L160">        this(oper, null, null);</span>
+<span class="nc" id="L161">    }</span>
+
+    /**
+     * Constructor. If a FigMessage object is passed, then it is assumed that
+     * the actual diagram is a sequence diagram, so no new one is created and
+     * the work happens in the actual sequence diagram.
+     *
+     * @param oper The operation that should be reverse engineered.
+     * @param figMessage the message figure where the result will be drawn to
+     * @param aDiagram the diagram to draw to or null is a new diagram required
+     */
+    public RESequenceDiagramDialog(
+            final Object oper,
+            final DiagramElement figMessage,
+            final ArgoDiagram aDiagram) {
+        // TODO: don't depend on a Fig (but it is needed to extend an existing
+        // sequence diagram, i.e. to perform an action on a FigMessage!)
+<span class="nc" id="L178">        super(</span>
+                &quot;NOT FUNCTIONAL!!! &quot;
+<span class="nc bnc" id="L180" title="All 2 branches missed.">                + Translator.localize(</span>
+                        &quot;dialog.title.reverse-engineer-sequence-diagram&quot;)
+                + (oper != null
+<span class="nc" id="L183">                        ? (' ' + Model.getFacade().getName(oper) + &quot;()&quot;)</span>
+                                : &quot;&quot;),
+                ArgoDialog.OK_CANCEL_OPTION,
+                true);
+<span class="nc" id="L187">        setResizable(false);</span>
+<span class="nc" id="L188">        project = ProjectManager.getManager().getCurrentProject();</span>
+
+<span class="nc" id="L190">        operation = oper;</span>
+<span class="nc" id="L191">        model = project.getUserDefinedModelList().get(0);</span>
+
+        // get the Java profile from project, if available
+<span class="nc" id="L194">        Profile javaProfile = null;</span>
+        for (Profile profile
+<span class="nc bnc" id="L196" title="All 2 branches missed.">                : project.getProfileConfiguration().getProfiles()) {</span>
+<span class="nc bnc" id="L197" title="All 2 branches missed.">            if (&quot;Java&quot;.equals(profile.getDisplayName())) {</span>
+<span class="nc" id="L198">                javaProfile = profile;</span>
+            }
+<span class="nc" id="L200">        }</span>
+
+        try {
+            // TODO: must not depend on the Java modeller, but the needed one
+            // must be either derived from the method's notation, or chosen by
+            // the user from a list of available language importers
+<span class="nc" id="L206">            modeller = new Modeller(model, javaProfile, true, true, null);</span>
+<span class="nc" id="L207">        } catch (Exception ex) {</span>
+            // the only chance we have is to finish the current operation
+<span class="nc" id="L209">            LOG.log(Level.WARNING,</span>
+                    &quot;Modeller not ready, so no more generation of calls&quot;, ex);
+            // TODO: Why do we continue here as if nothing has gone wrong?
+            // Can we really continue correctly without a modeller?
+<span class="nc" id="L213">        }</span>
+
+<span class="nc" id="L215">        classifier = Model.getFacade().getOwner(operation);</span>
+<span class="nc bnc" id="L216" title="All 2 branches missed.">        if (figMessage != null) {</span>
+<span class="nc" id="L217">            diagram = aDiagram;</span>
+<span class="nc" id="L218">            isNewSequenceDiagram = false;</span>
+            /*
+            figClassifierRole = getFigClassifierRole(classifier, &quot;obj&quot;);
+            // TODO: There is only a single port on new implementation of SD
+            // so how do we resolve this?
+            // Layer layer =
+            diagram.getLayer();
+            // TODO: Fix for new sequence diagrams
+            // portCnt = 0;
+//            portCnt 
+//                = layer.getNodeIndex(
+//                    figMessage.getDestFigNode().getFigMessagePort().getY());
+            Iterator&lt;Fig&gt; it = diagram.getFigIterator();
+            while (it.hasNext()) {
+                Fig f = it.next();
+                Object modelElement = f.getOwner();
+
+                if (Model.getFacade().isAClassifierRole(modelElement)) {
+                    int x = f.getX();
+                    if (maxXPos &lt; x) {
+                        maxXPos = x;
+                    }
+                    if (Model.getFacade().getName(modelElement)
+                            .startsWith(&quot;anon&quot;)) {
+                        anonCnt++;
+                    }
+                } else if (Model.getFacade().isAMessage(modelElement)) {
+                    // TODO: Fix for new sequence diagrams
+//                    int port =
+//                        layer.getNodeIndex(
+//                            ((FigMessage) f).getDestMessageNode()
+//                                .getFigMessagePort().getY());
+//                    if (maxPort &lt; port) {
+//                        maxPort = port;
+//                    }
+                }
+            }
+            */
+        } else {
+<span class="nc" id="L257">            isNewSequenceDiagram = true;</span>
+<span class="nc" id="L258">            this.diagram = buildSequenceDiagram(classifier);</span>
+            //figClassifierRole = getFigClassifierRole(classifier, &quot;obj&quot;);
+            //maxXPos = figClassifierRole.getX();
+        }
+<span class="nc" id="L262">        parseBody();</span>
+
+<span class="nc" id="L264">        JPanel contentPanel = getContentPanel();</span>
+<span class="nc" id="L265">        setContent(contentPanel);</span>
+<span class="nc" id="L266">    }</span>
+
+    /*
+     * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+     */
+    public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L272">        super.actionPerformed(e);</span>
+
+<span class="nc bnc" id="L274" title="All 2 branches missed.">        if (e.getSource() == getOkButton()) {</span>
+            //for (int i = 0; i &lt; callTable.getRowCount(); i++) {
+            //    if (Boolean.TRUE.equals(callTable.getValueAt(i, 1))) {
+            //        /*
+            //        buildAction(
+            //                (String) callTable.getValueAt(i, 0),
+            //                figClassifierRole,
+            //                figClassifierRole);
+            //        */
+            //    }
+            //}
+<span class="nc bnc" id="L285" title="All 4 branches missed.">        } else if (e.getSource() == getCancelButton()</span>
+                &amp;&amp; isNewSequenceDiagram) {
+            // remove SD and clean up everything
+<span class="nc" id="L288">            Object newTarget = null;</span>
+<span class="nc bnc" id="L289" title="All 2 branches missed.">            if (ActionDeleteModelElements.sureRemove(diagram)) {</span>
+<span class="nc" id="L290">                Object collaboration = diagram.getNamespace();</span>
+                // remove from the model
+<span class="nc" id="L292">                newTarget = getNewTarget(diagram);</span>
+<span class="nc" id="L293">                project.moveToTrash(diagram);</span>
+<span class="nc" id="L294">                project.moveToTrash(collaboration);</span>
+            }
+<span class="nc bnc" id="L296" title="All 2 branches missed.">            if (newTarget != null) {</span>
+<span class="nc" id="L297">                TargetManager.getInstance().setTarget(newTarget);</span>
+            }
+        }
+<span class="nc" id="L300">    }</span>
+
+    /*
+     * @see java.awt.event.ItemListener#itemStateChanged(java.awt.event.ItemEvent)
+     */
+    public void itemStateChanged(ItemEvent e) {
+<span class="nc bnc" id="L306" title="All 2 branches missed.">        if (modeChoice.getSelectedIndex() != 1) {</span>
+<span class="nc" id="L307">            changingPanel.remove(autoPanel);</span>
+<span class="nc" id="L308">            changingPanel.add(manuPanel, BorderLayout.CENTER);</span>
+<span class="nc" id="L309">            pack();</span>
+        } else {
+<span class="nc" id="L311">            changingPanel.remove(manuPanel);</span>
+<span class="nc" id="L312">            changingPanel.add(autoPanel, BorderLayout.CENTER);</span>
+<span class="nc" id="L313">            pack();</span>
+        }
+<span class="nc" id="L315">    }</span>
+
+    /**
+     * Gets the object that should be target after the given target is
+     * deleted from the model.
+     *
+     * @param target the target to delete
+     * @return The object.
+     */
+    private Object getNewTarget(Object target) {
+<span class="nc" id="L325">        Object newTarget = null;</span>
+        //if (target instanceof Fig) {
+            // TODO: common method for getting the model element of a fig
+            //target = ((Fig) target).getOwner();
+        //}
+<span class="nc bnc" id="L330" title="All 2 branches missed.">        if (Model.getFacade().isAModelElement(target)</span>
+<span class="nc bnc" id="L331" title="All 2 branches missed.">                &amp;&amp; Model.getFacade().getNamespace(target) != null) {</span>
+<span class="nc" id="L332">            newTarget = Model.getFacade().getNamespace(target);</span>
+<span class="nc bnc" id="L333" title="All 2 branches missed.">        } else if (target instanceof ArgoDiagram) {</span>
+<span class="nc" id="L334">            ArgoDiagram firstDiagram = project.getDiagramList().get(0);</span>
+<span class="nc bnc" id="L335" title="All 2 branches missed.">            if (target != firstDiagram) {</span>
+<span class="nc" id="L336">                newTarget = firstDiagram;</span>
+            } else {
+<span class="nc bnc" id="L338" title="All 2 branches missed.">                if (project.getDiagramList().size() &gt; 1) {</span>
+<span class="nc" id="L339">                    newTarget = project.getDiagramList().get(1);</span>
+                } else {
+<span class="nc" id="L341">                    newTarget = project.getRoots().iterator().next();</span>
+                }
+            }
+<span class="nc" id="L344">        } else {</span>
+<span class="nc" id="L345">            newTarget = project.getRoots().iterator().next();</span>
+        }
+<span class="nc" id="L347">        return newTarget;</span>
+    }
+
+    /**
+     * Gets the content panel, containing all the gui.
+     * @return the constructed panel
+     */
+    private JPanel getContentPanel() {
+<span class="nc" id="L355">        JPanel content = new JPanel();</span>
+<span class="nc" id="L356">        content.setLayout(new GridBagLayout());</span>
+
+<span class="nc" id="L358">        GridBagConstraints constraints = new GridBagConstraints();</span>
+<span class="nc" id="L359">        constraints.anchor = GridBagConstraints.WEST;</span>
+<span class="nc" id="L360">        constraints.fill =</span>
+            GridBagConstraints.HORIZONTAL;
+<span class="nc" id="L362">        constraints.gridx = 0;</span>
+<span class="nc" id="L363">        constraints.gridy = 0;</span>
+
+<span class="nc" id="L365">        constraints.insets = new Insets(2, 2, 2, 2);</span>
+<span class="nc" id="L366">        content.add(new JLabel(&quot;Mode:&quot;), constraints);</span>
+
+<span class="nc" id="L368">        constraints.gridy = 1;</span>
+<span class="nc" id="L369">        modeChoice = new JComboBox();</span>
+<span class="nc" id="L370">        modeChoice.addItem(&quot;Manually select calls of this operation&quot;);</span>
+<span class="nc" id="L371">        modeChoice.addItem(&quot;Traverse calls automatically with a chosen depth&quot;);</span>
+<span class="nc" id="L372">        modeChoice.addItemListener(this);</span>
+<span class="nc" id="L373">        content.add(modeChoice, constraints);</span>
+
+<span class="nc" id="L375">        manuPanel = getManuallyTab();</span>
+<span class="nc" id="L376">        autoPanel = getAutomaticallyTab();</span>
+
+<span class="nc" id="L378">        constraints.gridy = 2;</span>
+<span class="nc" id="L379">        changingPanel = new JPanel(new BorderLayout(0, 0));</span>
+<span class="nc" id="L380">        changingPanel.add(manuPanel, BorderLayout.CENTER);</span>
+<span class="nc" id="L381">        content.add(changingPanel, constraints);</span>
+
+<span class="nc" id="L383">        return content;</span>
+    }
+
+    /**
+     * Gets the panel of the automatically tab.
+     * @return the constructed panel
+     */
+    private JPanel getAutomaticallyTab() {
+<span class="nc" id="L391">        JPanel top = new JPanel();</span>
+<span class="nc" id="L392">        top.setLayout(new GridBagLayout());</span>
+
+<span class="nc" id="L394">        GridBagConstraints labelConstraints = new GridBagConstraints();</span>
+<span class="nc" id="L395">        labelConstraints.anchor = GridBagConstraints.WEST;</span>
+<span class="nc" id="L396">        labelConstraints.gridy = 0;</span>
+<span class="nc" id="L397">        labelConstraints.gridx = 0;</span>
+<span class="nc" id="L398">        labelConstraints.insets = new Insets(10, 2, 2, 2);</span>
+
+<span class="nc" id="L400">        GridBagConstraints fieldConstraints = new GridBagConstraints();</span>
+<span class="nc" id="L401">        fieldConstraints.anchor = GridBagConstraints.WEST;</span>
+<span class="nc" id="L402">        fieldConstraints.fill = GridBagConstraints.NONE;</span>
+<span class="nc" id="L403">        fieldConstraints.gridy = 0;</span>
+<span class="nc" id="L404">        fieldConstraints.gridx = 1;</span>
+<span class="nc" id="L405">        fieldConstraints.weightx = 1.0;</span>
+<span class="nc" id="L406">        fieldConstraints.insets = new Insets(4, 2, 2, 2);</span>
+
+<span class="nc" id="L408">        JPanel depthPanel = new JPanel(new FlowLayout());</span>
+<span class="nc" id="L409">        JRadioButton unlimited = new JRadioButton(&quot;unlimited&quot;);</span>
+<span class="nc" id="L410">        JRadioButton limited = new JRadioButton(&quot;limit to&quot;, true);</span>
+<span class="nc" id="L411">        ButtonGroup group = new ButtonGroup();</span>
+<span class="nc" id="L412">        group.add(unlimited);</span>
+<span class="nc" id="L413">        group.add(limited);</span>
+<span class="nc" id="L414">        depthPanel.add(limited);</span>
+<span class="nc" id="L415">        depthPanel.add(new JSpinner(new SpinnerNumberModel(1, 0, 999, 1)));</span>
+<span class="nc" id="L416">        depthPanel.add(unlimited);</span>
+
+<span class="nc" id="L418">        labelConstraints.gridy = 0;</span>
+<span class="nc" id="L419">        fieldConstraints.gridy = 0;</span>
+<span class="nc" id="L420">        top.add(new JLabel(&quot;Depth:&quot;), labelConstraints);</span>
+<span class="nc" id="L421">        top.add(depthPanel, fieldConstraints);</span>
+
+<span class="nc" id="L423">        labelConstraints.gridy = 1;</span>
+<span class="nc" id="L424">        fieldConstraints.gridy = 1;</span>
+<span class="nc" id="L425">        top.add(new JLabel(&quot;Assumption table:&quot;), labelConstraints);</span>
+<span class="nc" id="L426">        top.add(new JButton(&quot;Update&quot;), fieldConstraints);</span>
+
+<span class="nc" id="L428">        List&lt;String&gt; assumptions = new ArrayList&lt;String&gt;();</span>
+<span class="nc" id="L429">        assumptions.add(&quot;calls.hasMoreElements()&quot;);</span>
+<span class="nc" id="L430">        assumptions.add(&quot;methods != null &amp;&amp; !methods.isEmpty()&quot;);</span>
+<span class="nc" id="L431">        Object[] data = null;</span>
+<span class="nc" id="L432">        JTable table =</span>
+            new JTable(new CheckboxTableModel(
+<span class="nc" id="L434">                    assumptions.toArray(),</span>
+                    data,
+                    &quot;Conditions&quot;,
+                    &quot;Assume true&quot;));
+<span class="nc" id="L438">        table.setShowVerticalLines(true);</span>
+
+<span class="nc" id="L440">        fieldConstraints.gridx = 0;</span>
+<span class="nc" id="L441">        fieldConstraints.gridy = 2;</span>
+<span class="nc" id="L442">        fieldConstraints.gridwidth = 2;</span>
+<span class="nc" id="L443">        fieldConstraints.anchor = GridBagConstraints.CENTER;</span>
+<span class="nc" id="L444">        fieldConstraints.fill = GridBagConstraints.BOTH;</span>
+<span class="nc" id="L445">        fieldConstraints.weighty = 1.0;</span>
+<span class="nc" id="L446">        top.add(new JScrollPane(table), fieldConstraints);</span>
+
+<span class="nc" id="L448">        fieldConstraints.insets = new Insets(0, 2, 0, 2);</span>
+<span class="nc" id="L449">        JCheckBox checkbox1 = new JCheckBox(&quot;also process create calls&quot;, true);</span>
+<span class="nc" id="L450">        fieldConstraints.gridy = 3;</span>
+<span class="nc" id="L451">        top.add(checkbox1, fieldConstraints);</span>
+<span class="nc" id="L452">        JCheckBox checkbox2 = new JCheckBox(&quot;also process local calls&quot;, true);</span>
+<span class="nc" id="L453">        fieldConstraints.gridy = 4;</span>
+<span class="nc" id="L454">        top.add(checkbox2, fieldConstraints);</span>
+<span class="nc" id="L455">        JCheckBox checkbox3 =</span>
+            new JCheckBox(&quot;also process calls inside package&quot;, true);
+<span class="nc" id="L457">        fieldConstraints.gridy = 5;</span>
+<span class="nc" id="L458">        top.add(checkbox3, fieldConstraints);</span>
+
+<span class="nc" id="L460">        return top;</span>
+    }
+
+    /**
+     * Gets the panel of the manually tab.
+     *
+     * @return the constructed panel
+     */
+    private JPanel getManuallyTab() {
+<span class="nc" id="L469">        JPanel top = new JPanel();</span>
+<span class="nc" id="L470">        top.setLayout(new GridBagLayout());</span>
+
+<span class="nc" id="L472">        GridBagConstraints labelConstraints = new GridBagConstraints();</span>
+<span class="nc" id="L473">        labelConstraints.anchor = GridBagConstraints.WEST;</span>
+<span class="nc" id="L474">        labelConstraints.gridx = 0;</span>
+<span class="nc" id="L475">        labelConstraints.gridy = 0;</span>
+<span class="nc" id="L476">        labelConstraints.insets = new Insets(10, 2, 2, 2);</span>
+
+<span class="nc" id="L478">        GridBagConstraints fieldConstraints = new GridBagConstraints();</span>
+<span class="nc" id="L479">        fieldConstraints.anchor = GridBagConstraints.WEST;</span>
+<span class="nc" id="L480">        fieldConstraints.fill = GridBagConstraints.NONE;</span>
+<span class="nc" id="L481">        fieldConstraints.gridx = 1;</span>
+<span class="nc" id="L482">        fieldConstraints.gridy = 0;</span>
+<span class="nc" id="L483">        fieldConstraints.weightx = 1.0;</span>
+<span class="nc" id="L484">        fieldConstraints.insets = new Insets(4, 2, 2, 2);</span>
+
+<span class="nc" id="L486">        top.add(new JLabel(&quot;Method call table:&quot;), labelConstraints);</span>
+
+<span class="nc" id="L488">        callTable =</span>
+            new CheckboxTableModel(
+<span class="nc" id="L490">                    calls.toArray(),</span>
+<span class="nc" id="L491">                    calldata.toArray(),</span>
+                    &quot;Method calls&quot;,
+                    &quot;Enable&quot;);
+<span class="nc" id="L494">        JTable table = new JTable(callTable);</span>
+<span class="nc" id="L495">        table.setShowVerticalLines(true);</span>
+
+<span class="nc" id="L497">        fieldConstraints.gridx = 0;</span>
+<span class="nc" id="L498">        fieldConstraints.gridy = 1;</span>
+<span class="nc" id="L499">        fieldConstraints.gridwidth = 2;</span>
+<span class="nc" id="L500">        fieldConstraints.anchor = GridBagConstraints.CENTER;</span>
+<span class="nc" id="L501">        fieldConstraints.fill = GridBagConstraints.BOTH;</span>
+<span class="nc" id="L502">        fieldConstraints.weighty = 1.0;</span>
+<span class="nc" id="L503">        top.add(new JScrollPane(table), fieldConstraints);</span>
+
+<span class="nc" id="L505">        fieldConstraints.insets = new Insets(0, 2, 0, 2);</span>
+<span class="nc" id="L506">        JCheckBox checkbox1 = new JCheckBox(&quot;(un)check create calls&quot;, true);</span>
+<span class="nc" id="L507">        fieldConstraints.gridy = 2;</span>
+<span class="nc" id="L508">        top.add(checkbox1, fieldConstraints);</span>
+<span class="nc" id="L509">        JCheckBox checkbox2 = new JCheckBox(&quot;(un)check local calls&quot;, true);</span>
+<span class="nc" id="L510">        fieldConstraints.gridy = 3;</span>
+<span class="nc" id="L511">        top.add(checkbox2, fieldConstraints);</span>
+<span class="nc" id="L512">        JCheckBox checkbox3 = new JCheckBox(&quot;(un)check package calls&quot;, true);</span>
+<span class="nc" id="L513">        fieldConstraints.gridy = 4;</span>
+<span class="nc" id="L514">        top.add(checkbox3, fieldConstraints);</span>
+<span class="nc" id="L515">        JCheckBox checkbox4 = new JCheckBox(&quot;(un)check far calls&quot;, true);</span>
+<span class="nc" id="L516">        fieldConstraints.gridy = 5;</span>
+<span class="nc" id="L517">        top.add(checkbox4, fieldConstraints);</span>
+
+<span class="nc" id="L519">        return top;</span>
+    }
+
+    /**
+     * Builds the sequence diagram for a classifier.&lt;p&gt;
+     * TODO: find a better place for a similar method.
+     */
+    private ArgoDiagram buildSequenceDiagram(Object theClassifier) {
+        Object collaboration =
+<span class="nc" id="L528">            Model.getCollaborationsFactory().buildCollaboration(</span>
+<span class="nc" id="L529">                Model.getFacade().getNamespace(theClassifier),</span>
+                theClassifier);
+        final ArgoDiagram newDiagram =
+<span class="nc" id="L532">            DiagramFactory.getInstance().createDiagram(</span>
+                DiagramType.Sequence,
+                collaboration,
+                null);
+<span class="nc" id="L536">        project.addMember(newDiagram);</span>
+<span class="nc" id="L537">        TargetManager.getInstance().setTarget(newDiagram);</span>
+<span class="nc" id="L538">        return newDiagram;</span>
+    }
+
+    /**
+     * Gets or builds the figure of the classifier role for a given classifier
+     * and object name.&lt;p&gt;
+     * TODO: Hide this method elsewhere and use it in the implementation of a
+     * to be defined method (see usage of this method in this class)
+     */
+    /*
+    private Fig getFigClassifierRole(
+            Object theClassifier,
+            String objName) {
+        Fig crFig = null;
+        // first check if the fig of the classifier role already exists
+        Collection coll = diagram.getLayer().getContents();
+        Iterator iter = coll != null ? coll.iterator() : null;
+        while (iter != null &amp;&amp; iter.hasNext()) {
+            Object fig = iter.next();
+            if (fig instanceof Fig) {
+                Object elem = ((Fig) fig).getOwner();
+                if (Model.getFacade().isAClassifierRole(elem)) {
+                    // TODO: Do we really need to test for name here 
+                    // if we know we have the right classifier role?
+                    if (Model.getFacade().getName(elem).equals(objName)) {
+                        final Collection bases =
+                            Model.getFacade().getBases(elem);
+                        // TODO: Do we really have to test for null here?
+                        // I suspect not, I'd expect an empty collection.
+                        if (bases != null &amp;&amp; bases.contains(theClassifier)) {
+                            // yes found, so this will be returned
+                            crFig = (Fig) fig;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        if (crFig == null) {
+            // classifier role does not exists, so create a new one
+            Object newClassifierRole =
+                Model.getCollaborationsFactory()
+                    .buildClassifierRole(diagram.getNamespace());
+            if (objName != null) {
+                Model.getCoreHelper().setName(newClassifierRole, objName);
+            } else {
+                // TODO: I don't think it's normal to generate model element
+                // names
+                Model.getCoreHelper().setName(newClassifierRole,
+                        &quot;anon&quot; + (++anonCnt));
+            }
+            coll = new ArrayList&lt;Object&gt;();
+            coll.add(theClassifier);
+            Model.getCollaborationsHelper().setBases(newClassifierRole, coll);
+            crFig = (Fig) diagram.createDiagramElement(
+                    newClassifierRole, DEFAULT_BOUNDS);
+
+            // location must be set for correct automatic layouting (how funny)
+            // otherwise, the new classifier role is not the rightmost
+            maxXPos += X_OFFSET;
+            crFig.setLocation(maxXPos, 0);
+
+            // TODO: Do we need to do both of these?
+            diagram.add(crFig);
+            ((MutableGraphModel)
+                    (diagram.getGraphModel())).addNode(newClassifierRole);
+
+            // TODO: Send event instead of calling event adapter directly
+            ExplorerEventAdaptor.getInstance().modelElementChanged(
+                Model.getFacade().getNamespace(classifier));
+        }
+        return crFig;
+    }
+    */
+
+    /**
+     * Parses a body of the actual operation.
+     */
+    private void parseBody() {
+<span class="nc" id="L617">        JavaLexer lexer = null;</span>
+<span class="nc" id="L618">        CommonTokenStream tokens = null;</span>
+<span class="nc" id="L619">        JavaParser parser = null;</span>
+
+<span class="nc" id="L621">        calls.clear();</span>
+<span class="nc" id="L622">        types.clear();</span>
+<span class="nc bnc" id="L623" title="All 2 branches missed.">        if (modeller != null) {</span>
+<span class="nc" id="L624">            modeller.clearMethodCalls();</span>
+<span class="nc" id="L625">            modeller.clearLocalVariableDeclarations();</span>
+        }
+        try {
+<span class="nc" id="L628">            lexer =</span>
+                new JavaLexer(
+<span class="nc" id="L630">                    new ANTLRStringStream('{' + getBody(operation) + '}'));</span>
+<span class="nc" id="L631">            tokens = new CommonTokenStream(lexer);</span>
+<span class="nc" id="L632">            parser = new JavaParser(tokens);</span>
+<span class="nc" id="L633">            parser.setModeller(modeller);</span>
+<span class="nc" id="L634">            parser.setParserMode(JavaParser.MODE_REVENG_SEQUENCE);</span>
+<span class="nc" id="L635">        } catch (Exception ex) {</span>
+            // the only chance we have is to finish the current operation
+<span class="nc" id="L637">            LOG.log(Level.WARNING,</span>
+                    &quot;Parser not ready, so no more generation of calls&quot;, ex);
+<span class="nc" id="L639">        }</span>
+<span class="nc bnc" id="L640" title="All 4 branches missed.">        if (modeller != null &amp;&amp; parser != null) {</span>
+            try {
+<span class="nc" id="L642">                parser.block();</span>
+<span class="nc" id="L643">            } catch (Exception ex) {</span>
+<span class="nc" id="L644">                LOG.log(Level.FINE, &quot;Parsing method body failed:&quot;, ex);</span>
+<span class="nc" id="L645">            }</span>
+<span class="nc" id="L646">            Collection&lt;String&gt; methodCalls = modeller.getMethodCalls();</span>
+<span class="nc bnc" id="L647" title="All 2 branches missed.">            if (methodCalls != null) {</span>
+<span class="nc" id="L648">                calls.addAll(methodCalls);</span>
+<span class="nc" id="L649">                types.putAll(modeller.getLocalVariableDeclarations());</span>
+            }
+        }
+<span class="nc" id="L652">    }</span>
+
+    /**
+     * Gets the (first) body of an operation.
+     * TODO: get the right body instead (notation!), else nothing.
+     */
+    private static String getBody(Object operation) {
+<span class="nc" id="L659">        String body = null;</span>
+<span class="nc" id="L660">        Collection methods = Model.getFacade().getMethods(operation);</span>
+<span class="nc bnc" id="L661" title="All 4 branches missed.">        if (methods != null &amp;&amp; !methods.isEmpty()) {</span>
+            Object expression =
+<span class="nc" id="L663">                Model.getFacade().getBody(methods.iterator().next());</span>
+<span class="nc" id="L664">            body = (String) Model.getFacade().getBody(expression);</span>
+        }
+<span class="nc bnc" id="L666" title="All 2 branches missed.">        if (body == null) {</span>
+<span class="nc" id="L667">            body = &quot;&quot;;</span>
+        }
+<span class="nc" id="L669">        return body;</span>
+    }
+
+    /**
+     * Builds the complete action and its target
+     * classifier role (if not existing).
+     * TODO: Put a similar method in a to be defined interface.
+     */
+    /*
+    private void buildAction(
+            String call,
+            Fig startFig,
+            Fig endFig) {
+        StringBuffer sb = new StringBuffer(call);
+        int findpos = sb.lastIndexOf(&quot;.&quot;);
+        int createPos = sb.indexOf(&quot;new &quot;);
+        boolean isCreate =
+            createPos != -1
+            &amp;&amp; (createPos == 0 || sb.charAt(createPos - 1) == '=');
+        if (!isCreate &amp;&amp; findpos == -1) {
+            // call of a method of the class
+            buildEdge(call, startFig, endFig,
+                    Model.getMetaTypes().getCallAction());
+        } else if (!isCreate
+                &amp;&amp; findpos &lt;= 5
+                &amp;&amp; (call.startsWith(&quot;super.&quot;) || call.startsWith(&quot;this.&quot;))) {
+            // also call of a method of the class,
+            // but prefixed with &quot;super.&quot; or &quot;this.&quot;
+            buildEdge(call, startFig, endFig,
+                    Model.getMetaTypes().getCallAction());
+        } else {
+            String type = null;
+            if (isCreate) {
+                // creator (constructor) call
+                type = sb.substring(createPos + 4);
+                String objName =
+                    createPos &gt;= 2 ? sb.substring(0, createPos - 1) : null;
+                Object cls = getClassifierFromModel(type, objName);
+                buildEdge(
+                        sb.substring(createPos),
+                        startFig,
+                        getFigClassifierRole(cls, objName),
+                        Model.getMetaTypes().getCreateAction());
+            } else {
+                String teststring = call.substring(0, findpos);
+                type = (String) types.get(teststring);
+                if (type != null) {
+                    Object cls = getClassifierFromModel(type, teststring);
+                    buildEdge(
+                            call,
+                            startFig,
+                            getFigClassifierRole(cls, teststring),
+                            Model.getMetaTypes().getCallAction());
+                }
+            }
+
+            // if (type != null) {
+                // call of a method of a local object
+                // or call of a static method of a classifier
+            // } else {
+                // unknown type
+            // }
+        }
+    }
+    */
+
+    /**
+     * Builds the edge figure for an action.&lt;p&gt;
+     * TODO: Hide this method in the implementation of a to be defined
+     * interface.
+     * TODO: When moving it would be better to take model elements rather than
+     * Figs as arguments here the implementation of that interface suggested
+     * above can then find the Figs itself without such diagram knowledge being
+     * in RE.
+     */
+    /*
+    private void buildEdge(
+            String call,
+            Fig startFig,
+            Fig endFig,
+            Object callType) {
+        
+        // TODO: Fix for new sequence diagram implementation
+        
+//        SequenceDiagramLayer lay = (SequenceDiagramLayer) diagram.getLayer();
+//        int n = startFig == endFig ? 2 : 1;
+//        if (portCnt &lt; maxPort) {
+//            lay.expandDiagram(portCnt + 1, n);
+//        }
+//        MessageNode startPort = startFig.getNode(portCnt + 1);
+//        MessageNode foundPort = endFig.getNode(portCnt + n);
+//        portCnt += n;
+//        maxPort += n;
+//        Fig startPortFig = startFig.getPortFig(startPort);
+//        Fig destPortFig = endFig.getPortFig(foundPort);
+//        Object messageType = Model.getMetaTypes().getMessage();
+//
+//        // TODO: This has a bad smell. I don't think we should be using Modes
+//        // here. Modes are for user interactions.
+//        // Find a better way to do this.
+//        Editor ce = Globals.curEditor();
+//        Hashtable&lt;String, Object&gt; args = new Hashtable&lt;String, Object&gt;();
+//        args.put(&quot;action&quot;, callType);
+//        Mode mode = ce.getModeManager().top();
+//        mode.setArgs(args);
+//
+//        SequenceDiagramGraphModel graphModel =
+//            (SequenceDiagramGraphModel) diagram.getGraphModel();
+//        Object newEdge =
+//            graphModel.connect(startPort, foundPort, messageType);
+//        if (null != newEdge) {
+//            Model.getCoreHelper().setName(newEdge, call);
+//            final FigMessage figMessage =
+//                (FigMessage) lay.presentationFor(newEdge);
+//            figMessage.setSourcePortFig(startPortFig);
+//            figMessage.setSourceFigNode(startFig);
+//            figMessage.setDestPortFig(destPortFig);
+//            figMessage.setDestFigNode(endFig);
+//            endFig.updateEdges();
+//            if (startFig != endFig) {
+//                startFig.updateEdges();
+//            }
+//        }
+    }
+    */
+
+//    /**
+//     * Gets or builds a classifier role from a type. The type is a classifier
+//     * name, either fully qualified (with whole package path) or not.
+//     * Also ensures that there is an association to the actual classifier.&lt;p&gt;
+//     * TODO: Hide this method in the implementation of a to be defined
+//     * interface.
+//     * TODO: objName is not used. Are there plans for this?
+//     */
+//    private Object getClassifierFromModel(
+//            final String type,
+//            final String objName) {
+//        Object theClassifier = null;
+//        int pos = type.lastIndexOf(&quot;.&quot;);
+//        if (pos != -1) {
+//            // full package path given, so let's get it from the model
+//            Object namespace = model;
+//            pos = 0;
+//            StringTokenizer st = new StringTokenizer(type, &quot;.&quot;);
+//            while (st.hasMoreTokens()) {
+//                String s = st.nextToken();
+//                pos += s.length();
+//                Object element = Model.getFacade().lookupIn(namespace, s);
+//                if (element == null) {
+//                    // package/classifier is missing, so create one
+//                    if (st.hasMoreTokens()) {
+//                        // must be a package
+//                        element =
+//                            Model.getModelManagementFactory()
+//                                .buildPackage(s);
+//                    } else {
+//                        // must be a classifier, let's assume a class
+//                        element = Model.getCoreFactory().buildClass(s);
+//                    }
+//                    Model.getCoreHelper().setNamespace(element, namespace);
+//                    Model.getCoreHelper().addOwnedElement(namespace, element);
+//                }
+//                namespace = element;
+//                pos++;
+//            }
+//            theClassifier = namespace;
+//        } else {
+//            // classifier without package information given
+//            // first, let's look in the namespace of the actual classifier
+//            Object namespace = Model.getFacade().getNamespace(classifier);
+//            theClassifier = Model.getFacade().lookupIn(namespace, type);
+//            if (!Model.getFacade().isAClassifier(theClassifier)) {
+//                theClassifier = null;
+//                // let's search for it in the imports (component dependencies)
+//                Collection sdeps =
+//                    Model.getFacade().getSupplierDependencies(classifier);
+//                Iterator iter1 = sdeps != null ? sdeps.iterator() : null;
+//                while (theClassifier == null
+//                        &amp;&amp; iter1 != null
+//                        &amp;&amp; iter1.hasNext()) {
+//                    Object dep = iter1.next();
+//                    if (Model.getFacade().isADependency(dep)) {
+//                        Collection clients =
+//                            Model.getFacade().getClients(dep);
+//                        Iterator iter2 =
+//                            clients != null ? clients.iterator() : null;
+//                        while (theClassifier == null
+//                                &amp;&amp; iter2 != null
+//                                &amp;&amp; iter2.hasNext()) {
+//                            Object comp = iter2.next();
+//                            if (Model.getFacade().isAComponent(comp)) {
+//                                theClassifier = permissionLookup(comp, type);
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//        if (theClassifier == null) {
+//            // not found any matching classifier, so create one, and put it
+//            // into the namespace of the actual classifier
+//            theClassifier = Model.getCoreFactory().buildClass(type);
+//            Object namespace = Model.getFacade().getNamespace(classifier);
+//            Model.getCoreHelper().setNamespace(theClassifier, namespace);
+//            Model.getCoreHelper().addOwnedElement(namespace, theClassifier);
+//        }
+//        ensureDirectedAssociation(classifier, theClassifier);
+//        return theClassifier;
+//    }
+
+    /**
+     * Checks if there is a directed association between two classifiers, and
+     * creates one if necessary.&lt;p&gt;
+     * TODO: Hide this method in the implementation of a to be defined
+     * interface.
+     */
+    private void ensureDirectedAssociation(Object fromCls, Object toCls) {
+<span class="nc" id="L886">        String fromName = Model.getFacade().getName(fromCls);</span>
+<span class="nc" id="L887">        String toName = Model.getFacade().getName(toCls);</span>
+<span class="nc" id="L888">        Object assocEnd = null;</span>
+        for (Iterator i =
+<span class="nc" id="L890">                Model.getFacade().getAssociationEnds(toCls).iterator();</span>
+<span class="nc bnc" id="L891" title="All 2 branches missed.">             i.hasNext();) {</span>
+<span class="nc" id="L892">            Object ae = i.next();</span>
+<span class="nc" id="L893">            Object assoc = Model.getFacade().getAssociation(ae);</span>
+<span class="nc bnc" id="L894" title="All 2 branches missed.">            if (Model.getFacade().getConnections(assoc).size() == 2</span>
+<span class="nc bnc" id="L895" title="All 2 branches missed.">                    &amp;&amp; Model.getFacade().getType(</span>
+<span class="nc" id="L896">                            Model.getFacade().getNextEnd(ae)) == fromCls</span>
+<span class="nc bnc" id="L897" title="All 2 branches missed.">                    &amp;&amp; Model.getFacade().getName(ae) == null</span>
+<span class="nc bnc" id="L898" title="All 2 branches missed.">                    &amp;&amp; Model.getFacade().isNavigable(ae)) {</span>
+<span class="nc" id="L899">                assocEnd = ae;</span>
+            }
+<span class="nc" id="L901">        }</span>
+<span class="nc bnc" id="L902" title="All 2 branches missed.">        if (assocEnd == null) {</span>
+<span class="nc" id="L903">            String assocName = fromName + &quot; -&gt; &quot; + toName;</span>
+<span class="nc" id="L904">            Modeller.buildDirectedAssociation(assocName, fromCls, toCls);</span>
+        }
+<span class="nc" id="L906">    }</span>
+
+    /**
+     * Get the classifier with the given name from a permission
+     * (null if not found).&lt;p&gt;
+     * TODO: Hide this method in the implementation of a to be defined
+     * interface.
+     */
+    private Object permissionLookup(Object comp, String clsName) {
+<span class="nc" id="L915">        Object theClassifier = null;</span>
+        // TODO: This could use the new CoreHelper.getPackageImports()
+<span class="nc" id="L917">        Collection cdeps = Model.getFacade().getClientDependencies(comp);</span>
+        // TODO: Do we really need to test for null here?
+        // We should get empty collections.
+<span class="nc bnc" id="L920" title="All 2 branches missed.">        Iterator iter1 = cdeps != null ? cdeps.iterator() : null;</span>
+<span class="nc bnc" id="L921" title="All 6 branches missed.">        while (theClassifier == null &amp;&amp; iter1 != null &amp;&amp; iter1.hasNext()) {</span>
+<span class="nc" id="L922">            Object perm = iter1.next();</span>
+<span class="nc bnc" id="L923" title="All 2 branches missed.">            if (Model.getFacade().isAPackageImport(perm)) {</span>
+<span class="nc" id="L924">                Collection suppliers = Model.getFacade().getSuppliers(perm);</span>
+                // TODO: Do we really need to test for null here?
+                // We should get empty collections.
+<span class="nc bnc" id="L927" title="All 2 branches missed.">                Iterator iter2 =</span>
+<span class="nc" id="L928">                    suppliers != null ? suppliers.iterator() : null;</span>
+<span class="nc bnc" id="L929" title="All 4 branches missed.">                while (theClassifier == null</span>
+                        &amp;&amp; iter2 != null
+<span class="nc bnc" id="L931" title="All 2 branches missed.">                        &amp;&amp; iter2.hasNext()) {</span>
+<span class="nc" id="L932">                    Object elem = iter2.next();</span>
+                    // TODO: I'm not sure what this is trying to do, but it
+                    // probably isn't what it thinks it is.  The supplier to
+                    // an import is going to be a Package, which is not a
+                    // Classifier.  Perhaps this intends to process the
+                    // ownedElements of the Package. - tfm - 20070803
+<span class="nc bnc" id="L938" title="All 2 branches missed.">                    if (Model.getFacade().isAClassifier(elem)</span>
+<span class="nc bnc" id="L939" title="All 2 branches missed.">                         &amp;&amp; clsName.equals(Model.getFacade().getName(elem))) {</span>
+<span class="nc" id="L940">                        theClassifier = elem;</span>
+                    }
+<span class="nc" id="L942">                }</span>
+            }
+<span class="nc" id="L944">        }</span>
+<span class="nc" id="L945">        return theClassifier;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

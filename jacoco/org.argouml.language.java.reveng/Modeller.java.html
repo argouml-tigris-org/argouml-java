@@ -1,0 +1,2452 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Modeller.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">argo_java</a> &gt; <a href="index.source.html" class="el_package">org.argouml.language.java.reveng</a> &gt; <span class="el_source">Modeller.java</span></div><h1>Modeller.java</h1><pre class="source lang-java linenums">/* $Id$
+ *****************************************************************************
+ * Copyright (c) 2009-2013 Contributors - see below
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Thomas Neustupny
+ *    Alexander Lepekhine
+ *    Laurent Braud
+ *****************************************************************************
+ *
+ * Some portions of this file was previously release using the BSD License:
+ */
+
+// Copyright (c) 1996-2006 The Regents of the University of California. All
+// Rights Reserved. Permission to use, copy, modify, and distribute this
+// software and its documentation without fee, and without a written
+// agreement is hereby granted, provided that the above copyright notice
+// and this paragraph appear in all copies.  This software program and
+// documentation are copyrighted by The Regents of the University of
+// California. The software program and documentation are supplied &quot;AS
+// IS&quot;, without any accompanying services from The Regents. The Regents
+// does not warrant that the operation of the program will be
+// uninterrupted or error-free. The end-user understands that the program
+// was developed for research purposes and is advised not to rely
+// exclusively on the program for any reason.  IN NO EVENT SHALL THE
+// UNIVERSITY OF CALIFORNIA BE LIABLE TO ANY PARTY FOR DIRECT, INDIRECT,
+// SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES, INCLUDING LOST PROFITS,
+// ARISING OUT OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF
+// THE UNIVERSITY OF CALIFORNIA HAS BEEN ADVISED OF THE POSSIBILITY OF
+// SUCH DAMAGE. THE UNIVERSITY OF CALIFORNIA SPECIFICALLY DISCLAIMS ANY
+// WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+// MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE SOFTWARE
+// PROVIDED HEREUNDER IS ON AN &quot;AS IS&quot; BASIS, AND THE UNIVERSITY OF
+// CALIFORNIA HAS NO OBLIGATIONS TO PROVIDE MAINTENANCE, SUPPORT,
+// UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
+// Copyright (c) 2003-2008 The Regents of the University of California. All
+// Rights Reserved. Permission to use, copy, modify, and distribute this
+// software and its documentation without fee, and without a written
+// agreement is hereby granted, provided that the above copyright notice
+// and this paragraph appear in all copies.  This software program and
+// documentation are copyrighted by The Regents of the University of
+// California. The software program and documentation are supplied &quot;AS
+// IS&quot;, without any accompanying services from The Regents. The Regents
+// does not warrant that the operation of the program will be
+// uninterrupted or error-free. The end-user understands that the program
+// was developed for research purposes and is advised not to rely
+// exclusively on the program for any reason.  IN NO EVENT SHALL THE
+// UNIVERSITY OF CALIFORNIA BE LIABLE TO ANY PARTY FOR DIRECT, INDIRECT,
+// SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES, INCLUDING LOST PROFITS,
+// ARISING OUT OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF
+// THE UNIVERSITY OF CALIFORNIA HAS BEEN ADVISED OF THE POSSIBILITY OF
+// SUCH DAMAGE. THE UNIVERSITY OF CALIFORNIA SPECIFICALLY DISCLAIMS ANY
+// WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+// MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE SOFTWARE
+// PROVIDED HEREUNDER IS ON AN &quot;AS IS&quot; BASIS, AND THE UNIVERSITY OF
+// CALIFORNIA HAS NO OBLIGATIONS TO PROVIDE MAINTENANCE, SUPPORT,
+// UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
+
+package org.argouml.language.java.reveng;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Stack;
+import java.util.StringTokenizer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.argouml.application.api.Argo;
+import org.argouml.kernel.ProjectManager;
+import org.argouml.language.java.reveng.classfile.ParserUtils;
+import org.argouml.model.CoreFactory;
+import org.argouml.model.Facade;
+import org.argouml.model.Model;
+import org.argouml.ocl.OCLUtil;
+import org.argouml.profile.Profile;
+import org.argouml.uml.reveng.ImportCommon;
+import org.argouml.uml.reveng.ImportInterface;
+
+
+/**
+ * Modeller maps Java source code(parsed/recognised by ANTLR) to UML model
+ * elements, it applies some of the semantics in JSR-26. Note: JSR-26 was
+ * withdrawn in March, 2004, so it obviously provides no guidance for more
+ * recent language features such as Java 5.
+ * 
+ * TODO: This really needs a more sophisticated symbol table facility. It
+ * currently uses the model repository as its symbol table which makes it easy
+ * to merge into an existing model, but it also sometimes requires guessing
+ * about what a symbol represents (e.g. interface, class, or package) so that
+ * the name can instantiated in a concrete form. - tfm 20070911
+ * 
+ * @author Marcus Andersson, Thomas Neustupny
+ */
+public class Modeller {
+
+<span class="fc" id="L108">    private static final Logger LOG =</span>
+<span class="fc" id="L109">        Logger.getLogger(Modeller.class.getName());</span>
+
+    private static final String JAVA_PACKAGE = &quot;java.lang&quot;;
+
+<span class="fc" id="L113">    private static final List&lt;String&gt; EMPTY_STRING_LIST =</span>
+<span class="fc" id="L114">        Collections.emptyList();</span>
+
+    /**
+     * Current working model.
+     */
+    private Object model;
+
+    /**
+     * Java profile model.
+     */
+    private Profile javaProfile;
+
+    /**
+     * Current import settings.
+     */
+    private ImportCommon importSession;
+
+    /**
+     * The package which the currentClassifier belongs to.
+     */
+    private Object currentPackage;
+
+    /**
+     * Keeps the data that varies during parsing.
+     */
+    private ParseState parseState;
+
+    /**
+     * Stack up the state when descending inner classes.
+     */
+    private Stack&lt;ParseState&gt; parseStateStack;
+
+    /**
+     * Only attributes will be generated.
+     */
+    private boolean noAssociations;
+
+    /**
+     * Arrays will be modelled as unique datatypes.
+     */
+    private boolean arraysAsDatatype;
+
+    /**
+     * The name of the file being parsed.
+     */
+    private String fileName;
+
+    /**
+     * Arbitrary attributes.
+     */
+<span class="fc" id="L164">    private Hashtable&lt;String, Object&gt; attributes =</span>
+        new Hashtable&lt;String, Object&gt;();
+
+    /**
+     * List of the names of parsed method calls.
+     */
+<span class="fc" id="L170">    private List&lt;String&gt; methodCalls = new ArrayList&lt;String&gt;();</span>
+
+    /**
+     * HashMap of parsed local variables. Indexed by variable name with string
+     * representation of the type stored as the value.
+     */
+<span class="fc" id="L176">    private Hashtable&lt;String, String&gt; localVariables =</span>
+        new Hashtable&lt;String, String&gt;();
+
+    /**
+     * New model elements that were created during this reverse engineering
+     * session. TODO: We want a stronger type here, but ArgoUML treats all
+     * elements as just simple Objects.
+     */
+    private Collection&lt;Object&gt; newElements;
+
+    /**
+     * Flag to control generation of artificial names for associations. If true,
+     * generate names of form &quot;From-&gt;To&quot;. If false, set name to null.
+     */
+<span class="fc" id="L190">    private boolean generateNames = true;</span>
+
+    /**
+     * Create a new modeller.
+     * 
+     * @param theModel The model to work with.
+     * @param attributeSelected true if associations should be modeled as
+     *            attributes
+     * @param datatypeSelected true if arrays should be modeled as datatypes
+     *            instead of instead of using UML multiplicities
+     * @param theFileName the current file name
+     * @deprecated for 0.27.2 by thn. Use the other constructor.
+     */
+    public Modeller(Object theModel, boolean attributeSelected,
+            boolean datatypeSelected, String theFileName) {
+<span class="nc" id="L205">        this(theModel, null, attributeSelected, datatypeSelected, theFileName);</span>
+<span class="nc" id="L206">    }</span>
+
+    /**
+     * Create a new modeller.
+     * 
+     * @param theModel The model to work with.
+     * @param theJavaProfile The Java profile.
+     * @param attributeSelected true if associations should be modeled as
+     *            attributes
+     * @param datatypeSelected true if arrays should be modeled as datatypes
+     *            instead of instead of using UML multiplicities
+     * @param theFileName the current file name
+     */
+    public Modeller(Object theModel, Profile theJavaProfile,
+            boolean attributeSelected, boolean datatypeSelected,
+<span class="fc" id="L221">            String theFileName) {</span>
+<span class="fc" id="L222">        model = theModel;</span>
+<span class="fc" id="L223">        javaProfile = theJavaProfile;</span>
+<span class="fc" id="L224">        noAssociations = attributeSelected;</span>
+<span class="fc" id="L225">        arraysAsDatatype = datatypeSelected;</span>
+<span class="fc" id="L226">        currentPackage = this.model;</span>
+<span class="fc" id="L227">        newElements = new HashSet&lt;Object&gt;();</span>
+<span class="fc" id="L228">        parseState = new ParseState(this.model, getPackage(JAVA_PACKAGE, true));</span>
+<span class="fc" id="L229">        parseStateStack = new Stack&lt;ParseState&gt;();</span>
+<span class="fc" id="L230">        fileName = theFileName;</span>
+<span class="pc bpc" id="L231" title="1 of 2 branches missed.">        if (javaProfile == null) {</span>
+<span class="nc" id="L232">            LOG.warning(&quot;No Java profile activated for Java source import. &quot;</span>
+                        + &quot;Why?&quot;);
+        }
+<span class="fc" id="L235">    }</span>
+
+    /**
+     * @param key the key of the attribute to get
+     * @return the value of the attribute
+     */
+    public Object getAttribute(String key) {
+<span class="fc" id="L242">        return attributes.get(key);</span>
+    }
+
+    /**
+     * @param key the key of the attribute
+     * @param value the value for the attribute
+     */
+    public void setAttribute(String key, Object value) {
+<span class="nc" id="L250">        attributes.put(key, value);</span>
+<span class="nc" id="L251">    }</span>
+
+    /**
+     * This is a mapping from a Java compilation Unit -&gt; a UML artifact.
+     * Classes are resident in a component in UML1, and realizing classifiers
+     * in UML2. Imports are relationships between artifacts and other
+     * classes / packages.
+     * &lt;p&gt;
+     * 
+     * See JSR 26 (for UML1?).
+     * &lt;p&gt;
+     * 
+     * Adding artifacts is a little messy since there are 2 cases:
+     * 
+     * &lt;ol&gt;
+     * &lt;li&gt;source file has package statement, will be added several times since
+     * lookup in addComponent() only looks in the model since the package
+     * namespace is not yet known.
+     * 
+     * &lt;li&gt;source file has not package statement: artifact is added to the
+     * model namespace. There is no package statement so the lookup will
+     * always work.
+     * 
+     * &lt;/ol&gt;
+     * Therefore in the case of (1), we need to delete duplicate artifacts in
+     * the addPackage() method.
+     * &lt;p&gt;
+     * 
+     * In either case we need to add a package since we don't know in advance if
+     * there will be a package statement.
+     * &lt;p&gt;
+     */
+    public void addComponent() {
+
+        // try and find the artifact in the current package
+        // to cope with repeated imports
+        // [this will never work if a package statement exists:
+        // because the package statement is parsed after the component is
+        // identified]
+<span class="fc" id="L290">        Object artifact = Model.getFacade().lookupIn(currentPackage, fileName);</span>
+
+<span class="pc bpc" id="L292" title="1 of 2 branches missed.">        if (artifact == null) {</span>
+
+            // remove the java specific ending (per JSR 26).
+            // BUT we can't do this because then the component will be confused
+            // with its class with the same name when invoking
+            // Model.getFacade().lookupIn(Object,String)
+            /*
+             * if(fileName.endsWith(&quot;.java&quot;)) fileName = fileName.substring(0,
+             * fileName.length()-5);
+             */
+
+<span class="pc bpc" id="L303" title="1 of 2 branches missed.">            if (Model.getFacade().getUmlVersion().charAt(0) == '1') {</span>
+<span class="fc" id="L304">                artifact = Model.getCoreFactory().createComponent();</span>
+            } else {
+<span class="nc" id="L306">                artifact = Model.getCoreFactory().createArtifact();</span>
+            }
+<span class="fc" id="L308">            Model.getCoreHelper().setName(artifact, fileName);</span>
+<span class="fc" id="L309">            newElements.add(artifact);</span>
+        }
+
+<span class="fc" id="L312">        parseState.setArtifact(artifact);</span>
+
+        // set the namespace of the component, in the event
+        // that the source file does not have a package stmt
+<span class="fc" id="L316">        Model.getCoreHelper().setNamespace(parseState.getArtifact(), model);</span>
+<span class="fc" id="L317">    }</span>
+
+    /**
+     * Called from the parser when a package clause is found.
+     * 
+     * @param name The name of the package.
+     */
+    public void addPackage(String name) {
+        // We used to add diagrams to the project here for each package
+        // but diagram creation is handled in the common code for all
+        // reverse engineering modules now
+
+        // Find the top level package
+<span class="fc" id="L330">        String ownerPackageName, currentName = name;</span>
+<span class="fc" id="L331">        ownerPackageName = getPackageName(currentName);</span>
+<span class="fc bfc" id="L332" title="All 2 branches covered.">        while (!&quot;&quot;.equals(ownerPackageName)) {</span>
+<span class="fc" id="L333">            currentName = ownerPackageName;</span>
+<span class="fc" id="L334">            ownerPackageName = getPackageName(currentName);</span>
+        }
+        // here, getPackage must NOT use the Java profile, because
+        // the declared package need to be in the user model
+<span class="fc" id="L338">        Object mPackage = getPackage(currentName, false);</span>
+        // Save src_path in the upper package
+        // TODO: Rework this so that we don't need importSession here.
+        // perhaps move to the common import code. - tfm
+<span class="pc bpc" id="L342" title="1 of 2 branches missed.">        if (importSession != null</span>
+<span class="nc bnc" id="L343" title="All 2 branches missed.">                &amp;&amp; importSession.getSrcPath() != null</span>
+<span class="nc bnc" id="L344" title="All 2 branches missed.">                &amp;&amp; Model.getFacade().getTaggedValue(mPackage,</span>
+                        ImportInterface.SOURCE_PATH_TAG) == null) {
+<span class="nc" id="L346">            String[] srcPaths = {</span>
+<span class="nc" id="L347">                importSession.getSrcPath()</span>
+            };
+<span class="nc" id="L349">            buildTaggedValue(mPackage, ImportInterface.SOURCE_PATH_TAG,</span>
+                    srcPaths);
+        }
+
+        // Find or create a Package model element for this package
+        // (in user model only, because a new package must be added).
+<span class="fc" id="L355">        mPackage = getPackage(name, false);</span>
+
+        // Set the current package for the following source code.
+<span class="fc" id="L358">        currentPackage = mPackage;</span>
+<span class="fc" id="L359">        parseState.addPackageContext(mPackage);</span>
+
+        // set the namespace of the artifact
+        // check to see if there is already a artifact defined:
+<span class="fc" id="L363">        Object artifact = Model.getFacade().lookupIn(currentPackage, fileName);</span>
+
+<span class="pc bpc" id="L365" title="1 of 2 branches missed.">        if (artifact == null) {</span>
+
+            // set the namespace of the artifact
+<span class="fc" id="L368">            Model.getCoreHelper().setNamespace(parseState.getArtifact(),</span>
+                    currentPackage);
+        } else {
+
+            // an artifact already exists,
+            // so delete the latest one(the duplicate)
+<span class="nc" id="L374">            Object oldArtifact = parseState.getArtifact();</span>
+<span class="nc" id="L375">            Model.getUmlFactory().delete(oldArtifact);</span>
+<span class="nc" id="L376">            newElements.remove(oldArtifact);</span>
+            // change the parse state to the existing one.
+<span class="nc" id="L378">            parseState.setArtifact(artifact);</span>
+        }
+<span class="fc" id="L380">    }</span>
+
+    /**
+     * Called from the parser when an import clause is found.
+     * 
+     * @param name The name of the import. Can end with a '*'.
+     */
+    public void addImport(String name) {
+<span class="nc" id="L388">        addImport(name, false);</span>
+<span class="nc" id="L389">    }</span>
+
+    /*
+     * ClassSignature: TypeParametersopt Superopt Interfacesopt
+     * 
+     * TypeParameters ::= &lt; TypeParameterList &gt; TypeParameterList ::=
+     * TypeParameterList , TypeParameter | TypeParameter
+     * 
+     * TypeParameter: TypeVariable TypeBoundopt TypeBound: extends
+     * ClassOrInterfaceType AdditionalBoundListopt AdditionalBoundList:
+     * AdditionalBound AdditionalBoundList AdditionalBound AdditionalBound: &amp;
+     * InterfaceType
+     */
+    public void addClassSignature(String signature) {
+<span class="fc" id="L403">        addTypeParameters(parseState.getClassifier(),</span>
+<span class="fc" id="L404">                ParserUtils.extractTypeParameters(signature));</span>
+<span class="fc" id="L405">    }</span>
+
+    /**
+     * Called from the parser when an import clause is found.
+     * 
+     * @param name The name of the import. Can end with a '*'.
+     * @param forceIt Force addition by creating all that's missing.
+     */
+    void addImport(String name, boolean forceIt) {
+        // only do imports on the 2nd pass.
+<span class="pc bpc" id="L415" title="1 of 2 branches missed.">        if (getLevel() == 0) {</span>
+<span class="nc" id="L416">            return;</span>
+        }
+
+<span class="fc" id="L419">        String packageName = getPackageName(name);</span>
+
+<span class="pc bpc" id="L421" title="2 of 4 branches missed.">        if (packageName == null || &quot;&quot;.equals(packageName)) {</span>
+            // TODO: This won't happen and can be removed when there is a
+            // real symbol table for name lookup instead of guessing based
+            // on parsing &quot;.&quot; strings
+<span class="nc" id="L425">            LOG.log(Level.WARNING,</span>
+                    &quot;Import skipped - unable to get package name for {0}&quot;,
+                    name);
+<span class="nc" id="L428">            return;</span>
+        }
+
+        // TODO: In the case of an inner class, we probably want either the
+        // qualified name with both outer and inner class names, or just the
+        // outer class name
+<span class="fc" id="L434">        String classifierName = getClassifierName(name);</span>
+<span class="fc" id="L435">        Object mPackage = getPackage(packageName, true);</span>
+
+        // import on demand
+<span class="pc bpc" id="L438" title="1 of 2 branches missed.">        if (classifierName.equals(&quot;*&quot;)) {</span>
+<span class="nc" id="L439">            parseState.addPackageContext(mPackage);</span>
+<span class="nc" id="L440">            Object srcFile = parseState.getArtifact();</span>
+<span class="nc" id="L441">            buildDependency(mPackage, srcFile, &quot;javaImport&quot;);</span>
+<span class="nc" id="L442">        }</span>
+        // single type import
+        else {
+<span class="fc" id="L445">            Object mClassifier = null;</span>
+            try {
+<span class="fc" id="L447">                mClassifier = (new PackageContext(null, mPackage)).get(</span>
+                        classifierName, false, javaProfile);
+<span class="nc" id="L449">            } catch (ClassifierNotFoundException e) {</span>
+<span class="nc bnc" id="L450" title="All 6 branches missed.">                if (forceIt &amp;&amp; classifierName != null &amp;&amp; mPackage != null) {</span>
+                    // call getPackage again WITHOUT Java profile, because
+                    // class creation is only allowed in the user model
+<span class="nc bnc" id="L453" title="All 2 branches missed.">                    mPackage = (packageName.length() &gt; 0) ? getPackage(</span>
+                            packageName, false) : model;
+                    // a last chance: maybe it's in this user model package:
+<span class="nc" id="L456">                    mClassifier = Model.getFacade().lookupIn(mPackage,</span>
+                            classifierName);
+<span class="nc bnc" id="L458" title="All 2 branches missed.">                    if (mClassifier == null) {</span>
+                        // we must guess if it's a class/interface, so: class
+<span class="nc" id="L460">                        LOG.info(&quot;Modeller.java: &quot;</span>
+                                + &quot;forced creation of unknown classifier &quot;
+                                + classifierName);
+                        // TODO: A better strategy would be to defer creating
+                        // this until we can determine what it is
+<span class="nc" id="L465">                        mClassifier = Model.getCoreFactory().buildClass(</span>
+                                classifierName, mPackage);
+<span class="nc" id="L467">                        newElements.add(mClassifier);</span>
+                    }
+                } else {
+<span class="nc" id="L470">                    warnClassifierNotFound(classifierName,</span>
+                            &quot;an imported classifier&quot;);
+                }
+<span class="fc" id="L473">            }</span>
+<span class="pc bpc" id="L474" title="1 of 2 branches missed.">            if (mClassifier != null) {</span>
+<span class="fc" id="L475">                parseState.addClassifierContext(mClassifier);</span>
+<span class="fc" id="L476">                Object srcFile = parseState.getArtifact();</span>
+<span class="fc" id="L477">                buildDependency(mClassifier, srcFile, &quot;javaImport&quot;);</span>
+            }
+        }
+<span class="fc" id="L480">    }</span>
+
+    /**
+     * Called from the parser to add a dependency to a classifier.
+     * 
+     * @param name The name of the classifier candidate.
+     */
+    void addClassifierDependency(String name) {
+<span class="nc" id="L488">        String classifierName = stripVarargAndGenerics(name);</span>
+<span class="nc" id="L489">        Object clientObj = parseState.getClassifier();</span>
+<span class="nc bnc" id="L490" title="All 2 branches missed.">        if (clientObj == null) {</span>
+<span class="nc" id="L491">            return;</span>
+        }
+<span class="nc" id="L493">        Object supplierObj = null;</span>
+        
+        // first try: lookup classifierName in same namespace
+<span class="nc" id="L496">        Object ns = Model.getFacade().getNamespace(clientObj);</span>
+<span class="nc bnc" id="L497" title="All 2 branches missed.">        if (ns != null) {</span>
+<span class="nc" id="L498">            supplierObj = Model.getFacade().lookupIn(ns, classifierName);</span>
+        }
+        
+        // second try: resolve fully qualified classifier (xxx.yyy.Zzz)
+<span class="nc" id="L502">        String packageName = getPackageName(name);</span>
+<span class="nc bnc" id="L503" title="All 6 branches missed.">        if (supplierObj == null &amp;&amp; packageName != null &amp;&amp; packageName.length() &gt; 0) {</span>
+<span class="nc" id="L504">            classifierName = this.getClassifierName(name);</span>
+<span class="nc" id="L505">            Object mPackage = getPackage(packageName, true);</span>
+<span class="nc" id="L506">            supplierObj = Model.getFacade().lookupIn(mPackage, classifierName);</span>
+        }
+
+        // third try: lookup in imports
+<span class="nc" id="L510">        Object srcFile = parseStateStack.lastElement().getArtifact();</span>
+<span class="nc bnc" id="L511" title="All 4 branches missed.">        if (supplierObj == null &amp;&amp; srcFile != null) {</span>
+<span class="nc" id="L512">            Collection dependencies = Model.getFacade().getClientDependencies(srcFile);</span>
+<span class="nc bnc" id="L513" title="All 2 branches missed.">            for (Object dep : dependencies) {</span>
+<span class="nc bnc" id="L514" title="All 2 branches missed.">                for (Object suppl : Model.getFacade().getSuppliers(dep)) {</span>
+<span class="nc bnc" id="L515" title="All 2 branches missed.">                    if (Model.getFacade().isAPackage(suppl)) {</span>
+<span class="nc" id="L516">                        supplierObj = Model.getFacade().lookupIn(suppl, classifierName);</span>
+<span class="nc bnc" id="L517" title="All 2 branches missed.">                    } else if (classifierName.equals(Model.getFacade().getName(suppl))) {</span>
+<span class="nc" id="L518">                        supplierObj = suppl;</span>
+                    }
+<span class="nc" id="L520">                }</span>
+<span class="nc bnc" id="L521" title="All 2 branches missed.">                if (supplierObj != null) {</span>
+<span class="nc" id="L522">                    break;</span>
+                }
+<span class="nc" id="L524">            }</span>
+        }
+        
+        // finally build the dependency
+<span class="nc bnc" id="L528" title="All 2 branches missed.">        if (supplierObj != null) {</span>
+<span class="nc" id="L529">            buildDependency(supplierObj, clientObj, null);</span>
+        }
+<span class="nc" id="L531">    }</span>
+
+    /*
+     * Build a dependency, e.g. a Java import equivalent in UML. First search
+     * for an existing dependency. Create a new one if not found.
+     */
+    private Object buildDependency(Object supplier, Object client, String stereoname) {
+        // TODO: add &lt;&lt;javaImport&gt;&gt; stereotype to Java profile - thn
+<span class="fc" id="L539">        Collection dependencies = Model.getCoreHelper().getDependencies(</span>
+                supplier, client);
+<span class="pc bpc" id="L541" title="1 of 2 branches missed.">        for (Object dep : dependencies) {</span>
+<span class="nc bnc" id="L542" title="All 2 branches missed.">            for (Object stereotype : Model.getFacade().getStereotypes(dep)) {</span>
+<span class="nc bnc" id="L543" title="All 4 branches missed.">                if (stereoname == null || stereoname.equals(</span>
+<span class="nc" id="L544">                        Model.getFacade().getName(stereotype))) {</span>
+<span class="nc" id="L545">                    return dep;</span>
+                }
+<span class="nc" id="L547">            }</span>
+<span class="nc" id="L548">        }</span>
+
+        // Didn't find it. Let's create one.
+<span class="fc" id="L551">        Object dependency = Model.getCoreFactory().buildDependency(client,</span>
+                supplier);
+<span class="pc bpc" id="L553" title="2 of 4 branches missed.">        if (stereoname != null &amp;&amp; Model.getFacade().getUmlVersion().charAt(0) == '1') {</span>
+            // TODO: support for stereotypes in eUML
+<span class="fc" id="L555">            Model.getCoreHelper().addStereotype(dependency,</span>
+<span class="fc" id="L556">                    getUML1Stereotype(stereoname));</span>
+<span class="fc" id="L557">            ProjectManager.getManager().updateRoots();</span>
+        }
+<span class="fc" id="L559">        String newName = makeDependencyName(client, supplier);</span>
+<span class="fc" id="L560">        Model.getCoreHelper().setName(dependency, newName);</span>
+<span class="fc" id="L561">        newElements.add(dependency);</span>
+<span class="fc" id="L562">        return dependency;</span>
+    }
+
+    private String makeAbstractionName(Object child, Object parent) {
+<span class="fc" id="L566">        return makeFromToName(child, parent);</span>
+    }
+
+    private String makeAssociationName(Object from, Object to) {
+<span class="fc" id="L570">        return makeFromToName(from, to);</span>
+    }
+
+    private String makeDependencyName(Object from, Object to) {
+<span class="fc" id="L574">        return makeFromToName(from, to);</span>
+    }
+
+    private String makeFromToName(Object from, Object to) {
+<span class="pc bpc" id="L578" title="1 of 2 branches missed.">        if (!generateNames) {</span>
+<span class="nc" id="L579">            return null;</span>
+        } else {
+<span class="fc" id="L581">            return makeFromToName(Model.getFacade().getName(from), Model</span>
+<span class="fc" id="L582">                    .getFacade().getName(to));</span>
+        }
+    }
+
+    private String makeFromToName(String from, String to) {
+<span class="pc bpc" id="L587" title="1 of 2 branches missed.">        if (!generateNames) {</span>
+<span class="nc" id="L588">            return null;</span>
+        } else {
+            // TODO: This isn't localized, but I'm not sure it can be
+            // without other side effects - tfm - 20070410
+<span class="fc" id="L592">            return from + &quot; -&gt; &quot; + to;</span>
+        }
+    }
+
+    /**
+     * Called from the parser when a class declaration is found.
+     * 
+     * @param name The name of the class.
+     * @param modifiers A sequence of class modifiers.
+     * @param superclassName Zero or one string with the name of the superclass.
+     *            Can be fully qualified or just a simple class name.
+     * @param interfaces Zero or more strings with the names of implemented
+     *            interfaces. Can be fully qualified or just a simple interface
+     *            name.
+     * @param javadoc The javadoc comment. null or &quot;&quot; if no comment available.
+     */
+    public void addClass(String name, short modifiers, String superclassName,
+            List&lt;String&gt; interfaces, String javadoc) {
+<span class="fc" id="L610">        addClass(name, modifiers, EMPTY_STRING_LIST, superclassName,</span>
+                interfaces, javadoc, false);
+<span class="fc" id="L612">    }</span>
+
+    /**
+     * Called from the parser when a class declaration is found.
+     * 
+     * @param name The name of the class.
+     * @param modifiers A bitmask of class modifiers.
+     * @param typeParameters List of strings containing names of types for
+     *            parameters
+     * @param superclassName Zero or one string with the name of the superclass.
+     *            Can be fully qualified or just a simple class name.
+     * @param interfaces Zero or more strings with the names of implemented
+     *            interfaces. Can be fully qualified or just a simple interface
+     *            name.
+     * @param javadoc The javadoc comment. null or &quot;&quot; if no comment available.
+     * @param forceIt Force addition by creating all that's missing.
+     */
+    void addClass(String name, short modifiers, List&lt;String&gt; typeParameters,
+            String superclassName, List&lt;String&gt; interfaces, String javadoc,
+            boolean forceIt) {
+<span class="pc bpc" id="L632" title="2 of 4 branches missed.">        if (typeParameters != null &amp;&amp; typeParameters.size() &gt; 0) {</span>
+<span class="nc" id="L633">            logError(&quot;type parameters not supported on Class&quot;, name);</span>
+<span class="nc bnc" id="L634" title="All 2 branches missed.">            for (String s : typeParameters) {</span>
+<span class="nc" id="L635">                logError(&quot;type parameter &quot;, s);</span>
+<span class="nc" id="L636">            }</span>
+        }
+<span class="fc" id="L638">        Object mClass = addClassifier(Model.getCoreFactory().createClass(),</span>
+                name, modifiers, javadoc, typeParameters);
+
+<span class="fc bfc" id="L641" title="All 2 branches covered.">        Model.getCoreHelper().setAbstract(mClass,</span>
+                (modifiers &amp; JavaParser.ACC_ABSTRACT) &gt; 0);
+<span class="pc bpc" id="L643" title="1 of 2 branches missed.">        Model.getCoreHelper().setLeaf(mClass,</span>
+                (modifiers &amp; JavaParser.ACC_FINAL) &gt; 0);
+<span class="pc bpc" id="L645" title="1 of 2 branches missed.">        if (Model.getFacade().getUmlVersion().charAt(0) == '1') {</span>
+<span class="fc" id="L646">            Model.getCoreHelper().setRoot(mClass, false);</span>
+        }
+<span class="fc" id="L648">        newElements.add(mClass);</span>
+
+        // only do generalizations and realizations on the 2nd pass.
+<span class="pc bpc" id="L651" title="1 of 2 branches missed.">        if (getLevel() == 0) {</span>
+<span class="nc" id="L652">            return;</span>
+        }
+
+<span class="fc bfc" id="L655" title="All 2 branches covered.">        if (superclassName != null) {</span>
+<span class="fc" id="L656">            Object parentClass = null;</span>
+            try {
+<span class="fc" id="L658">                parentClass = getContext(superclassName).get(</span>
+<span class="fc" id="L659">                        getClassifierName(superclassName), false, javaProfile);</span>
+<span class="fc" id="L660">                getGeneralization(currentPackage, parentClass, mClass);</span>
+<span class="fc" id="L661">            } catch (ClassifierNotFoundException e) {</span>
+<span class="pc bpc" id="L662" title="5 of 6 branches missed.">                if (forceIt &amp;&amp; superclassName != null &amp;&amp; model != null) {</span>
+<span class="nc" id="L663">                    LOG.info(&quot;Modeller.java: forced creation of unknown class &quot;</span>
+                            + superclassName);
+<span class="nc" id="L665">                    String packageName = getPackageName(superclassName);</span>
+<span class="nc" id="L666">                    String classifierName = getClassifierName(superclassName);</span>
+                    // here, getPackage must NOT use the Java profile, because
+                    // class creation is only allowed in the user model
+<span class="nc bnc" id="L669" title="All 2 branches missed.">                    Object mPackage = (packageName.length() &gt; 0) ? getPackage(</span>
+                            packageName, false) : model;
+                    // a last chance: maybe it's in this user model package:
+<span class="nc" id="L672">                    parentClass = Model.getFacade().lookupIn(mPackage,</span>
+                            classifierName);
+<span class="nc bnc" id="L674" title="All 2 branches missed.">                    if (parentClass == null) {</span>
+<span class="nc" id="L675">                        parentClass = Model.getCoreFactory().buildClass(</span>
+                                classifierName, mPackage);
+<span class="nc" id="L677">                        newElements.add(parentClass);</span>
+                    }
+<span class="nc" id="L679">                    getGeneralization(currentPackage, parentClass, mClass);</span>
+<span class="nc" id="L680">                } else {</span>
+<span class="fc" id="L681">                    warnClassifierNotFound(superclassName, &quot;a generalization&quot;);</span>
+                }
+<span class="fc" id="L683">            }</span>
+        }
+
+<span class="pc bpc" id="L686" title="1 of 2 branches missed.">        if (interfaces != null) {</span>
+<span class="fc" id="L687">            addInterfaces(mClass, interfaces, forceIt);</span>
+        }
+<span class="fc" id="L689">    }</span>
+
+    /**
+     * Called from the parser when an anonymous inner class is found.
+     * 
+     * @param type The type of this anonymous class.
+     */
+    public void addAnonymousClass(String type) {
+<span class="nc" id="L697">        addAnonymousClass(type, false);</span>
+<span class="nc" id="L698">    }</span>
+
+    /**
+     * Called from the parser when an anonymous inner class is found.
+     * 
+     * @param type The type of this anonymous class.
+     * @param forceIt Force addition by creating all that's missing.
+     */
+    void addAnonymousClass(String type, boolean forceIt) {
+<span class="nc" id="L707">        String name = parseState.anonymousClass();</span>
+        try {
+<span class="nc" id="L709">            Object mClassifier = getContext(type).get(getClassifierName(type),</span>
+                    false, javaProfile);
+<span class="nc" id="L711">            List&lt;String&gt; interfaces = new ArrayList&lt;String&gt;();</span>
+<span class="nc bnc" id="L712" title="All 2 branches missed.">            if (Model.getFacade().isAInterface(mClassifier)) {</span>
+<span class="nc" id="L713">                interfaces.add(type);</span>
+            }
+
+<span class="nc" id="L716">            addClass(name, (short) 0, EMPTY_STRING_LIST, Model.getFacade()</span>
+<span class="nc bnc" id="L717" title="All 2 branches missed.">                    .isAClass(mClassifier) ? type : null, interfaces, &quot;&quot;,</span>
+                    forceIt);
+<span class="nc" id="L719">        } catch (ClassifierNotFoundException e) {</span>
+            // Must add it anyway, or the class popping will mismatch.
+<span class="nc" id="L721">            addClass(name, (short) 0, EMPTY_STRING_LIST, null,</span>
+                    EMPTY_STRING_LIST, &quot;&quot;, forceIt);
+<span class="nc" id="L723">            LOG.info(&quot;Modeller.java: an anonymous class was created &quot;</span>
+                    + &quot;although it could not be found in the classpath.&quot;);
+<span class="nc" id="L725">        }</span>
+<span class="nc" id="L726">    }</span>
+
+    /**
+     * Add an Interface to the model.
+     * 
+     * TODO: This method preserves the historical public API which is used by
+     * other reverse engineering modules such as the Classfile module. This
+     * really needs to be decoupled.
+     * 
+     * @param name The name of the interface.
+     * @param modifiers A sequence of interface modifiers.
+     * @param interfaces Zero or more strings with the names of extended
+     *            interfaces. Can be fully qualified or just a simple interface
+     *            name.
+     * @param javadoc The javadoc comment. &quot;&quot; if no comment available.
+     */
+    public void addInterface(String name, short modifiers,
+            List&lt;String&gt; interfaces, String javadoc) {
+<span class="nc" id="L744">        addInterface(name, modifiers, EMPTY_STRING_LIST, interfaces, javadoc,</span>
+                false);
+<span class="nc" id="L746">    }</span>
+
+    /**
+     * Called from the parser when an interface declaration is found.
+     * 
+     * @param name The name of the interface.
+     * @param modifiers A sequence of interface modifiers.
+     * @param interfaces Zero or more strings with the names of extended
+     *            interfaces. Can be fully qualified or just a simple interface
+     *            name.
+     * @param javadoc The javadoc comment. &quot;&quot; if no comment available.
+     * @param forceIt Force addition by creating all that's missing.
+     */
+    void addInterface(String name, short modifiers,
+            List&lt;String&gt; typeParameters, List&lt;String&gt; interfaces,
+            String javadoc, boolean forceIt) {
+<span class="pc bpc" id="L762" title="3 of 4 branches missed.">        if (typeParameters != null &amp;&amp; typeParameters.size() &gt; 0) {</span>
+<span class="nc" id="L763">            logError(&quot;type parameters not supported on Interface&quot;, name);</span>
+        }
+<span class="fc" id="L765">        Object mInterface = addClassifier(Model.getCoreFactory()</span>
+<span class="fc" id="L766">                .createInterface(), name, modifiers, javadoc, typeParameters);</span>
+
+        // only do generalizations and realizations on the 2nd pass.
+<span class="pc bpc" id="L769" title="1 of 2 branches missed.">        if (getLevel() == 0) {</span>
+<span class="nc" id="L770">            return;</span>
+        }
+
+<span class="fc bfc" id="L773" title="All 2 branches covered.">        for (String interfaceName : interfaces) {</span>
+<span class="fc" id="L774">            Object parentInterface = null;</span>
+            try {
+<span class="fc" id="L776">                parentInterface = getContext(interfaceName).get(</span>
+<span class="fc" id="L777">                        getClassifierName(interfaceName), true, javaProfile);</span>
+<span class="fc" id="L778">                getGeneralization(currentPackage, parentInterface, mInterface);</span>
+<span class="nc" id="L779">            } catch (ClassifierNotFoundException e) {</span>
+<span class="nc bnc" id="L780" title="All 6 branches missed.">                if (forceIt &amp;&amp; interfaceName != null &amp;&amp; model != null) {</span>
+<span class="nc" id="L781">                    LOG.info(&quot;Modeller.java: &quot;</span>
+                            + &quot;forced creation of unknown interface &quot;
+                            + interfaceName);
+<span class="nc" id="L784">                    String packageName = getPackageName(interfaceName);</span>
+<span class="nc" id="L785">                    String classifierName = getClassifierName(interfaceName);</span>
+                    // here, getPackage must NOT use the Java profile, because
+                    // interface creation is only allowed in the user model
+<span class="nc bnc" id="L788" title="All 2 branches missed.">                    Object mPackage = (packageName.length() &gt; 0) ? getPackage(</span>
+                            packageName, false) : model;
+                    // a last chance: maybe it's in this user model package:
+<span class="nc" id="L791">                    parentInterface = Model.getFacade().lookupIn(mPackage,</span>
+                            classifierName);
+<span class="nc bnc" id="L793" title="All 2 branches missed.">                    if (parentInterface == null) {</span>
+<span class="nc" id="L794">                        parentInterface = Model.getCoreFactory()</span>
+<span class="nc" id="L795">                                .buildInterface(classifierName, mPackage);</span>
+<span class="nc" id="L796">                        newElements.add(parentInterface);</span>
+                    }
+<span class="nc" id="L798">                    getGeneralization(currentPackage, parentInterface,</span>
+                            mInterface);
+<span class="nc" id="L800">                } else {</span>
+<span class="nc" id="L801">                    warnClassifierNotFound(interfaceName, &quot;a generalization&quot;);</span>
+                }
+<span class="fc" id="L803">            }</span>
+<span class="fc" id="L804">        }</span>
+<span class="fc" id="L805">    }</span>
+
+    /**
+     * Called from the parser when an enumeration declaration is found.
+     * 
+     * @param name The name of the class.
+     * @param modifiers A sequence of class modifiers.
+     * @param interfaces Zero or more strings with the names of implemented
+     *            interfaces. Can be fully qualified or just a simple interface
+     *            name.
+     * @param javadoc The javadoc comment. null or &quot;&quot; if no comment available.
+     * @param forceIt Force addition by creating all that's missing.
+     */
+    void addEnumeration(String name, short modifiers, List&lt;String&gt; interfaces,
+            String javadoc, boolean forceIt) {
+<span class="fc" id="L820">        Object mEnum = null;</span>
+<span class="pc bpc" id="L821" title="1 of 2 branches missed.">        if (Model.getFacade().getUmlVersion().charAt(0) == '1') {</span>
+<span class="fc" id="L822">            mEnum = addClassifier(Model.getCoreFactory().createClass(),</span>
+                name, modifiers, javadoc, EMPTY_STRING_LIST); // no type params
+                                                              // for now
+<span class="fc" id="L825">            Model.getCoreHelper().addStereotype(mEnum,</span>
+<span class="fc" id="L826">                    getUML1Stereotype(&quot;enumeration&quot;));</span>
+<span class="fc" id="L827">            ProjectManager.getManager().updateRoots();</span>
+        } else {
+            // TODO: always use UML Enumerations, like this:
+<span class="nc" id="L830">            mEnum = Model.getCoreFactory().createEnumeration();</span>
+            Object mNamespace;
+<span class="nc bnc" id="L832" title="All 2 branches missed.">            if (parseState.getClassifier() != null) {</span>
+                // the new classifier is a java inner enumeration
+<span class="nc" id="L834">                mNamespace = parseState.getClassifier();</span>
+            } else {
+                // the new classifier is a top level java enumeration
+<span class="nc" id="L837">                parseState.outerClassifier();</span>
+<span class="nc" id="L838">                mNamespace = currentPackage;</span>
+            }
+
+<span class="nc" id="L841">            LOG.log(Level.INFO, &quot;Created new enumeration for {0}&quot;, name);</span>
+
+<span class="nc" id="L843">            Model.getCoreHelper().setName(mEnum, name);</span>
+<span class="nc" id="L844">            Model.getCoreHelper().setNamespace(mEnum, mNamespace);</span>
+<span class="nc" id="L845">            newElements.add(mEnum);</span>
+
+<span class="nc" id="L847">            parseState.innerClassifier(mEnum);</span>
+            // change the parse state to a classifier parse state
+<span class="nc" id="L849">            parseStateStack.push(parseState);</span>
+<span class="nc" id="L850">            parseState = new ParseState(parseState, mEnum, currentPackage);</span>
+
+<span class="nc" id="L852">            setVisibility(mEnum, modifiers);</span>
+
+            // Add classifier documentation tags during 
+            // first (or only) pass only
+<span class="nc bnc" id="L856" title="All 2 branches missed.">            if (getLevel() &lt;= 0) {</span>
+<span class="nc" id="L857">                addDocumentationTag(mEnum, javadoc);</span>
+            }
+        }
+
+<span class="pc bpc" id="L861" title="1 of 2 branches missed.">        if ((modifiers &amp; JavaParser.ACC_ABSTRACT) &gt; 0) {</span>
+            // abstract enums are illegal in Java
+<span class="nc" id="L863">            logError(&quot;Illegal \&quot;abstract\&quot; modifier on enum &quot;, name);</span>
+        } else {
+<span class="fc" id="L865">            Model.getCoreHelper().setAbstract(mEnum, false);</span>
+        }
+<span class="pc bpc" id="L867" title="1 of 2 branches missed.">        if ((modifiers &amp; JavaParser.ACC_FINAL) &gt; 0) {</span>
+            // it's an error to explicitly use the 'final' keyword for an enum
+            // declaration
+<span class="nc" id="L870">            logError(&quot;Illegal \&quot;final\&quot; modifier on enum &quot;, name);</span>
+        } else {
+            // enums are implicitly final unless they contain a class body
+            // (which we won't know until we process the constants
+<span class="fc" id="L874">            Model.getCoreHelper().setLeaf(mEnum, true);</span>
+        }
+<span class="pc bpc" id="L876" title="1 of 2 branches missed.">        if (Model.getFacade().getUmlVersion().charAt(0) == '1') {</span>
+<span class="fc" id="L877">            Model.getCoreHelper().setRoot(mEnum, false);</span>
+        }
+
+        // only do realizations on the 2nd pass.
+<span class="pc bpc" id="L881" title="1 of 2 branches missed.">        if (getLevel() == 0) {</span>
+<span class="nc" id="L882">            return;</span>
+        }
+
+<span class="pc bpc" id="L885" title="1 of 2 branches missed.">        if (interfaces != null) {</span>
+<span class="fc" id="L886">            addInterfaces(mEnum, interfaces, forceIt);</span>
+        }
+<span class="fc" id="L888">    }</span>
+
+    /**
+     * @param mClass
+     * @param interfaces
+     * @param forceIt
+     */
+    private void addInterfaces(Object mClass, List&lt;String&gt; interfaces,
+            boolean forceIt) {
+<span class="fc bfc" id="L897" title="All 2 branches covered.">        for (String interfaceName : interfaces) {</span>
+<span class="fc" id="L898">            Object mInterface = null;</span>
+            try {
+<span class="fc" id="L900">                mInterface = getContext(interfaceName).get(</span>
+<span class="fc" id="L901">                        getClassifierName(interfaceName), true, javaProfile);</span>
+<span class="nc" id="L902">            } catch (ClassifierNotFoundException e) {</span>
+<span class="nc bnc" id="L903" title="All 6 branches missed.">                if (forceIt &amp;&amp; interfaceName != null &amp;&amp; model != null) {</span>
+<span class="nc" id="L904">                    LOG.info(&quot;Modeller.java: &quot;</span>
+                            + &quot;forced creation of unknown interface &quot;
+                            + interfaceName);
+<span class="nc" id="L907">                    String packageName = getPackageName(interfaceName);</span>
+<span class="nc" id="L908">                    String classifierName = getClassifierName(interfaceName);</span>
+                    // here, getPackage must NOT use the Java profile, because
+                    // interface creation is only allowed in the user model
+<span class="nc bnc" id="L911" title="All 2 branches missed.">                    Object mPackage = (packageName.length() &gt; 0) ? getPackage(</span>
+                            packageName, false) : model;
+                    // a last chance: maybe it's in this user model package:
+<span class="nc" id="L914">                    mInterface = Model.getFacade().lookupIn(mPackage,</span>
+                            classifierName);
+<span class="nc bnc" id="L916" title="All 2 branches missed.">                    if (mInterface == null) {</span>
+<span class="nc" id="L917">                        mInterface = Model.getCoreFactory().buildInterface(</span>
+                                classifierName, mPackage);
+<span class="nc" id="L919">                        newElements.add(mInterface);</span>
+                    }
+<span class="nc" id="L921">                } else {</span>
+<span class="nc" id="L922">                    warnClassifierNotFound(interfaceName, &quot;an abstraction&quot;);</span>
+                }
+<span class="fc" id="L924">            }</span>
+            // TODO: This should use the Model API's buildAbstraction - tfm
+<span class="pc bpc" id="L926" title="2 of 4 branches missed.">            if (mInterface != null &amp;&amp; mInterface != mClass) {</span>
+<span class="fc" id="L927">                Object mAbstraction = getAbstraction(mInterface, mClass);</span>
+<span class="pc bpc" id="L928" title="1 of 2 branches missed.">                if (Model.getFacade().getSuppliers(mAbstraction).size() == 0) {</span>
+<span class="nc" id="L929">                    Model.getCoreHelper().addSupplier(mAbstraction, mInterface);</span>
+<span class="nc" id="L930">                    Model.getCoreHelper().addClient(mAbstraction, mClass);</span>
+                }
+<span class="pc bpc" id="L932" title="1 of 2 branches missed.">                if (Model.getFacade().getUmlVersion().charAt(0) == '1') {</span>
+<span class="fc" id="L933">                    Model.getCoreHelper()</span>
+<span class="fc" id="L934">                        .setNamespace(mAbstraction, currentPackage);</span>
+<span class="fc" id="L935">                    Model.getCoreHelper().addStereotype(mAbstraction,</span>
+<span class="fc" id="L936">                        getUML1Stereotype(CoreFactory.REALIZE_STEREOTYPE));</span>
+<span class="fc" id="L937">                    ProjectManager.getManager().updateRoots();</span>
+                }
+<span class="fc" id="L939">                newElements.add(mAbstraction);</span>
+            }
+<span class="fc" id="L941">        }</span>
+<span class="fc" id="L942">    }</span>
+
+    /**
+     * Called from the parser when an enumeration literal is found.
+     * 
+     * @param name The name of the enumerationLiteral.
+     */
+    void addEnumerationLiteral(String name) {
+<span class="fc" id="L950">        Object enumeration = parseState.getClassifier();</span>
+<span class="pc bpc" id="L951" title="1 of 2 branches missed.">        if (!isAEnumeration(enumeration)) {</span>
+<span class="nc" id="L952">            throw new ParseStateException(&quot;not an Enumeration&quot;);</span>
+        }
+
+<span class="fc" id="L955">        short mod = JavaParser.ACC_PUBLIC | JavaParser.ACC_FINAL</span>
+                | JavaParser.ACC_STATIC;
+
+<span class="pc bpc" id="L958" title="1 of 2 branches missed.">        if (Model.getFacade().getUmlVersion().charAt(0) == '1') {</span>
+            // TODO: make this obsolete (always use real enumerations)
+<span class="fc" id="L960">            addAttribute(mod, null, name, null, null, true);</span>
+        } else {
+<span class="nc" id="L962">            Model.getCoreFactory().buildEnumerationLiteral(name, enumeration);</span>
+        }
+
+        // add an &lt;&lt;enum&gt;&gt; stereotype to distinguish it from fields
+        // in the class body?
+<span class="fc" id="L967">    }</span>
+
+    /*
+     * Recognizer for enumeration. In UML1 an enumeration is a Class with
+     * the &lt;&lt;enumeration&gt;&gt; stereotype applied.
+     */
+    private boolean isAEnumeration(Object element) {
+<span class="pc bpc" id="L974" title="1 of 2 branches missed.">        if (Model.getFacade().isAEnumeration(element)) {</span>
+<span class="nc" id="L975">            return true;</span>
+        }
+        // TODO: make the following obsolete
+<span class="pc bpc" id="L978" title="1 of 2 branches missed.">        if (!Model.getFacade().isAClass(element)) {</span>
+<span class="nc" id="L979">            return false;</span>
+        }
+<span class="fc" id="L981">        return Model.getExtensionMechanismsHelper().hasStereotype(element,</span>
+                &quot;enumeration&quot;);
+    }
+
+    /**
+     * Add an annotation declaration
+     * 
+     * @param name identifier for annotation definition.
+     * @param modifiers A sequence of modifiers.
+     * @param javadoc The javadoc comment. null or &quot;&quot; if no comment available.
+     * @param forceIt Force addition by creating all that's missing.
+     */
+    void addAnnotationDefinition(String name, short modifiers, String javadoc,
+            boolean forceIt) {
+        // TODO: Not implemented
+<span class="nc" id="L996">        logError(&quot;Java 5 annotation definitions not supported&quot;, &quot;@&quot; + name);</span>
+<span class="nc" id="L997">    }</span>
+
+    /**
+     * Called from the parser when an annotation declaration is found.
+     * 
+     * @param name identifier for annotation.
+     */
+    void addAnnotation(String name) {
+        // TODO: Not implemented
+<span class="nc" id="L1006">        logError(&quot;Java 5 annotations not supported&quot;, &quot;@&quot; + name);</span>
+<span class="nc" id="L1007">    }</span>
+
+    /**
+     * Done adding an annotation.
+     */
+    void endAnnotation() {
+        // TODO: Placeholder. Can we use popClassifier here?
+<span class="nc" id="L1014">    }</span>
+
+    void addTypeParameters(Object modelElement, List&lt;String&gt; typeParameters) {
+<span class="pc bpc" id="L1017" title="1 of 4 branches missed.">        if (modelElement == null || typeParameters == null) {</span>
+<span class="fc" id="L1018">            return;</span>
+        }
+<span class="pc bpc" id="L1020" title="1 of 2 branches missed.">        if (Model.getFacade().getTemplateParameters(modelElement).size() == 0) {</span>
+<span class="fc bfc" id="L1021" title="All 2 branches covered.">            for (String parameter : typeParameters) {</span>
+                // parse parameter to name and bounds
+<span class="fc" id="L1023">                Pattern p =</span>
+<span class="fc" id="L1024">                    Pattern.compile(&quot;([^ ]*)( super | extends )?((.*))&quot;);</span>
+<span class="fc" id="L1025">                Matcher m = p.matcher(parameter);</span>
+<span class="pc bpc" id="L1026" title="1 of 2 branches missed.">                if (m.matches()) {</span>
+<span class="fc" id="L1027">                    String templateParameterName = m.group(1);</span>
+<span class="fc" id="L1028">                    Object param = Model.getCoreFactory().createParameter();</span>
+<span class="fc" id="L1029">                    Model.getCoreHelper().setName(param, templateParameterName);</span>
+                    Object templateParameter =
+<span class="fc" id="L1031">                        Model.getCoreFactory()</span>
+<span class="fc" id="L1032">                            .buildTemplateParameter(modelElement, param, null);</span>
+<span class="pc bpc" id="L1033" title="1 of 2 branches missed.">                    if (m.group(2) != null) {</span>
+                        // bounds are saved as tagged value in param
+<span class="fc" id="L1035">                        buildTaggedValue(param, </span>
+<span class="fc" id="L1036">                                m.group(2).trim(), </span>
+<span class="fc" id="L1037">                                new String[]{m.group(3)});</span>
+                    }
+<span class="fc" id="L1039">                    Model.getCoreHelper()</span>
+<span class="fc" id="L1040">                        .addTemplateParameter(modelElement, templateParameter);</span>
+                } 
+<span class="fc" id="L1042">            }</span>
+        }
+<span class="fc" id="L1044">    }</span>
+
+    /**
+     * Common code used by addClass and addInterface.
+     * 
+     * @param newClassifier Supply one if none is found in the model.
+     * @param name Name of the classifier.
+     * @param modifiers String of modifiers.
+     * @param javadoc The javadoc comment. null or &quot;&quot; if no comment available.
+     * @param typeParameters List of types for parameters (not implemented)
+     * @return The newly created/found classifier.
+     */
+    private Object addClassifier(Object newClassifier, String name,
+            short modifiers, String javadoc, List&lt;String&gt; typeParameters) {
+        Object mClassifier;
+        Object mNamespace;
+
+<span class="fc bfc" id="L1061" title="All 2 branches covered.">        if (parseState.getClassifier() != null) {</span>
+            // the new classifier is a java inner class
+<span class="fc" id="L1063">            mClassifier = Model.getFacade().lookupIn(</span>
+<span class="fc" id="L1064">                    parseState.getClassifier(), name);</span>
+<span class="fc" id="L1065">            mNamespace = parseState.getClassifier();</span>
+        } else {
+            // the new classifier is a top level java class
+<span class="fc" id="L1068">            parseState.outerClassifier();</span>
+<span class="fc" id="L1069">            mClassifier = Model.getFacade().lookupIn(currentPackage, name);</span>
+<span class="fc" id="L1070">            mNamespace = currentPackage;</span>
+        }
+
+<span class="pc bpc" id="L1073" title="1 of 2 branches missed.">        if (mClassifier == null) {</span>
+            // if the classifier could not be found in the model
+<span class="fc" id="L1075">            LOG.log(Level.INFO, &quot;Created new classifier for {0}&quot;, name);</span>
+
+<span class="fc" id="L1077">            mClassifier = newClassifier;</span>
+<span class="fc" id="L1078">            Model.getCoreHelper().setName(mClassifier, name);</span>
+<span class="fc" id="L1079">            Model.getCoreHelper().setNamespace(mClassifier, mNamespace);</span>
+<span class="fc" id="L1080">            newElements.add(mClassifier);</span>
+        } else {
+            // it was found and we delete any existing tagged values.
+<span class="nc" id="L1083">            LOG.log(Level.INFO, &quot;Found existing classifier for {0}&quot;, name);</span>
+
+            // TODO: Rewrite existing elements instead? - tfm
+<span class="nc" id="L1086">            cleanModelElement(mClassifier);</span>
+        }
+
+<span class="fc" id="L1089">        parseState.innerClassifier(mClassifier);</span>
+
+        // set up the artifact manifestation (only for top level classes)
+<span class="fc bfc" id="L1092" title="All 2 branches covered.">        if (parseState.getClassifier() == null) {</span>
+<span class="pc bpc" id="L1093" title="1 of 2 branches missed.">            if (Model.getFacade().getUmlVersion().charAt(0) == '1') {</span>
+                // set the classifier to be a resident in its component:
+                // (before we push a new parse state on the stack)
+    
+                // This test is carried over from a previous implementation,
+                // but I'm not sure why it would already be set - tfm
+<span class="fc" id="L1099">                if (Model.getFacade()</span>
+<span class="pc bpc" id="L1100" title="1 of 2 branches missed.">                        .getElementResidences(mClassifier).isEmpty()) {</span>
+<span class="fc" id="L1101">                    Object resident = Model.getCoreFactory()</span>
+<span class="fc" id="L1102">                            .createElementResidence();</span>
+<span class="fc" id="L1103">                    Model.getCoreHelper().setResident(resident, mClassifier);</span>
+<span class="fc" id="L1104">                    Model.getCoreHelper().setContainer(resident,</span>
+<span class="fc" id="L1105">                            parseState.getArtifact());</span>
+<span class="fc" id="L1106">                }</span>
+            } else {
+<span class="nc" id="L1108">                Object artifact = parseState.getArtifact();</span>
+                Collection c =
+<span class="nc" id="L1110">                    Model.getCoreHelper().getUtilizedElements(artifact);</span>
+<span class="nc bnc" id="L1111" title="All 2 branches missed.">                if (!c.contains(mClassifier)) {</span>
+<span class="nc" id="L1112">                    Object manifestation = Model.getCoreFactory()</span>
+<span class="nc" id="L1113">                            .buildManifestation(mClassifier);</span>
+<span class="nc" id="L1114">                    Model.getCoreHelper()</span>
+<span class="nc" id="L1115">                            .addManifestation(artifact, manifestation);</span>
+                }
+            }
+        }
+
+        // change the parse state to a classifier parse state
+<span class="fc" id="L1121">        parseStateStack.push(parseState);</span>
+<span class="fc" id="L1122">        parseState = new ParseState(parseState, mClassifier, currentPackage);</span>
+
+<span class="fc" id="L1124">        setVisibility(mClassifier, modifiers);</span>
+
+        // Add classifier documentation tags during first (or only) pass only
+<span class="pc bpc" id="L1127" title="1 of 2 branches missed.">        if (getLevel() &lt;= 0) {</span>
+<span class="fc" id="L1128">            addDocumentationTag(mClassifier, javadoc);</span>
+        }
+<span class="fc" id="L1130">        addTypeParameters(mClassifier, typeParameters);</span>
+<span class="fc" id="L1131">        return mClassifier;</span>
+    }
+
+    /**
+     * Return the current import pass/level.
+     * 
+     * @return 0, 1, or 2 depending on current import level and pass of
+     *         processing. Returns -1 if level isn't defined.
+     */
+    private int getLevel() {
+<span class="fc" id="L1141">        Object level = this.getAttribute(&quot;level&quot;);</span>
+<span class="pc bpc" id="L1142" title="1 of 2 branches missed.">        if (level != null) {</span>
+<span class="nc" id="L1143">            return ((Integer) level).intValue();</span>
+        }
+<span class="fc" id="L1145">        return -1;</span>
+    }
+
+    /**
+     * Called from the parser when a classifier is completely parsed.
+     */
+    public void popClassifier() {
+
+        // Remove operations and attributes not in source
+<span class="fc" id="L1154">        parseState.removeObsoleteFeatures();</span>
+
+        // Remove inner classes not in source
+<span class="fc" id="L1157">        parseState.removeObsoleteInnerClasses();</span>
+
+<span class="fc" id="L1159">        parseState = parseStateStack.pop();</span>
+<span class="fc" id="L1160">    }</span>
+
+    /**
+     * Add an Operation to the current model
+     * 
+     * @param modifiers A sequence of operation modifiers.
+     * @param returnType The return type of the operation.
+     * @param name The name of the operation as a string
+     * @param parameters A List of parameter declarations containing types and
+     *            names.
+     * @param javadoc The javadoc comment. null or &quot;&quot; if no comment available.
+     * @return The operation.
+     */
+    public Object addOperation(short modifiers, String returnType, String name,
+            List&lt;ParameterDeclaration&gt; parameters, String javadoc) {
+<span class="fc" id="L1175">        return addOperation(modifiers, EMPTY_STRING_LIST, returnType, name,</span>
+                parameters, javadoc, false);
+    }
+
+    /**
+     * Called from the parser when an operation is found.
+     * 
+     * @param modifiers A sequence of operation modifiers.
+     * @param returnType The return type of the operation.
+     * @param name The name of the operation as a string
+     * @param parameters A number of lists, each representing a parameter.
+     * @param javadoc The javadoc comment. null or &quot;&quot; if no comment available.
+     * @param forceIt Force addition by creating all that's missing.
+     * @return The operation.
+     */
+    Object addOperation(short modifiers, List&lt;String&gt; typeParameters,
+            String returnType, String name,
+            List&lt;ParameterDeclaration&gt; parameters, String javadoc,
+            boolean forceIt) {
+<span class="pc bpc" id="L1194" title="1 of 4 branches missed.">        if (typeParameters != null &amp;&amp; typeParameters.size() &gt; 0) {</span>
+<span class="nc" id="L1195">            logError(&quot;type parameters not supported on operation return type&quot;,</span>
+                    name);
+        }
+<span class="fc" id="L1198">        Object mOperation = getOperation(name);</span>
+<span class="fc" id="L1199">        parseState.feature(mOperation);</span>
+
+<span class="fc bfc" id="L1201" title="All 2 branches covered.">        Model.getCoreHelper().setAbstract(mOperation,</span>
+                (modifiers &amp; JavaParser.ACC_ABSTRACT) &gt; 0);
+<span class="pc bpc" id="L1203" title="1 of 2 branches missed.">        Model.getCoreHelper().setLeaf(mOperation,</span>
+                (modifiers &amp; JavaParser.ACC_FINAL) &gt; 0);
+<span class="pc bpc" id="L1205" title="1 of 2 branches missed.">        if (Model.getFacade().getUmlVersion().charAt(0) == '1') {</span>
+<span class="fc" id="L1206">            Model.getCoreHelper().setRoot(mOperation, false);</span>
+        }
+<span class="fc" id="L1208">        setOwnerScope(mOperation, modifiers);</span>
+<span class="fc" id="L1209">        setVisibility(mOperation, modifiers);</span>
+<span class="pc bpc" id="L1210" title="1 of 2 branches missed.">        if ((modifiers &amp; JavaParser.ACC_SYNCHRONIZED) &gt; 0) {</span>
+<span class="nc" id="L1211">            Model.getCoreHelper().setConcurrency(mOperation,</span>
+<span class="nc" id="L1212">                    Model.getConcurrencyKind().getGuarded());</span>
+<span class="fc" id="L1213">        } else if (Model.getFacade().getConcurrency(mOperation) == Model</span>
+<span class="pc bpc" id="L1214" title="1 of 2 branches missed.">                .getConcurrencyKind().getGuarded()) {</span>
+<span class="nc" id="L1215">            Model.getCoreHelper().setConcurrency(mOperation,</span>
+<span class="nc" id="L1216">                    Model.getConcurrencyKind().getSequential());</span>
+        }
+
+<span class="fc" id="L1219">        Object[] c = Model.getFacade().getParameters(mOperation).toArray();</span>
+<span class="fc bfc" id="L1220" title="All 2 branches covered.">        for (Object parameter : c) {</span>
+<span class="fc" id="L1221">            Model.getCoreHelper().removeParameter(mOperation, parameter);</span>
+        }
+
+        Object mParameter;
+<span class="fc" id="L1225">        Object mClassifier = null;</span>
+
+<span class="fc bfc" id="L1227" title="All 2 branches covered.">        if (returnType == null</span>
+<span class="pc bpc" id="L1228" title="1 of 4 branches missed.">                || (&quot;void&quot;.equals(returnType) &amp;&amp; name.equals(Model.getFacade()</span>
+<span class="fc" id="L1229">                        .getName(parseState.getClassifier())))) {</span>
+            // Constructor
+<span class="fc" id="L1231">            Model.getCoreHelper().addStereotype(mOperation,</span>
+<span class="fc" id="L1232">                    getStereotype(mOperation, &quot;create&quot;, &quot;BehavioralFeature&quot;));</span>
+<span class="fc" id="L1233">            ProjectManager.getManager().updateRoots();</span>
+        } else {
+            try {
+<span class="fc" id="L1236">                mClassifier =</span>
+                    // FIXME: This can't throw away the fully qualified
+                    // name before starting the search!
+<span class="fc" id="L1239">                    getContext(returnType).get(getClassifierName(returnType),</span>
+                        false, javaProfile);
+<span class="nc" id="L1241">            } catch (ClassifierNotFoundException e) {</span>
+<span class="nc bnc" id="L1242" title="All 6 branches missed.">                if (forceIt &amp;&amp; returnType != null &amp;&amp; model != null) {</span>
+<span class="nc" id="L1243">                    LOG.info(&quot;Modeller.java: &quot;</span>
+                            + &quot;forced creation of unknown classifier &quot;
+                            + returnType);
+<span class="nc" id="L1246">                    String packageName = getPackageName(returnType);</span>
+<span class="nc" id="L1247">                    String classifierName = getClassifierName(returnType);</span>
+                    // here, getPackage must NOT use the Java profile, because
+                    // class creation is only allowed in the user model
+<span class="nc bnc" id="L1250" title="All 2 branches missed.">                    Object mPackage = (packageName.length() &gt; 0) ? getPackage(</span>
+                            packageName, false) : model;
+                    // a last chance: maybe it's in this user model package:
+<span class="nc" id="L1253">                    mClassifier = Model.getFacade().lookupIn(mPackage,</span>
+                            classifierName);
+<span class="nc bnc" id="L1255" title="All 2 branches missed.">                    if (mClassifier == null) {</span>
+<span class="nc" id="L1256">                        mClassifier = Model.getCoreFactory().buildClass(</span>
+                                classifierName, mPackage);
+<span class="nc" id="L1258">                        newElements.add(mClassifier);</span>
+                    }
+<span class="nc" id="L1260">                } else {</span>
+<span class="nc" id="L1261">                    warnClassifierNotFound(returnType, &quot;operation return type&quot;);</span>
+                }
+<span class="fc" id="L1263">            }</span>
+<span class="pc bpc" id="L1264" title="1 of 2 branches missed.">            if (mClassifier != null) {</span>
+<span class="fc" id="L1265">                mParameter = buildReturnParameter(mOperation, mClassifier);</span>
+            }
+        }
+
+<span class="fc bfc" id="L1269" title="All 2 branches covered.">        for (ParameterDeclaration parameter : parameters) {</span>
+<span class="fc" id="L1270">            String typeName = parameter.getType();</span>
+            // TODO: A type name with a trailing &quot;...&quot; represents
+            // a variable length parameter list. It can only be
+            // the last parameter and it gets converted to an array
+            // on method invocation, so perhaps we should model it that
+            // way (ie convert &quot;Foo...&quot; to &quot;Foo[]&quot;). - tfm - 20070329
+<span class="pc bpc" id="L1276" title="1 of 2 branches missed.">            if (typeName.endsWith(&quot;...&quot;)) {</span>
+<span class="nc" id="L1277">                logError(&quot;Unsupported variable length parameter list notation&quot;,</span>
+<span class="nc" id="L1278">                        parameter.getName());</span>
+            }
+<span class="fc" id="L1280">            mClassifier = null;</span>
+            try {
+<span class="fc" id="L1282">                mClassifier = getContext(typeName).get(</span>
+<span class="fc" id="L1283">                        getClassifierName(typeName), false, javaProfile);</span>
+<span class="nc" id="L1284">            } catch (ClassifierNotFoundException e) {</span>
+<span class="nc bnc" id="L1285" title="All 4 branches missed.">                if (forceIt &amp;&amp; model != null) {</span>
+<span class="nc" id="L1286">                    LOG.info(&quot;Modeller.java: &quot;</span>
+                            + &quot;forced creation of unknown classifier &quot;
+                            + typeName);
+<span class="nc" id="L1289">                    String packageName = getPackageName(typeName);</span>
+<span class="nc" id="L1290">                    String classifierName = getClassifierName(typeName);</span>
+                    // here, getPackage must NOT use the Java profile, because
+                    // class creation is only allowed in the user model
+<span class="nc bnc" id="L1293" title="All 2 branches missed.">                    Object mPackage = (packageName.length() &gt; 0) ? getPackage(</span>
+                            packageName, false) : model;
+                    // a last chance: maybe it's in this user model package:
+<span class="nc" id="L1296">                    mClassifier = Model.getFacade().lookupIn(mPackage,</span>
+                            classifierName);
+<span class="nc bnc" id="L1298" title="All 2 branches missed.">                    if (mClassifier == null) {</span>
+<span class="nc" id="L1299">                        mClassifier = Model.getCoreFactory().buildClass(</span>
+                                classifierName, mPackage);
+<span class="nc" id="L1301">                        newElements.add(mClassifier);</span>
+                    }
+<span class="nc" id="L1303">                } else {</span>
+<span class="nc" id="L1304">                    warnClassifierNotFound(typeName, &quot;operation params&quot;);</span>
+                }
+<span class="fc" id="L1306">            }</span>
+<span class="pc bpc" id="L1307" title="1 of 2 branches missed.">            if (mClassifier != null) {</span>
+<span class="fc" id="L1308">                mParameter = buildInParameter(mOperation, mClassifier,</span>
+<span class="fc" id="L1309">                        parameter.getName());</span>
+<span class="pc bpc" id="L1310" title="1 of 2 branches missed.">                if (!Model.getFacade().isAClassifier(mClassifier)) {</span>
+                    // the type resolution failed to find a valid classifier.
+<span class="nc" id="L1312">                    logError(&quot;Modeller.java: a valid type for a parameter &quot;</span>
+                            + &quot;could not be resolved:\n &quot; + &quot;In file: &quot;
+                            + fileName + &quot;, for operation: &quot;
+<span class="nc" id="L1315">                            + Model.getFacade().getName(mOperation)</span>
+<span class="nc" id="L1316">                            + &quot;, for parameter: &quot;, Model.getFacade().getName(</span>
+                            mParameter));
+                }
+            }
+<span class="fc" id="L1320">        }</span>
+
+<span class="fc" id="L1322">        addDocumentationTag(mOperation, javadoc);</span>
+
+<span class="fc" id="L1324">        return mOperation;</span>
+    }
+
+    private Object buildInParameter(Object operation, Object classifier,
+            String name) {
+<span class="fc" id="L1329">        Object parameter = buildParameter(operation, classifier, name);</span>
+<span class="fc" id="L1330">        Model.getCoreHelper().setKind(parameter,</span>
+<span class="fc" id="L1331">                Model.getDirectionKind().getInParameter());</span>
+<span class="fc" id="L1332">        return parameter;</span>
+    }
+
+    private Object buildReturnParameter(Object operation, Object classifier) {
+<span class="fc" id="L1336">        Object parameter = buildParameter(operation, classifier, &quot;return&quot;);</span>
+<span class="fc" id="L1337">        Model.getCoreHelper().setKind(parameter,</span>
+<span class="fc" id="L1338">                Model.getDirectionKind().getReturnParameter());</span>
+<span class="fc" id="L1339">        return parameter;</span>
+    }
+
+    private Object buildParameter(Object operation, Object classifier,
+            String name) {
+<span class="fc" id="L1344">        Object parameter = Model.getCoreFactory().buildParameter(operation,</span>
+                classifier);
+<span class="fc" id="L1346">        Model.getCoreHelper().setName(parameter, name);</span>
+<span class="fc" id="L1347">        return parameter;</span>
+    }
+
+    /**
+     * Warn user that information available in input source will not be
+     * reflected accurately in the model.
+     * 
+     * @param name name of the classifier which wasn't found
+     * @param operation - a string indicating what type of operation was being
+     *            attempted
+     */
+    private void warnClassifierNotFound(String name, String operation) {
+<span class="fc" id="L1359">        logError(&quot;Modeller.java: a classifier (&quot; + name</span>
+                + &quot;) that was in the source &quot;
+                + &quot;file could not be generated in the model &quot;, operation);
+<span class="fc" id="L1362">    }</span>
+
+    /**
+     * Add an error message to the log to be shown to the user.
+     * &lt;p&gt;
+     * TODO: This currently just writes to the error log. It needs to return
+     * errors some place that the user can see them and deal with them. We also
+     * need a way to get the line and column numbers to help the user track the
+     * problem down.
+     */
+    private void logError(String message, String identifier) {
+<span class="fc" id="L1373">        LOG.warning(message + &quot; : &quot; + identifier);</span>
+<span class="fc" id="L1374">    }</span>
+
+    /**
+     * Called from the parser when a class field is parsed. This can occur in a
+     * class block where it indicates a method body to to be added to an
+     * operation (An operation will have exactly one Java body) OR it can occur
+     * in the enum declaration (not currently supported).
+     * 
+     * TODO: Support use in an enum declaration
+     * 
+     * @param op An operation.
+     * @param body A method body.
+     */
+    public void addBodyToOperation(Object op, String body) {
+<span class="pc bpc" id="L1388" title="2 of 4 branches missed.">        if (op == null || !Model.getFacade().isAOperation(op)) {</span>
+            // This can occur if there's a class field in an enum definition
+<span class="nc" id="L1390">            throw new ParseStateException(</span>
+                    &quot;Found class body in context other than a class&quot;);
+        }
+<span class="pc bpc" id="L1393" title="1 of 4 branches missed.">        if (body == null || body.length() == 0) {</span>
+<span class="fc" id="L1394">            return;</span>
+        }
+
+<span class="fc" id="L1397">        Object method = getMethod(Model.getFacade().getName(op));</span>
+<span class="fc" id="L1398">        parseState.feature(method);</span>
+<span class="pc bpc" id="L1399" title="1 of 2 branches missed.">        if (Model.getFacade().getUmlVersion().charAt(0) == '1') {</span>
+<span class="fc" id="L1400">            Model.getCoreHelper().setBody(</span>
+                method,
+<span class="fc" id="L1402">                Model.getDataTypesFactory().createProcedureExpression(&quot;Java&quot;,</span>
+                    body));
+        } else {
+<span class="nc" id="L1405">            Model.getDataTypesHelper().setBody(method, body);</span>
+<span class="nc" id="L1406">            Model.getDataTypesHelper().setLanguage(method, &quot;Java&quot;);</span>
+        }
+        // Add the method to it's specification.
+<span class="fc" id="L1409">        Model.getCoreHelper().addMethod(op, method);</span>
+
+        // Add this method as an element to the classifier that owns
+        // the operation.
+<span class="pc bpc" id="L1413" title="1 of 2 branches missed.">        if (Model.getFacade().getUmlVersion().charAt(0) == '1') {</span>
+<span class="fc" id="L1414">            Model.getCoreHelper()</span>
+<span class="fc" id="L1415">                    .addFeature(Model.getFacade().getOwner(op), method);</span>
+        } else {
+<span class="nc" id="L1417">            Model.getCoreHelper()</span>
+<span class="nc" id="L1418">                    .addOwnedElement(Model.getFacade().getOwner(op), method);</span>
+        }
+<span class="fc" id="L1420">    }</span>
+
+    /**
+     * Called from the parser when an attribute is found.
+     * 
+     * @param modifiers A sequence of attribute modifiers.
+     * @param typeSpec The attribute's type.
+     * @param name The name of the attribute.
+     * @param initializer The initial value of the attribute.
+     * @param javadoc The javadoc comment. null or &quot;&quot; if no comment available.
+     */
+    public void addAttribute(short modifiers, String typeSpec, String name,
+            String initializer, String javadoc) {
+<span class="nc" id="L1433">        addAttribute(modifiers, typeSpec, name, initializer, javadoc, false);</span>
+<span class="nc" id="L1434">    }</span>
+
+    /**
+     * Called from the parser when an attribute is found.
+     * 
+     * @param modifiers A sequence of attribute modifiers.
+     * @param typeSpec The attribute's type.
+     * @param name The name of the attribute.
+     * @param initializer The initial value of the attribute.
+     * @param javadoc The javadoc comment. null or &quot;&quot; if no comment available.
+     * @param forceIt Force addition by creating all that's missing.
+     */
+    void addAttribute(short modifiers, String typeSpec, String name,
+            String initializer, String javadoc, boolean forceIt) {
+<span class="fc" id="L1448">        String multiplicity = &quot;1_1&quot;;</span>
+<span class="fc" id="L1449">        Object mClassifier = null;</span>
+
+<span class="fc bfc" id="L1451" title="All 2 branches covered.">        if (typeSpec != null) {</span>
+<span class="pc bpc" id="L1452" title="2 of 4 branches missed.">            if (!arraysAsDatatype &amp;&amp; typeSpec.indexOf('[') != -1) {</span>
+<span class="nc" id="L1453">                typeSpec = typeSpec.substring(0, typeSpec.indexOf('['));</span>
+<span class="nc" id="L1454">                multiplicity = &quot;1_N&quot;;</span>
+            }
+
+            // the attribute type
+            try {
+                // get the attribute type
+<span class="fc" id="L1460">                mClassifier = getContext(typeSpec).get(</span>
+<span class="fc" id="L1461">                        getClassifierName(typeSpec), false, javaProfile);</span>
+<span class="nc" id="L1462">            } catch (ClassifierNotFoundException e) {</span>
+<span class="nc bnc" id="L1463" title="All 6 branches missed.">                if (forceIt &amp;&amp; typeSpec != null &amp;&amp; model != null) {</span>
+<span class="nc" id="L1464">                    LOG.info(&quot;Modeller.java: forced creation of&quot;</span>
+                            + &quot; unknown classifier &quot; + typeSpec);
+<span class="nc" id="L1466">                    String packageName = getPackageName(typeSpec);</span>
+<span class="nc" id="L1467">                    String classifierName = getClassifierName(typeSpec);</span>
+                    // here, getPackage must NOT use the Java profile, because
+                    // class creation is only allowed in the user model
+<span class="nc bnc" id="L1470" title="All 2 branches missed.">                    Object mPackage = (packageName.length() &gt; 0) ? getPackage(</span>
+                            packageName, false) : model;
+                    // a last chance: maybe it's in this user model package:
+<span class="nc" id="L1473">                    mClassifier = Model.getFacade().lookupIn(mPackage,</span>
+                            classifierName);
+<span class="nc bnc" id="L1475" title="All 2 branches missed.">                    if (mClassifier == null) {</span>
+<span class="nc" id="L1476">                        mClassifier = Model.getCoreFactory().buildClass(</span>
+                                classifierName, mPackage);
+<span class="nc" id="L1478">                        newElements.add(mClassifier);</span>
+                    }
+<span class="nc" id="L1480">                } else {</span>
+<span class="nc" id="L1481">                    warnClassifierNotFound(typeSpec, &quot;an attribute&quot;);</span>
+                }
+<span class="fc" id="L1483">            }</span>
+<span class="pc bpc" id="L1484" title="1 of 2 branches missed.">            if (mClassifier == null) {</span>
+<span class="nc" id="L1485">                logError(&quot;failed to find or create type&quot;, typeSpec);</span>
+<span class="nc" id="L1486">                return;</span>
+            }
+        }
+
+        // if we want to create a UML attribute:
+<span class="pc bpc" id="L1491" title="1 of 4 branches missed.">        if (mClassifier == null</span>
+                || noAssociations
+<span class="fc bfc" id="L1493" title="All 2 branches covered.">                || Model.getFacade().isADataType(mClassifier)</span>
+<span class="fc bfc" id="L1494" title="All 2 branches covered.">                || (Model.getFacade().getNamespace(mClassifier) == getPackage(</span>
+                        JAVA_PACKAGE, true))) {
+
+<span class="fc" id="L1497">            Object mAttribute = parseState.getAttribute(name);</span>
+<span class="pc bpc" id="L1498" title="1 of 2 branches missed.">            if (mAttribute == null) {</span>
+<span class="fc" id="L1499">                mAttribute = buildAttribute(parseState.getClassifier(),</span>
+                        mClassifier, name);
+            }
+<span class="fc" id="L1502">            parseState.feature(mAttribute);</span>
+
+<span class="fc" id="L1504">            setOwnerScope(mAttribute, modifiers);</span>
+<span class="fc" id="L1505">            setVisibility(mAttribute, modifiers);</span>
+<span class="fc" id="L1506">            Model.getCoreHelper().setMultiplicity(mAttribute, multiplicity);</span>
+
+<span class="fc bfc" id="L1508" title="All 2 branches covered.">            if (Model.getFacade().isAClassifier(mClassifier)) {</span>
+                // TODO: This should already have been done in buildAttribute
+<span class="fc" id="L1510">                Model.getCoreHelper().setType(mAttribute, mClassifier);</span>
+            } else {
+                // the type resolution failed to find a valid classifier.
+<span class="fc" id="L1513">                logError(&quot;Modeller.java: a valid type for a parameter &quot;</span>
+                        + &quot;could not be resolved:\n &quot; + &quot;In file: &quot; + fileName
+<span class="fc" id="L1515">                        + &quot;, for attribute: &quot;, Model.getFacade().getName(</span>
+                        mAttribute));
+            }
+
+            // Set the initial value for the attribute.
+<span class="fc bfc" id="L1520" title="All 2 branches covered.">            if (initializer != null) {</span>
+
+                // we must remove line endings and tabs from the intializer
+                // strings, otherwise the classes will display horribly.
+<span class="fc" id="L1524">                initializer = initializer.replace('\n', ' ');</span>
+<span class="fc" id="L1525">                initializer = initializer.replace('\t', ' ');</span>
+
+<span class="fc" id="L1527">                Object newInitialValue = Model.getDataTypesFactory()</span>
+<span class="fc" id="L1528">                        .createExpression(&quot;Java&quot;, initializer);</span>
+<span class="fc" id="L1529">                Model.getCoreHelper().setInitialValue(mAttribute,</span>
+                        newInitialValue);
+            }
+
+<span class="fc bfc" id="L1533" title="All 2 branches covered.">            if ((modifiers &amp; JavaParser.ACC_FINAL) &gt; 0) {</span>
+<span class="fc" id="L1534">                Model.getCoreHelper().setReadOnly(mAttribute, true);</span>
+<span class="pc bpc" id="L1535" title="1 of 2 branches missed.">            } else if (Model.getFacade().isReadOnly(mAttribute)) {</span>
+<span class="nc" id="L1536">                Model.getCoreHelper().setReadOnly(mAttribute, true);</span>
+            }
+<span class="fc" id="L1538">            addDocumentationTag(mAttribute, javadoc);</span>
+<span class="fc" id="L1539">        }</span>
+        // we want to create a UML association from the java attribute
+        else {
+
+<span class="fc" id="L1543">            Object mAssociationEnd = getAssociationEnd(name, mClassifier);</span>
+<span class="pc bpc" id="L1544" title="1 of 2 branches missed.">            Model.getCoreHelper().setStatic(mAssociationEnd,</span>
+                    (modifiers &amp; JavaParser.ACC_STATIC) &gt; 0);
+<span class="fc" id="L1546">            setVisibility(mAssociationEnd, modifiers);</span>
+<span class="fc" id="L1547">            Model.getCoreHelper()</span>
+<span class="fc" id="L1548">                    .setMultiplicity(mAssociationEnd, multiplicity);</span>
+<span class="fc" id="L1549">            Model.getCoreHelper().setType(mAssociationEnd, mClassifier);</span>
+<span class="fc" id="L1550">            Model.getCoreHelper().setName(mAssociationEnd, name);</span>
+<span class="pc bpc" id="L1551" title="1 of 2 branches missed.">            if ((modifiers &amp; JavaParser.ACC_FINAL) &gt; 0) {</span>
+<span class="nc" id="L1552">                Model.getCoreHelper().setReadOnly(mAssociationEnd, true);</span>
+            }
+<span class="pc bpc" id="L1554" title="1 of 2 branches missed.">            if (!mClassifier.equals(parseState.getClassifier())) {</span>
+                // Because if they are equal,
+                // then getAssociationEnd(name, mClassifier) could return
+                // the wrong assoc end, on the other hand the navigability
+                // is already set correctly (at least in this case), so the
+                // next line is not necessary. (maybe never necessary?) - thn
+<span class="nc" id="L1560">                Model.getCoreHelper().setNavigable(mAssociationEnd, true);</span>
+            }
+<span class="fc" id="L1562">            addDocumentationTag(mAssociationEnd, javadoc);</span>
+        }
+<span class="fc" id="L1564">    }</span>
+
+    /**
+     * Find a generalization in the model. If it does not exist, a new
+     * generalization is created.
+     * 
+     * @param mPackage Look in this package.
+     * @param parent The superclass.
+     * @param child The subclass.
+     * @return The generalization found or created.
+     */
+    private Object getGeneralization(Object mPackage, Object parent,
+            Object child) {
+<span class="fc" id="L1577">        Object mGeneralization = Model.getFacade().getGeneralization(child,</span>
+                parent);
+<span class="pc bpc" id="L1579" title="1 of 2 branches missed.">        if (mGeneralization == null) {</span>
+<span class="fc" id="L1580">            mGeneralization = Model.getCoreFactory().buildGeneralization(child,</span>
+                    parent);
+<span class="fc" id="L1582">            newElements.add(mGeneralization);</span>
+        }
+<span class="pc bpc" id="L1584" title="1 of 2 branches missed.">        if (mGeneralization != null</span>
+<span class="pc bpc" id="L1585" title="1 of 2 branches missed.">             &amp;&amp; Model.getFacade().getUmlVersion().charAt(0) == '1') {</span>
+<span class="fc" id="L1586">            Model.getCoreHelper().setNamespace(mGeneralization, mPackage);</span>
+        }
+<span class="fc" id="L1588">        return mGeneralization;</span>
+    }
+
+    /**
+     * Find an abstraction&lt;&lt;realize&gt;&gt; in the model. If it does not exist, a new
+     * abstraction is created.
+     * 
+     * @param parent The superclass.
+     * @param child The subclass.
+     * @return The abstraction found or created.
+     */
+    private Object getAbstraction(Object parent, Object child) {
+<span class="fc" id="L1600">        Object mAbstraction = null;</span>
+<span class="fc" id="L1601">        for (Iterator i = Model.getFacade().getClientDependencies(child)</span>
+<span class="pc bpc" id="L1602" title="1 of 2 branches missed.">                .iterator(); i.hasNext();) {</span>
+<span class="nc" id="L1603">            mAbstraction = i.next();</span>
+<span class="nc" id="L1604">            Collection c = Model.getFacade().getSuppliers(mAbstraction);</span>
+<span class="nc bnc" id="L1605" title="All 4 branches missed.">            if (c == null || c.size() == 0) {</span>
+<span class="nc" id="L1606">                Model.getCoreHelper().removeClientDependency(child,</span>
+                        mAbstraction);
+            } else {
+<span class="nc bnc" id="L1609" title="All 2 branches missed.">                if (parent != c.toArray()[0]) {</span>
+<span class="nc" id="L1610">                    mAbstraction = null;</span>
+                } else {
+                    break;
+                }
+            }
+<span class="nc" id="L1615">        }</span>
+
+<span class="pc bpc" id="L1617" title="1 of 2 branches missed.">        if (mAbstraction == null) {</span>
+<span class="fc" id="L1618">            mAbstraction = Model.getCoreFactory().buildAbstraction(</span>
+<span class="fc" id="L1619">                    makeAbstractionName(child, parent), parent, child);</span>
+<span class="fc" id="L1620">            newElements.add(mAbstraction);</span>
+        }
+<span class="fc" id="L1622">        return mAbstraction;</span>
+    }
+
+    /**
+     * Find a class in a package. If it does not exist, a new class is
+     * created.
+     * 
+     * @param mPackage Look in this package.
+     * @param name The name of the class.
+     * @return The class found or created.
+     */
+    private Object getClass(Object mPackage, String name) {
+<span class="nc" id="L1634">        Object mClass = null;</span>
+<span class="nc bnc" id="L1635" title="All 2 branches missed.">        for (Object c : Model.getCoreHelper().getAllClasses(mPackage)) {</span>
+<span class="nc bnc" id="L1636" title="All 2 branches missed.">            if (name.equals(Model.getFacade().getName(c))) {</span>
+<span class="nc" id="L1637">                mClass = c;</span>
+<span class="nc" id="L1638">                break;</span>
+            }
+<span class="nc" id="L1640">        }</span>
+<span class="nc bnc" id="L1641" title="All 2 branches missed.">        if (mClass == null) {</span>
+<span class="nc" id="L1642">            mClass = Model.getCoreFactory().buildClass(name, mPackage);</span>
+<span class="nc" id="L1643">            newElements.add(mClass);</span>
+        }
+<span class="nc" id="L1645">        return mClass;</span>
+    }
+
+    /**
+     * Find a package in the project. If it does not exist, a new package is
+     * created in the user model.
+     * 
+     * @param name The name of the package.
+     * @param useProfile also look in the Java profile if true
+     * @return The package found or created.
+     */
+    private Object getPackage(String name, boolean useProfile) {
+<span class="fc" id="L1657">        Object mPackage = searchPackageInModel(name, useProfile);</span>
+<span class="fc bfc" id="L1658" title="All 2 branches covered.">        if (mPackage == null) {</span>
+            // whole or part of the package path need to be built in model:
+<span class="fc" id="L1660">            Object currentNs = model;</span>
+<span class="fc" id="L1661">            StringTokenizer st = new StringTokenizer(name, &quot;.&quot;);</span>
+<span class="fc bfc" id="L1662" title="All 2 branches covered.">            while (st.hasMoreTokens()) {</span>
+<span class="fc" id="L1663">                String rname = st.nextToken();</span>
+<span class="fc" id="L1664">                mPackage = Model.getFacade().lookupIn(currentNs, rname);</span>
+                // the actual package might already exist in the user model
+<span class="fc bfc" id="L1666" title="All 2 branches covered.">                if (mPackage == null</span>
+<span class="pc bpc" id="L1667" title="1 of 2 branches missed.">                        || !Model.getFacade().isAPackage(mPackage)) {</span>
+<span class="fc" id="L1668">                    mPackage = Model.getModelManagementFactory().buildPackage(</span>
+<span class="fc" id="L1669">                            getRelativePackageName(rname));</span>
+                    // set the owner for this package.
+<span class="fc" id="L1671">                    Model.getCoreHelper().addOwnedElement(currentNs, mPackage);</span>
+<span class="fc" id="L1672">                    newElements.add(mPackage);</span>
+                }
+<span class="fc" id="L1674">                currentNs = mPackage;</span>
+<span class="fc" id="L1675">            }</span>
+        }
+<span class="fc" id="L1677">        return mPackage;</span>
+    }
+
+    /**
+     * Search recursively for nested packages in the user model. So if you pass
+     * a package org.argouml.kernel , this method searches for a package kernel,
+     * that is owned by a package argouml, which is owned by a package org. This
+     * method is required to nest the parsed packages. It optionally first
+     * searches in the Java profile.
+     * 
+     * @param name The fully qualified package name of the package we are
+     *            searching for.
+     * @param useProfile first have a look in the Java profile if true
+     * @return The found package or null, if it is not in the model.
+     */
+    private Object searchPackageInModel(String name, boolean useProfile) {
+<span class="fc" id="L1693">        Object ret = null;</span>
+<span class="fc bfc" id="L1694" title="All 2 branches covered.">        if (&quot;&quot;.equals(getPackageName(name))) {</span>
+<span class="pc bpc" id="L1695" title="1 of 4 branches missed.">            if (useProfile &amp;&amp; javaProfile != null) {</span>
+                try {
+<span class="fc" id="L1697">                    Object m = javaProfile.getProfilePackages().iterator()</span>
+<span class="fc" id="L1698">                            .next();</span>
+<span class="fc" id="L1699">                    ret = Model.getFacade().lookupIn(m, name);</span>
+<span class="nc" id="L1700">                } catch (Exception e) {</span>
+<span class="nc" id="L1701">                    ret = null;</span>
+<span class="fc" id="L1702">                }</span>
+            }
+<span class="fc bfc" id="L1704" title="All 2 branches covered.">            if (ret == null) {</span>
+<span class="fc" id="L1705">                ret = Model.getFacade().lookupIn(model, name);</span>
+            }
+<span class="fc" id="L1707">            return ret;</span>
+        }
+<span class="fc" id="L1709">        Object owner = searchPackageInModel(getPackageName(name), useProfile);</span>
+<span class="fc bfc" id="L1710" title="All 2 branches covered.">        return owner == null ? null : Model.getFacade().lookupIn(owner,</span>
+<span class="fc" id="L1711">                getRelativePackageName(name));</span>
+    }
+
+    /**
+     * Find an operation in the currentClassifier. If the operation is not
+     * found, a new is created.
+     * 
+     * @param name The name of the operation.
+     * @return The operation found or created.
+     */
+    private Object getOperation(String name) {
+<span class="fc" id="L1722">        Object mOperation = parseState.getOperation(name);</span>
+<span class="pc bpc" id="L1723" title="1 of 2 branches missed.">        if (mOperation != null) {</span>
+<span class="nc" id="L1724">            LOG.info(&quot;Getting the existing operation &quot; + name);</span>
+        } else {
+<span class="fc" id="L1726">            LOG.info(&quot;Creating a new operation &quot; + name);</span>
+<span class="fc" id="L1727">            Object cls = parseState.getClassifier();</span>
+<span class="fc" id="L1728">            Object returnType = ProjectManager.getManager().getCurrentProject()</span>
+<span class="fc" id="L1729">                    .getDefaultReturnType();</span>
+<span class="fc" id="L1730">            mOperation = Model.getCoreFactory().buildOperation2(cls,</span>
+                    returnType, name);
+<span class="fc" id="L1732">            newElements.add(mOperation);</span>
+        }
+<span class="fc" id="L1734">        return mOperation;</span>
+    }
+
+    /**
+     * Find an operation in the currentClassifier. If the operation is not
+     * found, a new is created.
+     * 
+     * @param name The name of the method.
+     * @return The method found or created.
+     */
+    private Object getMethod(String name) {
+<span class="fc" id="L1745">        Object method = parseState.getMethod(name);</span>
+<span class="pc bpc" id="L1746" title="1 of 2 branches missed.">        if (method != null) {</span>
+<span class="nc" id="L1747">            LOG.info(&quot;Getting the existing method &quot; + name);</span>
+        } else {
+<span class="fc" id="L1749">            LOG.info(&quot;Creating a new method &quot; + name);</span>
+<span class="fc" id="L1750">            method = Model.getCoreFactory().buildMethod(name);</span>
+<span class="fc" id="L1751">            newElements.add(method);</span>
+<span class="pc bpc" id="L1752" title="1 of 2 branches missed.">            if (Model.getFacade().getUmlVersion().charAt(0) == '1') {</span>
+                // Is this done twice (see caller of this method)?
+<span class="fc" id="L1754">                Model.getCoreHelper()</span>
+<span class="fc" id="L1755">                    .addFeature(parseState.getClassifier(), method);</span>
+            }
+        }
+<span class="fc" id="L1758">        return method;</span>
+    }
+
+    /**
+     * Build a new attribute in the current classifier.
+     * 
+     * @param classifier the model were are reverse engineering into
+     * @param type the the type of the new attribute
+     * @param name The name of the attribute.
+     * @return The attribute found or created.
+     */
+    private Object buildAttribute(Object classifier, Object type, String name) {
+<span class="fc" id="L1770">        Object mAttribute = Model.getCoreFactory().buildAttribute2(classifier,</span>
+                type);
+<span class="fc" id="L1772">        newElements.add(mAttribute);</span>
+<span class="fc" id="L1773">        Model.getCoreHelper().setName(mAttribute, name);</span>
+<span class="fc" id="L1774">        return mAttribute;</span>
+    }
+
+    /**
+     * Find an associationEnd for a binary Association from the
+     * currentClassifier to the type specified. If not found, a new is created.
+     * 
+     * @param name The name of the attribute.
+     * @param mClassifier Where the association ends.
+     * @return The attribute found or created.
+     */
+    private Object getAssociationEnd(String name, Object mClassifier) {
+<span class="fc" id="L1786">        Object mAssociationEnd = null;</span>
+<span class="fc" id="L1787">        for (Iterator i = Model.getFacade().getAssociationEnds(mClassifier)</span>
+<span class="pc bpc" id="L1788" title="1 of 2 branches missed.">                .iterator(); i.hasNext();) {</span>
+<span class="nc" id="L1789">            Object ae = i.next();</span>
+<span class="nc" id="L1790">            Object assoc = Model.getFacade().getAssociation(ae);</span>
+<span class="nc bnc" id="L1791" title="All 2 branches missed.">            if (name.equals(Model.getFacade().getName(ae))</span>
+<span class="nc bnc" id="L1792" title="All 2 branches missed.">                    &amp;&amp; Model.getFacade().getConnections(assoc).size() == 2</span>
+<span class="nc" id="L1793">                    &amp;&amp; Model.getFacade().getType(</span>
+<span class="nc" id="L1794">                            Model.getFacade().getNextEnd(ae)) == parseState</span>
+<span class="nc bnc" id="L1795" title="All 2 branches missed.">                            .getClassifier()) {</span>
+<span class="nc" id="L1796">                mAssociationEnd = ae;</span>
+            }
+<span class="nc" id="L1798">        }</span>
+<span class="pc bpc" id="L1799" title="2 of 4 branches missed.">        if (mAssociationEnd == null &amp;&amp; !noAssociations) {</span>
+<span class="fc" id="L1800">            String newName = makeAssociationName(parseState.getClassifier(),</span>
+                    mClassifier);
+
+<span class="fc" id="L1803">            Object mAssociation = buildDirectedAssociation(newName, parseState</span>
+<span class="fc" id="L1804">                    .getClassifier(), mClassifier);</span>
+            // this causes a problem when mClassifier is not only
+            // at one assoc end: (which one is the right one?)
+<span class="fc" id="L1807">            mAssociationEnd = Model.getFacade().getAssociationEnd(mClassifier,</span>
+                    mAssociation);
+        }
+<span class="fc" id="L1810">        return mAssociationEnd;</span>
+    }
+
+    /**
+     * Build a unidirectional association between two Classifiers.
+     * 
+     * @param name name of the association
+     * @param sourceClassifier source classifier (end which is non-navigable)
+     * @param destClassifier destination classifier (end which is navigable)
+     * @return newly created Association
+     */
+    public static Object buildDirectedAssociation(String name,
+            Object sourceClassifier, Object destClassifier) {
+<span class="fc" id="L1823">        return Model.getCoreFactory().buildAssociation(destClassifier, true,</span>
+                sourceClassifier, false, name);
+    }
+
+    /**
+     * Get the stereotype with a specific name. UML 1.x only.
+     * 
+     * @param name The name of the stereotype.
+     * @return The stereotype.
+     */
+    private Object getUML1Stereotype(String name) {
+<span class="fc" id="L1834">        LOG.fine(&quot;Trying to find a stereotype of name &lt;&lt;&quot; + name + &quot;&gt;&gt;&quot;);</span>
+        // Is this line really safe wouldn't it just return the first
+        // model element of the same name whether or not it is a stereotype
+<span class="fc" id="L1837">        Object stereotype = Model.getFacade().lookupIn(model, name);</span>
+
+<span class="fc bfc" id="L1839" title="All 2 branches covered.">        if (stereotype == null) {</span>
+<span class="fc" id="L1840">            LOG.fine(&quot;Couldn't find so creating it&quot;);</span>
+<span class="fc" id="L1841">            return Model.getExtensionMechanismsFactory().buildStereotype(name,</span>
+                    model);
+        }
+
+<span class="pc bpc" id="L1845" title="1 of 2 branches missed.">        if (!Model.getFacade().isAStereotype(stereotype)) {</span>
+            // and so this piece of code may create an existing stereotype
+            // in error.
+<span class="nc" id="L1848">            LOG.fine(&quot;Found something that isn't a stereotype so creating it&quot;);</span>
+<span class="nc" id="L1849">            return Model.getExtensionMechanismsFactory().buildStereotype(name,</span>
+                    model);
+        }
+
+<span class="fc" id="L1853">        LOG.fine(&quot;Found it&quot;);</span>
+<span class="fc" id="L1854">        return stereotype;</span>
+    }
+
+    /**
+     * Find the first suitable stereotype with baseclass for a given object.
+     * 
+     * @param me
+     * @param name
+     * @param baseClass
+     * @return the stereotype if found
+     * 
+     * @throws IllegalArgumentException if the desired stereotypes for the
+     *             modelelement and baseclass was not found and could not be
+     *             created. No stereotype is created.
+     */
+    private Object getStereotype(Object me, String name, String baseClass) {
+<span class="fc" id="L1870">        Collection models = ProjectManager.getManager().getCurrentProject()</span>
+<span class="fc" id="L1871">                .getModels();</span>
+<span class="fc" id="L1872">        Collection stereos = Model.getExtensionMechanismsHelper()</span>
+<span class="fc" id="L1873">                .getAllPossibleStereotypes(models, me);</span>
+<span class="fc" id="L1874">        Object stereotype = null;</span>
+<span class="pc bpc" id="L1875" title="2 of 4 branches missed.">        if (stereos != null &amp;&amp; stereos.size() &gt; 0) {</span>
+<span class="fc" id="L1876">            Iterator iter = stereos.iterator();</span>
+<span class="pc bpc" id="L1877" title="1 of 2 branches missed.">            while (iter.hasNext()) {</span>
+<span class="fc" id="L1878">                stereotype = iter.next();</span>
+<span class="pc bpc" id="L1879" title="1 of 2 branches missed.">                if (Model.getExtensionMechanismsHelper().isStereotypeInh(</span>
+                        stereotype, name, baseClass)) {
+<span class="fc" id="L1881">                    LOG.info(&quot;Returning the existing stereotype of &lt;&lt;&quot;</span>
+<span class="fc" id="L1882">                            + Model.getFacade().getName(stereotype) + &quot;&gt;&gt;&quot;);</span>
+<span class="fc" id="L1883">                    return stereotype;</span>
+                }
+            }
+        }
+<span class="nc bnc" id="L1887" title="All 2 branches missed.">        if (Model.getFacade().getUmlVersion().charAt(0) != '1') {</span>
+            // For UML2, we must fail now, because stereotypes must be found
+            // only in profiles.
+<span class="nc" id="L1890">            throw new IllegalArgumentException(&quot;Could not find &quot;</span>
+<span class="nc" id="L1891">                + &quot;a suitable stereotype for &quot; + Model.getFacade().getName(me)</span>
+                + &quot; -  stereotype: &lt;&lt;&quot; + name + &quot;&gt;&gt; base: &quot; + baseClass
+                + &quot;.\n&quot;
+                + &quot;Check if environment variable eUML.resources &quot;
+                + &quot;is correctly set.&quot;);
+        }
+        // (UML 1.x only from here)
+        // Instead of failing, this should create any stereotypes that it
+        // requires. Most likely cause of failure is that the stereotype isn't
+        // included in the profile that is being used. - tfm 20060224
+<span class="nc" id="L1901">        stereotype = getUML1Stereotype(name);</span>
+<span class="nc bnc" id="L1902" title="All 2 branches missed.">        if (stereotype != null) {</span>
+<span class="nc" id="L1903">            Model.getExtensionMechanismsHelper().addBaseClass(stereotype, me);</span>
+<span class="nc" id="L1904">            return stereotype;</span>
+        }
+        // This should never happen then:
+<span class="nc" id="L1907">        throw new IllegalArgumentException(&quot;Could not find &quot;</span>
+<span class="nc" id="L1908">                + &quot;a suitable stereotype for &quot; + Model.getFacade().getName(me)</span>
+                + &quot; -  stereotype: &lt;&lt;&quot; + name + &quot;&gt;&gt; base: &quot; + baseClass);
+    }
+
+    /**
+     * Return the tagged value with a specific tag.
+     * 
+     * @param element The tagged value belongs to this.
+     * @param name The tag.
+     * @return The found tag. A new is created if not found.
+     */
+    private Object getTaggedValue(Object element, String name) {
+<span class="nc" id="L1920">        Object tv = Model.getFacade().getTaggedValue(element, name);</span>
+<span class="nc bnc" id="L1921" title="All 2 branches missed.">        if (tv == null) {</span>
+<span class="nc" id="L1922">            String[] empties = {</span>
+                &quot;&quot;
+            };
+<span class="nc" id="L1925">            buildTaggedValue(element, name, empties);</span>
+<span class="nc" id="L1926">            tv = Model.getFacade().getTaggedValue(element, name);</span>
+        }
+<span class="nc" id="L1928">        return tv;</span>
+    }
+
+    /**
+     * This classifier was earlier generated by reference but now it is its time
+     * to be parsed so we clean out remnants.
+     * 
+     * @param element that they are removed from
+     */
+    private void cleanModelElement(Object element) {
+<span class="nc" id="L1938">        Object tv = Model.getFacade().getTaggedValue(element,</span>
+                Facade.GENERATED_TAG);
+<span class="nc bnc" id="L1940" title="All 2 branches missed.">        while (tv != null) {</span>
+<span class="nc" id="L1941">            Model.getUmlFactory().delete(tv);</span>
+<span class="nc" id="L1942">            tv = Model.getFacade()</span>
+<span class="nc" id="L1943">                    .getTaggedValue(element, Facade.GENERATED_TAG);</span>
+        }
+<span class="nc" id="L1945">    }</span>
+
+    /**
+     * Get the package name from a fully specified classifier name.
+     * 
+     * @param name A fully specified classifier name.
+     * @return The package name.
+     */
+    private String getPackageName(String name) {
+<span class="fc" id="L1954">        name = stripVarargAndGenerics(name);</span>
+<span class="fc" id="L1955">        int lastDot = name.lastIndexOf('.');</span>
+<span class="fc bfc" id="L1956" title="All 2 branches covered.">        if (lastDot == -1) {</span>
+<span class="fc" id="L1957">            return &quot;&quot;;</span>
+        }
+<span class="fc" id="L1959">        String pkgName = name.substring(0, lastDot);</span>
+
+        // If the last element begins with an uppercase character, assume
+        // that we've really got a class, not a package.
+        // TODO: A better strategy would be to defer until we can disambiguate
+<span class="pc bpc" id="L1964" title="1 of 2 branches missed.">        if (Character.isUpperCase(getRelativePackageName(pkgName).charAt(0))) {</span>
+<span class="nc" id="L1965">            return getPackageName(pkgName);</span>
+        } else {
+<span class="fc" id="L1967">            return pkgName;</span>
+        }
+    }
+
+    /**
+     * Get the relative package name from a fully qualified package name. So if
+     * the parameter is 'org.argouml.kernel' the method is supposed to return
+     * 'kernel' (the package kernel is in package 'org.argouml').
+     * 
+     * @param packageName A fully qualified package name.
+     * @return The relative package name.
+     */
+    private String getRelativePackageName(String packageName) {
+        // Since the relative package name corresponds
+        // to the classifier name of a fully qualified
+        // classifier, we simply use this method.
+
+        // TODO: This won't correctly identify the package for an inner class
+        // e.g. package.Foo.Bar, but getPackageName() makes an attempt to
+        // guess correctly
+
+<span class="fc" id="L1988">        return getClassifierName(packageName);</span>
+    }
+
+    /**
+     * Get the classifier name from a fully specified classifier name.
+     * &lt;p&gt;
+     * FIXME: Most uses of this method are wrong. We should be adding context
+     * such as package names or outer classifier names, not removing it, before
+     * doing lookup so that the search methods have the fully qualified name to
+     * work with.
+     * 
+     * @param name A fully specified classifier name.
+     * @return The classifier name.
+     */
+    private String getClassifierName(String name) {
+<span class="fc" id="L2003">        name = stripVarargAndGenerics(name);</span>
+<span class="fc" id="L2004">        int lastDot = name.lastIndexOf('.');</span>
+<span class="fc bfc" id="L2005" title="All 2 branches covered.">        if (lastDot == -1) {</span>
+<span class="fc" id="L2006">            return name;</span>
+        }
+<span class="fc" id="L2008">        return name.substring(lastDot + 1);</span>
+    }
+
+    /**
+     * Set the visibility for a model element.
+     * 
+     * @param element The model element.
+     * @param modifiers A sequence of modifiers which may contain 'private',
+     *            'protected' or 'public'.
+     */
+    private void setVisibility(Object element, short modifiers) {
+<span class="fc bfc" id="L2019" title="All 2 branches covered.">        if ((modifiers &amp; JavaParser.ACC_PRIVATE) &gt; 0) {</span>
+<span class="fc" id="L2020">            Model.getCoreHelper().setVisibility(element,</span>
+<span class="fc" id="L2021">                    Model.getVisibilityKind().getPrivate());</span>
+<span class="fc bfc" id="L2022" title="All 2 branches covered.">        } else if ((modifiers &amp; JavaParser.ACC_PROTECTED) &gt; 0) {</span>
+<span class="fc" id="L2023">            Model.getCoreHelper().setVisibility(element,</span>
+<span class="fc" id="L2024">                    Model.getVisibilityKind().getProtected());</span>
+<span class="fc bfc" id="L2025" title="All 2 branches covered.">        } else if ((modifiers &amp; JavaParser.ACC_PUBLIC) &gt; 0) {</span>
+<span class="fc" id="L2026">            Model.getCoreHelper().setVisibility(element,</span>
+<span class="fc" id="L2027">                    Model.getVisibilityKind().getPublic());</span>
+        } else {
+            // Default Java visibility is &quot;package&quot;
+<span class="fc" id="L2030">            Model.getCoreHelper().setVisibility(element,</span>
+<span class="fc" id="L2031">                    Model.getVisibilityKind().getPackage());</span>
+        }
+<span class="fc" id="L2033">    }</span>
+
+    /**
+     * Set the owner scope for a feature.
+     * 
+     * @param feature The feature.
+     * @param modifiers A sequence of modifiers which may contain 'static'.
+     */
+    private void setOwnerScope(Object feature, short modifiers) {
+<span class="fc bfc" id="L2042" title="All 2 branches covered.">        Model.getCoreHelper().setStatic(feature,</span>
+                (modifiers &amp; JavaParser.ACC_STATIC) &gt; 0);
+<span class="fc" id="L2044">    }</span>
+
+    /**
+     * Get the context for a classifier name that may or may not be fully
+     * qualified. The context contains either the user model, or a package
+     * or class inside the user model, or a package or class in the Java
+     * profile.
+     * 
+     * @param name the classifier name
+     * @return the context
+     */
+    private Context getContext(String name) {
+<span class="fc" id="L2056">        Context context = parseState.getContext();</span>
+<span class="fc" id="L2057">        String packageName = getPackageName(name);</span>
+<span class="fc" id="L2058">        Object pkg = model;</span>
+<span class="fc bfc" id="L2059" title="All 2 branches covered.">        if (!&quot;&quot;.equals(packageName)) {</span>
+<span class="fc" id="L2060">            pkg = getPackage(packageName, true);</span>
+        }
+<span class="fc" id="L2062">        String classifierName = name.substring(packageName.length());</span>
+<span class="fc bfc" id="L2063" title="All 2 branches covered.">        if (classifierName.charAt(0) == '.') {</span>
+<span class="fc" id="L2064">            classifierName = classifierName.substring(1);</span>
+        }
+<span class="fc" id="L2066">        classifierName = stripVarargAndGenerics(classifierName);</span>
+<span class="fc" id="L2067">        int lastDot = classifierName.lastIndexOf('.');</span>
+<span class="pc bpc" id="L2068" title="1 of 2 branches missed.">        if (lastDot != -1) {</span>
+<span class="nc" id="L2069">            String clsName = classifierName.substring(0, lastDot);</span>
+<span class="nc" id="L2070">            Object cls = getClass(pkg, clsName);</span>
+<span class="nc" id="L2071">            context = </span>
+                new OuterClassifierContext(
+<span class="nc" id="L2073">                        context.getContext(), cls, pkg, </span>
+                        clsName + '$');
+<span class="pc bfc" id="L2075" title="All 2 branches covered.">        } else if (!&quot;&quot;.equals(packageName)) {</span>
+<span class="fc" id="L2076">            context = new PackageContext(context, pkg);</span>
+        }
+<span class="fc" id="L2078">        return context;</span>
+    }
+
+    /**
+     * Add the contents of a single standard javadoc tag to the model element.
+     * Usually this will be added as a tagged value.
+     * 
+     * This is called from {@link #addDocumentationTag} only.
+     * 
+     * @param me the model element to add to
+     * @param sTagName the name of the javadoc tag
+     * @param sTagData the contents of the javadoc tag
+     */
+    private void addJavadocTagContents(Object me, String sTagName,
+            String[] sTagData) {
+<span class="nc bnc" id="L2093" title="All 6 branches missed.">        if (sTagData != null </span>
+            &amp;&amp; (sTagData.length == 0 || sTagData[0] == null)) {
+<span class="nc" id="L2095">            LOG.fine(&quot;Called addJavadocTagContents with no tag data!&quot;);</span>
+<span class="nc" id="L2096">            return;</span>
+        }
+<span class="nc bnc" id="L2098" title="All 2 branches missed.">        int colonPos = (sTagData != null) ? sTagData[0].indexOf(':') : -1;</span>
+<span class="nc bnc" id="L2099" title="All 2 branches missed.">        if (colonPos != -1</span>
+<span class="nc bnc" id="L2100" title="All 2 branches missed.">                &amp;&amp; ((&quot;invariant&quot;.equals(sTagName))</span>
+<span class="nc bnc" id="L2101" title="All 2 branches missed.">                        || (&quot;pre-condition&quot;.equals(sTagName))</span>
+<span class="nc bnc" id="L2102" title="All 2 branches missed.">                        || (&quot;post-condition&quot;.equals(sTagName)))) {</span>
+
+            // add as OCL constraint
+<span class="nc" id="L2105">            String sContext = OCLUtil.getContextString(me);</span>
+<span class="nc" id="L2106">            String name = sTagData[0].substring(0, colonPos);</span>
+<span class="nc" id="L2107">            String body = null;</span>
+<span class="nc bnc" id="L2108" title="All 2 branches missed.">            if (sTagName.equals(&quot;invariant&quot;)) {</span>
+                // add as invariant constraint Note that no checking
+                // of constraint syntax is performed... BAD!
+<span class="nc" id="L2111">                body = sContext + &quot; inv &quot; + sTagData;</span>
+<span class="nc bnc" id="L2112" title="All 2 branches missed.">            } else if (sTagName.equals(&quot;pre-condition&quot;)) {</span>
+<span class="nc" id="L2113">                body = sContext + &quot; pre &quot; + sTagData;</span>
+            } else {
+<span class="nc" id="L2115">                body = sContext + &quot; post &quot; + sTagData;</span>
+            }
+<span class="nc" id="L2117">            Object bexpr = Model.getDataTypesFactory().createBooleanExpression(</span>
+                    &quot;OCL&quot;, body);
+<span class="nc" id="L2119">            Object mc = Model.getCoreFactory().buildConstraint(name, bexpr);</span>
+<span class="nc" id="L2120">            Model.getCoreHelper().addConstraint(me, mc);</span>
+<span class="nc bnc" id="L2121" title="All 2 branches missed.">            if (Model.getFacade().getNamespace(me) != null) {</span>
+                // Apparently namespace management is not supported
+                // for all model elements. As this does not seem to
+                // cause problems, I'll just leave it at that for the
+                // moment...
+<span class="nc" id="L2126">                Model.getCoreHelper().addOwnedElement(</span>
+<span class="nc" id="L2127">                        Model.getFacade().getNamespace(me), mc);</span>
+            }
+<span class="nc" id="L2129">        } else {</span>
+<span class="nc bnc" id="L2130" title="All 2 branches missed.">            if (&quot;stereotype&quot;.equals(sTagName)) {</span>
+                // multiple stereotype support:
+                // make one stereotype tag from many stereotype tags
+<span class="nc" id="L2133">                Object tv = getTaggedValue(me, sTagName);</span>
+<span class="nc bnc" id="L2134" title="All 2 branches missed.">                if (tv != null) {</span>
+<span class="nc" id="L2135">                    String sStereotype = Model.getFacade().getValueOfTag(tv);</span>
+<span class="nc bnc" id="L2136" title="All 4 branches missed.">                    if (sStereotype != null &amp;&amp; sStereotype.length() &gt; 0) {</span>
+<span class="nc" id="L2137">                        sTagData[0] = sStereotype + ',' + sTagData[0];</span>
+                    }
+                }
+                // now eliminate multiple entries in that comma separated list
+<span class="nc" id="L2141">                HashSet&lt;String&gt; stSet = new HashSet&lt;String&gt;();</span>
+<span class="nc" id="L2142">                StringTokenizer st = new StringTokenizer(sTagData[0], &quot;, &quot;);</span>
+<span class="nc bnc" id="L2143" title="All 2 branches missed.">                while (st.hasMoreTokens()) {</span>
+<span class="nc" id="L2144">                    stSet.add(st.nextToken().trim());</span>
+                }
+<span class="nc" id="L2146">                StringBuffer sb = new StringBuffer();</span>
+<span class="nc" id="L2147">                Iterator&lt;String&gt; iter = stSet.iterator();</span>
+<span class="nc bnc" id="L2148" title="All 2 branches missed.">                while (iter.hasNext()) {</span>
+<span class="nc bnc" id="L2149" title="All 2 branches missed.">                    if (sb.length() &gt; 0) {</span>
+<span class="nc" id="L2150">                        sb.append(',');</span>
+                    }
+<span class="nc" id="L2152">                    sb.append(iter.next());</span>
+                }
+<span class="nc" id="L2154">                sTagData[0] = sb.toString();</span>
+
+            }
+<span class="nc" id="L2157">            buildTaggedValue(me, sTagName, sTagData);</span>
+        }
+<span class="nc" id="L2159">    }</span>
+
+    private void buildTaggedValue(Object me, 
+            String sTagName, 
+            String[] sTagData) {
+<span class="fc" id="L2164">        Object tv = Model.getFacade().getTaggedValue(me, sTagName);</span>
+<span class="pc bpc" id="L2165" title="1 of 2 branches missed.">        if (tv == null) {</span>
+            // using deprecated buildTaggedValue here, because getting the tag
+            // definition from a tag name is the critical step, and this is
+            // implemented in ExtensionMechanismsFactory in a central place,
+            // but not as a public method:
+<span class="fc" id="L2170">            Model.getExtensionMechanismsHelper().addTaggedValue(</span>
+                    me,
+<span class="fc" id="L2172">                    Model.getExtensionMechanismsFactory()</span>
+<span class="fc" id="L2173">                    .buildTaggedValue(sTagName, sTagData[0]));</span>
+        } else {
+<span class="nc" id="L2175">            Model.getExtensionMechanismsHelper().setDataValues(tv, sTagData);</span>
+        }
+<span class="fc" id="L2177">    }</span>
+
+    /**
+     * Add the javadocs as a tagged value 'documentation' to the model element.
+     * All comment delimiters are removed prior to adding the comment.
+     * 
+     * Added 2001-10-05 STEFFEN ZSCHALER.
+     * 
+     * @param modelElement the model element to which to add the documentation
+     * @param sJavaDocs the documentation comments to add (&quot;&quot; or null if no java
+     *            docs)
+     */
+    private void addDocumentationTag(Object modelElement, String sJavaDocs) {
+<span class="pc bpc" id="L2190" title="1 of 4 branches missed.">        if ((sJavaDocs != null) &amp;&amp; (sJavaDocs.trim().length() &gt;= 5)) {</span>
+<span class="fc" id="L2191">            StringBuffer sbPureDocs = new StringBuffer(80);</span>
+<span class="fc" id="L2192">            String sCurrentTagName = null;</span>
+<span class="fc" id="L2193">            String[] sCurrentTagData = {</span>
+                null
+            };
+<span class="fc" id="L2196">            int nStartPos = 3; // skip the leading /**</span>
+<span class="fc" id="L2197">            boolean fHadAsterisk = true;</span>
+
+<span class="fc bfc" id="L2199" title="All 2 branches covered.">            while (nStartPos &lt; sJavaDocs.length()) {</span>
+<span class="pc bpc" id="L2200" title="2 of 3 branches missed.">                switch (sJavaDocs.charAt(nStartPos)) {</span>
+                case '*':
+<span class="nc" id="L2202">                    fHadAsterisk = true;</span>
+<span class="nc" id="L2203">                    nStartPos++;</span>
+<span class="nc" id="L2204">                    break;</span>
+                case ' ': // all white space, hope I didn't miss any ;-)
+                case '\t':
+                    // ignore white space before the first asterisk
+<span class="pc bpc" id="L2208" title="1 of 2 branches missed.">                    if (!fHadAsterisk) {</span>
+<span class="nc" id="L2209">                        nStartPos++;</span>
+<span class="nc" id="L2210">                        break;</span>
+                    }
+                default:
+                    // normal comment text or standard tag
+                    // check ahead for tag
+<span class="fc" id="L2215">                    int j = nStartPos;</span>
+<span class="pc bpc" id="L2216" title="1 of 2 branches missed.">                    while ((j &lt; sJavaDocs.length())</span>
+<span class="fc bfc" id="L2217" title="All 2 branches covered.">                            &amp;&amp; ((sJavaDocs.charAt(j) == ' ') || (sJavaDocs</span>
+<span class="pc bpc" id="L2218" title="1 of 2 branches missed.">                                    .charAt(j) == '\t'))) {</span>
+<span class="fc" id="L2219">                        j++;</span>
+                    }
+<span class="pc bpc" id="L2221" title="1 of 2 branches missed.">                    if (j &lt; sJavaDocs.length()) {</span>
+<span class="pc bpc" id="L2222" title="1 of 2 branches missed.">                        if (sJavaDocs.charAt(j) == '@') {</span>
+                            // if the last javadoc is on the last line
+                            // no new line will be found, causing an
+                            // indexoutofboundexception.
+<span class="nc" id="L2226">                            int lineEndPos = 0;</span>
+<span class="nc bnc" id="L2227" title="All 2 branches missed.">                            if (sJavaDocs.indexOf('\n', j) &lt; 0) {</span>
+<span class="nc" id="L2228">                                lineEndPos = sJavaDocs.length() - 2;</span>
+                            } else {
+<span class="nc" id="L2230">                                lineEndPos = sJavaDocs.indexOf('\n', j) + 1;</span>
+                            }
+<span class="nc" id="L2232">                            sbPureDocs.append(sJavaDocs</span>
+<span class="nc" id="L2233">                                    .substring(j, lineEndPos));</span>
+                            // start standard tag potentially add
+                            // current tag to set of tagged values...
+<span class="nc bnc" id="L2236" title="All 2 branches missed.">                            if (sCurrentTagName != null) {</span>
+<span class="nc" id="L2237">                                addJavadocTagContents(modelElement,</span>
+                                        sCurrentTagName, sCurrentTagData);
+                            }
+                            // open new tag
+<span class="nc" id="L2241">                            int nTemp = sJavaDocs.indexOf(' ', j + 1);</span>
+<span class="nc bnc" id="L2242" title="All 2 branches missed.">                            if (nTemp == -1) {</span>
+<span class="nc" id="L2243">                                nTemp = sJavaDocs.length() - 1;</span>
+                            }
+<span class="nc" id="L2245">                            sCurrentTagName = sJavaDocs.substring(j + 1, nTemp);</span>
+<span class="nc" id="L2246">                            int nTemp1 = sJavaDocs.indexOf('\n', ++nTemp);</span>
+<span class="nc bnc" id="L2247" title="All 2 branches missed.">                            if (nTemp1 == -1) {</span>
+<span class="nc" id="L2248">                                nTemp1 = sJavaDocs.length();</span>
+                            } else {
+<span class="nc" id="L2250">                                nTemp1++;</span>
+                            }
+<span class="nc" id="L2252">                            sCurrentTagData[0] = sJavaDocs.substring(nTemp,</span>
+                                    nTemp1);
+<span class="nc" id="L2254">                            nStartPos = nTemp1;</span>
+<span class="nc" id="L2255">                        } else {</span>
+                            // continue standard tag or comment text
+<span class="fc" id="L2257">                            int nTemp = sJavaDocs.indexOf('\n', nStartPos);</span>
+<span class="pc bpc" id="L2258" title="1 of 2 branches missed.">                            if (nTemp == -1) {</span>
+<span class="fc" id="L2259">                                nTemp = sJavaDocs.length();</span>
+                            } else {
+<span class="nc" id="L2261">                                nTemp++;</span>
+                            }
+<span class="pc bpc" id="L2263" title="1 of 2 branches missed.">                            if (sCurrentTagName != null) {</span>
+<span class="nc" id="L2264">                                sbPureDocs.append(sJavaDocs.substring(</span>
+                                        nStartPos, nTemp));
+<span class="nc" id="L2266">                                sCurrentTagData[0] += &quot; &quot;</span>
+<span class="nc" id="L2267">                                        + sJavaDocs.substring(nStartPos, nTemp);</span>
+                            } else {
+<span class="fc" id="L2269">                                sbPureDocs.append(sJavaDocs.substring(</span>
+                                        nStartPos, nTemp));
+                            }
+<span class="fc" id="L2272">                            nStartPos = nTemp;</span>
+                        }
+                    }
+<span class="fc" id="L2275">                    fHadAsterisk = false;</span>
+                }
+            }
+<span class="fc" id="L2278">            sJavaDocs = sbPureDocs.toString();</span>
+
+            /*
+             * After this, we have the documentation text, but there's still a
+             * trailing '/' left, either at the end of the actual comment text
+             * or at the end of the last tag.
+             */
+<span class="fc" id="L2285">            sJavaDocs = removeTrailingSlash(sJavaDocs);</span>
+
+            // handle last tag, if any (strip trailing slash there too)
+<span class="pc bpc" id="L2288" title="1 of 2 branches missed.">            if (sCurrentTagName != null) {</span>
+<span class="nc" id="L2289">                sCurrentTagData[0] = removeTrailingSlash(sCurrentTagData[0]);</span>
+<span class="nc" id="L2290">                addJavadocTagContents(modelElement, sCurrentTagName,</span>
+                        sCurrentTagData);
+            }
+
+            // Now store documentation text in a tagged value
+<span class="fc" id="L2295">            String[] javadocs = {</span>
+                sJavaDocs
+            };
+<span class="fc" id="L2298">            buildTaggedValue(modelElement, Argo.DOCUMENTATION_TAG, javadocs);</span>
+<span class="fc" id="L2299">            addStereotypes(modelElement);</span>
+        }
+<span class="fc" id="L2301">    }</span>
+
+    /*
+     * Remove a trailing slash, including the entire line if it's the only thing
+     * on the line.
+     */
+    private String removeTrailingSlash(String s) {
+<span class="pc bpc" id="L2308" title="1 of 2 branches missed.">        if (s.endsWith(&quot;\n/&quot;)) {</span>
+<span class="nc" id="L2309">            return s.substring(0, s.length() - 2);</span>
+<span class="pc bpc" id="L2310" title="1 of 2 branches missed.">        } else if (s.endsWith(&quot;*/&quot;)) {</span>
+            // need if end comment in the same line than comment
+<span class="fc" id="L2312">            return s.substring(0, s.length() - 2);</span>
+<span class="nc bnc" id="L2313" title="All 2 branches missed.">        } else if (s.endsWith(&quot;/&quot;)) {</span>
+<span class="nc" id="L2314">            return s.substring(0, s.length() - 1);</span>
+        } else {
+<span class="nc" id="L2316">            return s;</span>
+        }
+    }
+
+    /*
+     * Remove information that currently is not handled.
+     * TODO: Handle them instead.
+     */
+    private String stripVarargAndGenerics(String name) {
+<span class="pc bpc" id="L2325" title="1 of 2 branches missed.">        if (name != null) {</span>
+<span class="pc bpc" id="L2326" title="1 of 2 branches missed.">            if (name.endsWith(&quot;...&quot;)) {</span>
+                // handle vararg
+<span class="nc" id="L2328">                name = name.substring(0, name.length() - 3);</span>
+            }
+<span class="pc bpc" id="L2330" title="1 of 2 branches missed.">            if (name.endsWith(&quot;&gt;&quot;)) {</span>
+                // handle generics
+<span class="nc" id="L2332">                int i = name.length() - 2;</span>
+<span class="nc" id="L2333">                int cnt = 1;</span>
+<span class="nc bnc" id="L2334" title="All 4 branches missed.">                while (i &gt;= 0 &amp;&amp; cnt &gt; 0) {</span>
+<span class="nc bnc" id="L2335" title="All 2 branches missed.">                    if (name.charAt(i) == '&lt;') {</span>
+<span class="nc" id="L2336">                        cnt--;</span>
+<span class="nc bnc" id="L2337" title="All 2 branches missed.">                    } else if (name.charAt(i) == '&gt;') {</span>
+<span class="nc" id="L2338">                        cnt++;</span>
+                    }
+<span class="nc" id="L2340">                    i--;</span>
+                }
+<span class="nc" id="L2342">                name = name.substring(0, i + 1);</span>
+            }
+        }
+<span class="fc" id="L2345">        return name;</span>
+    }
+
+    /*
+     * If there is a tagged value named 'stereotype', make it a real stereotype
+     * and remove the tagged value. We allow multiple instances of this tagged
+     * value AND parse a single instance for multiple stereotypes
+     */
+    private void addStereotypes(Object modelElement) {
+        // TODO: What we do here is allowed for UML 1.x only!
+<span class="pc bpc" id="L2355" title="1 of 2 branches missed.">        if (Model.getFacade().getUmlVersion().charAt(0) == '1') {</span>
+<span class="fc" id="L2356">            Object tv = Model.getFacade()</span>
+<span class="fc" id="L2357">                    .getTaggedValue(modelElement, &quot;stereotype&quot;);</span>
+<span class="pc bpc" id="L2358" title="1 of 2 branches missed.">            if (tv != null) {</span>
+<span class="nc" id="L2359">                String stereo = Model.getFacade().getValueOfTag(tv);</span>
+<span class="nc bnc" id="L2360" title="All 4 branches missed.">                if (stereo != null &amp;&amp; stereo.length() &gt; 0) {</span>
+<span class="nc" id="L2361">                    StringTokenizer st = new StringTokenizer(stereo, &quot;, &quot;);</span>
+<span class="nc bnc" id="L2362" title="All 2 branches missed.">                    while (st.hasMoreTokens()) {</span>
+<span class="nc" id="L2363">                        Model.getCoreHelper().addStereotype(modelElement,</span>
+<span class="nc" id="L2364">                                getUML1Stereotype(st.nextToken().trim()));</span>
+                    }
+<span class="nc" id="L2366">                    ProjectManager.getManager().updateRoots();</span>
+                }
+<span class="nc" id="L2368">                Model.getUmlFactory().delete(tv);</span>
+            }
+        }
+<span class="fc" id="L2371">    }</span>
+
+    /**
+     * Manage collection of parsed method calls. Used for reverse engineering of
+     * interactions.
+     */
+    /**
+     * Add a parsed method call to the collection of method calls.
+     * 
+     * @param methodName The method name called.
+     */
+    public void addCall(String methodName) {
+<span class="nc" id="L2383">        methodCalls.add(methodName);</span>
+<span class="nc" id="L2384">    }</span>
+
+    /**
+     * Get collection of method calls.
+     * 
+     * @return list containing collected method calls
+     */
+    public synchronized List&lt;String&gt; getMethodCalls() {
+<span class="nc" id="L2392">        return methodCalls;</span>
+    }
+
+    /**
+     * Clear collected method calls.
+     */
+    public void clearMethodCalls() {
+<span class="nc" id="L2399">        methodCalls.clear();</span>
+<span class="nc" id="L2400">    }</span>
+
+    /**
+     * Add a local variable declaration to the list of variables.
+     * 
+     * @param type type of declared variable
+     * @param name name of declared variable
+     */
+    public void addLocalVariableDeclaration(String type, String name) {
+<span class="nc" id="L2409">        localVariables.put(name, type);</span>
+<span class="nc" id="L2410">    }</span>
+
+    /**
+     * Return the collected set of local variable declarations.
+     *
+     * This is read from
+     * {@link org.argouml.language.java.ui.RESequenceDiagramDialog#parseBody()}
+     *
+     * 
+     * @return hash table containing all local variable declarations.
+     */
+    public Map&lt;String, String&gt; getLocalVariableDeclarations() {
+<span class="nc" id="L2422">        return Collections.unmodifiableMap(localVariables);</span>
+    }
+
+    /**
+     * Clear the set of local variable declarations.
+     */
+    public void clearLocalVariableDeclarations() {
+<span class="nc" id="L2429">        localVariables.clear();</span>
+<span class="nc" id="L2430">    }</span>
+
+    /**
+     * Get the elements which were created while reverse engineering this file.
+     * 
+     * @return the collection of elements
+     */
+    public Collection&lt;Object&gt; getNewElements() {
+<span class="nc" id="L2438">        return newElements;</span>
+    }
+
+    /**
+     * Set flag that controls name generation. Artificial names are generated by
+     * default for historical reasons, but in most cases they are just clutter.
+     * 
+     * @param generateNamesFlag true to generate artificial names of the form
+     *            &quot;From-&gt;To&quot; for Associations, Dependencies, etc.
+     */
+    public void setGenerateNames(boolean generateNamesFlag) {
+<span class="nc" id="L2449">        generateNames = generateNamesFlag;</span>
+<span class="nc" id="L2450">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

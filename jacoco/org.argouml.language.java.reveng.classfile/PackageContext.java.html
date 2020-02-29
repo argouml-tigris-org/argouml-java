@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PackageContext.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">argo_java</a> &gt; <a href="index.source.html" class="el_package">org.argouml.language.java.reveng.classfile</a> &gt; <span class="el_source">PackageContext.java</span></div><h1>PackageContext.java</h1><pre class="source lang-java linenums">/* $Id$
+ *****************************************************************************
+ * Copyright (c) 2009-2013 Contributors - see below
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    thn
+ *****************************************************************************
+ *
+ * Some portions of this file was previously release using the BSD License:
+ */
+
+// Copyright (c) 2003-2007 The Regents of the University of California. All
+// Rights Reserved. Permission to use, copy, modify, and distribute this
+// software and its documentation without fee, and without a written
+// agreement is hereby granted, provided that the above copyright notice
+// and this paragraph appear in all copies.  This software program and
+// documentation are copyrighted by The Regents of the University of
+// California. The software program and documentation are supplied &quot;AS
+// IS&quot;, without any accompanying services from The Regents. The Regents
+// does not warrant that the operation of the program will be
+// uninterrupted or error-free. The end-user understands that the program
+// was developed for research purposes and is advised not to rely
+// exclusively on the program for any reason.  IN NO EVENT SHALL THE
+// UNIVERSITY OF CALIFORNIA BE LIABLE TO ANY PARTY FOR DIRECT, INDIRECT,
+// SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES, INCLUDING LOST PROFITS,
+// ARISING OUT OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF
+// THE UNIVERSITY OF CALIFORNIA HAS BEEN ADVISED OF THE POSSIBILITY OF
+// SUCH DAMAGE. THE UNIVERSITY OF CALIFORNIA SPECIFICALLY DISCLAIMS ANY
+// WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+// MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE SOFTWARE
+// PROVIDED HEREUNDER IS ON AN &quot;AS IS&quot; BASIS, AND THE UNIVERSITY OF
+// CALIFORNIA HAS NO OBLIGATIONS TO PROVIDE MAINTENANCE, SUPPORT,
+// UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
+
+package org.argouml.language.java.reveng.classfile;
+
+import org.argouml.model.Facade;
+import org.argouml.model.Model;
+
+/**
+ * This context is a package.
+ *
+ * @author Marcus Andersson
+ */
+// TODO: This file is similar to the ../PackageContext.java file.
+// The difference seems to be that this file doesn't handle profiles.
+// I hope this is deliberate. /Linus 2013-01-01.
+class PackageContext extends Context {
+
+    /** The package this context represents. */
+    private Object mPackage;
+
+    /** The java style name of the package. */
+    private String javaName;
+
+    /**
+       Create a new context from a package.
+
+       @param base Based on this context.
+       @param thePackage Represents this package.
+    */
+    public PackageContext(Context base, Object thePackage) {
+<span class="nc" id="L67">	super(base);</span>
+<span class="nc" id="L68">	this.mPackage = thePackage;</span>
+<span class="nc" id="L69">	javaName = getJavaName(thePackage);</span>
+<span class="nc" id="L70">    }</span>
+
+    public Object getInterface(String name)
+	throws ClassifierNotFoundException {
+<span class="nc" id="L74">        return get(name, true);</span>
+    }
+
+    /**
+     * Get a classifier from the model. If it is not in the model, try
+     * to find it with the CLASSPATH. If found, in the classpath, the
+     * classifier is created and added to the model. If not found at
+     * all, a datatype is created and added to the model.
+     *
+     * @param name The name of the classifier to find.
+     * @return Found classifier.
+     * @throws ClassifierNotFoundException if classifier couldn't be located
+     */
+    public Object get(String name)
+        throws ClassifierNotFoundException {
+<span class="nc" id="L89">        return get(name, false);</span>
+    }
+
+    /**
+     * Get a classifier from the model. If it is not in the model, try
+     * to find it with the CLASSPATH. If found, in the classpath, the
+     * classifier is created and added to the model. If not found at
+     * all, a datatype is created and added to the model.
+     *
+     * @param name The name of the classifier to find.
+     * @return Found classifier.
+     * @throws ClassifierNotFoundException if classifier couldn't be located
+     */
+    public Object get(String name, boolean interfacesOnly)
+	throws ClassifierNotFoundException {
+	// Search in model
+<span class="nc" id="L105">	Object mClassifier = Model.getFacade().lookupIn(mPackage, name);</span>
+
+<span class="nc bnc" id="L107" title="All 2 branches missed.">	if (mClassifier == null) {</span>
+	    Class classifier;
+<span class="nc" id="L109">	    String clazzName = name;</span>
+	    // Special case for model
+<span class="nc bnc" id="L111" title="All 2 branches missed.">	    if (!Model.getFacade().isAModel(mPackage)) {</span>
+<span class="nc" id="L112">	        clazzName = javaName + &quot;.&quot; + name;</span>
+	    }
+<span class="nc" id="L114">	    classifier = findClass(clazzName, interfacesOnly);</span>
+<span class="nc bnc" id="L115" title="All 2 branches missed.">	    if (classifier != null) {</span>
+<span class="nc bnc" id="L116" title="All 2 branches missed.">	        if (classifier.isInterface()) {</span>
+<span class="nc" id="L117">                    mClassifier = Model.getCoreFactory().buildInterface(name,</span>
+                            mPackage);
+                } else {
+<span class="nc" id="L120">                    mClassifier = Model.getCoreFactory().buildClass(name,</span>
+                            mPackage);
+                }
+<span class="nc bnc" id="L123" title="All 2 branches missed.">                if (mClassifier != null) {</span>
+<span class="nc" id="L124">                    setGeneratedTag(mClassifier);</span>
+                }
+	    }
+	}
+<span class="nc bnc" id="L128" title="All 2 branches missed.">	if (mClassifier == null) {</span>
+	    // Continue the search through the rest of the model
+<span class="nc bnc" id="L130" title="All 2 branches missed.">	    if (getContext() != null) {</span>
+<span class="nc" id="L131">		mClassifier = getContext().get(name, interfacesOnly);</span>
+	    } else {
+		// Check for java data types
+<span class="nc bnc" id="L134" title="All 2 branches missed.">	        if (!interfacesOnly</span>
+<span class="nc bnc" id="L135" title="All 2 branches missed.">	                &amp;&amp; name.equals(&quot;int&quot;)</span>
+<span class="nc bnc" id="L136" title="All 2 branches missed.">	                || name.equals(&quot;long&quot;)</span>
+<span class="nc bnc" id="L137" title="All 2 branches missed.">	                || name.equals(&quot;short&quot;)</span>
+<span class="nc bnc" id="L138" title="All 2 branches missed.">	                || name.equals(&quot;byte&quot;)</span>
+<span class="nc bnc" id="L139" title="All 2 branches missed.">	                || name.equals(&quot;char&quot;)</span>
+<span class="nc bnc" id="L140" title="All 2 branches missed.">	                || name.equals(&quot;float&quot;)</span>
+<span class="nc bnc" id="L141" title="All 2 branches missed.">	                || name.equals(&quot;double&quot;)</span>
+<span class="nc bnc" id="L142" title="All 2 branches missed.">	                || name.equals(&quot;boolean&quot;)</span>
+<span class="nc bnc" id="L143" title="All 2 branches missed.">	                || name.equals(&quot;void&quot;)</span>
+	                // How do I represent arrays in UML?
+<span class="nc bnc" id="L145" title="All 2 branches missed.">	                || name.indexOf(&quot;[]&quot;) != -1) {</span>
+		    mClassifier =
+<span class="nc" id="L147">			Model.getCoreFactory()</span>
+<span class="nc" id="L148">			    .buildDataType(name, mPackage);</span>
+		}
+	    }
+	}
+<span class="nc bnc" id="L152" title="All 2 branches missed.">	if (mClassifier == null) {</span>
+<span class="nc" id="L153">	    throw new ClassifierNotFoundException(name);</span>
+	}
+
+<span class="nc" id="L156">	return mClassifier;</span>
+    }
+
+    // Historically this used the value &quot;yes&quot;, but all existing
+    // code only checks for the presence of the tag, not its value
+    private static final String GENERATED_TAG_VALUE = &quot;true&quot;;
+
+    /**
+     * Set the tagged value which indicates this element was
+     * generated as a result of reverse engineering.
+     *
+     * @param element the ModelElement to set the tag on
+     */
+    private void setGeneratedTag(Object element) {
+        Object tv =
+<span class="nc" id="L171">                Model.getFacade().getTaggedValue(element, Facade.GENERATED_TAG);</span>
+<span class="nc bnc" id="L172" title="All 2 branches missed.">        if (tv == null) {</span>
+<span class="nc" id="L173">            Model.getExtensionMechanismsHelper().addTaggedValue(</span>
+                    element,
+<span class="nc" id="L175">                    Model.getExtensionMechanismsFactory().buildTaggedValue(</span>
+                            Facade.GENERATED_TAG, GENERATED_TAG_VALUE));
+        } else {
+<span class="nc" id="L178">            Model.getExtensionMechanismsHelper().setValueOfTag(</span>
+                    tv, GENERATED_TAG_VALUE);
+        }
+<span class="nc" id="L181">    }</span>
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

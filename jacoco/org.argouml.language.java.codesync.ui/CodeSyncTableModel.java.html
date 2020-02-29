@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CodeSyncTableModel.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">argo_java</a> &gt; <a href="index.source.html" class="el_package">org.argouml.language.java.codesync.ui</a> &gt; <span class="el_source">CodeSyncTableModel.java</span></div><h1>CodeSyncTableModel.java</h1><pre class="source lang-java linenums">/* $Id$
+ *******************************************************************************
+ * Copyright (c) 2014 Contributors - see below
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Thomas Neustupny
+ *******************************************************************************
+ */
+
+package org.argouml.language.java.codesync.ui;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import javax.swing.table.AbstractTableModel;
+
+import org.argouml.kernel.Project;
+import org.argouml.kernel.ProjectManager;
+import org.argouml.model.Model;
+import org.argouml.uml.generator.GeneratorManager;
+
+/**
+ * This class implements the table model for the code sync tab. The table
+ * mainly consists of two lists. The left list contains all model elements
+ * marked for code generation, whereas the right list contains the
+ * corresponding files. Other data in this model is for the maintenance of the
+ * synchronization state.
+ *
+ * @author Thomas Neustupny
+ */
+public class CodeSyncTableModel extends AbstractTableModel {
+    
+<span class="nc" id="L38">    List&lt;Object&gt; classes = new ArrayList&lt;Object&gt;();</span>
+
+    /**
+     * Generated serial version UID.
+     */
+    private static final long serialVersionUID = -3746764405327100427L;
+
+<span class="nc" id="L45">    public CodeSyncTableModel() {</span>
+<span class="nc" id="L46">        classes.clear();</span>
+<span class="nc" id="L47">        Project p = ProjectManager.getManager().getCurrentProject();</span>
+<span class="nc bnc" id="L48" title="All 2 branches missed.">        if (p != null) {</span>
+<span class="nc bnc" id="L49" title="All 2 branches missed.">            for (Object ns : p.getUserDefinedModelList()) {</span>
+                //Model.getPump().addModelEventListener(this, ns);
+<span class="nc bnc" id="L51" title="All 2 branches missed.">                while (Model.getFacade().getNamespace(ns) != null) {</span>
+<span class="nc" id="L52">                    ns = Model.getFacade().getNamespace(ns);</span>
+                }
+                Collection elems =
+<span class="nc" id="L55">                    Model.getModelManagementHelper()</span>
+<span class="nc" id="L56">                        .getAllModelElementsOfKind(</span>
+                                ns,
+<span class="nc" id="L58">                                Model.getMetaTypes().getClassifier());</span>
+<span class="nc bnc" id="L59" title="All 2 branches missed.">                for (Object cls : elems) {</span>
+<span class="nc bnc" id="L60" title="All 2 branches missed.">                    if (isCodeRelevantClassifier(cls)) {</span>
+<span class="nc" id="L61">                        classes.add(cls);</span>
+                    }
+<span class="nc" id="L63">                }</span>
+<span class="nc" id="L64">            }</span>
+        }
+<span class="nc" id="L66">    }</span>
+
+    @Override
+    public int getRowCount() {
+<span class="nc" id="L70">        return classes.size();</span>
+    }
+
+    @Override
+    public int getColumnCount() {
+<span class="nc" id="L75">        return 1;</span>
+    }
+
+    @Override
+    public Object getValueAt(int rowIndex, int columnIndex) {
+<span class="nc" id="L80">        return classes.get(rowIndex);</span>
+    }
+
+    /**
+     * Checks if a given classifier is relevant for code generation.
+     * TODO: move this as a static class to GeneratorManager.
+     * 
+     * @param cls the classifier that is candidate for generation
+     * @return true if the candidate is sound
+     */
+    private boolean isCodeRelevantClassifier(Object cls) {
+<span class="nc bnc" id="L91" title="All 2 branches missed.">        if (cls == null) {</span>
+<span class="nc" id="L92">            return false;</span>
+        }
+<span class="nc bnc" id="L94" title="All 2 branches missed.">        if (!Model.getFacade().isAClass(cls)</span>
+<span class="nc bnc" id="L95" title="All 2 branches missed.">                &amp;&amp; !Model.getFacade().isAInterface(cls)) {</span>
+<span class="nc" id="L96">            return false;</span>
+        }
+<span class="nc" id="L98">        String path = GeneratorManager.getCodePath(cls);</span>
+<span class="nc" id="L99">        String name = Model.getFacade().getName(cls);</span>
+<span class="nc bnc" id="L100" title="All 2 branches missed.">        if (name == null</span>
+<span class="nc bnc" id="L101" title="All 2 branches missed.">            || name.length() == 0</span>
+<span class="nc bnc" id="L102" title="All 2 branches missed.">            || Character.isDigit(name.charAt(0))) {</span>
+<span class="nc" id="L103">            return false;</span>
+        }
+<span class="nc bnc" id="L105" title="All 2 branches missed.">        if (path != null) {</span>
+<span class="nc bnc" id="L106" title="All 2 branches missed.">            return (path.length() &gt; 0);</span>
+        }
+<span class="nc" id="L108">        Object parent = Model.getFacade().getNamespace(cls);</span>
+<span class="nc bnc" id="L109" title="All 2 branches missed.">        while (parent != null) {</span>
+<span class="nc" id="L110">            path = GeneratorManager.getCodePath(parent);</span>
+<span class="nc bnc" id="L111" title="All 2 branches missed.">            if (path != null) {</span>
+<span class="nc bnc" id="L112" title="All 2 branches missed.">                return (path.length() &gt; 0);</span>
+            }
+<span class="nc" id="L114">            parent = Model.getFacade().getNamespace(parent);</span>
+        }
+<span class="nc" id="L116">        return false;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CodeSyncJPanel.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">argo_java</a> &gt; <a href="index.source.html" class="el_package">org.argouml.language.java.codesync.ui</a> &gt; <span class="el_source">CodeSyncJPanel.java</span></div><h1>CodeSyncJPanel.java</h1><pre class="source lang-java linenums">/* $Id$
+ *******************************************************************************
+ * Copyright (c) 2014 Contributors - see below
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Thomas Neustupny
+ *******************************************************************************
+ */
+
+package org.argouml.language.java.codesync.ui;
+
+import java.awt.BorderLayout;
+import java.awt.Font;
+import java.util.logging.Logger;
+
+import javax.swing.JLabel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+
+import org.argouml.application.api.AbstractArgoJPanel;
+import org.argouml.ui.LookAndFeelMgr;
+
+public class CodeSyncJPanel extends AbstractArgoJPanel {
+
+<span class="nc" id="L29">    private static final Logger LOG =</span>
+<span class="nc" id="L30">        Logger.getLogger(CodeSyncJPanel.class.getName());</span>
+
+<span class="nc" id="L32">    private JTable table = new JTable(10, 1);</span>
+
+    /**
+     * Generated serial version UID.
+     */
+    private static final long serialVersionUID = -3670136920429109101L;
+
+    public CodeSyncJPanel() {
+<span class="nc" id="L40">        super(&quot;java.codesync.tabname&quot;);</span>
+<span class="nc" id="L41">        table.setModel(new CodeSyncTableModel());</span>
+<span class="nc" id="L42">        table.setRowSelectionAllowed(false);</span>
+
+<span class="nc" id="L44">        JScrollPane sp = new JScrollPane(table);</span>
+<span class="nc" id="L45">        Font labelFont = LookAndFeelMgr.getInstance().getStandardFont();</span>
+<span class="nc" id="L46">        table.setFont(labelFont);</span>
+
+<span class="nc" id="L48">        JLabel titleLabel = new JLabel(&quot;Bla&quot;);</span>
+<span class="nc" id="L49">        setLayout(new BorderLayout());</span>
+<span class="nc" id="L50">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

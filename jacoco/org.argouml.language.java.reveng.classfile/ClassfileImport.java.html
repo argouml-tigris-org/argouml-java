@@ -1,0 +1,480 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ClassfileImport.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">argo_java</a> &gt; <a href="index.source.html" class="el_package">org.argouml.language.java.reveng.classfile</a> &gt; <span class="el_source">ClassfileImport.java</span></div><h1>ClassfileImport.java</h1><pre class="source lang-java linenums">/* $Id$
+ *****************************************************************************
+ * Copyright (c) 2009 Contributors - see below
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    thn
+ *****************************************************************************
+ *
+ * Some portions of this file was previously release using the BSD License:
+ */
+
+// Copyright (c) 1996-2008 The Regents of the University of California. All
+// Rights Reserved. Permission to use, copy, modify, and distribute this
+// software and its documentation without fee, and without a written
+// agreement is hereby granted, provided that the above copyright notice
+// and this paragraph appear in all copies.  This software program and
+// documentation are copyrighted by The Regents of the University of
+// California. The software program and documentation are supplied &quot;AS
+// IS&quot;, without any accompanying services from The Regents. The Regents
+// does not warrant that the operation of the program will be
+// uninterrupted or error-free. The end-user understands that the program
+// was developed for research purposes and is advised not to rely
+// exclusively on the program for any reason.  IN NO EVENT SHALL THE
+// UNIVERSITY OF CALIFORNIA BE LIABLE TO ANY PARTY FOR DIRECT, INDIRECT,
+// SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES, INCLUDING LOST PROFITS,
+// ARISING OUT OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF
+// THE UNIVERSITY OF CALIFORNIA HAS BEEN ADVISED OF THE POSSIBILITY OF
+// SUCH DAMAGE. THE UNIVERSITY OF CALIFORNIA SPECIFICALLY DISCLAIMS ANY
+// WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+// MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE SOFTWARE
+// PROVIDED HEREUNDER IS ON AN &quot;AS IS&quot; BASIS, AND THE UNIVERSITY OF
+// CALIFORNIA HAS NO OBLIGATIONS TO PROVIDE MAINTENANCE, SUPPORT,
+// UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
+
+package org.argouml.language.java.reveng.classfile;
+
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+import java.util.zip.ZipEntry;
+
+import org.argouml.kernel.Project;
+import org.argouml.language.java.JavaModuleGlobals;
+import org.argouml.language.java.reveng.JavaImportSettings;
+import org.argouml.moduleloader.ModuleInterface;
+import org.argouml.profile.Profile;
+import org.argouml.taskmgmt.ProgressMonitor;
+import org.argouml.uml.reveng.FileImportUtils;
+import org.argouml.uml.reveng.ImportInterface;
+import org.argouml.uml.reveng.ImportSettings;
+import org.argouml.uml.reveng.ImporterManager;
+import org.argouml.uml.reveng.SettingsTypes;
+import org.argouml.util.SuffixFilter;
+
+import antlr.ANTLRException;
+import antlr.RecognitionException;
+import antlr.TokenStreamException;
+
+
+/**
+ * This is the main class for the classfile import.  It shares some logic with
+ * the Java source importer including the Modeler and the settings logic.
+ *
+ * @author Andreas Rueckert &lt;a_rueckert@gmx.net&gt;
+ */
+<span class="nc" id="L81">public class ClassfileImport implements ImportInterface {</span>
+
+    /** The files that needs a second RE pass. */
+    private Collection secondPassFiles;
+
+    /**
+     * Java profile model.
+     */
+<span class="nc" id="L89">    private Profile javaProfile = null;</span>
+    
+    /**
+     * New model elements that were added
+     */
+    private Collection newElements;
+
+    private int fileCount;
+
+    /*
+     * @see org.argouml.uml.reveng.ImportInterface#parseFiles(org.argouml.kernel.Project, java.util.Collection, org.argouml.uml.reveng.ImportSettings, org.argouml.application.api.ProgressMonitor)
+     */
+    public Collection parseFiles(Project p, Collection&lt;File&gt; files,
+            ImportSettings settings, ProgressMonitor monitor)
+        throws ImportException {
+
+<span class="nc" id="L105">        secondPassFiles = new ArrayList();</span>
+<span class="nc" id="L106">        newElements = new HashSet();</span>
+
+        // get the Java profile from project, if available
+<span class="nc" id="L109">        javaProfile = getJavaProfile(p);</span>
+
+<span class="nc" id="L111">        monitor.setMaximumProgress(countFiles(files));</span>
+<span class="nc bnc" id="L112" title="All 2 branches missed.">        for (File file : files) {</span>
+<span class="nc" id="L113">            monitor.updateMainTask(&quot;Parsing file: &quot; + file);</span>
+<span class="nc bnc" id="L114" title="All 2 branches missed.">            if (monitor.isCanceled()) {</span>
+<span class="nc" id="L115">                break;</span>
+            }
+<span class="nc" id="L117">            processFile(p, (File) file, monitor);</span>
+<span class="nc" id="L118">            monitor.updateProgress(fileCount++);</span>
+<span class="nc" id="L119">        }</span>
+
+<span class="nc bnc" id="L121" title="All 4 branches missed.">        if (count2ndPassFiles(secondPassFiles) &gt; 0 &amp;&amp; !monitor.isCanceled()) {</span>
+
+            // Process all the files, that need a second pass.
+<span class="nc bnc" id="L124" title="All 2 branches missed.">            for (Object next : secondPassFiles) {</span>
+                try {
+<span class="nc bnc" id="L126" title="All 2 branches missed.">                    if (next instanceof Collection) {</span>
+<span class="nc" id="L127">                        do2ndJarPass(p, (Collection) next, monitor);</span>
+                    } else {
+<span class="nc" id="L129">                        File nextFile = (File) next;</span>
+<span class="nc" id="L130">                        String fileName = nextFile.getName();</span>
+                        FileInputStream fis;
+                        try {
+<span class="nc" id="L133">                            fis = new FileInputStream(nextFile);</span>
+<span class="nc" id="L134">                        } catch (FileNotFoundException e) {</span>
+<span class="nc" id="L135">                            throw new ImportException(e);</span>
+<span class="nc" id="L136">                        }</span>
+                        // TODO: I18N
+<span class="nc" id="L138">                        monitor.updateSubTask(&quot;Parsing class 2nd pass - &quot;</span>
+                                + fileName);
+<span class="nc bnc" id="L140" title="All 2 branches missed.">                        if (monitor.isCanceled()) {</span>
+<span class="nc" id="L141">                            break;</span>
+                        }
+<span class="nc" id="L143">                        parseFile(p, fis, fileName);</span>
+<span class="nc" id="L144">                        monitor.updateProgress(fileCount++);</span>
+                    }
+<span class="nc" id="L146">                } catch (ANTLRException e) {</span>
+<span class="nc" id="L147">                    throw new ImportException(e);</span>
+<span class="nc" id="L148">                } catch (IOException e) {</span>
+<span class="nc" id="L149">                    throw new ImportException(e);</span>
+<span class="nc" id="L150">                }</span>
+<span class="nc" id="L151">            }</span>
+        }
+<span class="nc" id="L153">        return newElements;</span>
+    }
+
+
+    /**
+     * Count all class files, including ones inside JAR files.
+     *
+     * @return The number of files to process
+     */
+    private int countFiles(Collection&lt;File&gt; files) {
+
+<span class="nc" id="L164">        int total = 0;</span>
+<span class="nc bnc" id="L165" title="All 2 branches missed.">        for (File f : files) {</span>
+<span class="nc bnc" id="L166" title="All 2 branches missed.">            if (f.getName().endsWith(&quot;.jar&quot;)) {</span>
+                try {
+<span class="nc" id="L168">                    for (Enumeration&lt;JarEntry&gt; e = (new JarFile(f)).entries();</span>
+<span class="nc bnc" id="L169" title="All 2 branches missed.">                            e.hasMoreElements();) {</span>
+<span class="nc" id="L170">                        ZipEntry entry = e.nextElement();</span>
+<span class="nc bnc" id="L171" title="All 2 branches missed.">                        if (!entry.isDirectory()</span>
+<span class="nc bnc" id="L172" title="All 2 branches missed.">                                &amp;&amp; entry.getName().endsWith(&quot;.class&quot;)) {</span>
+<span class="nc" id="L173">                            total++;</span>
+                        }
+<span class="nc" id="L175">                    }</span>
+<span class="nc" id="L176">                } catch (IOException e) {</span>
+                    // Just count it as a normal file
+<span class="nc" id="L178">                    total++;</span>
+<span class="nc" id="L179">                }</span>
+            } else {
+<span class="nc" id="L181">                total++;</span>
+            }
+<span class="nc" id="L183">        }</span>
+<span class="nc" id="L184">        return total;</span>
+    }
+
+
+    /**
+     * Count the files in the 2nd pass buffer. We can't just use size() because
+     * the collection can contain nested collections which need to be counted
+     * independently.  In a nested collection, the first entry is the name of
+     * the JAR file, so we use size()-1.
+     *
+     * @param buffer
+     *            The buffer with the files for the 2nd pass.
+     */
+    private int count2ndPassFiles(Collection buffer) {
+<span class="nc" id="L198">	int nfiles = 0;</span>
+
+<span class="nc bnc" id="L200" title="All 2 branches missed.">	for (Iterator i = secondPassFiles.iterator(); i.hasNext();) {</span>
+<span class="nc" id="L201">	    Object next = i.next();</span>
+<span class="nc bnc" id="L202" title="All 2 branches missed.">	    nfiles += ((next instanceof Collection)</span>
+<span class="nc" id="L203">                ? ((Collection) next).size() - 1 : 1);</span>
+<span class="nc" id="L204">	}</span>
+<span class="nc" id="L205">	return nfiles;</span>
+    }
+
+    /**
+     * The main method for all parsing actions. It calls the
+     * actual parser methods depending on the type of the
+     * file.
+     *
+     * @param f The file or directory, we want to parse.
+     * @throws ImportException containing nested exception with original error
+     */
+    private void processFile(Project p, File f, ProgressMonitor monitor)
+        throws ImportException {
+
+<span class="nc" id="L219">        monitor.updateMainTask(&quot;Importing &quot; + f.getName());</span>
+        // Is this file a Jarfile?
+<span class="nc bnc" id="L221" title="All 2 branches missed.">        if ( f.getName().endsWith(&quot;.jar&quot;)) { //$NON-NLS-1$</span>
+<span class="nc" id="L222">            processJarFile(p, f, monitor);</span>
+        } else {
+<span class="nc" id="L224">            String fileName = f.getName();</span>
+            try {    // Try to parse this file.
+                InputStream is;
+                try {
+<span class="nc" id="L228">                    is = new FileInputStream(f);</span>
+<span class="nc" id="L229">                } catch (FileNotFoundException e) {</span>
+<span class="nc" id="L230">                    throw new ImportException(e);</span>
+<span class="nc" id="L231">                }</span>
+<span class="nc" id="L232">                parseFile(p, is, fileName);</span>
+<span class="nc" id="L233">            } catch (ANTLRException e) {</span>
+                // TODO: Is this still needed/appropriate? It looks like
+                // Modeller has been changed so that it no longer throws
+                // exceptions... - tfm
+<span class="nc" id="L237">                secondPassFiles.add(f);</span>
+<span class="nc" id="L238">            }</span>
+        }
+
+<span class="nc" id="L241">    }</span>
+
+
+    /**
+     * Process a Jar file, that contains classfiles.
+     *
+     * @param f The Jar file.
+     */
+    private void processJarFile(Project p, File f, ProgressMonitor monitor)
+        throws ImportException {
+
+        JarFile jarfile;
+        try {
+<span class="nc" id="L254">            jarfile = new JarFile(f);</span>
+<span class="nc" id="L255">        } catch (IOException e) {</span>
+<span class="nc" id="L256">            throw new ImportException(&quot;IO exception opening Jar file: &quot; + f, e);</span>
+<span class="nc" id="L257">        }</span>
+
+	// A second pass buffer just for this jar.
+<span class="nc" id="L260">	Collection jarSecondPassFiles = new ArrayList();</span>
+
+<span class="nc" id="L262">	for ( Enumeration&lt;JarEntry&gt; e = jarfile.entries();</span>
+<span class="nc bnc" id="L263" title="All 2 branches missed.">	        e.hasMoreElements(); ) {</span>
+<span class="nc" id="L264">	    JarEntry entry = e.nextElement();</span>
+<span class="nc" id="L265">	    String entryName = entry.getName();</span>
+<span class="nc bnc" id="L266" title="All 2 branches missed.">	    if ( !entry.isDirectory()</span>
+<span class="nc bnc" id="L267" title="All 2 branches missed.">                    &amp;&amp; entryName.endsWith(&quot;.class&quot;)) { //$NON-NLS-1$</span>
+		try {
+                    InputStream is;
+                    try {
+<span class="nc" id="L271">                        is = jarfile.getInputStream(entry);</span>
+<span class="nc" id="L272">                    } catch (IOException e1) {</span>
+                        // If this happens, something bad is going on ...
+<span class="nc" id="L274">                        throw new ImportException(e1);</span>
+<span class="nc" id="L275">                    }</span>
+                    // TODO: I18N
+<span class="nc" id="L277">                    monitor.updateSubTask(&quot;Parsing class - &quot; + entryName);</span>
+<span class="nc bnc" id="L278" title="All 2 branches missed.">                    if (monitor.isCanceled()) {</span>
+<span class="nc" id="L279">                        break;</span>
+                    }
+<span class="nc" id="L281">		    parseFile(p, is, entryName);</span>
+<span class="nc" id="L282">		    monitor.updateProgress(fileCount++);</span>
+<span class="nc" id="L283">		} catch (ANTLRException e1) {</span>
+<span class="nc bnc" id="L284" title="All 2 branches missed.">		    if (jarSecondPassFiles.isEmpty()) {</span>
+		        // If there are no files tagged for a second pass,
+		        // add the jar file as the 1st element.
+<span class="nc" id="L287">			jarSecondPassFiles.add(f);</span>
+		    }
+		    // Store the entry to be parsed a 2nd time.
+<span class="nc" id="L290">		    jarSecondPassFiles.add(entryName);</span>
+<span class="nc" id="L291">		}</span>
+            }
+<span class="nc" id="L293">	}</span>
+
+	// If there are files to parse again, add the jar to the 2nd pass.
+<span class="nc bnc" id="L296" title="All 2 branches missed.">	if ( !jarSecondPassFiles.isEmpty()) {</span>
+<span class="nc" id="L297">	    secondPassFiles.add(jarSecondPassFiles);</span>
+        }
+
+        try {
+<span class="nc" id="L301">            jarfile.close();</span>
+<span class="nc" id="L302">        } catch (IOException e) {</span>
+<span class="nc" id="L303">            throw new ImportException(&quot;IO exception closing Jar file: &quot; + f, e);</span>
+<span class="nc" id="L304">        }</span>
+<span class="nc" id="L305">    }</span>
+
+    /**
+     * Do a 2nd pass on a Jar file.
+     *
+     * @param secondPassBuffer A buffer, that holds the jarfile and the names of
+     *                the entries to parse again.
+     * @throws TokenStreamException
+     * @throws RecognitionException
+     */
+    private void do2ndJarPass(Project p, Collection secondPassBuffer,
+            ProgressMonitor monitor) throws IOException, RecognitionException,
+        TokenStreamException {
+<span class="nc bnc" id="L318" title="All 2 branches missed.">        if (!secondPassBuffer.isEmpty()) {</span>
+<span class="nc" id="L319">	    Iterator iterator = secondPassBuffer.iterator();</span>
+<span class="nc" id="L320">	    JarFile jarfile = new JarFile( (File) iterator.next());</span>
+
+<span class="nc bnc" id="L322" title="All 2 branches missed.">	    while (iterator.hasNext()) {</span>
+<span class="nc" id="L323">		String filename = (String) iterator.next();</span>
+		// TODO: I18N
+<span class="nc" id="L325">                monitor.updateSubTask(&quot;Parsing class 2nd pass - &quot; + filename);</span>
+<span class="nc bnc" id="L326" title="All 2 branches missed.">                if (monitor.isCanceled()) {</span>
+<span class="nc" id="L327">                    break;</span>
+                }
+<span class="nc" id="L329">		parseFile(</span>
+		        p,
+<span class="nc" id="L331">		        jarfile.getInputStream(jarfile.getEntry(filename)),</span>
+		        filename);
+<span class="nc" id="L333">		monitor.updateProgress(fileCount++);</span>
+<span class="nc" id="L334">	    }</span>
+<span class="nc" id="L335">	    jarfile.close();</span>
+	}
+<span class="nc" id="L337">    }</span>
+
+    /**
+     * This method parses 1 Java classfile.
+     *
+     * @param p The current project.
+     * @param is The inputStream for the file to parse.
+     * @param fileName the name of the file to parse
+     * @throws RecognitionException ANTLR parser error
+     * @throws TokenStreamException ANTLR parser error
+     */
+
+    public void parseFile(Project p, InputStream is, String fileName)
+        throws RecognitionException, TokenStreamException {
+
+<span class="nc" id="L352">        int lastSlash = fileName.lastIndexOf('/');</span>
+<span class="nc bnc" id="L353" title="All 2 branches missed.">	if (lastSlash != -1) {</span>
+<span class="nc" id="L354">	    fileName = fileName.substring(lastSlash + 1);</span>
+	}
+
+<span class="nc" id="L357">        ClassfileParser parser =</span>
+                new ClassfileParser(new SimpleByteLexer(
+                        new BufferedInputStream(is)));
+
+        // start parsing at the classfile rule
+<span class="nc" id="L362">        parser.classfile();</span>
+
+        // Create a modeller for the parser
+<span class="nc" id="L365">        org.argouml.language.java.reveng.Modeller modeller =</span>
+            new org.argouml.language.java.reveng.Modeller(
+<span class="nc" id="L367">                p.getUserDefinedModelList().get(0),</span>
+                javaProfile,
+<span class="nc" id="L369">                JavaImportSettings.getInstance().isAttributeSelected(),</span>
+<span class="nc" id="L370">                JavaImportSettings.getInstance().isDatatypeSelected(),</span>
+                fileName);
+
+
+	// do something with the tree
+<span class="nc" id="L375">	ClassfileTreeParser tparser = new ClassfileTreeParser();</span>
+<span class="nc" id="L376">	tparser.classfile(parser.getAST(), modeller);</span>
+<span class="nc" id="L377">        newElements.addAll(modeller.getNewElements());</span>
+
+        // Was there an exception thrown during modelling?
+        //Exception e = modeller.getException();
+        //if(e != null) {
+        //    throw e;
+        //}
+<span class="nc" id="L384">    }</span>
+
+    /*
+     * @see org.argouml.moduleloader.ModuleInterface#enable()
+     */
+    public boolean enable() {
+<span class="nc" id="L390">        ImporterManager.getInstance().addImporter(this);</span>
+<span class="nc" id="L391">        return true;</span>
+    }
+
+    /*
+     * @see org.argouml.moduleloader.ModuleInterface#disable()
+     */
+    public boolean disable() {
+<span class="nc" id="L398">        return true;</span>
+    }
+
+    /*
+     * @see org.argouml.uml.reveng.FileImportSupport#getName()
+     */
+    public String getName() {
+        // TODO: I18N
+<span class="nc" id="L406">        return &quot;Java from classes&quot;;</span>
+    }
+
+    /*
+     * @see org.argouml.moduleloader.ModuleInterface#getInfo(int)
+     */
+    public String getInfo(int type) {
+<span class="nc bnc" id="L413" title="All 5 branches missed.">        switch (type) {</span>
+        case AUTHOR:
+<span class="nc" id="L415">            return JavaModuleGlobals.MODULE_AUTHOR;</span>
+        case DESCRIPTION:
+<span class="nc" id="L417">            return &quot;Java import from class or jar files&quot;;</span>
+        case VERSION:
+<span class="nc" id="L419">            return JavaModuleGlobals.MODULE_VERSION;</span>
+        case ModuleInterface.DOWNLOADSITE:
+<span class="nc" id="L421">            return JavaModuleGlobals.MODULE_DOWNLOADSITE;</span>
+        default:
+<span class="nc" id="L423">            return null;</span>
+        }
+    }
+
+    /*
+     * @see org.argouml.uml.reveng.FileImportSupport#getSuffixFilters()
+     */
+    public SuffixFilter[] getSuffixFilters() {
+<span class="nc" id="L431">        SuffixFilter[] result = {</span>
+            // TODO: I18N
+            new SuffixFilter(new String[] {&quot;class&quot;, &quot;jar&quot;} , &quot;Java files&quot;),
+            new SuffixFilter(&quot;class&quot;, &quot;Java class files&quot;),
+            new SuffixFilter(&quot;jar&quot;, &quot;Java JAR files&quot;), };
+<span class="nc" id="L436">	return result;</span>
+    }
+
+    /*
+     * @see org.argouml.uml.reveng.ImportInterface#isParseable(java.io.File)
+     */
+    public boolean isParseable(File file) {
+<span class="nc" id="L443">        return FileImportUtils.matchesSuffix(file, getSuffixFilters());</span>
+    }
+
+    /*
+     * @see org.argouml.uml.reveng.ImportInterface#getImportSettings()
+     */
+    public List&lt;SettingsTypes.Setting&gt; getImportSettings() {
+<span class="nc" id="L450">        return JavaImportSettings.getInstance().getImportSettings();</span>
+    }
+
+    /**
+     * Get the Java profile from project, if available.
+     * 
+     * @param p the project
+     * @return the Java profile
+     */
+    private Profile getJavaProfile(Project p) {
+<span class="nc bnc" id="L460" title="All 2 branches missed.">        for (Profile profile : p.getProfileConfiguration().getProfiles()) {</span>
+<span class="nc bnc" id="L461" title="All 2 branches missed.">            if (&quot;Java&quot;.equals(profile.getDisplayName())) {</span>
+<span class="nc" id="L462">                return profile;</span>
+            }
+<span class="nc" id="L464">        }</span>
+<span class="nc" id="L465">        return null;</span>
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

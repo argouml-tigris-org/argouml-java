@@ -1,0 +1,4946 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JavaLexer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">argo_java</a> &gt; <a href="index.source.html" class="el_package">org.argouml.language.java.reveng</a> &gt; <span class="el_source">JavaLexer.java</span></div><h1>JavaLexer.java</h1><pre class="source lang-java linenums">// $ANTLR 3.5.2 org/argouml/language/java/reveng/Java.g 2020-02-29 14:13:25
+
+package org.argouml.language.java.reveng;
+
+
+import org.antlr.runtime.*;
+import java.util.Stack;
+import java.util.List;
+import java.util.ArrayList;
+
+@SuppressWarnings(&quot;all&quot;)
+public class JavaLexer extends Lexer {
+	public static final int EOF=-1;
+	public static final int T__27=27;
+	public static final int T__28=28;
+	public static final int T__29=29;
+	public static final int T__30=30;
+	public static final int T__31=31;
+	public static final int T__32=32;
+	public static final int T__33=33;
+	public static final int T__34=34;
+	public static final int T__35=35;
+	public static final int T__36=36;
+	public static final int T__37=37;
+	public static final int T__38=38;
+	public static final int T__39=39;
+	public static final int T__40=40;
+	public static final int T__41=41;
+	public static final int T__42=42;
+	public static final int T__43=43;
+	public static final int T__44=44;
+	public static final int T__45=45;
+	public static final int T__46=46;
+	public static final int T__47=47;
+	public static final int T__48=48;
+	public static final int T__49=49;
+	public static final int T__50=50;
+	public static final int T__51=51;
+	public static final int T__52=52;
+	public static final int T__53=53;
+	public static final int T__54=54;
+	public static final int T__55=55;
+	public static final int T__56=56;
+	public static final int T__57=57;
+	public static final int T__58=58;
+	public static final int T__59=59;
+	public static final int T__60=60;
+	public static final int T__61=61;
+	public static final int T__62=62;
+	public static final int T__63=63;
+	public static final int T__64=64;
+	public static final int T__65=65;
+	public static final int T__66=66;
+	public static final int T__67=67;
+	public static final int T__68=68;
+	public static final int T__69=69;
+	public static final int T__70=70;
+	public static final int T__71=71;
+	public static final int T__72=72;
+	public static final int T__73=73;
+	public static final int T__74=74;
+	public static final int T__75=75;
+	public static final int T__76=76;
+	public static final int T__77=77;
+	public static final int T__78=78;
+	public static final int T__79=79;
+	public static final int T__80=80;
+	public static final int T__81=81;
+	public static final int T__82=82;
+	public static final int T__83=83;
+	public static final int T__84=84;
+	public static final int T__85=85;
+	public static final int T__86=86;
+	public static final int T__87=87;
+	public static final int T__88=88;
+	public static final int T__89=89;
+	public static final int T__90=90;
+	public static final int T__91=91;
+	public static final int T__92=92;
+	public static final int T__93=93;
+	public static final int T__94=94;
+	public static final int T__95=95;
+	public static final int T__96=96;
+	public static final int T__97=97;
+	public static final int T__98=98;
+	public static final int T__99=99;
+	public static final int T__100=100;
+	public static final int T__101=101;
+	public static final int T__102=102;
+	public static final int T__103=103;
+	public static final int T__104=104;
+	public static final int T__105=105;
+	public static final int T__106=106;
+	public static final int T__107=107;
+	public static final int T__108=108;
+	public static final int T__109=109;
+	public static final int T__110=110;
+	public static final int T__111=111;
+	public static final int T__112=112;
+	public static final int T__113=113;
+	public static final int T__114=114;
+	public static final int T__115=115;
+	public static final int ASSERT=4;
+	public static final int COMMENT=5;
+	public static final int CharacterLiteral=6;
+	public static final int DecimalLiteral=7;
+	public static final int EMPTY_COMMENT=8;
+	public static final int ENUM=9;
+	public static final int EscapeSequence=10;
+	public static final int Exponent=11;
+	public static final int FloatTypeSuffix=12;
+	public static final int FloatingPointLiteral=13;
+	public static final int HexDigit=14;
+	public static final int HexLiteral=15;
+	public static final int Identifier=16;
+	public static final int IntegerTypeSuffix=17;
+	public static final int JAVADOC=18;
+	public static final int JavaIDDigit=19;
+	public static final int LINE_COMMENT=20;
+	public static final int Letter=21;
+	public static final int OctalEscape=22;
+	public static final int OctalLiteral=23;
+	public static final int StringLiteral=24;
+	public static final int UnicodeEscape=25;
+	public static final int WS=26;
+
+<span class="pc" id="L127">	    protected boolean enumIsKeyword = true;</span>
+<span class="pc" id="L128">	    protected boolean assertIsKeyword = true;</span>
+
+
+	// delegates
+	// delegators
+	public Lexer[] getDelegates() {
+<span class="nc" id="L134">		return new Lexer[] {};</span>
+	}
+
+<span class="nc" id="L137">	public JavaLexer() {} </span>
+	public JavaLexer(CharStream input) {
+<span class="fc" id="L139">		this(input, new RecognizerSharedState());</span>
+<span class="fc" id="L140">	}</span>
+	public JavaLexer(CharStream input, RecognizerSharedState state) {
+<span class="fc" id="L142">		super(input,state);</span>
+<span class="fc" id="L143">	}</span>
+<span class="nc" id="L144">	@Override public String getGrammarFileName() { return &quot;org/argouml/language/java/reveng/Java.g&quot;; }</span>
+
+	// $ANTLR start &quot;T__27&quot;
+	public final void mT__27() throws RecognitionException {
+		try {
+<span class="nc" id="L149">			int _type = T__27;</span>
+<span class="nc" id="L150">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:10:7: ( '!' )
+			// org/argouml/language/java/reveng/Java.g:10:9: '!'
+			{
+<span class="nc" id="L154">			match('!'); </span>
+			}
+
+<span class="nc" id="L157">			state.type = _type;</span>
+<span class="nc" id="L158">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="nc" id="L163">	}</span>
+	// $ANTLR end &quot;T__27&quot;
+
+	// $ANTLR start &quot;T__28&quot;
+	public final void mT__28() throws RecognitionException {
+		try {
+<span class="nc" id="L169">			int _type = T__28;</span>
+<span class="nc" id="L170">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:11:7: ( '!=' )
+			// org/argouml/language/java/reveng/Java.g:11:9: '!='
+			{
+<span class="nc" id="L174">			match(&quot;!=&quot;); </span>
+
+			}
+
+<span class="nc" id="L178">			state.type = _type;</span>
+<span class="nc" id="L179">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="nc" id="L184">	}</span>
+	// $ANTLR end &quot;T__28&quot;
+
+	// $ANTLR start &quot;T__29&quot;
+	public final void mT__29() throws RecognitionException {
+		try {
+<span class="nc" id="L190">			int _type = T__29;</span>
+<span class="nc" id="L191">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:12:7: ( '%' )
+			// org/argouml/language/java/reveng/Java.g:12:9: '%'
+			{
+<span class="nc" id="L195">			match('%'); </span>
+			}
+
+<span class="nc" id="L198">			state.type = _type;</span>
+<span class="nc" id="L199">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="nc" id="L204">	}</span>
+	// $ANTLR end &quot;T__29&quot;
+
+	// $ANTLR start &quot;T__30&quot;
+	public final void mT__30() throws RecognitionException {
+		try {
+<span class="nc" id="L210">			int _type = T__30;</span>
+<span class="nc" id="L211">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:13:7: ( '%=' )
+			// org/argouml/language/java/reveng/Java.g:13:9: '%='
+			{
+<span class="nc" id="L215">			match(&quot;%=&quot;); </span>
+
+			}
+
+<span class="nc" id="L219">			state.type = _type;</span>
+<span class="nc" id="L220">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="nc" id="L225">	}</span>
+	// $ANTLR end &quot;T__30&quot;
+
+	// $ANTLR start &quot;T__31&quot;
+	public final void mT__31() throws RecognitionException {
+		try {
+<span class="nc" id="L231">			int _type = T__31;</span>
+<span class="nc" id="L232">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:14:7: ( '&amp;&amp;' )
+			// org/argouml/language/java/reveng/Java.g:14:9: '&amp;&amp;'
+			{
+<span class="nc" id="L236">			match(&quot;&amp;&amp;&quot;); </span>
+
+			}
+
+<span class="nc" id="L240">			state.type = _type;</span>
+<span class="nc" id="L241">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="nc" id="L246">	}</span>
+	// $ANTLR end &quot;T__31&quot;
+
+	// $ANTLR start &quot;T__32&quot;
+	public final void mT__32() throws RecognitionException {
+		try {
+<span class="nc" id="L252">			int _type = T__32;</span>
+<span class="nc" id="L253">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:15:7: ( '&amp;' )
+			// org/argouml/language/java/reveng/Java.g:15:9: '&amp;'
+			{
+<span class="nc" id="L257">			match('&amp;'); </span>
+			}
+
+<span class="nc" id="L260">			state.type = _type;</span>
+<span class="nc" id="L261">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="nc" id="L266">	}</span>
+	// $ANTLR end &quot;T__32&quot;
+
+	// $ANTLR start &quot;T__33&quot;
+	public final void mT__33() throws RecognitionException {
+		try {
+<span class="nc" id="L272">			int _type = T__33;</span>
+<span class="nc" id="L273">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:16:7: ( '&amp;=' )
+			// org/argouml/language/java/reveng/Java.g:16:9: '&amp;='
+			{
+<span class="nc" id="L277">			match(&quot;&amp;=&quot;); </span>
+
+			}
+
+<span class="nc" id="L281">			state.type = _type;</span>
+<span class="nc" id="L282">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="nc" id="L287">	}</span>
+	// $ANTLR end &quot;T__33&quot;
+
+	// $ANTLR start &quot;T__34&quot;
+	public final void mT__34() throws RecognitionException {
+		try {
+<span class="fc" id="L293">			int _type = T__34;</span>
+<span class="fc" id="L294">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:17:7: ( '(' )
+			// org/argouml/language/java/reveng/Java.g:17:9: '('
+			{
+<span class="fc" id="L298">			match('('); </span>
+			}
+
+<span class="fc" id="L301">			state.type = _type;</span>
+<span class="fc" id="L302">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="fc" id="L307">	}</span>
+	// $ANTLR end &quot;T__34&quot;
+
+	// $ANTLR start &quot;T__35&quot;
+	public final void mT__35() throws RecognitionException {
+		try {
+<span class="fc" id="L313">			int _type = T__35;</span>
+<span class="fc" id="L314">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:18:7: ( ')' )
+			// org/argouml/language/java/reveng/Java.g:18:9: ')'
+			{
+<span class="fc" id="L318">			match(')'); </span>
+			}
+
+<span class="fc" id="L321">			state.type = _type;</span>
+<span class="fc" id="L322">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="fc" id="L327">	}</span>
+	// $ANTLR end &quot;T__35&quot;
+
+	// $ANTLR start &quot;T__36&quot;
+	public final void mT__36() throws RecognitionException {
+		try {
+<span class="nc" id="L333">			int _type = T__36;</span>
+<span class="nc" id="L334">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:19:7: ( '*' )
+			// org/argouml/language/java/reveng/Java.g:19:9: '*'
+			{
+<span class="nc" id="L338">			match('*'); </span>
+			}
+
+<span class="nc" id="L341">			state.type = _type;</span>
+<span class="nc" id="L342">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="nc" id="L347">	}</span>
+	// $ANTLR end &quot;T__36&quot;
+
+	// $ANTLR start &quot;T__37&quot;
+	public final void mT__37() throws RecognitionException {
+		try {
+<span class="nc" id="L353">			int _type = T__37;</span>
+<span class="nc" id="L354">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:20:7: ( '*=' )
+			// org/argouml/language/java/reveng/Java.g:20:9: '*='
+			{
+<span class="nc" id="L358">			match(&quot;*=&quot;); </span>
+
+			}
+
+<span class="nc" id="L362">			state.type = _type;</span>
+<span class="nc" id="L363">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="nc" id="L368">	}</span>
+	// $ANTLR end &quot;T__37&quot;
+
+	// $ANTLR start &quot;T__38&quot;
+	public final void mT__38() throws RecognitionException {
+		try {
+<span class="nc" id="L374">			int _type = T__38;</span>
+<span class="nc" id="L375">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:21:7: ( '+' )
+			// org/argouml/language/java/reveng/Java.g:21:9: '+'
+			{
+<span class="nc" id="L379">			match('+'); </span>
+			}
+
+<span class="nc" id="L382">			state.type = _type;</span>
+<span class="nc" id="L383">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="nc" id="L388">	}</span>
+	// $ANTLR end &quot;T__38&quot;
+
+	// $ANTLR start &quot;T__39&quot;
+	public final void mT__39() throws RecognitionException {
+		try {
+<span class="nc" id="L394">			int _type = T__39;</span>
+<span class="nc" id="L395">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:22:7: ( '++' )
+			// org/argouml/language/java/reveng/Java.g:22:9: '++'
+			{
+<span class="nc" id="L399">			match(&quot;++&quot;); </span>
+
+			}
+
+<span class="nc" id="L403">			state.type = _type;</span>
+<span class="nc" id="L404">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="nc" id="L409">	}</span>
+	// $ANTLR end &quot;T__39&quot;
+
+	// $ANTLR start &quot;T__40&quot;
+	public final void mT__40() throws RecognitionException {
+		try {
+<span class="nc" id="L415">			int _type = T__40;</span>
+<span class="nc" id="L416">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:23:7: ( '+=' )
+			// org/argouml/language/java/reveng/Java.g:23:9: '+='
+			{
+<span class="nc" id="L420">			match(&quot;+=&quot;); </span>
+
+			}
+
+<span class="nc" id="L424">			state.type = _type;</span>
+<span class="nc" id="L425">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="nc" id="L430">	}</span>
+	// $ANTLR end &quot;T__40&quot;
+
+	// $ANTLR start &quot;T__41&quot;
+	public final void mT__41() throws RecognitionException {
+		try {
+<span class="fc" id="L436">			int _type = T__41;</span>
+<span class="fc" id="L437">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:24:7: ( ',' )
+			// org/argouml/language/java/reveng/Java.g:24:9: ','
+			{
+<span class="fc" id="L441">			match(','); </span>
+			}
+
+<span class="fc" id="L444">			state.type = _type;</span>
+<span class="fc" id="L445">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="fc" id="L450">	}</span>
+	// $ANTLR end &quot;T__41&quot;
+
+	// $ANTLR start &quot;T__42&quot;
+	public final void mT__42() throws RecognitionException {
+		try {
+<span class="nc" id="L456">			int _type = T__42;</span>
+<span class="nc" id="L457">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:25:7: ( '-' )
+			// org/argouml/language/java/reveng/Java.g:25:9: '-'
+			{
+<span class="nc" id="L461">			match('-'); </span>
+			}
+
+<span class="nc" id="L464">			state.type = _type;</span>
+<span class="nc" id="L465">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="nc" id="L470">	}</span>
+	// $ANTLR end &quot;T__42&quot;
+
+	// $ANTLR start &quot;T__43&quot;
+	public final void mT__43() throws RecognitionException {
+		try {
+<span class="nc" id="L476">			int _type = T__43;</span>
+<span class="nc" id="L477">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:26:7: ( '--' )
+			// org/argouml/language/java/reveng/Java.g:26:9: '--'
+			{
+<span class="nc" id="L481">			match(&quot;--&quot;); </span>
+
+			}
+
+<span class="nc" id="L485">			state.type = _type;</span>
+<span class="nc" id="L486">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="nc" id="L491">	}</span>
+	// $ANTLR end &quot;T__43&quot;
+
+	// $ANTLR start &quot;T__44&quot;
+	public final void mT__44() throws RecognitionException {
+		try {
+<span class="nc" id="L497">			int _type = T__44;</span>
+<span class="nc" id="L498">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:27:7: ( '-=' )
+			// org/argouml/language/java/reveng/Java.g:27:9: '-='
+			{
+<span class="nc" id="L502">			match(&quot;-=&quot;); </span>
+
+			}
+
+<span class="nc" id="L506">			state.type = _type;</span>
+<span class="nc" id="L507">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="nc" id="L512">	}</span>
+	// $ANTLR end &quot;T__44&quot;
+
+	// $ANTLR start &quot;T__45&quot;
+	public final void mT__45() throws RecognitionException {
+		try {
+<span class="fc" id="L518">			int _type = T__45;</span>
+<span class="fc" id="L519">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:28:7: ( '.' )
+			// org/argouml/language/java/reveng/Java.g:28:9: '.'
+			{
+<span class="fc" id="L523">			match('.'); </span>
+			}
+
+<span class="fc" id="L526">			state.type = _type;</span>
+<span class="fc" id="L527">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="fc" id="L532">	}</span>
+	// $ANTLR end &quot;T__45&quot;
+
+	// $ANTLR start &quot;T__46&quot;
+	public final void mT__46() throws RecognitionException {
+		try {
+<span class="nc" id="L538">			int _type = T__46;</span>
+<span class="nc" id="L539">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:29:7: ( '...' )
+			// org/argouml/language/java/reveng/Java.g:29:9: '...'
+			{
+<span class="nc" id="L543">			match(&quot;...&quot;); </span>
+
+			}
+
+<span class="nc" id="L547">			state.type = _type;</span>
+<span class="nc" id="L548">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="nc" id="L553">	}</span>
+	// $ANTLR end &quot;T__46&quot;
+
+	// $ANTLR start &quot;T__47&quot;
+	public final void mT__47() throws RecognitionException {
+		try {
+<span class="nc" id="L559">			int _type = T__47;</span>
+<span class="nc" id="L560">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:30:7: ( '/' )
+			// org/argouml/language/java/reveng/Java.g:30:9: '/'
+			{
+<span class="nc" id="L564">			match('/'); </span>
+			}
+
+<span class="nc" id="L567">			state.type = _type;</span>
+<span class="nc" id="L568">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="nc" id="L573">	}</span>
+	// $ANTLR end &quot;T__47&quot;
+
+	// $ANTLR start &quot;T__48&quot;
+	public final void mT__48() throws RecognitionException {
+		try {
+<span class="nc" id="L579">			int _type = T__48;</span>
+<span class="nc" id="L580">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:31:7: ( '/=' )
+			// org/argouml/language/java/reveng/Java.g:31:9: '/='
+			{
+<span class="nc" id="L584">			match(&quot;/=&quot;); </span>
+
+			}
+
+<span class="nc" id="L588">			state.type = _type;</span>
+<span class="nc" id="L589">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="nc" id="L594">	}</span>
+	// $ANTLR end &quot;T__48&quot;
+
+	// $ANTLR start &quot;T__49&quot;
+	public final void mT__49() throws RecognitionException {
+		try {
+<span class="fc" id="L600">			int _type = T__49;</span>
+<span class="fc" id="L601">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:32:7: ( ':' )
+			// org/argouml/language/java/reveng/Java.g:32:9: ':'
+			{
+<span class="fc" id="L605">			match(':'); </span>
+			}
+
+<span class="fc" id="L608">			state.type = _type;</span>
+<span class="fc" id="L609">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="fc" id="L614">	}</span>
+	// $ANTLR end &quot;T__49&quot;
+
+	// $ANTLR start &quot;T__50&quot;
+	public final void mT__50() throws RecognitionException {
+		try {
+<span class="fc" id="L620">			int _type = T__50;</span>
+<span class="fc" id="L621">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:33:7: ( ';' )
+			// org/argouml/language/java/reveng/Java.g:33:9: ';'
+			{
+<span class="fc" id="L625">			match(';'); </span>
+			}
+
+<span class="fc" id="L628">			state.type = _type;</span>
+<span class="fc" id="L629">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="fc" id="L634">	}</span>
+	// $ANTLR end &quot;T__50&quot;
+
+	// $ANTLR start &quot;T__51&quot;
+	public final void mT__51() throws RecognitionException {
+		try {
+<span class="nc" id="L640">			int _type = T__51;</span>
+<span class="nc" id="L641">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:34:7: ( '&lt;' )
+			// org/argouml/language/java/reveng/Java.g:34:9: '&lt;'
+			{
+<span class="nc" id="L645">			match('&lt;'); </span>
+			}
+
+<span class="nc" id="L648">			state.type = _type;</span>
+<span class="nc" id="L649">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="nc" id="L654">	}</span>
+	// $ANTLR end &quot;T__51&quot;
+
+	// $ANTLR start &quot;T__52&quot;
+	public final void mT__52() throws RecognitionException {
+		try {
+<span class="fc" id="L660">			int _type = T__52;</span>
+<span class="fc" id="L661">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:35:7: ( '=' )
+			// org/argouml/language/java/reveng/Java.g:35:9: '='
+			{
+<span class="fc" id="L665">			match('='); </span>
+			}
+
+<span class="fc" id="L668">			state.type = _type;</span>
+<span class="fc" id="L669">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="fc" id="L674">	}</span>
+	// $ANTLR end &quot;T__52&quot;
+
+	// $ANTLR start &quot;T__53&quot;
+	public final void mT__53() throws RecognitionException {
+		try {
+<span class="nc" id="L680">			int _type = T__53;</span>
+<span class="nc" id="L681">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:36:7: ( '==' )
+			// org/argouml/language/java/reveng/Java.g:36:9: '=='
+			{
+<span class="nc" id="L685">			match(&quot;==&quot;); </span>
+
+			}
+
+<span class="nc" id="L689">			state.type = _type;</span>
+<span class="nc" id="L690">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="nc" id="L695">	}</span>
+	// $ANTLR end &quot;T__53&quot;
+
+	// $ANTLR start &quot;T__54&quot;
+	public final void mT__54() throws RecognitionException {
+		try {
+<span class="nc" id="L701">			int _type = T__54;</span>
+<span class="nc" id="L702">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:37:7: ( '&gt;' )
+			// org/argouml/language/java/reveng/Java.g:37:9: '&gt;'
+			{
+<span class="nc" id="L706">			match('&gt;'); </span>
+			}
+
+<span class="nc" id="L709">			state.type = _type;</span>
+<span class="nc" id="L710">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="nc" id="L715">	}</span>
+	// $ANTLR end &quot;T__54&quot;
+
+	// $ANTLR start &quot;T__55&quot;
+	public final void mT__55() throws RecognitionException {
+		try {
+<span class="nc" id="L721">			int _type = T__55;</span>
+<span class="nc" id="L722">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:38:7: ( '?' )
+			// org/argouml/language/java/reveng/Java.g:38:9: '?'
+			{
+<span class="nc" id="L726">			match('?'); </span>
+			}
+
+<span class="nc" id="L729">			state.type = _type;</span>
+<span class="nc" id="L730">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="nc" id="L735">	}</span>
+	// $ANTLR end &quot;T__55&quot;
+
+	// $ANTLR start &quot;T__56&quot;
+	public final void mT__56() throws RecognitionException {
+		try {
+<span class="nc" id="L741">			int _type = T__56;</span>
+<span class="nc" id="L742">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:39:7: ( '@' )
+			// org/argouml/language/java/reveng/Java.g:39:9: '@'
+			{
+<span class="nc" id="L746">			match('@'); </span>
+			}
+
+<span class="nc" id="L749">			state.type = _type;</span>
+<span class="nc" id="L750">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="nc" id="L755">	}</span>
+	// $ANTLR end &quot;T__56&quot;
+
+	// $ANTLR start &quot;T__57&quot;
+	public final void mT__57() throws RecognitionException {
+		try {
+<span class="nc" id="L761">			int _type = T__57;</span>
+<span class="nc" id="L762">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:40:7: ( '[' )
+			// org/argouml/language/java/reveng/Java.g:40:9: '['
+			{
+<span class="nc" id="L766">			match('['); </span>
+			}
+
+<span class="nc" id="L769">			state.type = _type;</span>
+<span class="nc" id="L770">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="nc" id="L775">	}</span>
+	// $ANTLR end &quot;T__57&quot;
+
+	// $ANTLR start &quot;T__58&quot;
+	public final void mT__58() throws RecognitionException {
+		try {
+<span class="nc" id="L781">			int _type = T__58;</span>
+<span class="nc" id="L782">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:41:7: ( ']' )
+			// org/argouml/language/java/reveng/Java.g:41:9: ']'
+			{
+<span class="nc" id="L786">			match(']'); </span>
+			}
+
+<span class="nc" id="L789">			state.type = _type;</span>
+<span class="nc" id="L790">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="nc" id="L795">	}</span>
+	// $ANTLR end &quot;T__58&quot;
+
+	// $ANTLR start &quot;T__59&quot;
+	public final void mT__59() throws RecognitionException {
+		try {
+<span class="nc" id="L801">			int _type = T__59;</span>
+<span class="nc" id="L802">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:42:7: ( '^' )
+			// org/argouml/language/java/reveng/Java.g:42:9: '^'
+			{
+<span class="nc" id="L806">			match('^'); </span>
+			}
+
+<span class="nc" id="L809">			state.type = _type;</span>
+<span class="nc" id="L810">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="nc" id="L815">	}</span>
+	// $ANTLR end &quot;T__59&quot;
+
+	// $ANTLR start &quot;T__60&quot;
+	public final void mT__60() throws RecognitionException {
+		try {
+<span class="nc" id="L821">			int _type = T__60;</span>
+<span class="nc" id="L822">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:43:7: ( '^=' )
+			// org/argouml/language/java/reveng/Java.g:43:9: '^='
+			{
+<span class="nc" id="L826">			match(&quot;^=&quot;); </span>
+
+			}
+
+<span class="nc" id="L830">			state.type = _type;</span>
+<span class="nc" id="L831">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="nc" id="L836">	}</span>
+	// $ANTLR end &quot;T__60&quot;
+
+	// $ANTLR start &quot;T__61&quot;
+	public final void mT__61() throws RecognitionException {
+		try {
+<span class="fc" id="L842">			int _type = T__61;</span>
+<span class="fc" id="L843">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:44:7: ( 'abstract' )
+			// org/argouml/language/java/reveng/Java.g:44:9: 'abstract'
+			{
+<span class="fc" id="L847">			match(&quot;abstract&quot;); </span>
+
+			}
+
+<span class="fc" id="L851">			state.type = _type;</span>
+<span class="fc" id="L852">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="fc" id="L857">	}</span>
+	// $ANTLR end &quot;T__61&quot;
+
+	// $ANTLR start &quot;T__62&quot;
+	public final void mT__62() throws RecognitionException {
+		try {
+<span class="nc" id="L863">			int _type = T__62;</span>
+<span class="nc" id="L864">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:45:7: ( 'boolean' )
+			// org/argouml/language/java/reveng/Java.g:45:9: 'boolean'
+			{
+<span class="nc" id="L868">			match(&quot;boolean&quot;); </span>
+
+			}
+
+<span class="nc" id="L872">			state.type = _type;</span>
+<span class="nc" id="L873">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="nc" id="L878">	}</span>
+	// $ANTLR end &quot;T__62&quot;
+
+	// $ANTLR start &quot;T__63&quot;
+	public final void mT__63() throws RecognitionException {
+		try {
+<span class="nc" id="L884">			int _type = T__63;</span>
+<span class="nc" id="L885">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:46:7: ( 'break' )
+			// org/argouml/language/java/reveng/Java.g:46:9: 'break'
+			{
+<span class="nc" id="L889">			match(&quot;break&quot;); </span>
+
+			}
+
+<span class="nc" id="L893">			state.type = _type;</span>
+<span class="nc" id="L894">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="nc" id="L899">	}</span>
+	// $ANTLR end &quot;T__63&quot;
+
+	// $ANTLR start &quot;T__64&quot;
+	public final void mT__64() throws RecognitionException {
+		try {
+<span class="nc" id="L905">			int _type = T__64;</span>
+<span class="nc" id="L906">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:47:7: ( 'byte' )
+			// org/argouml/language/java/reveng/Java.g:47:9: 'byte'
+			{
+<span class="nc" id="L910">			match(&quot;byte&quot;); </span>
+
+			}
+
+<span class="nc" id="L914">			state.type = _type;</span>
+<span class="nc" id="L915">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="nc" id="L920">	}</span>
+	// $ANTLR end &quot;T__64&quot;
+
+	// $ANTLR start &quot;T__65&quot;
+	public final void mT__65() throws RecognitionException {
+		try {
+<span class="fc" id="L926">			int _type = T__65;</span>
+<span class="fc" id="L927">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:48:7: ( 'case' )
+			// org/argouml/language/java/reveng/Java.g:48:9: 'case'
+			{
+<span class="fc" id="L931">			match(&quot;case&quot;); </span>
+
+			}
+
+<span class="fc" id="L935">			state.type = _type;</span>
+<span class="fc" id="L936">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="fc" id="L941">	}</span>
+	// $ANTLR end &quot;T__65&quot;
+
+	// $ANTLR start &quot;T__66&quot;
+	public final void mT__66() throws RecognitionException {
+		try {
+<span class="nc" id="L947">			int _type = T__66;</span>
+<span class="nc" id="L948">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:49:7: ( 'catch' )
+			// org/argouml/language/java/reveng/Java.g:49:9: 'catch'
+			{
+<span class="nc" id="L952">			match(&quot;catch&quot;); </span>
+
+			}
+
+<span class="nc" id="L956">			state.type = _type;</span>
+<span class="nc" id="L957">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="nc" id="L962">	}</span>
+	// $ANTLR end &quot;T__66&quot;
+
+	// $ANTLR start &quot;T__67&quot;
+	public final void mT__67() throws RecognitionException {
+		try {
+<span class="nc" id="L968">			int _type = T__67;</span>
+<span class="nc" id="L969">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:50:7: ( 'char' )
+			// org/argouml/language/java/reveng/Java.g:50:9: 'char'
+			{
+<span class="nc" id="L973">			match(&quot;char&quot;); </span>
+
+			}
+
+<span class="nc" id="L977">			state.type = _type;</span>
+<span class="nc" id="L978">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="nc" id="L983">	}</span>
+	// $ANTLR end &quot;T__67&quot;
+
+	// $ANTLR start &quot;T__68&quot;
+	public final void mT__68() throws RecognitionException {
+		try {
+<span class="fc" id="L989">			int _type = T__68;</span>
+<span class="fc" id="L990">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:51:7: ( 'class' )
+			// org/argouml/language/java/reveng/Java.g:51:9: 'class'
+			{
+<span class="fc" id="L994">			match(&quot;class&quot;); </span>
+
+			}
+
+<span class="fc" id="L998">			state.type = _type;</span>
+<span class="fc" id="L999">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="fc" id="L1004">	}</span>
+	// $ANTLR end &quot;T__68&quot;
+
+	// $ANTLR start &quot;T__69&quot;
+	public final void mT__69() throws RecognitionException {
+		try {
+<span class="nc" id="L1010">			int _type = T__69;</span>
+<span class="nc" id="L1011">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:52:7: ( 'continue' )
+			// org/argouml/language/java/reveng/Java.g:52:9: 'continue'
+			{
+<span class="nc" id="L1015">			match(&quot;continue&quot;); </span>
+
+			}
+
+<span class="nc" id="L1019">			state.type = _type;</span>
+<span class="nc" id="L1020">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="nc" id="L1025">	}</span>
+	// $ANTLR end &quot;T__69&quot;
+
+	// $ANTLR start &quot;T__70&quot;
+	public final void mT__70() throws RecognitionException {
+		try {
+<span class="fc" id="L1031">			int _type = T__70;</span>
+<span class="fc" id="L1032">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:53:7: ( 'default' )
+			// org/argouml/language/java/reveng/Java.g:53:9: 'default'
+			{
+<span class="fc" id="L1036">			match(&quot;default&quot;); </span>
+
+			}
+
+<span class="fc" id="L1040">			state.type = _type;</span>
+<span class="fc" id="L1041">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="fc" id="L1046">	}</span>
+	// $ANTLR end &quot;T__70&quot;
+
+	// $ANTLR start &quot;T__71&quot;
+	public final void mT__71() throws RecognitionException {
+		try {
+<span class="nc" id="L1052">			int _type = T__71;</span>
+<span class="nc" id="L1053">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:54:7: ( 'do' )
+			// org/argouml/language/java/reveng/Java.g:54:9: 'do'
+			{
+<span class="nc" id="L1057">			match(&quot;do&quot;); </span>
+
+			}
+
+<span class="nc" id="L1061">			state.type = _type;</span>
+<span class="nc" id="L1062">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="nc" id="L1067">	}</span>
+	// $ANTLR end &quot;T__71&quot;
+
+	// $ANTLR start &quot;T__72&quot;
+	public final void mT__72() throws RecognitionException {
+		try {
+<span class="nc" id="L1073">			int _type = T__72;</span>
+<span class="nc" id="L1074">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:55:7: ( 'double' )
+			// org/argouml/language/java/reveng/Java.g:55:9: 'double'
+			{
+<span class="nc" id="L1078">			match(&quot;double&quot;); </span>
+
+			}
+
+<span class="nc" id="L1082">			state.type = _type;</span>
+<span class="nc" id="L1083">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="nc" id="L1088">	}</span>
+	// $ANTLR end &quot;T__72&quot;
+
+	// $ANTLR start &quot;T__73&quot;
+	public final void mT__73() throws RecognitionException {
+		try {
+<span class="nc" id="L1094">			int _type = T__73;</span>
+<span class="nc" id="L1095">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:56:7: ( 'else' )
+			// org/argouml/language/java/reveng/Java.g:56:9: 'else'
+			{
+<span class="nc" id="L1099">			match(&quot;else&quot;); </span>
+
+			}
+
+<span class="nc" id="L1103">			state.type = _type;</span>
+<span class="nc" id="L1104">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="nc" id="L1109">	}</span>
+	// $ANTLR end &quot;T__73&quot;
+
+	// $ANTLR start &quot;T__74&quot;
+	public final void mT__74() throws RecognitionException {
+		try {
+<span class="fc" id="L1115">			int _type = T__74;</span>
+<span class="fc" id="L1116">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:57:7: ( 'extends' )
+			// org/argouml/language/java/reveng/Java.g:57:9: 'extends'
+			{
+<span class="fc" id="L1120">			match(&quot;extends&quot;); </span>
+
+			}
+
+<span class="fc" id="L1124">			state.type = _type;</span>
+<span class="fc" id="L1125">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="fc" id="L1130">	}</span>
+	// $ANTLR end &quot;T__74&quot;
+
+	// $ANTLR start &quot;T__75&quot;
+	public final void mT__75() throws RecognitionException {
+		try {
+<span class="nc" id="L1136">			int _type = T__75;</span>
+<span class="nc" id="L1137">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:58:7: ( 'false' )
+			// org/argouml/language/java/reveng/Java.g:58:9: 'false'
+			{
+<span class="nc" id="L1141">			match(&quot;false&quot;); </span>
+
+			}
+
+<span class="nc" id="L1145">			state.type = _type;</span>
+<span class="nc" id="L1146">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="nc" id="L1151">	}</span>
+	// $ANTLR end &quot;T__75&quot;
+
+	// $ANTLR start &quot;T__76&quot;
+	public final void mT__76() throws RecognitionException {
+		try {
+<span class="fc" id="L1157">			int _type = T__76;</span>
+<span class="fc" id="L1158">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:59:7: ( 'final' )
+			// org/argouml/language/java/reveng/Java.g:59:9: 'final'
+			{
+<span class="fc" id="L1162">			match(&quot;final&quot;); </span>
+
+			}
+
+<span class="fc" id="L1166">			state.type = _type;</span>
+<span class="fc" id="L1167">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="fc" id="L1172">	}</span>
+	// $ANTLR end &quot;T__76&quot;
+
+	// $ANTLR start &quot;T__77&quot;
+	public final void mT__77() throws RecognitionException {
+		try {
+<span class="nc" id="L1178">			int _type = T__77;</span>
+<span class="nc" id="L1179">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:60:7: ( 'finally' )
+			// org/argouml/language/java/reveng/Java.g:60:9: 'finally'
+			{
+<span class="nc" id="L1183">			match(&quot;finally&quot;); </span>
+
+			}
+
+<span class="nc" id="L1187">			state.type = _type;</span>
+<span class="nc" id="L1188">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="nc" id="L1193">	}</span>
+	// $ANTLR end &quot;T__77&quot;
+
+	// $ANTLR start &quot;T__78&quot;
+	public final void mT__78() throws RecognitionException {
+		try {
+<span class="nc" id="L1199">			int _type = T__78;</span>
+<span class="nc" id="L1200">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:61:7: ( 'float' )
+			// org/argouml/language/java/reveng/Java.g:61:9: 'float'
+			{
+<span class="nc" id="L1204">			match(&quot;float&quot;); </span>
+
+			}
+
+<span class="nc" id="L1208">			state.type = _type;</span>
+<span class="nc" id="L1209">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="nc" id="L1214">	}</span>
+	// $ANTLR end &quot;T__78&quot;
+
+	// $ANTLR start &quot;T__79&quot;
+	public final void mT__79() throws RecognitionException {
+		try {
+<span class="nc" id="L1220">			int _type = T__79;</span>
+<span class="nc" id="L1221">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:62:7: ( 'for' )
+			// org/argouml/language/java/reveng/Java.g:62:9: 'for'
+			{
+<span class="nc" id="L1225">			match(&quot;for&quot;); </span>
+
+			}
+
+<span class="nc" id="L1229">			state.type = _type;</span>
+<span class="nc" id="L1230">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="nc" id="L1235">	}</span>
+	// $ANTLR end &quot;T__79&quot;
+
+	// $ANTLR start &quot;T__80&quot;
+	public final void mT__80() throws RecognitionException {
+		try {
+<span class="fc" id="L1241">			int _type = T__80;</span>
+<span class="fc" id="L1242">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:63:7: ( 'if' )
+			// org/argouml/language/java/reveng/Java.g:63:9: 'if'
+			{
+<span class="fc" id="L1246">			match(&quot;if&quot;); </span>
+
+			}
+
+<span class="fc" id="L1250">			state.type = _type;</span>
+<span class="fc" id="L1251">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="fc" id="L1256">	}</span>
+	// $ANTLR end &quot;T__80&quot;
+
+	// $ANTLR start &quot;T__81&quot;
+	public final void mT__81() throws RecognitionException {
+		try {
+<span class="fc" id="L1262">			int _type = T__81;</span>
+<span class="fc" id="L1263">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:64:7: ( 'implements' )
+			// org/argouml/language/java/reveng/Java.g:64:9: 'implements'
+			{
+<span class="fc" id="L1267">			match(&quot;implements&quot;); </span>
+
+			}
+
+<span class="fc" id="L1271">			state.type = _type;</span>
+<span class="fc" id="L1272">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="fc" id="L1277">	}</span>
+	// $ANTLR end &quot;T__81&quot;
+
+	// $ANTLR start &quot;T__82&quot;
+	public final void mT__82() throws RecognitionException {
+		try {
+<span class="fc" id="L1283">			int _type = T__82;</span>
+<span class="fc" id="L1284">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:65:7: ( 'import' )
+			// org/argouml/language/java/reveng/Java.g:65:9: 'import'
+			{
+<span class="fc" id="L1288">			match(&quot;import&quot;); </span>
+
+			}
+
+<span class="fc" id="L1292">			state.type = _type;</span>
+<span class="fc" id="L1293">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="fc" id="L1298">	}</span>
+	// $ANTLR end &quot;T__82&quot;
+
+	// $ANTLR start &quot;T__83&quot;
+	public final void mT__83() throws RecognitionException {
+		try {
+<span class="fc" id="L1304">			int _type = T__83;</span>
+<span class="fc" id="L1305">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:66:7: ( 'instanceof' )
+			// org/argouml/language/java/reveng/Java.g:66:9: 'instanceof'
+			{
+<span class="fc" id="L1309">			match(&quot;instanceof&quot;); </span>
+
+			}
+
+<span class="fc" id="L1313">			state.type = _type;</span>
+<span class="fc" id="L1314">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="fc" id="L1319">	}</span>
+	// $ANTLR end &quot;T__83&quot;
+
+	// $ANTLR start &quot;T__84&quot;
+	public final void mT__84() throws RecognitionException {
+		try {
+<span class="fc" id="L1325">			int _type = T__84;</span>
+<span class="fc" id="L1326">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:67:7: ( 'int' )
+			// org/argouml/language/java/reveng/Java.g:67:9: 'int'
+			{
+<span class="fc" id="L1330">			match(&quot;int&quot;); </span>
+
+			}
+
+<span class="fc" id="L1334">			state.type = _type;</span>
+<span class="fc" id="L1335">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="fc" id="L1340">	}</span>
+	// $ANTLR end &quot;T__84&quot;
+
+	// $ANTLR start &quot;T__85&quot;
+	public final void mT__85() throws RecognitionException {
+		try {
+<span class="fc" id="L1346">			int _type = T__85;</span>
+<span class="fc" id="L1347">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:68:7: ( 'interface' )
+			// org/argouml/language/java/reveng/Java.g:68:9: 'interface'
+			{
+<span class="fc" id="L1351">			match(&quot;interface&quot;); </span>
+
+			}
+
+<span class="fc" id="L1355">			state.type = _type;</span>
+<span class="fc" id="L1356">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="fc" id="L1361">	}</span>
+	// $ANTLR end &quot;T__85&quot;
+
+	// $ANTLR start &quot;T__86&quot;
+	public final void mT__86() throws RecognitionException {
+		try {
+<span class="nc" id="L1367">			int _type = T__86;</span>
+<span class="nc" id="L1368">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:69:7: ( 'long' )
+			// org/argouml/language/java/reveng/Java.g:69:9: 'long'
+			{
+<span class="nc" id="L1372">			match(&quot;long&quot;); </span>
+
+			}
+
+<span class="nc" id="L1376">			state.type = _type;</span>
+<span class="nc" id="L1377">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="nc" id="L1382">	}</span>
+	// $ANTLR end &quot;T__86&quot;
+
+	// $ANTLR start &quot;T__87&quot;
+	public final void mT__87() throws RecognitionException {
+		try {
+<span class="nc" id="L1388">			int _type = T__87;</span>
+<span class="nc" id="L1389">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:70:7: ( 'native' )
+			// org/argouml/language/java/reveng/Java.g:70:9: 'native'
+			{
+<span class="nc" id="L1393">			match(&quot;native&quot;); </span>
+
+			}
+
+<span class="nc" id="L1397">			state.type = _type;</span>
+<span class="nc" id="L1398">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="nc" id="L1403">	}</span>
+	// $ANTLR end &quot;T__87&quot;
+
+	// $ANTLR start &quot;T__88&quot;
+	public final void mT__88() throws RecognitionException {
+		try {
+<span class="fc" id="L1409">			int _type = T__88;</span>
+<span class="fc" id="L1410">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:71:7: ( 'new' )
+			// org/argouml/language/java/reveng/Java.g:71:9: 'new'
+			{
+<span class="fc" id="L1414">			match(&quot;new&quot;); </span>
+
+			}
+
+<span class="fc" id="L1418">			state.type = _type;</span>
+<span class="fc" id="L1419">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="fc" id="L1424">	}</span>
+	// $ANTLR end &quot;T__88&quot;
+
+	// $ANTLR start &quot;T__89&quot;
+	public final void mT__89() throws RecognitionException {
+		try {
+<span class="nc" id="L1430">			int _type = T__89;</span>
+<span class="nc" id="L1431">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:72:7: ( 'null' )
+			// org/argouml/language/java/reveng/Java.g:72:9: 'null'
+			{
+<span class="nc" id="L1435">			match(&quot;null&quot;); </span>
+
+			}
+
+<span class="nc" id="L1439">			state.type = _type;</span>
+<span class="nc" id="L1440">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="nc" id="L1445">	}</span>
+	// $ANTLR end &quot;T__89&quot;
+
+	// $ANTLR start &quot;T__90&quot;
+	public final void mT__90() throws RecognitionException {
+		try {
+<span class="fc" id="L1451">			int _type = T__90;</span>
+<span class="fc" id="L1452">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:73:7: ( 'package' )
+			// org/argouml/language/java/reveng/Java.g:73:9: 'package'
+			{
+<span class="fc" id="L1456">			match(&quot;package&quot;); </span>
+
+			}
+
+<span class="fc" id="L1460">			state.type = _type;</span>
+<span class="fc" id="L1461">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="fc" id="L1466">	}</span>
+	// $ANTLR end &quot;T__90&quot;
+
+	// $ANTLR start &quot;T__91&quot;
+	public final void mT__91() throws RecognitionException {
+		try {
+<span class="fc" id="L1472">			int _type = T__91;</span>
+<span class="fc" id="L1473">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:74:7: ( 'private' )
+			// org/argouml/language/java/reveng/Java.g:74:9: 'private'
+			{
+<span class="fc" id="L1477">			match(&quot;private&quot;); </span>
+
+			}
+
+<span class="fc" id="L1481">			state.type = _type;</span>
+<span class="fc" id="L1482">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="fc" id="L1487">	}</span>
+	// $ANTLR end &quot;T__91&quot;
+
+	// $ANTLR start &quot;T__92&quot;
+	public final void mT__92() throws RecognitionException {
+		try {
+<span class="fc" id="L1493">			int _type = T__92;</span>
+<span class="fc" id="L1494">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:75:7: ( 'protected' )
+			// org/argouml/language/java/reveng/Java.g:75:9: 'protected'
+			{
+<span class="fc" id="L1498">			match(&quot;protected&quot;); </span>
+
+			}
+
+<span class="fc" id="L1502">			state.type = _type;</span>
+<span class="fc" id="L1503">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="fc" id="L1508">	}</span>
+	// $ANTLR end &quot;T__92&quot;
+
+	// $ANTLR start &quot;T__93&quot;
+	public final void mT__93() throws RecognitionException {
+		try {
+<span class="fc" id="L1514">			int _type = T__93;</span>
+<span class="fc" id="L1515">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:76:7: ( 'public' )
+			// org/argouml/language/java/reveng/Java.g:76:9: 'public'
+			{
+<span class="fc" id="L1519">			match(&quot;public&quot;); </span>
+
+			}
+
+<span class="fc" id="L1523">			state.type = _type;</span>
+<span class="fc" id="L1524">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="fc" id="L1529">	}</span>
+	// $ANTLR end &quot;T__93&quot;
+
+	// $ANTLR start &quot;T__94&quot;
+	public final void mT__94() throws RecognitionException {
+		try {
+<span class="fc" id="L1535">			int _type = T__94;</span>
+<span class="fc" id="L1536">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:77:7: ( 'return' )
+			// org/argouml/language/java/reveng/Java.g:77:9: 'return'
+			{
+<span class="fc" id="L1540">			match(&quot;return&quot;); </span>
+
+			}
+
+<span class="fc" id="L1544">			state.type = _type;</span>
+<span class="fc" id="L1545">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="fc" id="L1550">	}</span>
+	// $ANTLR end &quot;T__94&quot;
+
+	// $ANTLR start &quot;T__95&quot;
+	public final void mT__95() throws RecognitionException {
+		try {
+<span class="fc" id="L1556">			int _type = T__95;</span>
+<span class="fc" id="L1557">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:78:7: ( 'short' )
+			// org/argouml/language/java/reveng/Java.g:78:9: 'short'
+			{
+<span class="fc" id="L1561">			match(&quot;short&quot;); </span>
+
+			}
+
+<span class="fc" id="L1565">			state.type = _type;</span>
+<span class="fc" id="L1566">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="fc" id="L1571">	}</span>
+	// $ANTLR end &quot;T__95&quot;
+
+	// $ANTLR start &quot;T__96&quot;
+	public final void mT__96() throws RecognitionException {
+		try {
+<span class="fc" id="L1577">			int _type = T__96;</span>
+<span class="fc" id="L1578">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:79:7: ( 'static' )
+			// org/argouml/language/java/reveng/Java.g:79:9: 'static'
+			{
+<span class="fc" id="L1582">			match(&quot;static&quot;); </span>
+
+			}
+
+<span class="fc" id="L1586">			state.type = _type;</span>
+<span class="fc" id="L1587">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="fc" id="L1592">	}</span>
+	// $ANTLR end &quot;T__96&quot;
+
+	// $ANTLR start &quot;T__97&quot;
+	public final void mT__97() throws RecognitionException {
+		try {
+<span class="nc" id="L1598">			int _type = T__97;</span>
+<span class="nc" id="L1599">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:80:7: ( 'strictfp' )
+			// org/argouml/language/java/reveng/Java.g:80:9: 'strictfp'
+			{
+<span class="nc" id="L1603">			match(&quot;strictfp&quot;); </span>
+
+			}
+
+<span class="nc" id="L1607">			state.type = _type;</span>
+<span class="nc" id="L1608">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="nc" id="L1613">	}</span>
+	// $ANTLR end &quot;T__97&quot;
+
+	// $ANTLR start &quot;T__98&quot;
+	public final void mT__98() throws RecognitionException {
+		try {
+<span class="nc" id="L1619">			int _type = T__98;</span>
+<span class="nc" id="L1620">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:81:7: ( 'super' )
+			// org/argouml/language/java/reveng/Java.g:81:9: 'super'
+			{
+<span class="nc" id="L1624">			match(&quot;super&quot;); </span>
+
+			}
+
+<span class="nc" id="L1628">			state.type = _type;</span>
+<span class="nc" id="L1629">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="nc" id="L1634">	}</span>
+	// $ANTLR end &quot;T__98&quot;
+
+	// $ANTLR start &quot;T__99&quot;
+	public final void mT__99() throws RecognitionException {
+		try {
+<span class="fc" id="L1640">			int _type = T__99;</span>
+<span class="fc" id="L1641">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:82:7: ( 'switch' )
+			// org/argouml/language/java/reveng/Java.g:82:9: 'switch'
+			{
+<span class="fc" id="L1645">			match(&quot;switch&quot;); </span>
+
+			}
+
+<span class="fc" id="L1649">			state.type = _type;</span>
+<span class="fc" id="L1650">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="fc" id="L1655">	}</span>
+	// $ANTLR end &quot;T__99&quot;
+
+	// $ANTLR start &quot;T__100&quot;
+	public final void mT__100() throws RecognitionException {
+		try {
+<span class="nc" id="L1661">			int _type = T__100;</span>
+<span class="nc" id="L1662">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:83:8: ( 'synchronized' )
+			// org/argouml/language/java/reveng/Java.g:83:10: 'synchronized'
+			{
+<span class="nc" id="L1666">			match(&quot;synchronized&quot;); </span>
+
+			}
+
+<span class="nc" id="L1670">			state.type = _type;</span>
+<span class="nc" id="L1671">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="nc" id="L1676">	}</span>
+	// $ANTLR end &quot;T__100&quot;
+
+	// $ANTLR start &quot;T__101&quot;
+	public final void mT__101() throws RecognitionException {
+		try {
+<span class="fc" id="L1682">			int _type = T__101;</span>
+<span class="fc" id="L1683">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:84:8: ( 'this' )
+			// org/argouml/language/java/reveng/Java.g:84:10: 'this'
+			{
+<span class="fc" id="L1687">			match(&quot;this&quot;); </span>
+
+			}
+
+<span class="fc" id="L1691">			state.type = _type;</span>
+<span class="fc" id="L1692">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="fc" id="L1697">	}</span>
+	// $ANTLR end &quot;T__101&quot;
+
+	// $ANTLR start &quot;T__102&quot;
+	public final void mT__102() throws RecognitionException {
+		try {
+<span class="fc" id="L1703">			int _type = T__102;</span>
+<span class="fc" id="L1704">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:85:8: ( 'throw' )
+			// org/argouml/language/java/reveng/Java.g:85:10: 'throw'
+			{
+<span class="fc" id="L1708">			match(&quot;throw&quot;); </span>
+
+			}
+
+<span class="fc" id="L1712">			state.type = _type;</span>
+<span class="fc" id="L1713">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="fc" id="L1718">	}</span>
+	// $ANTLR end &quot;T__102&quot;
+
+	// $ANTLR start &quot;T__103&quot;
+	public final void mT__103() throws RecognitionException {
+		try {
+<span class="fc" id="L1724">			int _type = T__103;</span>
+<span class="fc" id="L1725">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:86:8: ( 'throws' )
+			// org/argouml/language/java/reveng/Java.g:86:10: 'throws'
+			{
+<span class="fc" id="L1729">			match(&quot;throws&quot;); </span>
+
+			}
+
+<span class="fc" id="L1733">			state.type = _type;</span>
+<span class="fc" id="L1734">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="fc" id="L1739">	}</span>
+	// $ANTLR end &quot;T__103&quot;
+
+	// $ANTLR start &quot;T__104&quot;
+	public final void mT__104() throws RecognitionException {
+		try {
+<span class="nc" id="L1745">			int _type = T__104;</span>
+<span class="nc" id="L1746">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:87:8: ( 'transient' )
+			// org/argouml/language/java/reveng/Java.g:87:10: 'transient'
+			{
+<span class="nc" id="L1750">			match(&quot;transient&quot;); </span>
+
+			}
+
+<span class="nc" id="L1754">			state.type = _type;</span>
+<span class="nc" id="L1755">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="nc" id="L1760">	}</span>
+	// $ANTLR end &quot;T__104&quot;
+
+	// $ANTLR start &quot;T__105&quot;
+	public final void mT__105() throws RecognitionException {
+		try {
+<span class="nc" id="L1766">			int _type = T__105;</span>
+<span class="nc" id="L1767">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:88:8: ( 'true' )
+			// org/argouml/language/java/reveng/Java.g:88:10: 'true'
+			{
+<span class="nc" id="L1771">			match(&quot;true&quot;); </span>
+
+			}
+
+<span class="nc" id="L1775">			state.type = _type;</span>
+<span class="nc" id="L1776">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="nc" id="L1781">	}</span>
+	// $ANTLR end &quot;T__105&quot;
+
+	// $ANTLR start &quot;T__106&quot;
+	public final void mT__106() throws RecognitionException {
+		try {
+<span class="nc" id="L1787">			int _type = T__106;</span>
+<span class="nc" id="L1788">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:89:8: ( 'try' )
+			// org/argouml/language/java/reveng/Java.g:89:10: 'try'
+			{
+<span class="nc" id="L1792">			match(&quot;try&quot;); </span>
+
+			}
+
+<span class="nc" id="L1796">			state.type = _type;</span>
+<span class="nc" id="L1797">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="nc" id="L1802">	}</span>
+	// $ANTLR end &quot;T__106&quot;
+
+	// $ANTLR start &quot;T__107&quot;
+	public final void mT__107() throws RecognitionException {
+		try {
+<span class="fc" id="L1808">			int _type = T__107;</span>
+<span class="fc" id="L1809">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:90:8: ( 'void' )
+			// org/argouml/language/java/reveng/Java.g:90:10: 'void'
+			{
+<span class="fc" id="L1813">			match(&quot;void&quot;); </span>
+
+			}
+
+<span class="fc" id="L1817">			state.type = _type;</span>
+<span class="fc" id="L1818">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="fc" id="L1823">	}</span>
+	// $ANTLR end &quot;T__107&quot;
+
+	// $ANTLR start &quot;T__108&quot;
+	public final void mT__108() throws RecognitionException {
+		try {
+<span class="nc" id="L1829">			int _type = T__108;</span>
+<span class="nc" id="L1830">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:91:8: ( 'volatile' )
+			// org/argouml/language/java/reveng/Java.g:91:10: 'volatile'
+			{
+<span class="nc" id="L1834">			match(&quot;volatile&quot;); </span>
+
+			}
+
+<span class="nc" id="L1838">			state.type = _type;</span>
+<span class="nc" id="L1839">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="nc" id="L1844">	}</span>
+	// $ANTLR end &quot;T__108&quot;
+
+	// $ANTLR start &quot;T__109&quot;
+	public final void mT__109() throws RecognitionException {
+		try {
+<span class="nc" id="L1850">			int _type = T__109;</span>
+<span class="nc" id="L1851">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:92:8: ( 'while' )
+			// org/argouml/language/java/reveng/Java.g:92:10: 'while'
+			{
+<span class="nc" id="L1855">			match(&quot;while&quot;); </span>
+
+			}
+
+<span class="nc" id="L1859">			state.type = _type;</span>
+<span class="nc" id="L1860">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="nc" id="L1865">	}</span>
+	// $ANTLR end &quot;T__109&quot;
+
+	// $ANTLR start &quot;T__110&quot;
+	public final void mT__110() throws RecognitionException {
+		try {
+<span class="fc" id="L1871">			int _type = T__110;</span>
+<span class="fc" id="L1872">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:93:8: ( '{' )
+			// org/argouml/language/java/reveng/Java.g:93:10: '{'
+			{
+<span class="fc" id="L1876">			match('{'); </span>
+			}
+
+<span class="fc" id="L1879">			state.type = _type;</span>
+<span class="fc" id="L1880">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="fc" id="L1885">	}</span>
+	// $ANTLR end &quot;T__110&quot;
+
+	// $ANTLR start &quot;T__111&quot;
+	public final void mT__111() throws RecognitionException {
+		try {
+<span class="nc" id="L1891">			int _type = T__111;</span>
+<span class="nc" id="L1892">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:94:8: ( '|' )
+			// org/argouml/language/java/reveng/Java.g:94:10: '|'
+			{
+<span class="nc" id="L1896">			match('|'); </span>
+			}
+
+<span class="nc" id="L1899">			state.type = _type;</span>
+<span class="nc" id="L1900">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="nc" id="L1905">	}</span>
+	// $ANTLR end &quot;T__111&quot;
+
+	// $ANTLR start &quot;T__112&quot;
+	public final void mT__112() throws RecognitionException {
+		try {
+<span class="nc" id="L1911">			int _type = T__112;</span>
+<span class="nc" id="L1912">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:95:8: ( '|=' )
+			// org/argouml/language/java/reveng/Java.g:95:10: '|='
+			{
+<span class="nc" id="L1916">			match(&quot;|=&quot;); </span>
+
+			}
+
+<span class="nc" id="L1920">			state.type = _type;</span>
+<span class="nc" id="L1921">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="nc" id="L1926">	}</span>
+	// $ANTLR end &quot;T__112&quot;
+
+	// $ANTLR start &quot;T__113&quot;
+	public final void mT__113() throws RecognitionException {
+		try {
+<span class="nc" id="L1932">			int _type = T__113;</span>
+<span class="nc" id="L1933">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:96:8: ( '||' )
+			// org/argouml/language/java/reveng/Java.g:96:10: '||'
+			{
+<span class="nc" id="L1937">			match(&quot;||&quot;); </span>
+
+			}
+
+<span class="nc" id="L1941">			state.type = _type;</span>
+<span class="nc" id="L1942">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="nc" id="L1947">	}</span>
+	// $ANTLR end &quot;T__113&quot;
+
+	// $ANTLR start &quot;T__114&quot;
+	public final void mT__114() throws RecognitionException {
+		try {
+<span class="fc" id="L1953">			int _type = T__114;</span>
+<span class="fc" id="L1954">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:97:8: ( '}' )
+			// org/argouml/language/java/reveng/Java.g:97:10: '}'
+			{
+<span class="fc" id="L1958">			match('}'); </span>
+			}
+
+<span class="fc" id="L1961">			state.type = _type;</span>
+<span class="fc" id="L1962">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="fc" id="L1967">	}</span>
+	// $ANTLR end &quot;T__114&quot;
+
+	// $ANTLR start &quot;T__115&quot;
+	public final void mT__115() throws RecognitionException {
+		try {
+<span class="nc" id="L1973">			int _type = T__115;</span>
+<span class="nc" id="L1974">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:98:8: ( '~' )
+			// org/argouml/language/java/reveng/Java.g:98:10: '~'
+			{
+<span class="nc" id="L1978">			match('~'); </span>
+			}
+
+<span class="nc" id="L1981">			state.type = _type;</span>
+<span class="nc" id="L1982">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="nc" id="L1987">	}</span>
+	// $ANTLR end &quot;T__115&quot;
+
+	// $ANTLR start &quot;HexLiteral&quot;
+	public final void mHexLiteral() throws RecognitionException {
+		try {
+<span class="nc" id="L1993">			int _type = HexLiteral;</span>
+<span class="nc" id="L1994">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:1603:12: ( '0' ( 'x' | 'X' ) ( HexDigit )+ ( IntegerTypeSuffix )? )
+			// org/argouml/language/java/reveng/Java.g:1603:14: '0' ( 'x' | 'X' ) ( HexDigit )+ ( IntegerTypeSuffix )?
+			{
+<span class="nc" id="L1998">			match('0'); </span>
+<span class="nc bnc" id="L1999" title="All 4 branches missed.">			if ( input.LA(1)=='X'||input.LA(1)=='x' ) {</span>
+<span class="nc" id="L2000">				input.consume();</span>
+			}
+			else {
+<span class="nc" id="L2003">				MismatchedSetException mse = new MismatchedSetException(null,input);</span>
+<span class="nc" id="L2004">				recover(mse);</span>
+<span class="nc" id="L2005">				throw mse;</span>
+			}
+			// org/argouml/language/java/reveng/Java.g:1603:28: ( HexDigit )+
+<span class="nc" id="L2008">			int cnt1=0;</span>
+			loop1:
+			while (true) {
+<span class="nc" id="L2011">				int alt1=2;</span>
+<span class="nc" id="L2012">				int LA1_0 = input.LA(1);</span>
+<span class="nc bnc" id="L2013" title="All 12 branches missed.">				if ( ((LA1_0 &gt;= '0' &amp;&amp; LA1_0 &lt;= '9')||(LA1_0 &gt;= 'A' &amp;&amp; LA1_0 &lt;= 'F')||(LA1_0 &gt;= 'a' &amp;&amp; LA1_0 &lt;= 'f')) ) {</span>
+<span class="nc" id="L2014">					alt1=1;</span>
+				}
+
+<span class="nc bnc" id="L2017" title="All 2 branches missed.">				switch (alt1) {</span>
+				case 1 :
+					// org/argouml/language/java/reveng/Java.g:
+					{
+<span class="nc bnc" id="L2021" title="All 12 branches missed.">					if ( (input.LA(1) &gt;= '0' &amp;&amp; input.LA(1) &lt;= '9')||(input.LA(1) &gt;= 'A' &amp;&amp; input.LA(1) &lt;= 'F')||(input.LA(1) &gt;= 'a' &amp;&amp; input.LA(1) &lt;= 'f') ) {</span>
+<span class="nc" id="L2022">						input.consume();</span>
+					}
+					else {
+<span class="nc" id="L2025">						MismatchedSetException mse = new MismatchedSetException(null,input);</span>
+<span class="nc" id="L2026">						recover(mse);</span>
+<span class="nc" id="L2027">						throw mse;</span>
+					}
+					}
+					break;
+
+				default :
+<span class="nc bnc" id="L2033" title="All 2 branches missed.">					if ( cnt1 &gt;= 1 ) break loop1;</span>
+<span class="nc" id="L2034">					EarlyExitException eee = new EarlyExitException(1, input);</span>
+<span class="nc" id="L2035">					throw eee;</span>
+				}
+<span class="nc" id="L2037">				cnt1++;</span>
+<span class="nc" id="L2038">			}</span>
+
+			// org/argouml/language/java/reveng/Java.g:1603:38: ( IntegerTypeSuffix )?
+<span class="nc" id="L2041">			int alt2=2;</span>
+<span class="nc" id="L2042">			int LA2_0 = input.LA(1);</span>
+<span class="nc bnc" id="L2043" title="All 4 branches missed.">			if ( (LA2_0=='L'||LA2_0=='l') ) {</span>
+<span class="nc" id="L2044">				alt2=1;</span>
+			}
+<span class="nc bnc" id="L2046" title="All 2 branches missed.">			switch (alt2) {</span>
+				case 1 :
+					// org/argouml/language/java/reveng/Java.g:
+					{
+<span class="nc bnc" id="L2050" title="All 4 branches missed.">					if ( input.LA(1)=='L'||input.LA(1)=='l' ) {</span>
+<span class="nc" id="L2051">						input.consume();</span>
+					}
+					else {
+<span class="nc" id="L2054">						MismatchedSetException mse = new MismatchedSetException(null,input);</span>
+<span class="nc" id="L2055">						recover(mse);</span>
+<span class="nc" id="L2056">						throw mse;</span>
+					}
+					}
+					break;
+
+			}
+
+			}
+
+<span class="nc" id="L2065">			state.type = _type;</span>
+<span class="nc" id="L2066">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="nc" id="L2071">	}</span>
+	// $ANTLR end &quot;HexLiteral&quot;
+
+	// $ANTLR start &quot;DecimalLiteral&quot;
+	public final void mDecimalLiteral() throws RecognitionException {
+		try {
+<span class="fc" id="L2077">			int _type = DecimalLiteral;</span>
+<span class="fc" id="L2078">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:1605:16: ( ( '0' | '1' .. '9' ( '0' .. '9' )* ) ( IntegerTypeSuffix )? )
+			// org/argouml/language/java/reveng/Java.g:1605:18: ( '0' | '1' .. '9' ( '0' .. '9' )* ) ( IntegerTypeSuffix )?
+			{
+			// org/argouml/language/java/reveng/Java.g:1605:18: ( '0' | '1' .. '9' ( '0' .. '9' )* )
+<span class="fc" id="L2083">			int alt4=2;</span>
+<span class="fc" id="L2084">			int LA4_0 = input.LA(1);</span>
+<span class="fc bfc" id="L2085" title="All 2 branches covered.">			if ( (LA4_0=='0') ) {</span>
+<span class="fc" id="L2086">				alt4=1;</span>
+			}
+<span class="pc bpc" id="L2088" title="2 of 4 branches missed.">			else if ( ((LA4_0 &gt;= '1' &amp;&amp; LA4_0 &lt;= '9')) ) {</span>
+<span class="fc" id="L2089">				alt4=2;</span>
+			}
+
+			else {
+<span class="nc" id="L2093">				NoViableAltException nvae =</span>
+					new NoViableAltException(&quot;&quot;, 4, 0, input);
+<span class="nc" id="L2095">				throw nvae;</span>
+			}
+
+<span class="pc bpc" id="L2098" title="1 of 3 branches missed.">			switch (alt4) {</span>
+				case 1 :
+					// org/argouml/language/java/reveng/Java.g:1605:19: '0'
+					{
+<span class="fc" id="L2102">					match('0'); </span>
+					}
+<span class="fc" id="L2104">					break;</span>
+				case 2 :
+					// org/argouml/language/java/reveng/Java.g:1605:25: '1' .. '9' ( '0' .. '9' )*
+					{
+<span class="fc" id="L2108">					matchRange('1','9'); </span>
+					// org/argouml/language/java/reveng/Java.g:1605:34: ( '0' .. '9' )*
+					loop3:
+					while (true) {
+<span class="fc" id="L2112">						int alt3=2;</span>
+<span class="fc" id="L2113">						int LA3_0 = input.LA(1);</span>
+<span class="pc bpc" id="L2114" title="1 of 4 branches missed.">						if ( ((LA3_0 &gt;= '0' &amp;&amp; LA3_0 &lt;= '9')) ) {</span>
+<span class="nc" id="L2115">							alt3=1;</span>
+						}
+
+<span class="pc bpc" id="L2118" title="1 of 2 branches missed.">						switch (alt3) {</span>
+						case 1 :
+							// org/argouml/language/java/reveng/Java.g:
+							{
+<span class="nc bnc" id="L2122" title="All 4 branches missed.">							if ( (input.LA(1) &gt;= '0' &amp;&amp; input.LA(1) &lt;= '9') ) {</span>
+<span class="nc" id="L2123">								input.consume();</span>
+							}
+							else {
+<span class="nc" id="L2126">								MismatchedSetException mse = new MismatchedSetException(null,input);</span>
+<span class="nc" id="L2127">								recover(mse);</span>
+<span class="nc" id="L2128">								throw mse;</span>
+							}
+							}
+							break;
+
+						default :
+<span class="fc" id="L2134">							break loop3;</span>
+						}
+<span class="nc" id="L2136">					}</span>
+
+					}
+					break;
+
+			}
+
+			// org/argouml/language/java/reveng/Java.g:1605:45: ( IntegerTypeSuffix )?
+<span class="fc" id="L2144">			int alt5=2;</span>
+<span class="fc" id="L2145">			int LA5_0 = input.LA(1);</span>
+<span class="pc bpc" id="L2146" title="2 of 4 branches missed.">			if ( (LA5_0=='L'||LA5_0=='l') ) {</span>
+<span class="nc" id="L2147">				alt5=1;</span>
+			}
+<span class="pc bpc" id="L2149" title="1 of 2 branches missed.">			switch (alt5) {</span>
+				case 1 :
+					// org/argouml/language/java/reveng/Java.g:
+					{
+<span class="nc bnc" id="L2153" title="All 4 branches missed.">					if ( input.LA(1)=='L'||input.LA(1)=='l' ) {</span>
+<span class="nc" id="L2154">						input.consume();</span>
+					}
+					else {
+<span class="nc" id="L2157">						MismatchedSetException mse = new MismatchedSetException(null,input);</span>
+<span class="nc" id="L2158">						recover(mse);</span>
+<span class="nc" id="L2159">						throw mse;</span>
+					}
+					}
+					break;
+
+			}
+
+			}
+
+<span class="fc" id="L2168">			state.type = _type;</span>
+<span class="fc" id="L2169">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="fc" id="L2174">	}</span>
+	// $ANTLR end &quot;DecimalLiteral&quot;
+
+	// $ANTLR start &quot;OctalLiteral&quot;
+	public final void mOctalLiteral() throws RecognitionException {
+		try {
+<span class="nc" id="L2180">			int _type = OctalLiteral;</span>
+<span class="nc" id="L2181">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:1607:14: ( '0' ( '0' .. '7' )+ ( IntegerTypeSuffix )? )
+			// org/argouml/language/java/reveng/Java.g:1607:16: '0' ( '0' .. '7' )+ ( IntegerTypeSuffix )?
+			{
+<span class="nc" id="L2185">			match('0'); </span>
+			// org/argouml/language/java/reveng/Java.g:1607:20: ( '0' .. '7' )+
+<span class="nc" id="L2187">			int cnt6=0;</span>
+			loop6:
+			while (true) {
+<span class="nc" id="L2190">				int alt6=2;</span>
+<span class="nc" id="L2191">				int LA6_0 = input.LA(1);</span>
+<span class="nc bnc" id="L2192" title="All 4 branches missed.">				if ( ((LA6_0 &gt;= '0' &amp;&amp; LA6_0 &lt;= '7')) ) {</span>
+<span class="nc" id="L2193">					alt6=1;</span>
+				}
+
+<span class="nc bnc" id="L2196" title="All 2 branches missed.">				switch (alt6) {</span>
+				case 1 :
+					// org/argouml/language/java/reveng/Java.g:
+					{
+<span class="nc bnc" id="L2200" title="All 4 branches missed.">					if ( (input.LA(1) &gt;= '0' &amp;&amp; input.LA(1) &lt;= '7') ) {</span>
+<span class="nc" id="L2201">						input.consume();</span>
+					}
+					else {
+<span class="nc" id="L2204">						MismatchedSetException mse = new MismatchedSetException(null,input);</span>
+<span class="nc" id="L2205">						recover(mse);</span>
+<span class="nc" id="L2206">						throw mse;</span>
+					}
+					}
+					break;
+
+				default :
+<span class="nc bnc" id="L2212" title="All 2 branches missed.">					if ( cnt6 &gt;= 1 ) break loop6;</span>
+<span class="nc" id="L2213">					EarlyExitException eee = new EarlyExitException(6, input);</span>
+<span class="nc" id="L2214">					throw eee;</span>
+				}
+<span class="nc" id="L2216">				cnt6++;</span>
+<span class="nc" id="L2217">			}</span>
+
+			// org/argouml/language/java/reveng/Java.g:1607:32: ( IntegerTypeSuffix )?
+<span class="nc" id="L2220">			int alt7=2;</span>
+<span class="nc" id="L2221">			int LA7_0 = input.LA(1);</span>
+<span class="nc bnc" id="L2222" title="All 4 branches missed.">			if ( (LA7_0=='L'||LA7_0=='l') ) {</span>
+<span class="nc" id="L2223">				alt7=1;</span>
+			}
+<span class="nc bnc" id="L2225" title="All 2 branches missed.">			switch (alt7) {</span>
+				case 1 :
+					// org/argouml/language/java/reveng/Java.g:
+					{
+<span class="nc bnc" id="L2229" title="All 4 branches missed.">					if ( input.LA(1)=='L'||input.LA(1)=='l' ) {</span>
+<span class="nc" id="L2230">						input.consume();</span>
+					}
+					else {
+<span class="nc" id="L2233">						MismatchedSetException mse = new MismatchedSetException(null,input);</span>
+<span class="nc" id="L2234">						recover(mse);</span>
+<span class="nc" id="L2235">						throw mse;</span>
+					}
+					}
+					break;
+
+			}
+
+			}
+
+<span class="nc" id="L2244">			state.type = _type;</span>
+<span class="nc" id="L2245">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="nc" id="L2250">	}</span>
+	// $ANTLR end &quot;OctalLiteral&quot;
+
+	// $ANTLR start &quot;HexDigit&quot;
+	public final void mHexDigit() throws RecognitionException {
+		try {
+			// org/argouml/language/java/reveng/Java.g:1611:10: ( ( '0' .. '9' | 'a' .. 'f' | 'A' .. 'F' ) )
+			// org/argouml/language/java/reveng/Java.g:
+			{
+<span class="nc bnc" id="L2259" title="All 12 branches missed.">			if ( (input.LA(1) &gt;= '0' &amp;&amp; input.LA(1) &lt;= '9')||(input.LA(1) &gt;= 'A' &amp;&amp; input.LA(1) &lt;= 'F')||(input.LA(1) &gt;= 'a' &amp;&amp; input.LA(1) &lt;= 'f') ) {</span>
+<span class="nc" id="L2260">				input.consume();</span>
+			}
+			else {
+<span class="nc" id="L2263">				MismatchedSetException mse = new MismatchedSetException(null,input);</span>
+<span class="nc" id="L2264">				recover(mse);</span>
+<span class="nc" id="L2265">				throw mse;</span>
+			}
+			}
+
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="nc" id="L2273">	}</span>
+	// $ANTLR end &quot;HexDigit&quot;
+
+	// $ANTLR start &quot;IntegerTypeSuffix&quot;
+	public final void mIntegerTypeSuffix() throws RecognitionException {
+		try {
+			// org/argouml/language/java/reveng/Java.g:1614:19: ( ( 'l' | 'L' ) )
+			// org/argouml/language/java/reveng/Java.g:
+			{
+<span class="nc bnc" id="L2282" title="All 4 branches missed.">			if ( input.LA(1)=='L'||input.LA(1)=='l' ) {</span>
+<span class="nc" id="L2283">				input.consume();</span>
+			}
+			else {
+<span class="nc" id="L2286">				MismatchedSetException mse = new MismatchedSetException(null,input);</span>
+<span class="nc" id="L2287">				recover(mse);</span>
+<span class="nc" id="L2288">				throw mse;</span>
+			}
+			}
+
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="nc" id="L2296">	}</span>
+	// $ANTLR end &quot;IntegerTypeSuffix&quot;
+
+	// $ANTLR start &quot;FloatingPointLiteral&quot;
+	public final void mFloatingPointLiteral() throws RecognitionException {
+		try {
+<span class="nc" id="L2302">			int _type = FloatingPointLiteral;</span>
+<span class="nc" id="L2303">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:1616:5: ( ( '0' .. '9' )+ '.' ( '0' .. '9' )* ( Exponent )? ( FloatTypeSuffix )? | '.' ( '0' .. '9' )+ ( Exponent )? ( FloatTypeSuffix )? | ( '0' .. '9' )+ Exponent ( FloatTypeSuffix )? | ( '0' .. '9' )+ FloatTypeSuffix )
+<span class="nc" id="L2305">			int alt18=4;</span>
+<span class="nc" id="L2306">			alt18 = dfa18.predict(input);</span>
+<span class="nc bnc" id="L2307" title="All 5 branches missed.">			switch (alt18) {</span>
+				case 1 :
+					// org/argouml/language/java/reveng/Java.g:1616:9: ( '0' .. '9' )+ '.' ( '0' .. '9' )* ( Exponent )? ( FloatTypeSuffix )?
+					{
+					// org/argouml/language/java/reveng/Java.g:1616:9: ( '0' .. '9' )+
+<span class="nc" id="L2312">					int cnt8=0;</span>
+					loop8:
+					while (true) {
+<span class="nc" id="L2315">						int alt8=2;</span>
+<span class="nc" id="L2316">						int LA8_0 = input.LA(1);</span>
+<span class="nc bnc" id="L2317" title="All 4 branches missed.">						if ( ((LA8_0 &gt;= '0' &amp;&amp; LA8_0 &lt;= '9')) ) {</span>
+<span class="nc" id="L2318">							alt8=1;</span>
+						}
+
+<span class="nc bnc" id="L2321" title="All 2 branches missed.">						switch (alt8) {</span>
+						case 1 :
+							// org/argouml/language/java/reveng/Java.g:
+							{
+<span class="nc bnc" id="L2325" title="All 4 branches missed.">							if ( (input.LA(1) &gt;= '0' &amp;&amp; input.LA(1) &lt;= '9') ) {</span>
+<span class="nc" id="L2326">								input.consume();</span>
+							}
+							else {
+<span class="nc" id="L2329">								MismatchedSetException mse = new MismatchedSetException(null,input);</span>
+<span class="nc" id="L2330">								recover(mse);</span>
+<span class="nc" id="L2331">								throw mse;</span>
+							}
+							}
+							break;
+
+						default :
+<span class="nc bnc" id="L2337" title="All 2 branches missed.">							if ( cnt8 &gt;= 1 ) break loop8;</span>
+<span class="nc" id="L2338">							EarlyExitException eee = new EarlyExitException(8, input);</span>
+<span class="nc" id="L2339">							throw eee;</span>
+						}
+<span class="nc" id="L2341">						cnt8++;</span>
+<span class="nc" id="L2342">					}</span>
+
+<span class="nc" id="L2344">					match('.'); </span>
+					// org/argouml/language/java/reveng/Java.g:1616:25: ( '0' .. '9' )*
+					loop9:
+					while (true) {
+<span class="nc" id="L2348">						int alt9=2;</span>
+<span class="nc" id="L2349">						int LA9_0 = input.LA(1);</span>
+<span class="nc bnc" id="L2350" title="All 4 branches missed.">						if ( ((LA9_0 &gt;= '0' &amp;&amp; LA9_0 &lt;= '9')) ) {</span>
+<span class="nc" id="L2351">							alt9=1;</span>
+						}
+
+<span class="nc bnc" id="L2354" title="All 2 branches missed.">						switch (alt9) {</span>
+						case 1 :
+							// org/argouml/language/java/reveng/Java.g:
+							{
+<span class="nc bnc" id="L2358" title="All 4 branches missed.">							if ( (input.LA(1) &gt;= '0' &amp;&amp; input.LA(1) &lt;= '9') ) {</span>
+<span class="nc" id="L2359">								input.consume();</span>
+							}
+							else {
+<span class="nc" id="L2362">								MismatchedSetException mse = new MismatchedSetException(null,input);</span>
+<span class="nc" id="L2363">								recover(mse);</span>
+<span class="nc" id="L2364">								throw mse;</span>
+							}
+							}
+							break;
+
+						default :
+<span class="nc" id="L2370">							break loop9;</span>
+						}
+<span class="nc" id="L2372">					}</span>
+
+					// org/argouml/language/java/reveng/Java.g:1616:37: ( Exponent )?
+<span class="nc" id="L2375">					int alt10=2;</span>
+<span class="nc" id="L2376">					int LA10_0 = input.LA(1);</span>
+<span class="nc bnc" id="L2377" title="All 4 branches missed.">					if ( (LA10_0=='E'||LA10_0=='e') ) {</span>
+<span class="nc" id="L2378">						alt10=1;</span>
+					}
+<span class="nc bnc" id="L2380" title="All 2 branches missed.">					switch (alt10) {</span>
+						case 1 :
+							// org/argouml/language/java/reveng/Java.g:1616:37: Exponent
+							{
+<span class="nc" id="L2384">							mExponent(); </span>
+
+							}
+							break;
+
+					}
+
+					// org/argouml/language/java/reveng/Java.g:1616:47: ( FloatTypeSuffix )?
+<span class="nc" id="L2392">					int alt11=2;</span>
+<span class="nc" id="L2393">					int LA11_0 = input.LA(1);</span>
+<span class="nc bnc" id="L2394" title="All 8 branches missed.">					if ( (LA11_0=='D'||LA11_0=='F'||LA11_0=='d'||LA11_0=='f') ) {</span>
+<span class="nc" id="L2395">						alt11=1;</span>
+					}
+<span class="nc bnc" id="L2397" title="All 2 branches missed.">					switch (alt11) {</span>
+						case 1 :
+							// org/argouml/language/java/reveng/Java.g:
+							{
+<span class="nc bnc" id="L2401" title="All 8 branches missed.">							if ( input.LA(1)=='D'||input.LA(1)=='F'||input.LA(1)=='d'||input.LA(1)=='f' ) {</span>
+<span class="nc" id="L2402">								input.consume();</span>
+							}
+							else {
+<span class="nc" id="L2405">								MismatchedSetException mse = new MismatchedSetException(null,input);</span>
+<span class="nc" id="L2406">								recover(mse);</span>
+<span class="nc" id="L2407">								throw mse;</span>
+							}
+							}
+							break;
+
+					}
+
+					}
+<span class="nc" id="L2415">					break;</span>
+				case 2 :
+					// org/argouml/language/java/reveng/Java.g:1617:9: '.' ( '0' .. '9' )+ ( Exponent )? ( FloatTypeSuffix )?
+					{
+<span class="nc" id="L2419">					match('.'); </span>
+					// org/argouml/language/java/reveng/Java.g:1617:13: ( '0' .. '9' )+
+<span class="nc" id="L2421">					int cnt12=0;</span>
+					loop12:
+					while (true) {
+<span class="nc" id="L2424">						int alt12=2;</span>
+<span class="nc" id="L2425">						int LA12_0 = input.LA(1);</span>
+<span class="nc bnc" id="L2426" title="All 4 branches missed.">						if ( ((LA12_0 &gt;= '0' &amp;&amp; LA12_0 &lt;= '9')) ) {</span>
+<span class="nc" id="L2427">							alt12=1;</span>
+						}
+
+<span class="nc bnc" id="L2430" title="All 2 branches missed.">						switch (alt12) {</span>
+						case 1 :
+							// org/argouml/language/java/reveng/Java.g:
+							{
+<span class="nc bnc" id="L2434" title="All 4 branches missed.">							if ( (input.LA(1) &gt;= '0' &amp;&amp; input.LA(1) &lt;= '9') ) {</span>
+<span class="nc" id="L2435">								input.consume();</span>
+							}
+							else {
+<span class="nc" id="L2438">								MismatchedSetException mse = new MismatchedSetException(null,input);</span>
+<span class="nc" id="L2439">								recover(mse);</span>
+<span class="nc" id="L2440">								throw mse;</span>
+							}
+							}
+							break;
+
+						default :
+<span class="nc bnc" id="L2446" title="All 2 branches missed.">							if ( cnt12 &gt;= 1 ) break loop12;</span>
+<span class="nc" id="L2447">							EarlyExitException eee = new EarlyExitException(12, input);</span>
+<span class="nc" id="L2448">							throw eee;</span>
+						}
+<span class="nc" id="L2450">						cnt12++;</span>
+<span class="nc" id="L2451">					}</span>
+
+					// org/argouml/language/java/reveng/Java.g:1617:25: ( Exponent )?
+<span class="nc" id="L2454">					int alt13=2;</span>
+<span class="nc" id="L2455">					int LA13_0 = input.LA(1);</span>
+<span class="nc bnc" id="L2456" title="All 4 branches missed.">					if ( (LA13_0=='E'||LA13_0=='e') ) {</span>
+<span class="nc" id="L2457">						alt13=1;</span>
+					}
+<span class="nc bnc" id="L2459" title="All 2 branches missed.">					switch (alt13) {</span>
+						case 1 :
+							// org/argouml/language/java/reveng/Java.g:1617:25: Exponent
+							{
+<span class="nc" id="L2463">							mExponent(); </span>
+
+							}
+							break;
+
+					}
+
+					// org/argouml/language/java/reveng/Java.g:1617:35: ( FloatTypeSuffix )?
+<span class="nc" id="L2471">					int alt14=2;</span>
+<span class="nc" id="L2472">					int LA14_0 = input.LA(1);</span>
+<span class="nc bnc" id="L2473" title="All 8 branches missed.">					if ( (LA14_0=='D'||LA14_0=='F'||LA14_0=='d'||LA14_0=='f') ) {</span>
+<span class="nc" id="L2474">						alt14=1;</span>
+					}
+<span class="nc bnc" id="L2476" title="All 2 branches missed.">					switch (alt14) {</span>
+						case 1 :
+							// org/argouml/language/java/reveng/Java.g:
+							{
+<span class="nc bnc" id="L2480" title="All 8 branches missed.">							if ( input.LA(1)=='D'||input.LA(1)=='F'||input.LA(1)=='d'||input.LA(1)=='f' ) {</span>
+<span class="nc" id="L2481">								input.consume();</span>
+							}
+							else {
+<span class="nc" id="L2484">								MismatchedSetException mse = new MismatchedSetException(null,input);</span>
+<span class="nc" id="L2485">								recover(mse);</span>
+<span class="nc" id="L2486">								throw mse;</span>
+							}
+							}
+							break;
+
+					}
+
+					}
+<span class="nc" id="L2494">					break;</span>
+				case 3 :
+					// org/argouml/language/java/reveng/Java.g:1618:9: ( '0' .. '9' )+ Exponent ( FloatTypeSuffix )?
+					{
+					// org/argouml/language/java/reveng/Java.g:1618:9: ( '0' .. '9' )+
+<span class="nc" id="L2499">					int cnt15=0;</span>
+					loop15:
+					while (true) {
+<span class="nc" id="L2502">						int alt15=2;</span>
+<span class="nc" id="L2503">						int LA15_0 = input.LA(1);</span>
+<span class="nc bnc" id="L2504" title="All 4 branches missed.">						if ( ((LA15_0 &gt;= '0' &amp;&amp; LA15_0 &lt;= '9')) ) {</span>
+<span class="nc" id="L2505">							alt15=1;</span>
+						}
+
+<span class="nc bnc" id="L2508" title="All 2 branches missed.">						switch (alt15) {</span>
+						case 1 :
+							// org/argouml/language/java/reveng/Java.g:
+							{
+<span class="nc bnc" id="L2512" title="All 4 branches missed.">							if ( (input.LA(1) &gt;= '0' &amp;&amp; input.LA(1) &lt;= '9') ) {</span>
+<span class="nc" id="L2513">								input.consume();</span>
+							}
+							else {
+<span class="nc" id="L2516">								MismatchedSetException mse = new MismatchedSetException(null,input);</span>
+<span class="nc" id="L2517">								recover(mse);</span>
+<span class="nc" id="L2518">								throw mse;</span>
+							}
+							}
+							break;
+
+						default :
+<span class="nc bnc" id="L2524" title="All 2 branches missed.">							if ( cnt15 &gt;= 1 ) break loop15;</span>
+<span class="nc" id="L2525">							EarlyExitException eee = new EarlyExitException(15, input);</span>
+<span class="nc" id="L2526">							throw eee;</span>
+						}
+<span class="nc" id="L2528">						cnt15++;</span>
+<span class="nc" id="L2529">					}</span>
+
+<span class="nc" id="L2531">					mExponent(); </span>
+
+					// org/argouml/language/java/reveng/Java.g:1618:30: ( FloatTypeSuffix )?
+<span class="nc" id="L2534">					int alt16=2;</span>
+<span class="nc" id="L2535">					int LA16_0 = input.LA(1);</span>
+<span class="nc bnc" id="L2536" title="All 8 branches missed.">					if ( (LA16_0=='D'||LA16_0=='F'||LA16_0=='d'||LA16_0=='f') ) {</span>
+<span class="nc" id="L2537">						alt16=1;</span>
+					}
+<span class="nc bnc" id="L2539" title="All 2 branches missed.">					switch (alt16) {</span>
+						case 1 :
+							// org/argouml/language/java/reveng/Java.g:
+							{
+<span class="nc bnc" id="L2543" title="All 8 branches missed.">							if ( input.LA(1)=='D'||input.LA(1)=='F'||input.LA(1)=='d'||input.LA(1)=='f' ) {</span>
+<span class="nc" id="L2544">								input.consume();</span>
+							}
+							else {
+<span class="nc" id="L2547">								MismatchedSetException mse = new MismatchedSetException(null,input);</span>
+<span class="nc" id="L2548">								recover(mse);</span>
+<span class="nc" id="L2549">								throw mse;</span>
+							}
+							}
+							break;
+
+					}
+
+					}
+<span class="nc" id="L2557">					break;</span>
+				case 4 :
+					// org/argouml/language/java/reveng/Java.g:1619:9: ( '0' .. '9' )+ FloatTypeSuffix
+					{
+					// org/argouml/language/java/reveng/Java.g:1619:9: ( '0' .. '9' )+
+<span class="nc" id="L2562">					int cnt17=0;</span>
+					loop17:
+					while (true) {
+<span class="nc" id="L2565">						int alt17=2;</span>
+<span class="nc" id="L2566">						int LA17_0 = input.LA(1);</span>
+<span class="nc bnc" id="L2567" title="All 4 branches missed.">						if ( ((LA17_0 &gt;= '0' &amp;&amp; LA17_0 &lt;= '9')) ) {</span>
+<span class="nc" id="L2568">							alt17=1;</span>
+						}
+
+<span class="nc bnc" id="L2571" title="All 2 branches missed.">						switch (alt17) {</span>
+						case 1 :
+							// org/argouml/language/java/reveng/Java.g:
+							{
+<span class="nc bnc" id="L2575" title="All 4 branches missed.">							if ( (input.LA(1) &gt;= '0' &amp;&amp; input.LA(1) &lt;= '9') ) {</span>
+<span class="nc" id="L2576">								input.consume();</span>
+							}
+							else {
+<span class="nc" id="L2579">								MismatchedSetException mse = new MismatchedSetException(null,input);</span>
+<span class="nc" id="L2580">								recover(mse);</span>
+<span class="nc" id="L2581">								throw mse;</span>
+							}
+							}
+							break;
+
+						default :
+<span class="nc bnc" id="L2587" title="All 2 branches missed.">							if ( cnt17 &gt;= 1 ) break loop17;</span>
+<span class="nc" id="L2588">							EarlyExitException eee = new EarlyExitException(17, input);</span>
+<span class="nc" id="L2589">							throw eee;</span>
+						}
+<span class="nc" id="L2591">						cnt17++;</span>
+<span class="nc" id="L2592">					}</span>
+
+<span class="nc" id="L2594">					mFloatTypeSuffix(); </span>
+
+					}
+					break;
+
+			}
+<span class="nc" id="L2600">			state.type = _type;</span>
+<span class="nc" id="L2601">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="nc" id="L2606">	}</span>
+	// $ANTLR end &quot;FloatingPointLiteral&quot;
+
+	// $ANTLR start &quot;Exponent&quot;
+	public final void mExponent() throws RecognitionException {
+		try {
+			// org/argouml/language/java/reveng/Java.g:1624:10: ( ( 'e' | 'E' ) ( '+' | '-' )? ( '0' .. '9' )+ )
+			// org/argouml/language/java/reveng/Java.g:1624:12: ( 'e' | 'E' ) ( '+' | '-' )? ( '0' .. '9' )+
+			{
+<span class="nc bnc" id="L2615" title="All 4 branches missed.">			if ( input.LA(1)=='E'||input.LA(1)=='e' ) {</span>
+<span class="nc" id="L2616">				input.consume();</span>
+			}
+			else {
+<span class="nc" id="L2619">				MismatchedSetException mse = new MismatchedSetException(null,input);</span>
+<span class="nc" id="L2620">				recover(mse);</span>
+<span class="nc" id="L2621">				throw mse;</span>
+			}
+			// org/argouml/language/java/reveng/Java.g:1624:22: ( '+' | '-' )?
+<span class="nc" id="L2624">			int alt19=2;</span>
+<span class="nc" id="L2625">			int LA19_0 = input.LA(1);</span>
+<span class="nc bnc" id="L2626" title="All 4 branches missed.">			if ( (LA19_0=='+'||LA19_0=='-') ) {</span>
+<span class="nc" id="L2627">				alt19=1;</span>
+			}
+<span class="nc bnc" id="L2629" title="All 2 branches missed.">			switch (alt19) {</span>
+				case 1 :
+					// org/argouml/language/java/reveng/Java.g:
+					{
+<span class="nc bnc" id="L2633" title="All 4 branches missed.">					if ( input.LA(1)=='+'||input.LA(1)=='-' ) {</span>
+<span class="nc" id="L2634">						input.consume();</span>
+					}
+					else {
+<span class="nc" id="L2637">						MismatchedSetException mse = new MismatchedSetException(null,input);</span>
+<span class="nc" id="L2638">						recover(mse);</span>
+<span class="nc" id="L2639">						throw mse;</span>
+					}
+					}
+					break;
+
+			}
+
+			// org/argouml/language/java/reveng/Java.g:1624:33: ( '0' .. '9' )+
+<span class="nc" id="L2647">			int cnt20=0;</span>
+			loop20:
+			while (true) {
+<span class="nc" id="L2650">				int alt20=2;</span>
+<span class="nc" id="L2651">				int LA20_0 = input.LA(1);</span>
+<span class="nc bnc" id="L2652" title="All 4 branches missed.">				if ( ((LA20_0 &gt;= '0' &amp;&amp; LA20_0 &lt;= '9')) ) {</span>
+<span class="nc" id="L2653">					alt20=1;</span>
+				}
+
+<span class="nc bnc" id="L2656" title="All 2 branches missed.">				switch (alt20) {</span>
+				case 1 :
+					// org/argouml/language/java/reveng/Java.g:
+					{
+<span class="nc bnc" id="L2660" title="All 4 branches missed.">					if ( (input.LA(1) &gt;= '0' &amp;&amp; input.LA(1) &lt;= '9') ) {</span>
+<span class="nc" id="L2661">						input.consume();</span>
+					}
+					else {
+<span class="nc" id="L2664">						MismatchedSetException mse = new MismatchedSetException(null,input);</span>
+<span class="nc" id="L2665">						recover(mse);</span>
+<span class="nc" id="L2666">						throw mse;</span>
+					}
+					}
+					break;
+
+				default :
+<span class="nc bnc" id="L2672" title="All 2 branches missed.">					if ( cnt20 &gt;= 1 ) break loop20;</span>
+<span class="nc" id="L2673">					EarlyExitException eee = new EarlyExitException(20, input);</span>
+<span class="nc" id="L2674">					throw eee;</span>
+				}
+<span class="nc" id="L2676">				cnt20++;</span>
+<span class="nc" id="L2677">			}</span>
+
+			}
+
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="nc" id="L2685">	}</span>
+	// $ANTLR end &quot;Exponent&quot;
+
+	// $ANTLR start &quot;FloatTypeSuffix&quot;
+	public final void mFloatTypeSuffix() throws RecognitionException {
+		try {
+			// org/argouml/language/java/reveng/Java.g:1627:17: ( ( 'f' | 'F' | 'd' | 'D' ) )
+			// org/argouml/language/java/reveng/Java.g:
+			{
+<span class="nc bnc" id="L2694" title="All 8 branches missed.">			if ( input.LA(1)=='D'||input.LA(1)=='F'||input.LA(1)=='d'||input.LA(1)=='f' ) {</span>
+<span class="nc" id="L2695">				input.consume();</span>
+			}
+			else {
+<span class="nc" id="L2698">				MismatchedSetException mse = new MismatchedSetException(null,input);</span>
+<span class="nc" id="L2699">				recover(mse);</span>
+<span class="nc" id="L2700">				throw mse;</span>
+			}
+			}
+
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="nc" id="L2708">	}</span>
+	// $ANTLR end &quot;FloatTypeSuffix&quot;
+
+	// $ANTLR start &quot;CharacterLiteral&quot;
+	public final void mCharacterLiteral() throws RecognitionException {
+		try {
+<span class="nc" id="L2714">			int _type = CharacterLiteral;</span>
+<span class="nc" id="L2715">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:1629:5: ( '\\'' ( EscapeSequence |~ ( '\\'' | '\\\\' ) ) '\\'' )
+			// org/argouml/language/java/reveng/Java.g:1629:9: '\\'' ( EscapeSequence |~ ( '\\'' | '\\\\' ) ) '\\''
+			{
+<span class="nc" id="L2719">			match('\''); </span>
+			// org/argouml/language/java/reveng/Java.g:1629:14: ( EscapeSequence |~ ( '\\'' | '\\\\' ) )
+<span class="nc" id="L2721">			int alt21=2;</span>
+<span class="nc" id="L2722">			int LA21_0 = input.LA(1);</span>
+<span class="nc bnc" id="L2723" title="All 2 branches missed.">			if ( (LA21_0=='\\') ) {</span>
+<span class="nc" id="L2724">				alt21=1;</span>
+			}
+<span class="nc bnc" id="L2726" title="All 12 branches missed.">			else if ( ((LA21_0 &gt;= '\u0000' &amp;&amp; LA21_0 &lt;= '&amp;')||(LA21_0 &gt;= '(' &amp;&amp; LA21_0 &lt;= '[')||(LA21_0 &gt;= ']' &amp;&amp; LA21_0 &lt;= '\uFFFF')) ) {</span>
+<span class="nc" id="L2727">				alt21=2;</span>
+			}
+
+			else {
+<span class="nc" id="L2731">				NoViableAltException nvae =</span>
+					new NoViableAltException(&quot;&quot;, 21, 0, input);
+<span class="nc" id="L2733">				throw nvae;</span>
+			}
+
+<span class="nc bnc" id="L2736" title="All 3 branches missed.">			switch (alt21) {</span>
+				case 1 :
+					// org/argouml/language/java/reveng/Java.g:1629:16: EscapeSequence
+					{
+<span class="nc" id="L2740">					mEscapeSequence(); </span>
+
+					}
+<span class="nc" id="L2743">					break;</span>
+				case 2 :
+					// org/argouml/language/java/reveng/Java.g:1629:33: ~ ( '\\'' | '\\\\' )
+					{
+<span class="nc bnc" id="L2747" title="All 12 branches missed.">					if ( (input.LA(1) &gt;= '\u0000' &amp;&amp; input.LA(1) &lt;= '&amp;')||(input.LA(1) &gt;= '(' &amp;&amp; input.LA(1) &lt;= '[')||(input.LA(1) &gt;= ']' &amp;&amp; input.LA(1) &lt;= '\uFFFF') ) {</span>
+<span class="nc" id="L2748">						input.consume();</span>
+					}
+					else {
+<span class="nc" id="L2751">						MismatchedSetException mse = new MismatchedSetException(null,input);</span>
+<span class="nc" id="L2752">						recover(mse);</span>
+<span class="nc" id="L2753">						throw mse;</span>
+					}
+					}
+					break;
+
+			}
+
+<span class="nc" id="L2760">			match('\''); </span>
+			}
+
+<span class="nc" id="L2763">			state.type = _type;</span>
+<span class="nc" id="L2764">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="nc" id="L2769">	}</span>
+	// $ANTLR end &quot;CharacterLiteral&quot;
+
+	// $ANTLR start &quot;StringLiteral&quot;
+	public final void mStringLiteral() throws RecognitionException {
+		try {
+<span class="fc" id="L2775">			int _type = StringLiteral;</span>
+<span class="fc" id="L2776">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:1633:5: ( '\&quot;' ( EscapeSequence |~ ( '\\\\' | '\&quot;' ) )* '\&quot;' )
+			// org/argouml/language/java/reveng/Java.g:1633:8: '\&quot;' ( EscapeSequence |~ ( '\\\\' | '\&quot;' ) )* '\&quot;'
+			{
+<span class="fc" id="L2780">			match('\&quot;'); </span>
+			// org/argouml/language/java/reveng/Java.g:1633:12: ( EscapeSequence |~ ( '\\\\' | '\&quot;' ) )*
+			loop22:
+			while (true) {
+<span class="fc" id="L2784">				int alt22=3;</span>
+<span class="fc" id="L2785">				int LA22_0 = input.LA(1);</span>
+<span class="pc bpc" id="L2786" title="1 of 2 branches missed.">				if ( (LA22_0=='\\') ) {</span>
+<span class="nc" id="L2787">					alt22=1;</span>
+				}
+<span class="pc bpc" id="L2789" title="2 of 12 branches missed.">				else if ( ((LA22_0 &gt;= '\u0000' &amp;&amp; LA22_0 &lt;= '!')||(LA22_0 &gt;= '#' &amp;&amp; LA22_0 &lt;= '[')||(LA22_0 &gt;= ']' &amp;&amp; LA22_0 &lt;= '\uFFFF')) ) {</span>
+<span class="fc" id="L2790">					alt22=2;</span>
+				}
+
+<span class="pc bpc" id="L2793" title="1 of 3 branches missed.">				switch (alt22) {</span>
+				case 1 :
+					// org/argouml/language/java/reveng/Java.g:1633:14: EscapeSequence
+					{
+<span class="nc" id="L2797">					mEscapeSequence(); </span>
+
+					}
+<span class="nc" id="L2800">					break;</span>
+				case 2 :
+					// org/argouml/language/java/reveng/Java.g:1633:31: ~ ( '\\\\' | '\&quot;' )
+					{
+<span class="pc bpc" id="L2804" title="4 of 12 branches missed.">					if ( (input.LA(1) &gt;= '\u0000' &amp;&amp; input.LA(1) &lt;= '!')||(input.LA(1) &gt;= '#' &amp;&amp; input.LA(1) &lt;= '[')||(input.LA(1) &gt;= ']' &amp;&amp; input.LA(1) &lt;= '\uFFFF') ) {</span>
+<span class="fc" id="L2805">						input.consume();</span>
+					}
+					else {
+<span class="nc" id="L2808">						MismatchedSetException mse = new MismatchedSetException(null,input);</span>
+<span class="nc" id="L2809">						recover(mse);</span>
+<span class="nc" id="L2810">						throw mse;</span>
+					}
+					}
+					break;
+
+				default :
+<span class="fc" id="L2816">					break loop22;</span>
+				}
+<span class="fc" id="L2818">			}</span>
+
+<span class="fc" id="L2820">			match('\&quot;'); </span>
+			}
+
+<span class="fc" id="L2823">			state.type = _type;</span>
+<span class="fc" id="L2824">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="fc" id="L2829">	}</span>
+	// $ANTLR end &quot;StringLiteral&quot;
+
+	// $ANTLR start &quot;EscapeSequence&quot;
+	public final void mEscapeSequence() throws RecognitionException {
+		try {
+			// org/argouml/language/java/reveng/Java.g:1639:5: ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | '\\\&quot;' | '\\'' | '\\\\' ) | UnicodeEscape | OctalEscape )
+<span class="nc" id="L2836">			int alt23=3;</span>
+<span class="nc" id="L2837">			int LA23_0 = input.LA(1);</span>
+<span class="nc bnc" id="L2838" title="All 2 branches missed.">			if ( (LA23_0=='\\') ) {</span>
+<span class="nc bnc" id="L2839" title="All 4 branches missed.">				switch ( input.LA(2) ) {</span>
+				case '\&quot;':
+				case '\'':
+				case '\\':
+				case 'b':
+				case 'f':
+				case 'n':
+				case 'r':
+				case 't':
+					{
+<span class="nc" id="L2849">					alt23=1;</span>
+					}
+<span class="nc" id="L2851">					break;</span>
+				case 'u':
+					{
+<span class="nc" id="L2854">					alt23=2;</span>
+					}
+<span class="nc" id="L2856">					break;</span>
+				case '0':
+				case '1':
+				case '2':
+				case '3':
+				case '4':
+				case '5':
+				case '6':
+				case '7':
+					{
+<span class="nc" id="L2866">					alt23=3;</span>
+					}
+<span class="nc" id="L2868">					break;</span>
+				default:
+<span class="nc" id="L2870">					int nvaeMark = input.mark();</span>
+					try {
+<span class="nc" id="L2872">						input.consume();</span>
+<span class="nc" id="L2873">						NoViableAltException nvae =</span>
+							new NoViableAltException(&quot;&quot;, 23, 1, input);
+<span class="nc" id="L2875">						throw nvae;</span>
+					} finally {
+<span class="nc" id="L2877">						input.rewind(nvaeMark);</span>
+<span class="nc" id="L2878">					}</span>
+				}
+			}
+
+			else {
+<span class="nc" id="L2883">				NoViableAltException nvae =</span>
+					new NoViableAltException(&quot;&quot;, 23, 0, input);
+<span class="nc" id="L2885">				throw nvae;</span>
+			}
+
+<span class="nc bnc" id="L2888" title="All 4 branches missed.">			switch (alt23) {</span>
+				case 1 :
+					// org/argouml/language/java/reveng/Java.g:1639:9: '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | '\\\&quot;' | '\\'' | '\\\\' )
+					{
+<span class="nc" id="L2892">					match('\\'); </span>
+<span class="nc bnc" id="L2893" title="All 16 branches missed.">					if ( input.LA(1)=='\&quot;'||input.LA(1)=='\''||input.LA(1)=='\\'||input.LA(1)=='b'||input.LA(1)=='f'||input.LA(1)=='n'||input.LA(1)=='r'||input.LA(1)=='t' ) {</span>
+<span class="nc" id="L2894">						input.consume();</span>
+					}
+					else {
+<span class="nc" id="L2897">						MismatchedSetException mse = new MismatchedSetException(null,input);</span>
+<span class="nc" id="L2898">						recover(mse);</span>
+<span class="nc" id="L2899">						throw mse;</span>
+					}
+					}
+					break;
+				case 2 :
+					// org/argouml/language/java/reveng/Java.g:1640:9: UnicodeEscape
+					{
+<span class="nc" id="L2906">					mUnicodeEscape(); </span>
+
+					}
+<span class="nc" id="L2909">					break;</span>
+				case 3 :
+					// org/argouml/language/java/reveng/Java.g:1641:9: OctalEscape
+					{
+<span class="nc" id="L2913">					mOctalEscape(); </span>
+
+					}
+					break;
+
+			}
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="nc" id="L2923">	}</span>
+	// $ANTLR end &quot;EscapeSequence&quot;
+
+	// $ANTLR start &quot;OctalEscape&quot;
+	public final void mOctalEscape() throws RecognitionException {
+		try {
+			// org/argouml/language/java/reveng/Java.g:1646:5: ( '\\\\' ( '0' .. '3' ) ( '0' .. '7' ) ( '0' .. '7' ) | '\\\\' ( '0' .. '7' ) ( '0' .. '7' ) | '\\\\' ( '0' .. '7' ) )
+<span class="nc" id="L2930">			int alt24=3;</span>
+<span class="nc" id="L2931">			int LA24_0 = input.LA(1);</span>
+<span class="nc bnc" id="L2932" title="All 2 branches missed.">			if ( (LA24_0=='\\') ) {</span>
+<span class="nc" id="L2933">				int LA24_1 = input.LA(2);</span>
+<span class="nc bnc" id="L2934" title="All 4 branches missed.">				if ( ((LA24_1 &gt;= '0' &amp;&amp; LA24_1 &lt;= '3')) ) {</span>
+<span class="nc" id="L2935">					int LA24_2 = input.LA(3);</span>
+<span class="nc bnc" id="L2936" title="All 4 branches missed.">					if ( ((LA24_2 &gt;= '0' &amp;&amp; LA24_2 &lt;= '7')) ) {</span>
+<span class="nc" id="L2937">						int LA24_4 = input.LA(4);</span>
+<span class="nc bnc" id="L2938" title="All 4 branches missed.">						if ( ((LA24_4 &gt;= '0' &amp;&amp; LA24_4 &lt;= '7')) ) {</span>
+<span class="nc" id="L2939">							alt24=1;</span>
+						}
+
+						else {
+<span class="nc" id="L2943">							alt24=2;</span>
+						}
+
+<span class="nc" id="L2946">					}</span>
+
+					else {
+<span class="nc" id="L2949">						alt24=3;</span>
+					}
+
+<span class="nc" id="L2952">				}</span>
+<span class="nc bnc" id="L2953" title="All 4 branches missed.">				else if ( ((LA24_1 &gt;= '4' &amp;&amp; LA24_1 &lt;= '7')) ) {</span>
+<span class="nc" id="L2954">					int LA24_3 = input.LA(3);</span>
+<span class="nc bnc" id="L2955" title="All 4 branches missed.">					if ( ((LA24_3 &gt;= '0' &amp;&amp; LA24_3 &lt;= '7')) ) {</span>
+<span class="nc" id="L2956">						alt24=2;</span>
+					}
+
+					else {
+<span class="nc" id="L2960">						alt24=3;</span>
+					}
+
+<span class="nc" id="L2963">				}</span>
+
+				else {
+<span class="nc" id="L2966">					int nvaeMark = input.mark();</span>
+					try {
+<span class="nc" id="L2968">						input.consume();</span>
+<span class="nc" id="L2969">						NoViableAltException nvae =</span>
+							new NoViableAltException(&quot;&quot;, 24, 1, input);
+<span class="nc" id="L2971">						throw nvae;</span>
+					} finally {
+<span class="nc" id="L2973">						input.rewind(nvaeMark);</span>
+					}
+				}
+
+<span class="nc" id="L2977">			}</span>
+
+			else {
+<span class="nc" id="L2980">				NoViableAltException nvae =</span>
+					new NoViableAltException(&quot;&quot;, 24, 0, input);
+<span class="nc" id="L2982">				throw nvae;</span>
+			}
+
+<span class="nc bnc" id="L2985" title="All 4 branches missed.">			switch (alt24) {</span>
+				case 1 :
+					// org/argouml/language/java/reveng/Java.g:1646:9: '\\\\' ( '0' .. '3' ) ( '0' .. '7' ) ( '0' .. '7' )
+					{
+<span class="nc" id="L2989">					match('\\'); </span>
+<span class="nc bnc" id="L2990" title="All 4 branches missed.">					if ( (input.LA(1) &gt;= '0' &amp;&amp; input.LA(1) &lt;= '3') ) {</span>
+<span class="nc" id="L2991">						input.consume();</span>
+					}
+					else {
+<span class="nc" id="L2994">						MismatchedSetException mse = new MismatchedSetException(null,input);</span>
+<span class="nc" id="L2995">						recover(mse);</span>
+<span class="nc" id="L2996">						throw mse;</span>
+					}
+<span class="nc bnc" id="L2998" title="All 4 branches missed.">					if ( (input.LA(1) &gt;= '0' &amp;&amp; input.LA(1) &lt;= '7') ) {</span>
+<span class="nc" id="L2999">						input.consume();</span>
+					}
+					else {
+<span class="nc" id="L3002">						MismatchedSetException mse = new MismatchedSetException(null,input);</span>
+<span class="nc" id="L3003">						recover(mse);</span>
+<span class="nc" id="L3004">						throw mse;</span>
+					}
+<span class="nc bnc" id="L3006" title="All 4 branches missed.">					if ( (input.LA(1) &gt;= '0' &amp;&amp; input.LA(1) &lt;= '7') ) {</span>
+<span class="nc" id="L3007">						input.consume();</span>
+					}
+					else {
+<span class="nc" id="L3010">						MismatchedSetException mse = new MismatchedSetException(null,input);</span>
+<span class="nc" id="L3011">						recover(mse);</span>
+<span class="nc" id="L3012">						throw mse;</span>
+					}
+					}
+					break;
+				case 2 :
+					// org/argouml/language/java/reveng/Java.g:1647:9: '\\\\' ( '0' .. '7' ) ( '0' .. '7' )
+					{
+<span class="nc" id="L3019">					match('\\'); </span>
+<span class="nc bnc" id="L3020" title="All 4 branches missed.">					if ( (input.LA(1) &gt;= '0' &amp;&amp; input.LA(1) &lt;= '7') ) {</span>
+<span class="nc" id="L3021">						input.consume();</span>
+					}
+					else {
+<span class="nc" id="L3024">						MismatchedSetException mse = new MismatchedSetException(null,input);</span>
+<span class="nc" id="L3025">						recover(mse);</span>
+<span class="nc" id="L3026">						throw mse;</span>
+					}
+<span class="nc bnc" id="L3028" title="All 4 branches missed.">					if ( (input.LA(1) &gt;= '0' &amp;&amp; input.LA(1) &lt;= '7') ) {</span>
+<span class="nc" id="L3029">						input.consume();</span>
+					}
+					else {
+<span class="nc" id="L3032">						MismatchedSetException mse = new MismatchedSetException(null,input);</span>
+<span class="nc" id="L3033">						recover(mse);</span>
+<span class="nc" id="L3034">						throw mse;</span>
+					}
+					}
+					break;
+				case 3 :
+					// org/argouml/language/java/reveng/Java.g:1648:9: '\\\\' ( '0' .. '7' )
+					{
+<span class="nc" id="L3041">					match('\\'); </span>
+<span class="nc bnc" id="L3042" title="All 4 branches missed.">					if ( (input.LA(1) &gt;= '0' &amp;&amp; input.LA(1) &lt;= '7') ) {</span>
+<span class="nc" id="L3043">						input.consume();</span>
+					}
+					else {
+<span class="nc" id="L3046">						MismatchedSetException mse = new MismatchedSetException(null,input);</span>
+<span class="nc" id="L3047">						recover(mse);</span>
+<span class="nc" id="L3048">						throw mse;</span>
+					}
+					}
+					break;
+
+			}
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="nc" id="L3058">	}</span>
+	// $ANTLR end &quot;OctalEscape&quot;
+
+	// $ANTLR start &quot;UnicodeEscape&quot;
+	public final void mUnicodeEscape() throws RecognitionException {
+		try {
+			// org/argouml/language/java/reveng/Java.g:1653:5: ( '\\\\' 'u' HexDigit HexDigit HexDigit HexDigit )
+			// org/argouml/language/java/reveng/Java.g:1653:9: '\\\\' 'u' HexDigit HexDigit HexDigit HexDigit
+			{
+<span class="nc" id="L3067">			match('\\'); </span>
+<span class="nc" id="L3068">			match('u'); </span>
+<span class="nc" id="L3069">			mHexDigit(); </span>
+
+<span class="nc" id="L3071">			mHexDigit(); </span>
+
+<span class="nc" id="L3073">			mHexDigit(); </span>
+
+<span class="nc" id="L3075">			mHexDigit(); </span>
+
+			}
+
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="nc" id="L3083">	}</span>
+	// $ANTLR end &quot;UnicodeEscape&quot;
+
+	// $ANTLR start &quot;ENUM&quot;
+	public final void mENUM() throws RecognitionException {
+		try {
+<span class="fc" id="L3089">			int _type = ENUM;</span>
+<span class="fc" id="L3090">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:1655:5: ( 'enum' )
+			// org/argouml/language/java/reveng/Java.g:1655:9: 'enum'
+			{
+<span class="fc" id="L3094">			match(&quot;enum&quot;); </span>
+
+<span class="pc bpc" id="L3096" title="1 of 2 branches missed.">			if (!enumIsKeyword) _type=Identifier;</span>
+			}
+
+<span class="fc" id="L3099">			state.type = _type;</span>
+<span class="fc" id="L3100">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="fc" id="L3105">	}</span>
+	// $ANTLR end &quot;ENUM&quot;
+
+	// $ANTLR start &quot;ASSERT&quot;
+	public final void mASSERT() throws RecognitionException {
+		try {
+<span class="nc" id="L3111">			int _type = ASSERT;</span>
+<span class="nc" id="L3112">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:1659:5: ( 'assert' )
+			// org/argouml/language/java/reveng/Java.g:1659:9: 'assert'
+			{
+<span class="nc" id="L3116">			match(&quot;assert&quot;); </span>
+
+<span class="nc bnc" id="L3118" title="All 2 branches missed.">			if (!assertIsKeyword) _type=Identifier;</span>
+			}
+
+<span class="nc" id="L3121">			state.type = _type;</span>
+<span class="nc" id="L3122">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="nc" id="L3127">	}</span>
+	// $ANTLR end &quot;ASSERT&quot;
+
+	// $ANTLR start &quot;Identifier&quot;
+	public final void mIdentifier() throws RecognitionException {
+		try {
+<span class="fc" id="L3133">			int _type = Identifier;</span>
+<span class="fc" id="L3134">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:1663:5: ( Letter ( Letter | JavaIDDigit )* )
+			// org/argouml/language/java/reveng/Java.g:1663:9: Letter ( Letter | JavaIDDigit )*
+			{
+<span class="fc" id="L3138">			mLetter(); </span>
+
+			// org/argouml/language/java/reveng/Java.g:1663:16: ( Letter | JavaIDDigit )*
+			loop25:
+			while (true) {
+<span class="fc" id="L3143">				int alt25=2;</span>
+<span class="fc" id="L3144">				int LA25_0 = input.LA(1);</span>
+<span class="pc bpc" id="L3145" title="23 of 48 branches missed.">				if ( (LA25_0=='$'||(LA25_0 &gt;= '0' &amp;&amp; LA25_0 &lt;= '9')||(LA25_0 &gt;= 'A' &amp;&amp; LA25_0 &lt;= 'Z')||LA25_0=='_'||(LA25_0 &gt;= 'a' &amp;&amp; LA25_0 &lt;= 'z')||(LA25_0 &gt;= '\u00C0' &amp;&amp; LA25_0 &lt;= '\u00D6')||(LA25_0 &gt;= '\u00D8' &amp;&amp; LA25_0 &lt;= '\u00F6')||(LA25_0 &gt;= '\u00F8' &amp;&amp; LA25_0 &lt;= '\u1FFF')||(LA25_0 &gt;= '\u3040' &amp;&amp; LA25_0 &lt;= '\u318F')||(LA25_0 &gt;= '\u3300' &amp;&amp; LA25_0 &lt;= '\u337F')||(LA25_0 &gt;= '\u3400' &amp;&amp; LA25_0 &lt;= '\u3D2D')||(LA25_0 &gt;= '\u4E00' &amp;&amp; LA25_0 &lt;= '\u9FFF')||(LA25_0 &gt;= '\uF900' &amp;&amp; LA25_0 &lt;= '\uFAFF')) ) {</span>
+<span class="fc" id="L3146">					alt25=1;</span>
+				}
+
+<span class="fc bfc" id="L3149" title="All 2 branches covered.">				switch (alt25) {</span>
+				case 1 :
+					// org/argouml/language/java/reveng/Java.g:
+					{
+<span class="pc bpc" id="L3153" title="34 of 48 branches missed.">					if ( input.LA(1)=='$'||(input.LA(1) &gt;= '0' &amp;&amp; input.LA(1) &lt;= '9')||(input.LA(1) &gt;= 'A' &amp;&amp; input.LA(1) &lt;= 'Z')||input.LA(1)=='_'||(input.LA(1) &gt;= 'a' &amp;&amp; input.LA(1) &lt;= 'z')||(input.LA(1) &gt;= '\u00C0' &amp;&amp; input.LA(1) &lt;= '\u00D6')||(input.LA(1) &gt;= '\u00D8' &amp;&amp; input.LA(1) &lt;= '\u00F6')||(input.LA(1) &gt;= '\u00F8' &amp;&amp; input.LA(1) &lt;= '\u1FFF')||(input.LA(1) &gt;= '\u3040' &amp;&amp; input.LA(1) &lt;= '\u318F')||(input.LA(1) &gt;= '\u3300' &amp;&amp; input.LA(1) &lt;= '\u337F')||(input.LA(1) &gt;= '\u3400' &amp;&amp; input.LA(1) &lt;= '\u3D2D')||(input.LA(1) &gt;= '\u4E00' &amp;&amp; input.LA(1) &lt;= '\u9FFF')||(input.LA(1) &gt;= '\uF900' &amp;&amp; input.LA(1) &lt;= '\uFAFF') ) {</span>
+<span class="fc" id="L3154">						input.consume();</span>
+					}
+					else {
+<span class="nc" id="L3157">						MismatchedSetException mse = new MismatchedSetException(null,input);</span>
+<span class="nc" id="L3158">						recover(mse);</span>
+<span class="nc" id="L3159">						throw mse;</span>
+					}
+					}
+					break;
+
+				default :
+<span class="fc" id="L3165">					break loop25;</span>
+				}
+<span class="fc" id="L3167">			}</span>
+
+			}
+
+<span class="fc" id="L3171">			state.type = _type;</span>
+<span class="fc" id="L3172">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="fc" id="L3177">	}</span>
+	// $ANTLR end &quot;Identifier&quot;
+
+	// $ANTLR start &quot;Letter&quot;
+	public final void mLetter() throws RecognitionException {
+		try {
+			// org/argouml/language/java/reveng/Java.g:1672:5: ( '\\u0024' | '\\u0041' .. '\\u005a' | '\\u005f' | '\\u0061' .. '\\u007a' | '\\u00c0' .. '\\u00d6' | '\\u00d8' .. '\\u00f6' | '\\u00f8' .. '\\u00ff' | '\\u0100' .. '\\u1fff' | '\\u3040' .. '\\u318f' | '\\u3300' .. '\\u337f' | '\\u3400' .. '\\u3d2d' | '\\u4e00' .. '\\u9fff' | '\\uf900' .. '\\ufaff' )
+			// org/argouml/language/java/reveng/Java.g:
+			{
+<span class="pc bpc" id="L3186" title="37 of 44 branches missed.">			if ( input.LA(1)=='$'||(input.LA(1) &gt;= 'A' &amp;&amp; input.LA(1) &lt;= 'Z')||input.LA(1)=='_'||(input.LA(1) &gt;= 'a' &amp;&amp; input.LA(1) &lt;= 'z')||(input.LA(1) &gt;= '\u00C0' &amp;&amp; input.LA(1) &lt;= '\u00D6')||(input.LA(1) &gt;= '\u00D8' &amp;&amp; input.LA(1) &lt;= '\u00F6')||(input.LA(1) &gt;= '\u00F8' &amp;&amp; input.LA(1) &lt;= '\u1FFF')||(input.LA(1) &gt;= '\u3040' &amp;&amp; input.LA(1) &lt;= '\u318F')||(input.LA(1) &gt;= '\u3300' &amp;&amp; input.LA(1) &lt;= '\u337F')||(input.LA(1) &gt;= '\u3400' &amp;&amp; input.LA(1) &lt;= '\u3D2D')||(input.LA(1) &gt;= '\u4E00' &amp;&amp; input.LA(1) &lt;= '\u9FFF')||(input.LA(1) &gt;= '\uF900' &amp;&amp; input.LA(1) &lt;= '\uFAFF') ) {</span>
+<span class="fc" id="L3187">				input.consume();</span>
+			}
+			else {
+<span class="nc" id="L3190">				MismatchedSetException mse = new MismatchedSetException(null,input);</span>
+<span class="nc" id="L3191">				recover(mse);</span>
+<span class="nc" id="L3192">				throw mse;</span>
+			}
+			}
+
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="fc" id="L3200">	}</span>
+	// $ANTLR end &quot;Letter&quot;
+
+	// $ANTLR start &quot;JavaIDDigit&quot;
+	public final void mJavaIDDigit() throws RecognitionException {
+		try {
+			// org/argouml/language/java/reveng/Java.g:1689:5: ( '\\u0030' .. '\\u0039' | '\\u0660' .. '\\u0669' | '\\u06f0' .. '\\u06f9' | '\\u0966' .. '\\u096f' | '\\u09e6' .. '\\u09ef' | '\\u0a66' .. '\\u0a6f' | '\\u0ae6' .. '\\u0aef' | '\\u0b66' .. '\\u0b6f' | '\\u0be7' .. '\\u0bef' | '\\u0c66' .. '\\u0c6f' | '\\u0ce6' .. '\\u0cef' | '\\u0d66' .. '\\u0d6f' | '\\u0e50' .. '\\u0e59' | '\\u0ed0' .. '\\u0ed9' | '\\u1040' .. '\\u1049' )
+			// org/argouml/language/java/reveng/Java.g:
+			{
+<span class="nc bnc" id="L3209" title="All 60 branches missed.">			if ( (input.LA(1) &gt;= '0' &amp;&amp; input.LA(1) &lt;= '9')||(input.LA(1) &gt;= '\u0660' &amp;&amp; input.LA(1) &lt;= '\u0669')||(input.LA(1) &gt;= '\u06F0' &amp;&amp; input.LA(1) &lt;= '\u06F9')||(input.LA(1) &gt;= '\u0966' &amp;&amp; input.LA(1) &lt;= '\u096F')||(input.LA(1) &gt;= '\u09E6' &amp;&amp; input.LA(1) &lt;= '\u09EF')||(input.LA(1) &gt;= '\u0A66' &amp;&amp; input.LA(1) &lt;= '\u0A6F')||(input.LA(1) &gt;= '\u0AE6' &amp;&amp; input.LA(1) &lt;= '\u0AEF')||(input.LA(1) &gt;= '\u0B66' &amp;&amp; input.LA(1) &lt;= '\u0B6F')||(input.LA(1) &gt;= '\u0BE7' &amp;&amp; input.LA(1) &lt;= '\u0BEF')||(input.LA(1) &gt;= '\u0C66' &amp;&amp; input.LA(1) &lt;= '\u0C6F')||(input.LA(1) &gt;= '\u0CE6' &amp;&amp; input.LA(1) &lt;= '\u0CEF')||(input.LA(1) &gt;= '\u0D66' &amp;&amp; input.LA(1) &lt;= '\u0D6F')||(input.LA(1) &gt;= '\u0E50' &amp;&amp; input.LA(1) &lt;= '\u0E59')||(input.LA(1) &gt;= '\u0ED0' &amp;&amp; input.LA(1) &lt;= '\u0ED9')||(input.LA(1) &gt;= '\u1040' &amp;&amp; input.LA(1) &lt;= '\u1049') ) {</span>
+<span class="nc" id="L3210">				input.consume();</span>
+			}
+			else {
+<span class="nc" id="L3213">				MismatchedSetException mse = new MismatchedSetException(null,input);</span>
+<span class="nc" id="L3214">				recover(mse);</span>
+<span class="nc" id="L3215">				throw mse;</span>
+			}
+			}
+
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="nc" id="L3223">	}</span>
+	// $ANTLR end &quot;JavaIDDigit&quot;
+
+	// $ANTLR start &quot;WS&quot;
+	public final void mWS() throws RecognitionException {
+		try {
+<span class="fc" id="L3229">			int _type = WS;</span>
+<span class="fc" id="L3230">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:1705:5: ( ( ' ' | '\\r' | '\\t' | '\\u000C' | '\\n' ) )
+			// org/argouml/language/java/reveng/Java.g:1705:9: ( ' ' | '\\r' | '\\t' | '\\u000C' | '\\n' )
+			{
+<span class="pc bpc" id="L3234" title="4 of 10 branches missed.">			if ( (input.LA(1) &gt;= '\t' &amp;&amp; input.LA(1) &lt;= '\n')||(input.LA(1) &gt;= '\f' &amp;&amp; input.LA(1) &lt;= '\r')||input.LA(1)==' ' ) {</span>
+<span class="fc" id="L3235">				input.consume();</span>
+			}
+			else {
+<span class="nc" id="L3238">				MismatchedSetException mse = new MismatchedSetException(null,input);</span>
+<span class="nc" id="L3239">				recover(mse);</span>
+<span class="nc" id="L3240">				throw mse;</span>
+			}
+
+<span class="fc" id="L3243">			            _channel=HIDDEN;</span>
+			        
+			}
+
+<span class="fc" id="L3247">			state.type = _type;</span>
+<span class="fc" id="L3248">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="fc" id="L3253">	}</span>
+	// $ANTLR end &quot;WS&quot;
+
+	// $ANTLR start &quot;EMPTY_COMMENT&quot;
+	public final void mEMPTY_COMMENT() throws RecognitionException {
+		try {
+<span class="nc" id="L3259">			int _type = EMPTY_COMMENT;</span>
+<span class="nc" id="L3260">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:1713:5: ( '/**/' )
+			// org/argouml/language/java/reveng/Java.g:1713:10: '/**/'
+			{
+<span class="nc" id="L3264">			match(&quot;/**/&quot;); </span>
+
+
+<span class="nc" id="L3267">			            _channel=HIDDEN;</span>
+			        
+			}
+
+<span class="nc" id="L3271">			state.type = _type;</span>
+<span class="nc" id="L3272">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="nc" id="L3277">	}</span>
+	// $ANTLR end &quot;EMPTY_COMMENT&quot;
+
+	// $ANTLR start &quot;JAVADOC&quot;
+	public final void mJAVADOC() throws RecognitionException {
+		try {
+<span class="fc" id="L3283">			int _type = JAVADOC;</span>
+<span class="fc" id="L3284">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:1721:5: ( '/**' ( options {greedy=false; } : . )* '*/' )
+			// org/argouml/language/java/reveng/Java.g:1721:9: '/**' ( options {greedy=false; } : . )* '*/'
+			{
+<span class="fc" id="L3288">			match(&quot;/**&quot;); </span>
+
+			// org/argouml/language/java/reveng/Java.g:1721:15: ( options {greedy=false; } : . )*
+			loop26:
+			while (true) {
+<span class="fc" id="L3293">				int alt26=2;</span>
+<span class="fc" id="L3294">				int LA26_0 = input.LA(1);</span>
+<span class="fc bfc" id="L3295" title="All 2 branches covered.">				if ( (LA26_0=='*') ) {</span>
+<span class="fc" id="L3296">					int LA26_1 = input.LA(2);</span>
+<span class="pc bpc" id="L3297" title="1 of 2 branches missed.">					if ( (LA26_1=='/') ) {</span>
+<span class="fc" id="L3298">						alt26=2;</span>
+					}
+<span class="nc bnc" id="L3300" title="All 8 branches missed.">					else if ( ((LA26_1 &gt;= '\u0000' &amp;&amp; LA26_1 &lt;= '.')||(LA26_1 &gt;= '0' &amp;&amp; LA26_1 &lt;= '\uFFFF')) ) {</span>
+<span class="nc" id="L3301">						alt26=1;</span>
+					}
+
+<span class="fc" id="L3304">				}</span>
+<span class="pc bpc" id="L3305" title="3 of 8 branches missed.">				else if ( ((LA26_0 &gt;= '\u0000' &amp;&amp; LA26_0 &lt;= ')')||(LA26_0 &gt;= '+' &amp;&amp; LA26_0 &lt;= '\uFFFF')) ) {</span>
+<span class="fc" id="L3306">					alt26=1;</span>
+				}
+
+<span class="fc bfc" id="L3309" title="All 2 branches covered.">				switch (alt26) {</span>
+				case 1 :
+					// org/argouml/language/java/reveng/Java.g:1721:43: .
+					{
+<span class="fc" id="L3313">					matchAny(); </span>
+					}
+<span class="fc" id="L3315">					break;</span>
+
+				default :
+<span class="fc" id="L3318">					break loop26;</span>
+				}
+<span class="fc" id="L3320">			}</span>
+
+<span class="fc" id="L3322">			match(&quot;*/&quot;); </span>
+
+
+<span class="fc" id="L3325">			            _channel=HIDDEN;</span>
+			        
+			}
+
+<span class="fc" id="L3329">			state.type = _type;</span>
+<span class="fc" id="L3330">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="fc" id="L3335">	}</span>
+	// $ANTLR end &quot;JAVADOC&quot;
+
+	// $ANTLR start &quot;COMMENT&quot;
+	public final void mCOMMENT() throws RecognitionException {
+		try {
+<span class="fc" id="L3341">			int _type = COMMENT;</span>
+<span class="fc" id="L3342">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:1729:5: ( '/*' ~ '*' ( options {greedy=false; } : . )* '*/' )
+			// org/argouml/language/java/reveng/Java.g:1729:9: '/*' ~ '*' ( options {greedy=false; } : . )* '*/'
+			{
+<span class="fc" id="L3346">			match(&quot;/*&quot;); </span>
+
+<span class="pc bpc" id="L3348" title="6 of 8 branches missed.">			if ( (input.LA(1) &gt;= '\u0000' &amp;&amp; input.LA(1) &lt;= ')')||(input.LA(1) &gt;= '+' &amp;&amp; input.LA(1) &lt;= '\uFFFF') ) {</span>
+<span class="fc" id="L3349">				input.consume();</span>
+			}
+			else {
+<span class="nc" id="L3352">				MismatchedSetException mse = new MismatchedSetException(null,input);</span>
+<span class="nc" id="L3353">				recover(mse);</span>
+<span class="nc" id="L3354">				throw mse;</span>
+			}
+			// org/argouml/language/java/reveng/Java.g:1729:19: ( options {greedy=false; } : . )*
+			loop27:
+			while (true) {
+<span class="fc" id="L3359">				int alt27=2;</span>
+<span class="fc" id="L3360">				int LA27_0 = input.LA(1);</span>
+<span class="fc bfc" id="L3361" title="All 2 branches covered.">				if ( (LA27_0=='*') ) {</span>
+<span class="fc" id="L3362">					int LA27_1 = input.LA(2);</span>
+<span class="pc bpc" id="L3363" title="1 of 2 branches missed.">					if ( (LA27_1=='/') ) {</span>
+<span class="fc" id="L3364">						alt27=2;</span>
+					}
+<span class="nc bnc" id="L3366" title="All 8 branches missed.">					else if ( ((LA27_1 &gt;= '\u0000' &amp;&amp; LA27_1 &lt;= '.')||(LA27_1 &gt;= '0' &amp;&amp; LA27_1 &lt;= '\uFFFF')) ) {</span>
+<span class="nc" id="L3367">						alt27=1;</span>
+					}
+
+<span class="fc" id="L3370">				}</span>
+<span class="pc bpc" id="L3371" title="3 of 8 branches missed.">				else if ( ((LA27_0 &gt;= '\u0000' &amp;&amp; LA27_0 &lt;= ')')||(LA27_0 &gt;= '+' &amp;&amp; LA27_0 &lt;= '\uFFFF')) ) {</span>
+<span class="fc" id="L3372">					alt27=1;</span>
+				}
+
+<span class="fc bfc" id="L3375" title="All 2 branches covered.">				switch (alt27) {</span>
+				case 1 :
+					// org/argouml/language/java/reveng/Java.g:1729:47: .
+					{
+<span class="fc" id="L3379">					matchAny(); </span>
+					}
+<span class="fc" id="L3381">					break;</span>
+
+				default :
+<span class="fc" id="L3384">					break loop27;</span>
+				}
+<span class="fc" id="L3386">			}</span>
+
+<span class="fc" id="L3388">			match(&quot;*/&quot;); </span>
+
+
+<span class="fc" id="L3391">			            _channel=HIDDEN;</span>
+			        
+			}
+
+<span class="fc" id="L3395">			state.type = _type;</span>
+<span class="fc" id="L3396">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="fc" id="L3401">	}</span>
+	// $ANTLR end &quot;COMMENT&quot;
+
+	// $ANTLR start &quot;LINE_COMMENT&quot;
+	public final void mLINE_COMMENT() throws RecognitionException {
+		try {
+<span class="fc" id="L3407">			int _type = LINE_COMMENT;</span>
+<span class="fc" id="L3408">			int _channel = DEFAULT_TOKEN_CHANNEL;</span>
+			// org/argouml/language/java/reveng/Java.g:1737:5: ( '//' (~ ( '\\n' | '\\r' ) )* ( '\\r' )? '\\n' )
+			// org/argouml/language/java/reveng/Java.g:1737:9: '//' (~ ( '\\n' | '\\r' ) )* ( '\\r' )? '\\n'
+			{
+<span class="fc" id="L3412">			match(&quot;//&quot;); </span>
+
+			// org/argouml/language/java/reveng/Java.g:1737:14: (~ ( '\\n' | '\\r' ) )*
+			loop28:
+			while (true) {
+<span class="fc" id="L3417">				int alt28=2;</span>
+<span class="fc" id="L3418">				int LA28_0 = input.LA(1);</span>
+<span class="pc bpc" id="L3419" title="4 of 12 branches missed.">				if ( ((LA28_0 &gt;= '\u0000' &amp;&amp; LA28_0 &lt;= '\t')||(LA28_0 &gt;= '\u000B' &amp;&amp; LA28_0 &lt;= '\f')||(LA28_0 &gt;= '\u000E' &amp;&amp; LA28_0 &lt;= '\uFFFF')) ) {</span>
+<span class="fc" id="L3420">					alt28=1;</span>
+				}
+
+<span class="fc bfc" id="L3423" title="All 2 branches covered.">				switch (alt28) {</span>
+				case 1 :
+					// org/argouml/language/java/reveng/Java.g:
+					{
+<span class="pc bpc" id="L3427" title="6 of 12 branches missed.">					if ( (input.LA(1) &gt;= '\u0000' &amp;&amp; input.LA(1) &lt;= '\t')||(input.LA(1) &gt;= '\u000B' &amp;&amp; input.LA(1) &lt;= '\f')||(input.LA(1) &gt;= '\u000E' &amp;&amp; input.LA(1) &lt;= '\uFFFF') ) {</span>
+<span class="fc" id="L3428">						input.consume();</span>
+					}
+					else {
+<span class="nc" id="L3431">						MismatchedSetException mse = new MismatchedSetException(null,input);</span>
+<span class="nc" id="L3432">						recover(mse);</span>
+<span class="nc" id="L3433">						throw mse;</span>
+					}
+					}
+					break;
+
+				default :
+<span class="fc" id="L3439">					break loop28;</span>
+				}
+<span class="fc" id="L3441">			}</span>
+
+			// org/argouml/language/java/reveng/Java.g:1737:28: ( '\\r' )?
+<span class="fc" id="L3444">			int alt29=2;</span>
+<span class="fc" id="L3445">			int LA29_0 = input.LA(1);</span>
+<span class="pc bpc" id="L3446" title="1 of 2 branches missed.">			if ( (LA29_0=='\r') ) {</span>
+<span class="nc" id="L3447">				alt29=1;</span>
+			}
+<span class="pc bpc" id="L3449" title="1 of 2 branches missed.">			switch (alt29) {</span>
+				case 1 :
+					// org/argouml/language/java/reveng/Java.g:1737:28: '\\r'
+					{
+<span class="nc" id="L3453">					match('\r'); </span>
+					}
+					break;
+
+			}
+
+<span class="fc" id="L3459">			match('\n'); </span>
+
+<span class="fc" id="L3461">			            _channel=HIDDEN;</span>
+			        
+			}
+
+<span class="fc" id="L3465">			state.type = _type;</span>
+<span class="fc" id="L3466">			state.channel = _channel;</span>
+		}
+		finally {
+			// do for sure before leaving
+		}
+<span class="fc" id="L3471">	}</span>
+	// $ANTLR end &quot;LINE_COMMENT&quot;
+
+	@Override
+	public void mTokens() throws RecognitionException {
+		// org/argouml/language/java/reveng/Java.g:1:8: ( T__27 | T__28 | T__29 | T__30 | T__31 | T__32 | T__33 | T__34 | T__35 | T__36 | T__37 | T__38 | T__39 | T__40 | T__41 | T__42 | T__43 | T__44 | T__45 | T__46 | T__47 | T__48 | T__49 | T__50 | T__51 | T__52 | T__53 | T__54 | T__55 | T__56 | T__57 | T__58 | T__59 | T__60 | T__61 | T__62 | T__63 | T__64 | T__65 | T__66 | T__67 | T__68 | T__69 | T__70 | T__71 | T__72 | T__73 | T__74 | T__75 | T__76 | T__77 | T__78 | T__79 | T__80 | T__81 | T__82 | T__83 | T__84 | T__85 | T__86 | T__87 | T__88 | T__89 | T__90 | T__91 | T__92 | T__93 | T__94 | T__95 | T__96 | T__97 | T__98 | T__99 | T__100 | T__101 | T__102 | T__103 | T__104 | T__105 | T__106 | T__107 | T__108 | T__109 | T__110 | T__111 | T__112 | T__113 | T__114 | T__115 | HexLiteral | DecimalLiteral | OctalLiteral | FloatingPointLiteral | CharacterLiteral | StringLiteral | ENUM | ASSERT | Identifier | WS | EMPTY_COMMENT | JAVADOC | COMMENT | LINE_COMMENT )
+<span class="fc" id="L3477">		int alt30=103;</span>
+<span class="fc" id="L3478">		alt30 = dfa30.predict(input);</span>
+<span class="pc bpc" id="L3479" title="62 of 104 branches missed.">		switch (alt30) {</span>
+			case 1 :
+				// org/argouml/language/java/reveng/Java.g:1:10: T__27
+				{
+<span class="nc" id="L3483">				mT__27(); </span>
+
+				}
+<span class="nc" id="L3486">				break;</span>
+			case 2 :
+				// org/argouml/language/java/reveng/Java.g:1:16: T__28
+				{
+<span class="nc" id="L3490">				mT__28(); </span>
+
+				}
+<span class="nc" id="L3493">				break;</span>
+			case 3 :
+				// org/argouml/language/java/reveng/Java.g:1:22: T__29
+				{
+<span class="nc" id="L3497">				mT__29(); </span>
+
+				}
+<span class="nc" id="L3500">				break;</span>
+			case 4 :
+				// org/argouml/language/java/reveng/Java.g:1:28: T__30
+				{
+<span class="nc" id="L3504">				mT__30(); </span>
+
+				}
+<span class="nc" id="L3507">				break;</span>
+			case 5 :
+				// org/argouml/language/java/reveng/Java.g:1:34: T__31
+				{
+<span class="nc" id="L3511">				mT__31(); </span>
+
+				}
+<span class="nc" id="L3514">				break;</span>
+			case 6 :
+				// org/argouml/language/java/reveng/Java.g:1:40: T__32
+				{
+<span class="nc" id="L3518">				mT__32(); </span>
+
+				}
+<span class="nc" id="L3521">				break;</span>
+			case 7 :
+				// org/argouml/language/java/reveng/Java.g:1:46: T__33
+				{
+<span class="nc" id="L3525">				mT__33(); </span>
+
+				}
+<span class="nc" id="L3528">				break;</span>
+			case 8 :
+				// org/argouml/language/java/reveng/Java.g:1:52: T__34
+				{
+<span class="fc" id="L3532">				mT__34(); </span>
+
+				}
+<span class="fc" id="L3535">				break;</span>
+			case 9 :
+				// org/argouml/language/java/reveng/Java.g:1:58: T__35
+				{
+<span class="fc" id="L3539">				mT__35(); </span>
+
+				}
+<span class="fc" id="L3542">				break;</span>
+			case 10 :
+				// org/argouml/language/java/reveng/Java.g:1:64: T__36
+				{
+<span class="nc" id="L3546">				mT__36(); </span>
+
+				}
+<span class="nc" id="L3549">				break;</span>
+			case 11 :
+				// org/argouml/language/java/reveng/Java.g:1:70: T__37
+				{
+<span class="nc" id="L3553">				mT__37(); </span>
+
+				}
+<span class="nc" id="L3556">				break;</span>
+			case 12 :
+				// org/argouml/language/java/reveng/Java.g:1:76: T__38
+				{
+<span class="nc" id="L3560">				mT__38(); </span>
+
+				}
+<span class="nc" id="L3563">				break;</span>
+			case 13 :
+				// org/argouml/language/java/reveng/Java.g:1:82: T__39
+				{
+<span class="nc" id="L3567">				mT__39(); </span>
+
+				}
+<span class="nc" id="L3570">				break;</span>
+			case 14 :
+				// org/argouml/language/java/reveng/Java.g:1:88: T__40
+				{
+<span class="nc" id="L3574">				mT__40(); </span>
+
+				}
+<span class="nc" id="L3577">				break;</span>
+			case 15 :
+				// org/argouml/language/java/reveng/Java.g:1:94: T__41
+				{
+<span class="fc" id="L3581">				mT__41(); </span>
+
+				}
+<span class="fc" id="L3584">				break;</span>
+			case 16 :
+				// org/argouml/language/java/reveng/Java.g:1:100: T__42
+				{
+<span class="nc" id="L3588">				mT__42(); </span>
+
+				}
+<span class="nc" id="L3591">				break;</span>
+			case 17 :
+				// org/argouml/language/java/reveng/Java.g:1:106: T__43
+				{
+<span class="nc" id="L3595">				mT__43(); </span>
+
+				}
+<span class="nc" id="L3598">				break;</span>
+			case 18 :
+				// org/argouml/language/java/reveng/Java.g:1:112: T__44
+				{
+<span class="nc" id="L3602">				mT__44(); </span>
+
+				}
+<span class="nc" id="L3605">				break;</span>
+			case 19 :
+				// org/argouml/language/java/reveng/Java.g:1:118: T__45
+				{
+<span class="fc" id="L3609">				mT__45(); </span>
+
+				}
+<span class="fc" id="L3612">				break;</span>
+			case 20 :
+				// org/argouml/language/java/reveng/Java.g:1:124: T__46
+				{
+<span class="nc" id="L3616">				mT__46(); </span>
+
+				}
+<span class="nc" id="L3619">				break;</span>
+			case 21 :
+				// org/argouml/language/java/reveng/Java.g:1:130: T__47
+				{
+<span class="nc" id="L3623">				mT__47(); </span>
+
+				}
+<span class="nc" id="L3626">				break;</span>
+			case 22 :
+				// org/argouml/language/java/reveng/Java.g:1:136: T__48
+				{
+<span class="nc" id="L3630">				mT__48(); </span>
+
+				}
+<span class="nc" id="L3633">				break;</span>
+			case 23 :
+				// org/argouml/language/java/reveng/Java.g:1:142: T__49
+				{
+<span class="fc" id="L3637">				mT__49(); </span>
+
+				}
+<span class="fc" id="L3640">				break;</span>
+			case 24 :
+				// org/argouml/language/java/reveng/Java.g:1:148: T__50
+				{
+<span class="fc" id="L3644">				mT__50(); </span>
+
+				}
+<span class="fc" id="L3647">				break;</span>
+			case 25 :
+				// org/argouml/language/java/reveng/Java.g:1:154: T__51
+				{
+<span class="nc" id="L3651">				mT__51(); </span>
+
+				}
+<span class="nc" id="L3654">				break;</span>
+			case 26 :
+				// org/argouml/language/java/reveng/Java.g:1:160: T__52
+				{
+<span class="fc" id="L3658">				mT__52(); </span>
+
+				}
+<span class="fc" id="L3661">				break;</span>
+			case 27 :
+				// org/argouml/language/java/reveng/Java.g:1:166: T__53
+				{
+<span class="nc" id="L3665">				mT__53(); </span>
+
+				}
+<span class="nc" id="L3668">				break;</span>
+			case 28 :
+				// org/argouml/language/java/reveng/Java.g:1:172: T__54
+				{
+<span class="nc" id="L3672">				mT__54(); </span>
+
+				}
+<span class="nc" id="L3675">				break;</span>
+			case 29 :
+				// org/argouml/language/java/reveng/Java.g:1:178: T__55
+				{
+<span class="nc" id="L3679">				mT__55(); </span>
+
+				}
+<span class="nc" id="L3682">				break;</span>
+			case 30 :
+				// org/argouml/language/java/reveng/Java.g:1:184: T__56
+				{
+<span class="nc" id="L3686">				mT__56(); </span>
+
+				}
+<span class="nc" id="L3689">				break;</span>
+			case 31 :
+				// org/argouml/language/java/reveng/Java.g:1:190: T__57
+				{
+<span class="nc" id="L3693">				mT__57(); </span>
+
+				}
+<span class="nc" id="L3696">				break;</span>
+			case 32 :
+				// org/argouml/language/java/reveng/Java.g:1:196: T__58
+				{
+<span class="nc" id="L3700">				mT__58(); </span>
+
+				}
+<span class="nc" id="L3703">				break;</span>
+			case 33 :
+				// org/argouml/language/java/reveng/Java.g:1:202: T__59
+				{
+<span class="nc" id="L3707">				mT__59(); </span>
+
+				}
+<span class="nc" id="L3710">				break;</span>
+			case 34 :
+				// org/argouml/language/java/reveng/Java.g:1:208: T__60
+				{
+<span class="nc" id="L3714">				mT__60(); </span>
+
+				}
+<span class="nc" id="L3717">				break;</span>
+			case 35 :
+				// org/argouml/language/java/reveng/Java.g:1:214: T__61
+				{
+<span class="fc" id="L3721">				mT__61(); </span>
+
+				}
+<span class="fc" id="L3724">				break;</span>
+			case 36 :
+				// org/argouml/language/java/reveng/Java.g:1:220: T__62
+				{
+<span class="nc" id="L3728">				mT__62(); </span>
+
+				}
+<span class="nc" id="L3731">				break;</span>
+			case 37 :
+				// org/argouml/language/java/reveng/Java.g:1:226: T__63
+				{
+<span class="nc" id="L3735">				mT__63(); </span>
+
+				}
+<span class="nc" id="L3738">				break;</span>
+			case 38 :
+				// org/argouml/language/java/reveng/Java.g:1:232: T__64
+				{
+<span class="nc" id="L3742">				mT__64(); </span>
+
+				}
+<span class="nc" id="L3745">				break;</span>
+			case 39 :
+				// org/argouml/language/java/reveng/Java.g:1:238: T__65
+				{
+<span class="fc" id="L3749">				mT__65(); </span>
+
+				}
+<span class="fc" id="L3752">				break;</span>
+			case 40 :
+				// org/argouml/language/java/reveng/Java.g:1:244: T__66
+				{
+<span class="nc" id="L3756">				mT__66(); </span>
+
+				}
+<span class="nc" id="L3759">				break;</span>
+			case 41 :
+				// org/argouml/language/java/reveng/Java.g:1:250: T__67
+				{
+<span class="nc" id="L3763">				mT__67(); </span>
+
+				}
+<span class="nc" id="L3766">				break;</span>
+			case 42 :
+				// org/argouml/language/java/reveng/Java.g:1:256: T__68
+				{
+<span class="fc" id="L3770">				mT__68(); </span>
+
+				}
+<span class="fc" id="L3773">				break;</span>
+			case 43 :
+				// org/argouml/language/java/reveng/Java.g:1:262: T__69
+				{
+<span class="nc" id="L3777">				mT__69(); </span>
+
+				}
+<span class="nc" id="L3780">				break;</span>
+			case 44 :
+				// org/argouml/language/java/reveng/Java.g:1:268: T__70
+				{
+<span class="fc" id="L3784">				mT__70(); </span>
+
+				}
+<span class="fc" id="L3787">				break;</span>
+			case 45 :
+				// org/argouml/language/java/reveng/Java.g:1:274: T__71
+				{
+<span class="nc" id="L3791">				mT__71(); </span>
+
+				}
+<span class="nc" id="L3794">				break;</span>
+			case 46 :
+				// org/argouml/language/java/reveng/Java.g:1:280: T__72
+				{
+<span class="nc" id="L3798">				mT__72(); </span>
+
+				}
+<span class="nc" id="L3801">				break;</span>
+			case 47 :
+				// org/argouml/language/java/reveng/Java.g:1:286: T__73
+				{
+<span class="nc" id="L3805">				mT__73(); </span>
+
+				}
+<span class="nc" id="L3808">				break;</span>
+			case 48 :
+				// org/argouml/language/java/reveng/Java.g:1:292: T__74
+				{
+<span class="fc" id="L3812">				mT__74(); </span>
+
+				}
+<span class="fc" id="L3815">				break;</span>
+			case 49 :
+				// org/argouml/language/java/reveng/Java.g:1:298: T__75
+				{
+<span class="nc" id="L3819">				mT__75(); </span>
+
+				}
+<span class="nc" id="L3822">				break;</span>
+			case 50 :
+				// org/argouml/language/java/reveng/Java.g:1:304: T__76
+				{
+<span class="fc" id="L3826">				mT__76(); </span>
+
+				}
+<span class="fc" id="L3829">				break;</span>
+			case 51 :
+				// org/argouml/language/java/reveng/Java.g:1:310: T__77
+				{
+<span class="nc" id="L3833">				mT__77(); </span>
+
+				}
+<span class="nc" id="L3836">				break;</span>
+			case 52 :
+				// org/argouml/language/java/reveng/Java.g:1:316: T__78
+				{
+<span class="nc" id="L3840">				mT__78(); </span>
+
+				}
+<span class="nc" id="L3843">				break;</span>
+			case 53 :
+				// org/argouml/language/java/reveng/Java.g:1:322: T__79
+				{
+<span class="nc" id="L3847">				mT__79(); </span>
+
+				}
+<span class="nc" id="L3850">				break;</span>
+			case 54 :
+				// org/argouml/language/java/reveng/Java.g:1:328: T__80
+				{
+<span class="fc" id="L3854">				mT__80(); </span>
+
+				}
+<span class="fc" id="L3857">				break;</span>
+			case 55 :
+				// org/argouml/language/java/reveng/Java.g:1:334: T__81
+				{
+<span class="fc" id="L3861">				mT__81(); </span>
+
+				}
+<span class="fc" id="L3864">				break;</span>
+			case 56 :
+				// org/argouml/language/java/reveng/Java.g:1:340: T__82
+				{
+<span class="fc" id="L3868">				mT__82(); </span>
+
+				}
+<span class="fc" id="L3871">				break;</span>
+			case 57 :
+				// org/argouml/language/java/reveng/Java.g:1:346: T__83
+				{
+<span class="fc" id="L3875">				mT__83(); </span>
+
+				}
+<span class="fc" id="L3878">				break;</span>
+			case 58 :
+				// org/argouml/language/java/reveng/Java.g:1:352: T__84
+				{
+<span class="fc" id="L3882">				mT__84(); </span>
+
+				}
+<span class="fc" id="L3885">				break;</span>
+			case 59 :
+				// org/argouml/language/java/reveng/Java.g:1:358: T__85
+				{
+<span class="fc" id="L3889">				mT__85(); </span>
+
+				}
+<span class="fc" id="L3892">				break;</span>
+			case 60 :
+				// org/argouml/language/java/reveng/Java.g:1:364: T__86
+				{
+<span class="nc" id="L3896">				mT__86(); </span>
+
+				}
+<span class="nc" id="L3899">				break;</span>
+			case 61 :
+				// org/argouml/language/java/reveng/Java.g:1:370: T__87
+				{
+<span class="nc" id="L3903">				mT__87(); </span>
+
+				}
+<span class="nc" id="L3906">				break;</span>
+			case 62 :
+				// org/argouml/language/java/reveng/Java.g:1:376: T__88
+				{
+<span class="fc" id="L3910">				mT__88(); </span>
+
+				}
+<span class="fc" id="L3913">				break;</span>
+			case 63 :
+				// org/argouml/language/java/reveng/Java.g:1:382: T__89
+				{
+<span class="nc" id="L3917">				mT__89(); </span>
+
+				}
+<span class="nc" id="L3920">				break;</span>
+			case 64 :
+				// org/argouml/language/java/reveng/Java.g:1:388: T__90
+				{
+<span class="fc" id="L3924">				mT__90(); </span>
+
+				}
+<span class="fc" id="L3927">				break;</span>
+			case 65 :
+				// org/argouml/language/java/reveng/Java.g:1:394: T__91
+				{
+<span class="fc" id="L3931">				mT__91(); </span>
+
+				}
+<span class="fc" id="L3934">				break;</span>
+			case 66 :
+				// org/argouml/language/java/reveng/Java.g:1:400: T__92
+				{
+<span class="fc" id="L3938">				mT__92(); </span>
+
+				}
+<span class="fc" id="L3941">				break;</span>
+			case 67 :
+				// org/argouml/language/java/reveng/Java.g:1:406: T__93
+				{
+<span class="fc" id="L3945">				mT__93(); </span>
+
+				}
+<span class="fc" id="L3948">				break;</span>
+			case 68 :
+				// org/argouml/language/java/reveng/Java.g:1:412: T__94
+				{
+<span class="fc" id="L3952">				mT__94(); </span>
+
+				}
+<span class="fc" id="L3955">				break;</span>
+			case 69 :
+				// org/argouml/language/java/reveng/Java.g:1:418: T__95
+				{
+<span class="fc" id="L3959">				mT__95(); </span>
+
+				}
+<span class="fc" id="L3962">				break;</span>
+			case 70 :
+				// org/argouml/language/java/reveng/Java.g:1:424: T__96
+				{
+<span class="fc" id="L3966">				mT__96(); </span>
+
+				}
+<span class="fc" id="L3969">				break;</span>
+			case 71 :
+				// org/argouml/language/java/reveng/Java.g:1:430: T__97
+				{
+<span class="nc" id="L3973">				mT__97(); </span>
+
+				}
+<span class="nc" id="L3976">				break;</span>
+			case 72 :
+				// org/argouml/language/java/reveng/Java.g:1:436: T__98
+				{
+<span class="nc" id="L3980">				mT__98(); </span>
+
+				}
+<span class="nc" id="L3983">				break;</span>
+			case 73 :
+				// org/argouml/language/java/reveng/Java.g:1:442: T__99
+				{
+<span class="fc" id="L3987">				mT__99(); </span>
+
+				}
+<span class="fc" id="L3990">				break;</span>
+			case 74 :
+				// org/argouml/language/java/reveng/Java.g:1:448: T__100
+				{
+<span class="nc" id="L3994">				mT__100(); </span>
+
+				}
+<span class="nc" id="L3997">				break;</span>
+			case 75 :
+				// org/argouml/language/java/reveng/Java.g:1:455: T__101
+				{
+<span class="fc" id="L4001">				mT__101(); </span>
+
+				}
+<span class="fc" id="L4004">				break;</span>
+			case 76 :
+				// org/argouml/language/java/reveng/Java.g:1:462: T__102
+				{
+<span class="fc" id="L4008">				mT__102(); </span>
+
+				}
+<span class="fc" id="L4011">				break;</span>
+			case 77 :
+				// org/argouml/language/java/reveng/Java.g:1:469: T__103
+				{
+<span class="fc" id="L4015">				mT__103(); </span>
+
+				}
+<span class="fc" id="L4018">				break;</span>
+			case 78 :
+				// org/argouml/language/java/reveng/Java.g:1:476: T__104
+				{
+<span class="nc" id="L4022">				mT__104(); </span>
+
+				}
+<span class="nc" id="L4025">				break;</span>
+			case 79 :
+				// org/argouml/language/java/reveng/Java.g:1:483: T__105
+				{
+<span class="nc" id="L4029">				mT__105(); </span>
+
+				}
+<span class="nc" id="L4032">				break;</span>
+			case 80 :
+				// org/argouml/language/java/reveng/Java.g:1:490: T__106
+				{
+<span class="nc" id="L4036">				mT__106(); </span>
+
+				}
+<span class="nc" id="L4039">				break;</span>
+			case 81 :
+				// org/argouml/language/java/reveng/Java.g:1:497: T__107
+				{
+<span class="fc" id="L4043">				mT__107(); </span>
+
+				}
+<span class="fc" id="L4046">				break;</span>
+			case 82 :
+				// org/argouml/language/java/reveng/Java.g:1:504: T__108
+				{
+<span class="nc" id="L4050">				mT__108(); </span>
+
+				}
+<span class="nc" id="L4053">				break;</span>
+			case 83 :
+				// org/argouml/language/java/reveng/Java.g:1:511: T__109
+				{
+<span class="nc" id="L4057">				mT__109(); </span>
+
+				}
+<span class="nc" id="L4060">				break;</span>
+			case 84 :
+				// org/argouml/language/java/reveng/Java.g:1:518: T__110
+				{
+<span class="fc" id="L4064">				mT__110(); </span>
+
+				}
+<span class="fc" id="L4067">				break;</span>
+			case 85 :
+				// org/argouml/language/java/reveng/Java.g:1:525: T__111
+				{
+<span class="nc" id="L4071">				mT__111(); </span>
+
+				}
+<span class="nc" id="L4074">				break;</span>
+			case 86 :
+				// org/argouml/language/java/reveng/Java.g:1:532: T__112
+				{
+<span class="nc" id="L4078">				mT__112(); </span>
+
+				}
+<span class="nc" id="L4081">				break;</span>
+			case 87 :
+				// org/argouml/language/java/reveng/Java.g:1:539: T__113
+				{
+<span class="nc" id="L4085">				mT__113(); </span>
+
+				}
+<span class="nc" id="L4088">				break;</span>
+			case 88 :
+				// org/argouml/language/java/reveng/Java.g:1:546: T__114
+				{
+<span class="fc" id="L4092">				mT__114(); </span>
+
+				}
+<span class="fc" id="L4095">				break;</span>
+			case 89 :
+				// org/argouml/language/java/reveng/Java.g:1:553: T__115
+				{
+<span class="nc" id="L4099">				mT__115(); </span>
+
+				}
+<span class="nc" id="L4102">				break;</span>
+			case 90 :
+				// org/argouml/language/java/reveng/Java.g:1:560: HexLiteral
+				{
+<span class="nc" id="L4106">				mHexLiteral(); </span>
+
+				}
+<span class="nc" id="L4109">				break;</span>
+			case 91 :
+				// org/argouml/language/java/reveng/Java.g:1:571: DecimalLiteral
+				{
+<span class="fc" id="L4113">				mDecimalLiteral(); </span>
+
+				}
+<span class="fc" id="L4116">				break;</span>
+			case 92 :
+				// org/argouml/language/java/reveng/Java.g:1:586: OctalLiteral
+				{
+<span class="nc" id="L4120">				mOctalLiteral(); </span>
+
+				}
+<span class="nc" id="L4123">				break;</span>
+			case 93 :
+				// org/argouml/language/java/reveng/Java.g:1:599: FloatingPointLiteral
+				{
+<span class="nc" id="L4127">				mFloatingPointLiteral(); </span>
+
+				}
+<span class="nc" id="L4130">				break;</span>
+			case 94 :
+				// org/argouml/language/java/reveng/Java.g:1:620: CharacterLiteral
+				{
+<span class="nc" id="L4134">				mCharacterLiteral(); </span>
+
+				}
+<span class="nc" id="L4137">				break;</span>
+			case 95 :
+				// org/argouml/language/java/reveng/Java.g:1:637: StringLiteral
+				{
+<span class="fc" id="L4141">				mStringLiteral(); </span>
+
+				}
+<span class="fc" id="L4144">				break;</span>
+			case 96 :
+				// org/argouml/language/java/reveng/Java.g:1:651: ENUM
+				{
+<span class="fc" id="L4148">				mENUM(); </span>
+
+				}
+<span class="fc" id="L4151">				break;</span>
+			case 97 :
+				// org/argouml/language/java/reveng/Java.g:1:656: ASSERT
+				{
+<span class="nc" id="L4155">				mASSERT(); </span>
+
+				}
+<span class="nc" id="L4158">				break;</span>
+			case 98 :
+				// org/argouml/language/java/reveng/Java.g:1:663: Identifier
+				{
+<span class="fc" id="L4162">				mIdentifier(); </span>
+
+				}
+<span class="fc" id="L4165">				break;</span>
+			case 99 :
+				// org/argouml/language/java/reveng/Java.g:1:674: WS
+				{
+<span class="fc" id="L4169">				mWS(); </span>
+
+				}
+<span class="fc" id="L4172">				break;</span>
+			case 100 :
+				// org/argouml/language/java/reveng/Java.g:1:677: EMPTY_COMMENT
+				{
+<span class="nc" id="L4176">				mEMPTY_COMMENT(); </span>
+
+				}
+<span class="nc" id="L4179">				break;</span>
+			case 101 :
+				// org/argouml/language/java/reveng/Java.g:1:691: JAVADOC
+				{
+<span class="fc" id="L4183">				mJAVADOC(); </span>
+
+				}
+<span class="fc" id="L4186">				break;</span>
+			case 102 :
+				// org/argouml/language/java/reveng/Java.g:1:699: COMMENT
+				{
+<span class="fc" id="L4190">				mCOMMENT(); </span>
+
+				}
+<span class="fc" id="L4193">				break;</span>
+			case 103 :
+				// org/argouml/language/java/reveng/Java.g:1:707: LINE_COMMENT
+				{
+<span class="fc" id="L4197">				mLINE_COMMENT(); </span>
+
+				}
+				break;
+
+		}
+<span class="fc" id="L4203">	}</span>
+
+
+<span class="pc" id="L4206">	protected DFA18 dfa18 = new DFA18(this);</span>
+<span class="pc" id="L4207">	protected DFA30 dfa30 = new DFA30(this);</span>
+	static final String DFA18_eotS =
+		&quot;\6\uffff&quot;;
+	static final String DFA18_eofS =
+		&quot;\6\uffff&quot;;
+	static final String DFA18_minS =
+		&quot;\2\56\4\uffff&quot;;
+	static final String DFA18_maxS =
+		&quot;\1\71\1\146\4\uffff&quot;;
+	static final String DFA18_acceptS =
+		&quot;\2\uffff\1\2\1\1\1\3\1\4&quot;;
+	static final String DFA18_specialS =
+		&quot;\6\uffff}&gt;&quot;;
+<span class="fc" id="L4220">	static final String[] DFA18_transitionS = {</span>
+			&quot;\1\2\1\uffff\12\1&quot;,
+			&quot;\1\3\1\uffff\12\1\12\uffff\1\5\1\4\1\5\35\uffff\1\5\1\4\1\5&quot;,
+			&quot;&quot;,
+			&quot;&quot;,
+			&quot;&quot;,
+			&quot;&quot;
+	};
+
+<span class="fc" id="L4229">	static final short[] DFA18_eot = DFA.unpackEncodedString(DFA18_eotS);</span>
+<span class="fc" id="L4230">	static final short[] DFA18_eof = DFA.unpackEncodedString(DFA18_eofS);</span>
+<span class="fc" id="L4231">	static final char[] DFA18_min = DFA.unpackEncodedStringToUnsignedChars(DFA18_minS);</span>
+<span class="fc" id="L4232">	static final char[] DFA18_max = DFA.unpackEncodedStringToUnsignedChars(DFA18_maxS);</span>
+<span class="fc" id="L4233">	static final short[] DFA18_accept = DFA.unpackEncodedString(DFA18_acceptS);</span>
+<span class="fc" id="L4234">	static final short[] DFA18_special = DFA.unpackEncodedString(DFA18_specialS);</span>
+	static final short[][] DFA18_transition;
+
+	static {
+<span class="fc" id="L4238">		int numStates = DFA18_transitionS.length;</span>
+<span class="fc" id="L4239">		DFA18_transition = new short[numStates][];</span>
+<span class="fc bfc" id="L4240" title="All 2 branches covered.">		for (int i=0; i&lt;numStates; i++) {</span>
+<span class="fc" id="L4241">			DFA18_transition[i] = DFA.unpackEncodedString(DFA18_transitionS[i]);</span>
+		}
+	}
+
+	protected class DFA18 extends DFA {
+
+<span class="fc" id="L4247">		public DFA18(BaseRecognizer recognizer) {</span>
+<span class="fc" id="L4248">			this.recognizer = recognizer;</span>
+<span class="fc" id="L4249">			this.decisionNumber = 18;</span>
+<span class="fc" id="L4250">			this.eot = DFA18_eot;</span>
+<span class="fc" id="L4251">			this.eof = DFA18_eof;</span>
+<span class="fc" id="L4252">			this.min = DFA18_min;</span>
+<span class="fc" id="L4253">			this.max = DFA18_max;</span>
+<span class="fc" id="L4254">			this.accept = DFA18_accept;</span>
+<span class="fc" id="L4255">			this.special = DFA18_special;</span>
+<span class="fc" id="L4256">			this.transition = DFA18_transition;</span>
+<span class="fc" id="L4257">		}</span>
+		@Override
+		public String getDescription() {
+<span class="nc" id="L4260">			return &quot;1615:1: FloatingPointLiteral : ( ( '0' .. '9' )+ '.' ( '0' .. '9' )* ( Exponent )? ( FloatTypeSuffix )? | '.' ( '0' .. '9' )+ ( Exponent )? ( FloatTypeSuffix )? | ( '0' .. '9' )+ Exponent ( FloatTypeSuffix )? | ( '0' .. '9' )+ FloatTypeSuffix );&quot;;</span>
+		}
+	}
+
+	static final String DFA30_eotS =
+		&quot;\1\uffff\1\60\1\62\1\65\2\uffff\1\67\1\72\1\uffff\1\75\1\77\1\104\3\uffff&quot;+
+		&quot;\1\106\5\uffff\1\110\17\55\1\uffff\1\161\2\uffff\2\163\36\uffff\12\55&quot;+
+		&quot;\1\u0084\7\55\1\u008c\23\55\5\uffff\1\u00a7\1\163\2\uffff\14\55\1\uffff&quot;+
+		&quot;\6\55\1\u00bc\1\uffff\2\55\1\u00c1\2\55\1\u00c4\20\55\1\u00d5\3\55\1\uffff&quot;+
+		&quot;\1\u00d9\1\uffff\4\55\1\u00de\1\u00df\1\55\1\u00e1\4\55\1\u00e6\1\55\1&quot;+
+		&quot;\u00e8\3\55\1\uffff\4\55\1\uffff\1\u00f0\1\55\1\uffff\1\u00f2\13\55\1&quot;+
+		&quot;\u00fe\2\55\1\u0101\1\uffff\1\u0102\2\55\1\uffff\3\55\1\u0108\2\uffff&quot;+
+		&quot;\1\u0109\1\uffff\1\u010a\3\55\1\uffff\1\55\1\uffff\1\u010f\1\u0111\1\u0112&quot;+
+		&quot;\4\55\1\uffff\1\55\1\uffff\5\55\1\u011d\2\55\1\u0120\2\55\1\uffff\1\u0124&quot;+
+		&quot;\1\55\2\uffff\1\55\1\u0127\1\55\1\u0129\1\55\3\uffff\2\55\1\u012d\1\55&quot;+
+		&quot;\1\uffff\1\55\2\uffff\1\55\1\u0131\2\55\1\u0134\3\55\1\u0138\1\u0139\1&quot;+
+		&quot;\uffff\1\u013a\1\55\1\uffff\1\u013c\1\55\1\u013e\1\uffff\2\55\1\uffff&quot;+
+		&quot;\1\55\1\uffff\1\u0142\1\55\1\u0144\1\uffff\1\u0145\1\u0146\1\55\1\uffff&quot;+
+		&quot;\2\55\1\uffff\1\u014a\1\u014b\1\55\3\uffff\1\55\1\uffff\1\55\1\uffff\2&quot;+
+		&quot;\55\1\u0151\1\uffff\1\u0152\3\uffff\3\55\2\uffff\1\55\1\u0157\2\55\1\u015a&quot;+
+		&quot;\2\uffff\2\55\1\u015d\1\u015e\1\uffff\1\55\1\u0160\1\uffff\1\u0161\1\u0162&quot;+
+		&quot;\2\uffff\1\55\3\uffff\1\55\1\u0165\1\uffff&quot;;
+	static final String DFA30_eofS =
+		&quot;\u0166\uffff&quot;;
+	static final String DFA30_minS =
+		&quot;\1\11\2\75\1\46\2\uffff\1\75\1\53\1\uffff\1\55\1\56\1\52\3\uffff\1\75&quot;+
+		&quot;\5\uffff\1\75\1\142\1\157\1\141\1\145\1\154\1\141\1\146\1\157\2\141\1&quot;+
+		&quot;\145\2\150\1\157\1\150\1\uffff\1\75\2\uffff\2\56\27\uffff\1\0\6\uffff&quot;+
+		&quot;\2\163\1\157\1\145\1\164\1\163\2\141\1\156\1\146\1\44\1\163\1\164\1\165&quot;+
+		&quot;\1\154\1\156\1\157\1\162\1\44\1\160\1\163\1\156\1\164\1\167\1\154\1\143&quot;+
+		&quot;\1\151\1\142\1\164\1\157\1\141\1\160\1\151\1\156\1\151\1\141\2\151\5\uffff&quot;+
+		&quot;\2\56\1\0\1\uffff\1\164\1\145\1\154\1\141\2\145\1\143\1\162\1\163\1\164&quot;+
+		&quot;\1\141\1\142\1\uffff\2\145\1\155\1\163\2\141\1\44\1\uffff\1\154\1\164&quot;+
+		&quot;\1\44\1\147\1\151\1\44\1\154\1\153\1\166\1\164\1\154\1\165\1\162\1\164&quot;+
+		&quot;\1\151\1\145\1\164\1\143\1\163\1\157\1\156\1\145\1\44\1\144\1\141\1\154&quot;+
+		&quot;\1\uffff\1\0\1\uffff\2\162\1\145\1\153\2\44\1\150\1\44\1\163\1\151\1\165&quot;+
+		&quot;\1\154\1\44\1\156\1\44\1\145\1\154\1\164\1\uffff\1\145\1\162\1\141\1\162&quot;+
+		&quot;\1\uffff\1\44\1\166\1\uffff\1\44\2\141\1\145\1\151\1\162\1\164\1\151\1&quot;+
+		&quot;\143\1\162\1\143\1\150\1\44\1\167\1\163\1\44\1\uffff\1\44\1\164\1\145&quot;+
+		&quot;\1\uffff\1\141\1\164\1\141\1\44\2\uffff\1\44\1\uffff\1\44\1\156\1\154&quot;+
+		&quot;\1\145\1\uffff\1\144\1\uffff\3\44\1\155\1\164\1\156\1\146\1\uffff\1\145&quot;+
+		&quot;\1\uffff\1\147\1\164\2\143\1\156\1\44\1\143\1\164\1\44\1\150\1\162\1\uffff&quot;+
+		&quot;\1\44\1\151\2\uffff\1\151\1\44\1\143\1\44\1\156\3\uffff\1\165\1\164\1&quot;+
+		&quot;\44\1\163\1\uffff\1\171\2\uffff\1\145\1\44\1\143\1\141\1\44\2\145\1\164&quot;+
+		&quot;\2\44\1\uffff\1\44\1\146\1\uffff\1\44\1\157\1\44\1\uffff\1\145\1\154\1&quot;+
+		&quot;\uffff\1\164\1\uffff\1\44\1\145\1\44\1\uffff\2\44\1\156\1\uffff\1\145&quot;+
+		&quot;\1\143\1\uffff\2\44\1\145\3\uffff\1\160\1\uffff\1\156\1\uffff\1\156\1&quot;+
+		&quot;\145\1\44\1\uffff\1\44\3\uffff\1\164\1\157\1\145\2\uffff\1\144\1\44\1&quot;+
+		&quot;\151\1\164\1\44\2\uffff\1\163\1\146\2\44\1\uffff\1\172\1\44\1\uffff\2&quot;+
+		&quot;\44\2\uffff\1\145\3\uffff\1\144\1\44\1\uffff&quot;;
+	static final String DFA30_maxS =
+		&quot;\1\ufaff\3\75\2\uffff\2\75\1\uffff\1\75\1\71\1\75\3\uffff\1\75\5\uffff&quot;+
+		&quot;\1\75\1\163\1\171\2\157\1\170\1\157\1\156\1\157\2\165\1\145\1\171\1\162&quot;+
+		&quot;\1\157\1\150\1\uffff\1\174\2\uffff\1\170\1\146\27\uffff\1\uffff\6\uffff&quot;+
+		&quot;\2\163\1\157\1\145\2\164\2\141\1\156\1\146\1\ufaff\1\163\1\164\1\165\1&quot;+
+		&quot;\154\1\156\1\157\1\162\1\ufaff\1\160\1\164\1\156\1\164\1\167\1\154\1\143&quot;+
+		&quot;\1\157\1\142\1\164\1\157\1\162\1\160\1\151\1\156\1\162\1\171\1\154\1\151&quot;+
+		&quot;\5\uffff\2\146\1\uffff\1\uffff\1\164\1\145\1\154\1\141\2\145\1\143\1\162&quot;+
+		&quot;\1\163\1\164\1\141\1\142\1\uffff\2\145\1\155\1\163\2\141\1\ufaff\1\uffff&quot;+
+		&quot;\1\157\1\164\1\ufaff\1\147\1\151\1\ufaff\1\154\1\153\1\166\1\164\1\154&quot;+
+		&quot;\1\165\1\162\1\164\1\151\1\145\1\164\1\143\1\163\1\157\1\156\1\145\1\ufaff&quot;+
+		&quot;\1\144\1\141\1\154\1\uffff\1\uffff\1\uffff\2\162\1\145\1\153\2\ufaff\1&quot;+
+		&quot;\150\1\ufaff\1\163\1\151\1\165\1\154\1\ufaff\1\156\1\ufaff\1\145\1\154&quot;+
+		&quot;\1\164\1\uffff\1\145\1\162\1\141\1\162\1\uffff\1\ufaff\1\166\1\uffff\1&quot;+
+		&quot;\ufaff\2\141\1\145\1\151\1\162\1\164\1\151\1\143\1\162\1\143\1\150\1\ufaff&quot;+
+		&quot;\1\167\1\163\1\ufaff\1\uffff\1\ufaff\1\164\1\145\1\uffff\1\141\1\164\1&quot;+
+		&quot;\141\1\ufaff\2\uffff\1\ufaff\1\uffff\1\ufaff\1\156\1\154\1\145\1\uffff&quot;+
+		&quot;\1\144\1\uffff\3\ufaff\1\155\1\164\1\156\1\146\1\uffff\1\145\1\uffff\1&quot;+
+		&quot;\147\1\164\2\143\1\156\1\ufaff\1\143\1\164\1\ufaff\1\150\1\162\1\uffff&quot;+
+		&quot;\1\ufaff\1\151\2\uffff\1\151\1\ufaff\1\143\1\ufaff\1\156\3\uffff\1\165&quot;+
+		&quot;\1\164\1\ufaff\1\163\1\uffff\1\171\2\uffff\1\145\1\ufaff\1\143\1\141\1&quot;+
+		&quot;\ufaff\2\145\1\164\2\ufaff\1\uffff\1\ufaff\1\146\1\uffff\1\ufaff\1\157&quot;+
+		&quot;\1\ufaff\1\uffff\1\145\1\154\1\uffff\1\164\1\uffff\1\ufaff\1\145\1\ufaff&quot;+
+		&quot;\1\uffff\2\ufaff\1\156\1\uffff\1\145\1\143\1\uffff\2\ufaff\1\145\3\uffff&quot;+
+		&quot;\1\160\1\uffff\1\156\1\uffff\1\156\1\145\1\ufaff\1\uffff\1\ufaff\3\uffff&quot;+
+		&quot;\1\164\1\157\1\145\2\uffff\1\144\1\ufaff\1\151\1\164\1\ufaff\2\uffff\1&quot;+
+		&quot;\163\1\146\2\ufaff\1\uffff\1\172\1\ufaff\1\uffff\2\ufaff\2\uffff\1\145&quot;+
+		&quot;\3\uffff\1\144\1\ufaff\1\uffff&quot;;
+	static final String DFA30_acceptS =
+		&quot;\4\uffff\1\10\1\11\2\uffff\1\17\3\uffff\1\27\1\30\1\31\1\uffff\1\34\1&quot;+
+		&quot;\35\1\36\1\37\1\40\20\uffff\1\124\1\uffff\1\130\1\131\2\uffff\1\136\1&quot;+
+		&quot;\137\1\142\1\143\1\2\1\1\1\4\1\3\1\5\1\7\1\6\1\13\1\12\1\15\1\16\1\14&quot;+
+		&quot;\1\21\1\22\1\20\1\24\1\23\1\135\1\26\1\uffff\1\147\1\25\1\33\1\32\1\42&quot;+
+		&quot;\1\41\46\uffff\1\126\1\127\1\125\1\132\1\133\3\uffff\1\146\14\uffff\1&quot;+
+		&quot;\55\7\uffff\1\66\32\uffff\1\134\1\uffff\1\145\22\uffff\1\65\4\uffff\1&quot;+
+		&quot;\72\2\uffff\1\76\20\uffff\1\120\3\uffff\1\144\4\uffff\1\46\1\47\1\uffff&quot;+
+		&quot;\1\51\4\uffff\1\57\1\uffff\1\140\7\uffff\1\74\1\uffff\1\77\13\uffff\1&quot;+
+		&quot;\113\2\uffff\1\117\1\121\5\uffff\1\45\1\50\1\52\4\uffff\1\61\1\uffff\1&quot;+
+		&quot;\62\1\64\12\uffff\1\105\2\uffff\1\110\3\uffff\1\114\2\uffff\1\123\1\uffff&quot;+
+		&quot;\1\141\3\uffff\1\56\3\uffff\1\70\2\uffff\1\75\3\uffff\1\103\1\104\1\106&quot;+
+		&quot;\1\uffff\1\111\1\uffff\1\115\3\uffff\1\44\1\uffff\1\54\1\60\1\63\3\uffff&quot;+
+		&quot;\1\100\1\101\5\uffff\1\43\1\53\4\uffff\1\107\2\uffff\1\122\2\uffff\1\73&quot;+
+		&quot;\1\102\1\uffff\1\116\1\67\1\71\2\uffff\1\112&quot;;
+	static final String DFA30_specialS =
+		&quot;\102\uffff\1\1\63\uffff\1\0\61\uffff\1\2\u00bd\uffff}&gt;&quot;;
+<span class="fc" id="L4355">	static final String[] DFA30_transitionS = {</span>
+			&quot;\2\56\1\uffff\2\56\22\uffff\1\56\1\1\1\54\1\uffff\1\55\1\2\1\3\1\53\1&quot;+
+			&quot;\4\1\5\1\6\1\7\1\10\1\11\1\12\1\13\1\51\11\52\1\14\1\15\1\16\1\17\1\20&quot;+
+			&quot;\1\21\1\22\32\55\1\23\1\uffff\1\24\1\25\1\55\1\uffff\1\26\1\27\1\30\1&quot;+
+			&quot;\31\1\32\1\33\2\55\1\34\2\55\1\35\1\55\1\36\1\55\1\37\1\55\1\40\1\41&quot;+
+			&quot;\1\42\1\55\1\43\1\44\3\55\1\45\1\46\1\47\1\50\101\uffff\27\55\1\uffff&quot;+
+			&quot;\37\55\1\uffff\u1f08\55\u1040\uffff\u0150\55\u0170\uffff\u0080\55\u0080&quot;+
+			&quot;\uffff\u092e\55\u10d2\uffff\u5200\55\u5900\uffff\u0200\55&quot;,
+			&quot;\1\57&quot;,
+			&quot;\1\61&quot;,
+			&quot;\1\63\26\uffff\1\64&quot;,
+			&quot;&quot;,
+			&quot;&quot;,
+			&quot;\1\66&quot;,
+			&quot;\1\70\21\uffff\1\71&quot;,
+			&quot;&quot;,
+			&quot;\1\73\17\uffff\1\74&quot;,
+			&quot;\1\76\1\uffff\12\100&quot;,
+			&quot;\1\102\4\uffff\1\103\15\uffff\1\101&quot;,
+			&quot;&quot;,
+			&quot;&quot;,
+			&quot;&quot;,
+			&quot;\1\105&quot;,
+			&quot;&quot;,
+			&quot;&quot;,
+			&quot;&quot;,
+			&quot;&quot;,
+			&quot;&quot;,
+			&quot;\1\107&quot;,
+			&quot;\1\111\20\uffff\1\112&quot;,
+			&quot;\1\113\2\uffff\1\114\6\uffff\1\115&quot;,
+			&quot;\1\116\6\uffff\1\117\3\uffff\1\120\2\uffff\1\121&quot;,
+			&quot;\1\122\11\uffff\1\123&quot;,
+			&quot;\1\124\1\uffff\1\126\11\uffff\1\125&quot;,
+			&quot;\1\127\7\uffff\1\130\2\uffff\1\131\2\uffff\1\132&quot;,
+			&quot;\1\133\6\uffff\1\134\1\135&quot;,
+			&quot;\1\136&quot;,
+			&quot;\1\137\3\uffff\1\140\17\uffff\1\141&quot;,
+			&quot;\1\142\20\uffff\1\143\2\uffff\1\144&quot;,
+			&quot;\1\145&quot;,
+			&quot;\1\146\13\uffff\1\147\1\150\1\uffff\1\151\1\uffff\1\152&quot;,
+			&quot;\1\153\11\uffff\1\154&quot;,
+			&quot;\1\155&quot;,
+			&quot;\1\156&quot;,
+			&quot;&quot;,
+			&quot;\1\157\76\uffff\1\160&quot;,
+			&quot;&quot;,
+			&quot;&quot;,
+			&quot;\1\100\1\uffff\10\164\2\100\12\uffff\3\100\21\uffff\1\162\13\uffff\3&quot;+
+			&quot;\100\21\uffff\1\162&quot;,
+			&quot;\1\100\1\uffff\12\165\12\uffff\3\100\35\uffff\3\100&quot;,
+			&quot;&quot;,
+			&quot;&quot;,
+			&quot;&quot;,
+			&quot;&quot;,
+			&quot;&quot;,
+			&quot;&quot;,
+			&quot;&quot;,
+			&quot;&quot;,
+			&quot;&quot;,
+			&quot;&quot;,
+			&quot;&quot;,
+			&quot;&quot;,
+			&quot;&quot;,
+			&quot;&quot;,
+			&quot;&quot;,
+			&quot;&quot;,
+			&quot;&quot;,
+			&quot;&quot;,
+			&quot;&quot;,
+			&quot;&quot;,
+			&quot;&quot;,
+			&quot;&quot;,
+			&quot;&quot;,
+			&quot;\52\167\1\166\uffd5\167&quot;,
+			&quot;&quot;,
+			&quot;&quot;,
+			&quot;&quot;,
+			&quot;&quot;,
+			&quot;&quot;,
+			&quot;&quot;,
+			&quot;\1\170&quot;,
+			&quot;\1\171&quot;,
+			&quot;\1\172&quot;,
+			&quot;\1\173&quot;,
+			&quot;\1\174&quot;,
+			&quot;\1\175\1\176&quot;,
+			&quot;\1\177&quot;,
+			&quot;\1\u0080&quot;,
+			&quot;\1\u0081&quot;,
+			&quot;\1\u0082&quot;,
+			&quot;\1\55\13\uffff\12\55\7\uffff\32\55\4\uffff\1\55\1\uffff\24\55\1\u0083&quot;+
+			&quot;\5\55\105\uffff\27\55\1\uffff\37\55\1\uffff\u1f08\55\u1040\uffff\u0150&quot;+
+			&quot;\55\u0170\uffff\u0080\55\u0080\uffff\u092e\55\u10d2\uffff\u5200\55\u5900&quot;+
+			&quot;\uffff\u0200\55&quot;,
+			&quot;\1\u0085&quot;,
+			&quot;\1\u0086&quot;,
+			&quot;\1\u0087&quot;,
+			&quot;\1\u0088&quot;,
+			&quot;\1\u0089&quot;,
+			&quot;\1\u008a&quot;,
+			&quot;\1\u008b&quot;,
+			&quot;\1\55\13\uffff\12\55\7\uffff\32\55\4\uffff\1\55\1\uffff\32\55\105\uffff&quot;+
+			&quot;\27\55\1\uffff\37\55\1\uffff\u1f08\55\u1040\uffff\u0150\55\u0170\uffff&quot;+
+			&quot;\u0080\55\u0080\uffff\u092e\55\u10d2\uffff\u5200\55\u5900\uffff\u0200&quot;+
+			&quot;\55&quot;,
+			&quot;\1\u008d&quot;,
+			&quot;\1\u008e\1\u008f&quot;,
+			&quot;\1\u0090&quot;,
+			&quot;\1\u0091&quot;,
+			&quot;\1\u0092&quot;,
+			&quot;\1\u0093&quot;,
+			&quot;\1\u0094&quot;,
+			&quot;\1\u0095\5\uffff\1\u0096&quot;,
+			&quot;\1\u0097&quot;,
+			&quot;\1\u0098&quot;,
+			&quot;\1\u0099&quot;,
+			&quot;\1\u009a\20\uffff\1\u009b&quot;,
+			&quot;\1\u009c&quot;,
+			&quot;\1\u009d&quot;,
+			&quot;\1\u009e&quot;,
+			&quot;\1\u009f\10\uffff\1\u00a0&quot;,
+			&quot;\1\u00a1\23\uffff\1\u00a2\3\uffff\1\u00a3&quot;,
+			&quot;\1\u00a4\2\uffff\1\u00a5&quot;,
+			&quot;\1\u00a6&quot;,
+			&quot;&quot;,
+			&quot;&quot;,
+			&quot;&quot;,
+			&quot;&quot;,
+			&quot;&quot;,
+			&quot;\1\100\1\uffff\10\164\2\100\12\uffff\3\100\35\uffff\3\100&quot;,
+			&quot;\1\100\1\uffff\12\165\12\uffff\3\100\35\uffff\3\100&quot;,
+			&quot;\57\u00a9\1\u00a8\uffd0\u00a9&quot;,
+			&quot;&quot;,
+			&quot;\1\u00aa&quot;,
+			&quot;\1\u00ab&quot;,
+			&quot;\1\u00ac&quot;,
+			&quot;\1\u00ad&quot;,
+			&quot;\1\u00ae&quot;,
+			&quot;\1\u00af&quot;,
+			&quot;\1\u00b0&quot;,
+			&quot;\1\u00b1&quot;,
+			&quot;\1\u00b2&quot;,
+			&quot;\1\u00b3&quot;,
+			&quot;\1\u00b4&quot;,
+			&quot;\1\u00b5&quot;,
+			&quot;&quot;,
+			&quot;\1\u00b6&quot;,
+			&quot;\1\u00b7&quot;,
+			&quot;\1\u00b8&quot;,
+			&quot;\1\u00b9&quot;,
+			&quot;\1\u00ba&quot;,
+			&quot;\1\u00bb&quot;,
+			&quot;\1\55\13\uffff\12\55\7\uffff\32\55\4\uffff\1\55\1\uffff\32\55\105\uffff&quot;+
+			&quot;\27\55\1\uffff\37\55\1\uffff\u1f08\55\u1040\uffff\u0150\55\u0170\uffff&quot;+
+			&quot;\u0080\55\u0080\uffff\u092e\55\u10d2\uffff\u5200\55\u5900\uffff\u0200&quot;+
+			&quot;\55&quot;,
+			&quot;&quot;,
+			&quot;\1\u00bd\2\uffff\1\u00be&quot;,
+			&quot;\1\u00bf&quot;,
+			&quot;\1\55\13\uffff\12\55\7\uffff\32\55\4\uffff\1\55\1\uffff\4\55\1\u00c0&quot;+
+			&quot;\25\55\105\uffff\27\55\1\uffff\37\55\1\uffff\u1f08\55\u1040\uffff\u0150&quot;+
+			&quot;\55\u0170\uffff\u0080\55\u0080\uffff\u092e\55\u10d2\uffff\u5200\55\u5900&quot;+
+			&quot;\uffff\u0200\55&quot;,
+			&quot;\1\u00c2&quot;,
+			&quot;\1\u00c3&quot;,
+			&quot;\1\55\13\uffff\12\55\7\uffff\32\55\4\uffff\1\55\1\uffff\32\55\105\uffff&quot;+
+			&quot;\27\55\1\uffff\37\55\1\uffff\u1f08\55\u1040\uffff\u0150\55\u0170\uffff&quot;+
+			&quot;\u0080\55\u0080\uffff\u092e\55\u10d2\uffff\u5200\55\u5900\uffff\u0200&quot;+
+			&quot;\55&quot;,
+			&quot;\1\u00c5&quot;,
+			&quot;\1\u00c6&quot;,
+			&quot;\1\u00c7&quot;,
+			&quot;\1\u00c8&quot;,
+			&quot;\1\u00c9&quot;,
+			&quot;\1\u00ca&quot;,
+			&quot;\1\u00cb&quot;,
+			&quot;\1\u00cc&quot;,
+			&quot;\1\u00cd&quot;,
+			&quot;\1\u00ce&quot;,
+			&quot;\1\u00cf&quot;,
+			&quot;\1\u00d0&quot;,
+			&quot;\1\u00d1&quot;,
+			&quot;\1\u00d2&quot;,
+			&quot;\1\u00d3&quot;,
+			&quot;\1\u00d4&quot;,
+			&quot;\1\55\13\uffff\12\55\7\uffff\32\55\4\uffff\1\55\1\uffff\32\55\105\uffff&quot;+
+			&quot;\27\55\1\uffff\37\55\1\uffff\u1f08\55\u1040\uffff\u0150\55\u0170\uffff&quot;+
+			&quot;\u0080\55\u0080\uffff\u092e\55\u10d2\uffff\u5200\55\u5900\uffff\u0200&quot;+
+			&quot;\55&quot;,
+			&quot;\1\u00d6&quot;,
+			&quot;\1\u00d7&quot;,
+			&quot;\1\u00d8&quot;,
+			&quot;&quot;,
+			&quot;\0\u00a9&quot;,
+			&quot;&quot;,
+			&quot;\1\u00da&quot;,
+			&quot;\1\u00db&quot;,
+			&quot;\1\u00dc&quot;,
+			&quot;\1\u00dd&quot;,
+			&quot;\1\55\13\uffff\12\55\7\uffff\32\55\4\uffff\1\55\1\uffff\32\55\105\uffff&quot;+
+			&quot;\27\55\1\uffff\37\55\1\uffff\u1f08\55\u1040\uffff\u0150\55\u0170\uffff&quot;+
+			&quot;\u0080\55\u0080\uffff\u092e\55\u10d2\uffff\u5200\55\u5900\uffff\u0200&quot;+
+			&quot;\55&quot;,
+			&quot;\1\55\13\uffff\12\55\7\uffff\32\55\4\uffff\1\55\1\uffff\32\55\105\uffff&quot;+
+			&quot;\27\55\1\uffff\37\55\1\uffff\u1f08\55\u1040\uffff\u0150\55\u0170\uffff&quot;+
+			&quot;\u0080\55\u0080\uffff\u092e\55\u10d2\uffff\u5200\55\u5900\uffff\u0200&quot;+
+			&quot;\55&quot;,
+			&quot;\1\u00e0&quot;,
+			&quot;\1\55\13\uffff\12\55\7\uffff\32\55\4\uffff\1\55\1\uffff\32\55\105\uffff&quot;+
+			&quot;\27\55\1\uffff\37\55\1\uffff\u1f08\55\u1040\uffff\u0150\55\u0170\uffff&quot;+
+			&quot;\u0080\55\u0080\uffff\u092e\55\u10d2\uffff\u5200\55\u5900\uffff\u0200&quot;+
+			&quot;\55&quot;,
+			&quot;\1\u00e2&quot;,
+			&quot;\1\u00e3&quot;,
+			&quot;\1\u00e4&quot;,
+			&quot;\1\u00e5&quot;,
+			&quot;\1\55\13\uffff\12\55\7\uffff\32\55\4\uffff\1\55\1\uffff\32\55\105\uffff&quot;+
+			&quot;\27\55\1\uffff\37\55\1\uffff\u1f08\55\u1040\uffff\u0150\55\u0170\uffff&quot;+
+			&quot;\u0080\55\u0080\uffff\u092e\55\u10d2\uffff\u5200\55\u5900\uffff\u0200&quot;+
+			&quot;\55&quot;,
+			&quot;\1\u00e7&quot;,
+			&quot;\1\55\13\uffff\12\55\7\uffff\32\55\4\uffff\1\55\1\uffff\32\55\105\uffff&quot;+
+			&quot;\27\55\1\uffff\37\55\1\uffff\u1f08\55\u1040\uffff\u0150\55\u0170\uffff&quot;+
+			&quot;\u0080\55\u0080\uffff\u092e\55\u10d2\uffff\u5200\55\u5900\uffff\u0200&quot;+
+			&quot;\55&quot;,
+			&quot;\1\u00e9&quot;,
+			&quot;\1\u00ea&quot;,
+			&quot;\1\u00eb&quot;,
+			&quot;&quot;,
+			&quot;\1\u00ec&quot;,
+			&quot;\1\u00ed&quot;,
+			&quot;\1\u00ee&quot;,
+			&quot;\1\u00ef&quot;,
+			&quot;&quot;,
+			&quot;\1\55\13\uffff\12\55\7\uffff\32\55\4\uffff\1\55\1\uffff\32\55\105\uffff&quot;+
+			&quot;\27\55\1\uffff\37\55\1\uffff\u1f08\55\u1040\uffff\u0150\55\u0170\uffff&quot;+
+			&quot;\u0080\55\u0080\uffff\u092e\55\u10d2\uffff\u5200\55\u5900\uffff\u0200&quot;+
+			&quot;\55&quot;,
+			&quot;\1\u00f1&quot;,
+			&quot;&quot;,
+			&quot;\1\55\13\uffff\12\55\7\uffff\32\55\4\uffff\1\55\1\uffff\32\55\105\uffff&quot;+
+			&quot;\27\55\1\uffff\37\55\1\uffff\u1f08\55\u1040\uffff\u0150\55\u0170\uffff&quot;+
+			&quot;\u0080\55\u0080\uffff\u092e\55\u10d2\uffff\u5200\55\u5900\uffff\u0200&quot;+
+			&quot;\55&quot;,
+			&quot;\1\u00f3&quot;,
+			&quot;\1\u00f4&quot;,
+			&quot;\1\u00f5&quot;,
+			&quot;\1\u00f6&quot;,
+			&quot;\1\u00f7&quot;,
+			&quot;\1\u00f8&quot;,
+			&quot;\1\u00f9&quot;,
+			&quot;\1\u00fa&quot;,
+			&quot;\1\u00fb&quot;,
+			&quot;\1\u00fc&quot;,
+			&quot;\1\u00fd&quot;,
+			&quot;\1\55\13\uffff\12\55\7\uffff\32\55\4\uffff\1\55\1\uffff\32\55\105\uffff&quot;+
+			&quot;\27\55\1\uffff\37\55\1\uffff\u1f08\55\u1040\uffff\u0150\55\u0170\uffff&quot;+
+			&quot;\u0080\55\u0080\uffff\u092e\55\u10d2\uffff\u5200\55\u5900\uffff\u0200&quot;+
+			&quot;\55&quot;,
+			&quot;\1\u00ff&quot;,
+			&quot;\1\u0100&quot;,
+			&quot;\1\55\13\uffff\12\55\7\uffff\32\55\4\uffff\1\55\1\uffff\32\55\105\uffff&quot;+
+			&quot;\27\55\1\uffff\37\55\1\uffff\u1f08\55\u1040\uffff\u0150\55\u0170\uffff&quot;+
+			&quot;\u0080\55\u0080\uffff\u092e\55\u10d2\uffff\u5200\55\u5900\uffff\u0200&quot;+
+			&quot;\55&quot;,
+			&quot;&quot;,
+			&quot;\1\55\13\uffff\12\55\7\uffff\32\55\4\uffff\1\55\1\uffff\32\55\105\uffff&quot;+
+			&quot;\27\55\1\uffff\37\55\1\uffff\u1f08\55\u1040\uffff\u0150\55\u0170\uffff&quot;+
+			&quot;\u0080\55\u0080\uffff\u092e\55\u10d2\uffff\u5200\55\u5900\uffff\u0200&quot;+
+			&quot;\55&quot;,
+			&quot;\1\u0103&quot;,
+			&quot;\1\u0104&quot;,
+			&quot;&quot;,
+			&quot;\1\u0105&quot;,
+			&quot;\1\u0106&quot;,
+			&quot;\1\u0107&quot;,
+			&quot;\1\55\13\uffff\12\55\7\uffff\32\55\4\uffff\1\55\1\uffff\32\55\105\uffff&quot;+
+			&quot;\27\55\1\uffff\37\55\1\uffff\u1f08\55\u1040\uffff\u0150\55\u0170\uffff&quot;+
+			&quot;\u0080\55\u0080\uffff\u092e\55\u10d2\uffff\u5200\55\u5900\uffff\u0200&quot;+
+			&quot;\55&quot;,
+			&quot;&quot;,
+			&quot;&quot;,
+			&quot;\1\55\13\uffff\12\55\7\uffff\32\55\4\uffff\1\55\1\uffff\32\55\105\uffff&quot;+
+			&quot;\27\55\1\uffff\37\55\1\uffff\u1f08\55\u1040\uffff\u0150\55\u0170\uffff&quot;+
+			&quot;\u0080\55\u0080\uffff\u092e\55\u10d2\uffff\u5200\55\u5900\uffff\u0200&quot;+
+			&quot;\55&quot;,
+			&quot;&quot;,
+			&quot;\1\55\13\uffff\12\55\7\uffff\32\55\4\uffff\1\55\1\uffff\32\55\105\uffff&quot;+
+			&quot;\27\55\1\uffff\37\55\1\uffff\u1f08\55\u1040\uffff\u0150\55\u0170\uffff&quot;+
+			&quot;\u0080\55\u0080\uffff\u092e\55\u10d2\uffff\u5200\55\u5900\uffff\u0200&quot;+
+			&quot;\55&quot;,
+			&quot;\1\u010b&quot;,
+			&quot;\1\u010c&quot;,
+			&quot;\1\u010d&quot;,
+			&quot;&quot;,
+			&quot;\1\u010e&quot;,
+			&quot;&quot;,
+			&quot;\1\55\13\uffff\12\55\7\uffff\32\55\4\uffff\1\55\1\uffff\32\55\105\uffff&quot;+
+			&quot;\27\55\1\uffff\37\55\1\uffff\u1f08\55\u1040\uffff\u0150\55\u0170\uffff&quot;+
+			&quot;\u0080\55\u0080\uffff\u092e\55\u10d2\uffff\u5200\55\u5900\uffff\u0200&quot;+
+			&quot;\55&quot;,
+			&quot;\1\55\13\uffff\12\55\7\uffff\32\55\4\uffff\1\55\1\uffff\13\55\1\u0110&quot;+
+			&quot;\16\55\105\uffff\27\55\1\uffff\37\55\1\uffff\u1f08\55\u1040\uffff\u0150&quot;+
+			&quot;\55\u0170\uffff\u0080\55\u0080\uffff\u092e\55\u10d2\uffff\u5200\55\u5900&quot;+
+			&quot;\uffff\u0200\55&quot;,
+			&quot;\1\55\13\uffff\12\55\7\uffff\32\55\4\uffff\1\55\1\uffff\32\55\105\uffff&quot;+
+			&quot;\27\55\1\uffff\37\55\1\uffff\u1f08\55\u1040\uffff\u0150\55\u0170\uffff&quot;+
+			&quot;\u0080\55\u0080\uffff\u092e\55\u10d2\uffff\u5200\55\u5900\uffff\u0200&quot;+
+			&quot;\55&quot;,
+			&quot;\1\u0113&quot;,
+			&quot;\1\u0114&quot;,
+			&quot;\1\u0115&quot;,
+			&quot;\1\u0116&quot;,
+			&quot;&quot;,
+			&quot;\1\u0117&quot;,
+			&quot;&quot;,
+			&quot;\1\u0118&quot;,
+			&quot;\1\u0119&quot;,
+			&quot;\1\u011a&quot;,
+			&quot;\1\u011b&quot;,
+			&quot;\1\u011c&quot;,
+			&quot;\1\55\13\uffff\12\55\7\uffff\32\55\4\uffff\1\55\1\uffff\32\55\105\uffff&quot;+
+			&quot;\27\55\1\uffff\37\55\1\uffff\u1f08\55\u1040\uffff\u0150\55\u0170\uffff&quot;+
+			&quot;\u0080\55\u0080\uffff\u092e\55\u10d2\uffff\u5200\55\u5900\uffff\u0200&quot;+
+			&quot;\55&quot;,
+			&quot;\1\u011e&quot;,
+			&quot;\1\u011f&quot;,
+			&quot;\1\55\13\uffff\12\55\7\uffff\32\55\4\uffff\1\55\1\uffff\32\55\105\uffff&quot;+
+			&quot;\27\55\1\uffff\37\55\1\uffff\u1f08\55\u1040\uffff\u0150\55\u0170\uffff&quot;+
+			&quot;\u0080\55\u0080\uffff\u092e\55\u10d2\uffff\u5200\55\u5900\uffff\u0200&quot;+
+			&quot;\55&quot;,
+			&quot;\1\u0121&quot;,
+			&quot;\1\u0122&quot;,
+			&quot;&quot;,
+			&quot;\1\55\13\uffff\12\55\7\uffff\32\55\4\uffff\1\55\1\uffff\22\55\1\u0123&quot;+
+			&quot;\7\55\105\uffff\27\55\1\uffff\37\55\1\uffff\u1f08\55\u1040\uffff\u0150&quot;+
+			&quot;\55\u0170\uffff\u0080\55\u0080\uffff\u092e\55\u10d2\uffff\u5200\55\u5900&quot;+
+			&quot;\uffff\u0200\55&quot;,
+			&quot;\1\u0125&quot;,
+			&quot;&quot;,
+			&quot;&quot;,
+			&quot;\1\u0126&quot;,
+			&quot;\1\55\13\uffff\12\55\7\uffff\32\55\4\uffff\1\55\1\uffff\32\55\105\uffff&quot;+
+			&quot;\27\55\1\uffff\37\55\1\uffff\u1f08\55\u1040\uffff\u0150\55\u0170\uffff&quot;+
+			&quot;\u0080\55\u0080\uffff\u092e\55\u10d2\uffff\u5200\55\u5900\uffff\u0200&quot;+
+			&quot;\55&quot;,
+			&quot;\1\u0128&quot;,
+			&quot;\1\55\13\uffff\12\55\7\uffff\32\55\4\uffff\1\55\1\uffff\32\55\105\uffff&quot;+
+			&quot;\27\55\1\uffff\37\55\1\uffff\u1f08\55\u1040\uffff\u0150\55\u0170\uffff&quot;+
+			&quot;\u0080\55\u0080\uffff\u092e\55\u10d2\uffff\u5200\55\u5900\uffff\u0200&quot;+
+			&quot;\55&quot;,
+			&quot;\1\u012a&quot;,
+			&quot;&quot;,
+			&quot;&quot;,
+			&quot;&quot;,
+			&quot;\1\u012b&quot;,
+			&quot;\1\u012c&quot;,
+			&quot;\1\55\13\uffff\12\55\7\uffff\32\55\4\uffff\1\55\1\uffff\32\55\105\uffff&quot;+
+			&quot;\27\55\1\uffff\37\55\1\uffff\u1f08\55\u1040\uffff\u0150\55\u0170\uffff&quot;+
+			&quot;\u0080\55\u0080\uffff\u092e\55\u10d2\uffff\u5200\55\u5900\uffff\u0200&quot;+
+			&quot;\55&quot;,
+			&quot;\1\u012e&quot;,
+			&quot;&quot;,
+			&quot;\1\u012f&quot;,
+			&quot;&quot;,
+			&quot;&quot;,
+			&quot;\1\u0130&quot;,
+			&quot;\1\55\13\uffff\12\55\7\uffff\32\55\4\uffff\1\55\1\uffff\32\55\105\uffff&quot;+
+			&quot;\27\55\1\uffff\37\55\1\uffff\u1f08\55\u1040\uffff\u0150\55\u0170\uffff&quot;+
+			&quot;\u0080\55\u0080\uffff\u092e\55\u10d2\uffff\u5200\55\u5900\uffff\u0200&quot;+
+			&quot;\55&quot;,
+			&quot;\1\u0132&quot;,
+			&quot;\1\u0133&quot;,
+			&quot;\1\55\13\uffff\12\55\7\uffff\32\55\4\uffff\1\55\1\uffff\32\55\105\uffff&quot;+
+			&quot;\27\55\1\uffff\37\55\1\uffff\u1f08\55\u1040\uffff\u0150\55\u0170\uffff&quot;+
+			&quot;\u0080\55\u0080\uffff\u092e\55\u10d2\uffff\u5200\55\u5900\uffff\u0200&quot;+
+			&quot;\55&quot;,
+			&quot;\1\u0135&quot;,
+			&quot;\1\u0136&quot;,
+			&quot;\1\u0137&quot;,
+			&quot;\1\55\13\uffff\12\55\7\uffff\32\55\4\uffff\1\55\1\uffff\32\55\105\uffff&quot;+
+			&quot;\27\55\1\uffff\37\55\1\uffff\u1f08\55\u1040\uffff\u0150\55\u0170\uffff&quot;+
+			&quot;\u0080\55\u0080\uffff\u092e\55\u10d2\uffff\u5200\55\u5900\uffff\u0200&quot;+
+			&quot;\55&quot;,
+			&quot;\1\55\13\uffff\12\55\7\uffff\32\55\4\uffff\1\55\1\uffff\32\55\105\uffff&quot;+
+			&quot;\27\55\1\uffff\37\55\1\uffff\u1f08\55\u1040\uffff\u0150\55\u0170\uffff&quot;+
+			&quot;\u0080\55\u0080\uffff\u092e\55\u10d2\uffff\u5200\55\u5900\uffff\u0200&quot;+
+			&quot;\55&quot;,
+			&quot;&quot;,
+			&quot;\1\55\13\uffff\12\55\7\uffff\32\55\4\uffff\1\55\1\uffff\32\55\105\uffff&quot;+
+			&quot;\27\55\1\uffff\37\55\1\uffff\u1f08\55\u1040\uffff\u0150\55\u0170\uffff&quot;+
+			&quot;\u0080\55\u0080\uffff\u092e\55\u10d2\uffff\u5200\55\u5900\uffff\u0200&quot;+
+			&quot;\55&quot;,
+			&quot;\1\u013b&quot;,
+			&quot;&quot;,
+			&quot;\1\55\13\uffff\12\55\7\uffff\32\55\4\uffff\1\55\1\uffff\32\55\105\uffff&quot;+
+			&quot;\27\55\1\uffff\37\55\1\uffff\u1f08\55\u1040\uffff\u0150\55\u0170\uffff&quot;+
+			&quot;\u0080\55\u0080\uffff\u092e\55\u10d2\uffff\u5200\55\u5900\uffff\u0200&quot;+
+			&quot;\55&quot;,
+			&quot;\1\u013d&quot;,
+			&quot;\1\55\13\uffff\12\55\7\uffff\32\55\4\uffff\1\55\1\uffff\32\55\105\uffff&quot;+
+			&quot;\27\55\1\uffff\37\55\1\uffff\u1f08\55\u1040\uffff\u0150\55\u0170\uffff&quot;+
+			&quot;\u0080\55\u0080\uffff\u092e\55\u10d2\uffff\u5200\55\u5900\uffff\u0200&quot;+
+			&quot;\55&quot;,
+			&quot;&quot;,
+			&quot;\1\u013f&quot;,
+			&quot;\1\u0140&quot;,
+			&quot;&quot;,
+			&quot;\1\u0141&quot;,
+			&quot;&quot;,
+			&quot;\1\55\13\uffff\12\55\7\uffff\32\55\4\uffff\1\55\1\uffff\32\55\105\uffff&quot;+
+			&quot;\27\55\1\uffff\37\55\1\uffff\u1f08\55\u1040\uffff\u0150\55\u0170\uffff&quot;+
+			&quot;\u0080\55\u0080\uffff\u092e\55\u10d2\uffff\u5200\55\u5900\uffff\u0200&quot;+
+			&quot;\55&quot;,
+			&quot;\1\u0143&quot;,
+			&quot;\1\55\13\uffff\12\55\7\uffff\32\55\4\uffff\1\55\1\uffff\32\55\105\uffff&quot;+
+			&quot;\27\55\1\uffff\37\55\1\uffff\u1f08\55\u1040\uffff\u0150\55\u0170\uffff&quot;+
+			&quot;\u0080\55\u0080\uffff\u092e\55\u10d2\uffff\u5200\55\u5900\uffff\u0200&quot;+
+			&quot;\55&quot;,
+			&quot;&quot;,
+			&quot;\1\55\13\uffff\12\55\7\uffff\32\55\4\uffff\1\55\1\uffff\32\55\105\uffff&quot;+
+			&quot;\27\55\1\uffff\37\55\1\uffff\u1f08\55\u1040\uffff\u0150\55\u0170\uffff&quot;+
+			&quot;\u0080\55\u0080\uffff\u092e\55\u10d2\uffff\u5200\55\u5900\uffff\u0200&quot;+
+			&quot;\55&quot;,
+			&quot;\1\55\13\uffff\12\55\7\uffff\32\55\4\uffff\1\55\1\uffff\32\55\105\uffff&quot;+
+			&quot;\27\55\1\uffff\37\55\1\uffff\u1f08\55\u1040\uffff\u0150\55\u0170\uffff&quot;+
+			&quot;\u0080\55\u0080\uffff\u092e\55\u10d2\uffff\u5200\55\u5900\uffff\u0200&quot;+
+			&quot;\55&quot;,
+			&quot;\1\u0147&quot;,
+			&quot;&quot;,
+			&quot;\1\u0148&quot;,
+			&quot;\1\u0149&quot;,
+			&quot;&quot;,
+			&quot;\1\55\13\uffff\12\55\7\uffff\32\55\4\uffff\1\55\1\uffff\32\55\105\uffff&quot;+
+			&quot;\27\55\1\uffff\37\55\1\uffff\u1f08\55\u1040\uffff\u0150\55\u0170\uffff&quot;+
+			&quot;\u0080\55\u0080\uffff\u092e\55\u10d2\uffff\u5200\55\u5900\uffff\u0200&quot;+
+			&quot;\55&quot;,
+			&quot;\1\55\13\uffff\12\55\7\uffff\32\55\4\uffff\1\55\1\uffff\32\55\105\uffff&quot;+
+			&quot;\27\55\1\uffff\37\55\1\uffff\u1f08\55\u1040\uffff\u0150\55\u0170\uffff&quot;+
+			&quot;\u0080\55\u0080\uffff\u092e\55\u10d2\uffff\u5200\55\u5900\uffff\u0200&quot;+
+			&quot;\55&quot;,
+			&quot;\1\u014c&quot;,
+			&quot;&quot;,
+			&quot;&quot;,
+			&quot;&quot;,
+			&quot;\1\u014d&quot;,
+			&quot;&quot;,
+			&quot;\1\u014e&quot;,
+			&quot;&quot;,
+			&quot;\1\u014f&quot;,
+			&quot;\1\u0150&quot;,
+			&quot;\1\55\13\uffff\12\55\7\uffff\32\55\4\uffff\1\55\1\uffff\32\55\105\uffff&quot;+
+			&quot;\27\55\1\uffff\37\55\1\uffff\u1f08\55\u1040\uffff\u0150\55\u0170\uffff&quot;+
+			&quot;\u0080\55\u0080\uffff\u092e\55\u10d2\uffff\u5200\55\u5900\uffff\u0200&quot;+
+			&quot;\55&quot;,
+			&quot;&quot;,
+			&quot;\1\55\13\uffff\12\55\7\uffff\32\55\4\uffff\1\55\1\uffff\32\55\105\uffff&quot;+
+			&quot;\27\55\1\uffff\37\55\1\uffff\u1f08\55\u1040\uffff\u0150\55\u0170\uffff&quot;+
+			&quot;\u0080\55\u0080\uffff\u092e\55\u10d2\uffff\u5200\55\u5900\uffff\u0200&quot;+
+			&quot;\55&quot;,
+			&quot;&quot;,
+			&quot;&quot;,
+			&quot;&quot;,
+			&quot;\1\u0153&quot;,
+			&quot;\1\u0154&quot;,
+			&quot;\1\u0155&quot;,
+			&quot;&quot;,
+			&quot;&quot;,
+			&quot;\1\u0156&quot;,
+			&quot;\1\55\13\uffff\12\55\7\uffff\32\55\4\uffff\1\55\1\uffff\32\55\105\uffff&quot;+
+			&quot;\27\55\1\uffff\37\55\1\uffff\u1f08\55\u1040\uffff\u0150\55\u0170\uffff&quot;+
+			&quot;\u0080\55\u0080\uffff\u092e\55\u10d2\uffff\u5200\55\u5900\uffff\u0200&quot;+
+			&quot;\55&quot;,
+			&quot;\1\u0158&quot;,
+			&quot;\1\u0159&quot;,
+			&quot;\1\55\13\uffff\12\55\7\uffff\32\55\4\uffff\1\55\1\uffff\32\55\105\uffff&quot;+
+			&quot;\27\55\1\uffff\37\55\1\uffff\u1f08\55\u1040\uffff\u0150\55\u0170\uffff&quot;+
+			&quot;\u0080\55\u0080\uffff\u092e\55\u10d2\uffff\u5200\55\u5900\uffff\u0200&quot;+
+			&quot;\55&quot;,
+			&quot;&quot;,
+			&quot;&quot;,
+			&quot;\1\u015b&quot;,
+			&quot;\1\u015c&quot;,
+			&quot;\1\55\13\uffff\12\55\7\uffff\32\55\4\uffff\1\55\1\uffff\32\55\105\uffff&quot;+
+			&quot;\27\55\1\uffff\37\55\1\uffff\u1f08\55\u1040\uffff\u0150\55\u0170\uffff&quot;+
+			&quot;\u0080\55\u0080\uffff\u092e\55\u10d2\uffff\u5200\55\u5900\uffff\u0200&quot;+
+			&quot;\55&quot;,
+			&quot;\1\55\13\uffff\12\55\7\uffff\32\55\4\uffff\1\55\1\uffff\32\55\105\uffff&quot;+
+			&quot;\27\55\1\uffff\37\55\1\uffff\u1f08\55\u1040\uffff\u0150\55\u0170\uffff&quot;+
+			&quot;\u0080\55\u0080\uffff\u092e\55\u10d2\uffff\u5200\55\u5900\uffff\u0200&quot;+
+			&quot;\55&quot;,
+			&quot;&quot;,
+			&quot;\1\u015f&quot;,
+			&quot;\1\55\13\uffff\12\55\7\uffff\32\55\4\uffff\1\55\1\uffff\32\55\105\uffff&quot;+
+			&quot;\27\55\1\uffff\37\55\1\uffff\u1f08\55\u1040\uffff\u0150\55\u0170\uffff&quot;+
+			&quot;\u0080\55\u0080\uffff\u092e\55\u10d2\uffff\u5200\55\u5900\uffff\u0200&quot;+
+			&quot;\55&quot;,
+			&quot;&quot;,
+			&quot;\1\55\13\uffff\12\55\7\uffff\32\55\4\uffff\1\55\1\uffff\32\55\105\uffff&quot;+
+			&quot;\27\55\1\uffff\37\55\1\uffff\u1f08\55\u1040\uffff\u0150\55\u0170\uffff&quot;+
+			&quot;\u0080\55\u0080\uffff\u092e\55\u10d2\uffff\u5200\55\u5900\uffff\u0200&quot;+
+			&quot;\55&quot;,
+			&quot;\1\55\13\uffff\12\55\7\uffff\32\55\4\uffff\1\55\1\uffff\32\55\105\uffff&quot;+
+			&quot;\27\55\1\uffff\37\55\1\uffff\u1f08\55\u1040\uffff\u0150\55\u0170\uffff&quot;+
+			&quot;\u0080\55\u0080\uffff\u092e\55\u10d2\uffff\u5200\55\u5900\uffff\u0200&quot;+
+			&quot;\55&quot;,
+			&quot;&quot;,
+			&quot;&quot;,
+			&quot;\1\u0163&quot;,
+			&quot;&quot;,
+			&quot;&quot;,
+			&quot;&quot;,
+			&quot;\1\u0164&quot;,
+			&quot;\1\55\13\uffff\12\55\7\uffff\32\55\4\uffff\1\55\1\uffff\32\55\105\uffff&quot;+
+			&quot;\27\55\1\uffff\37\55\1\uffff\u1f08\55\u1040\uffff\u0150\55\u0170\uffff&quot;+
+			&quot;\u0080\55\u0080\uffff\u092e\55\u10d2\uffff\u5200\55\u5900\uffff\u0200&quot;+
+			&quot;\55&quot;,
+			&quot;&quot;
+	};
+
+<span class="fc" id="L4876">	static final short[] DFA30_eot = DFA.unpackEncodedString(DFA30_eotS);</span>
+<span class="fc" id="L4877">	static final short[] DFA30_eof = DFA.unpackEncodedString(DFA30_eofS);</span>
+<span class="fc" id="L4878">	static final char[] DFA30_min = DFA.unpackEncodedStringToUnsignedChars(DFA30_minS);</span>
+<span class="fc" id="L4879">	static final char[] DFA30_max = DFA.unpackEncodedStringToUnsignedChars(DFA30_maxS);</span>
+<span class="fc" id="L4880">	static final short[] DFA30_accept = DFA.unpackEncodedString(DFA30_acceptS);</span>
+<span class="fc" id="L4881">	static final short[] DFA30_special = DFA.unpackEncodedString(DFA30_specialS);</span>
+	static final short[][] DFA30_transition;
+
+	static {
+<span class="fc" id="L4885">		int numStates = DFA30_transitionS.length;</span>
+<span class="fc" id="L4886">		DFA30_transition = new short[numStates][];</span>
+<span class="fc bfc" id="L4887" title="All 2 branches covered.">		for (int i=0; i&lt;numStates; i++) {</span>
+<span class="fc" id="L4888">			DFA30_transition[i] = DFA.unpackEncodedString(DFA30_transitionS[i]);</span>
+		}
+<span class="fc" id="L4890">	}</span>
+
+	protected class DFA30 extends DFA {
+
+<span class="fc" id="L4894">		public DFA30(BaseRecognizer recognizer) {</span>
+<span class="fc" id="L4895">			this.recognizer = recognizer;</span>
+<span class="fc" id="L4896">			this.decisionNumber = 30;</span>
+<span class="fc" id="L4897">			this.eot = DFA30_eot;</span>
+<span class="fc" id="L4898">			this.eof = DFA30_eof;</span>
+<span class="fc" id="L4899">			this.min = DFA30_min;</span>
+<span class="fc" id="L4900">			this.max = DFA30_max;</span>
+<span class="fc" id="L4901">			this.accept = DFA30_accept;</span>
+<span class="fc" id="L4902">			this.special = DFA30_special;</span>
+<span class="fc" id="L4903">			this.transition = DFA30_transition;</span>
+<span class="fc" id="L4904">		}</span>
+		@Override
+		public String getDescription() {
+<span class="nc" id="L4907">			return &quot;1:1: Tokens : ( T__27 | T__28 | T__29 | T__30 | T__31 | T__32 | T__33 | T__34 | T__35 | T__36 | T__37 | T__38 | T__39 | T__40 | T__41 | T__42 | T__43 | T__44 | T__45 | T__46 | T__47 | T__48 | T__49 | T__50 | T__51 | T__52 | T__53 | T__54 | T__55 | T__56 | T__57 | T__58 | T__59 | T__60 | T__61 | T__62 | T__63 | T__64 | T__65 | T__66 | T__67 | T__68 | T__69 | T__70 | T__71 | T__72 | T__73 | T__74 | T__75 | T__76 | T__77 | T__78 | T__79 | T__80 | T__81 | T__82 | T__83 | T__84 | T__85 | T__86 | T__87 | T__88 | T__89 | T__90 | T__91 | T__92 | T__93 | T__94 | T__95 | T__96 | T__97 | T__98 | T__99 | T__100 | T__101 | T__102 | T__103 | T__104 | T__105 | T__106 | T__107 | T__108 | T__109 | T__110 | T__111 | T__112 | T__113 | T__114 | T__115 | HexLiteral | DecimalLiteral | OctalLiteral | FloatingPointLiteral | CharacterLiteral | StringLiteral | ENUM | ASSERT | Identifier | WS | EMPTY_COMMENT | JAVADOC | COMMENT | LINE_COMMENT );&quot;;</span>
+		}
+		@Override
+		public int specialStateTransition(int s, IntStream _input) throws NoViableAltException {
+<span class="fc" id="L4911">			IntStream input = _input;</span>
+<span class="fc" id="L4912">			int _s = s;</span>
+<span class="pc bpc" id="L4913" title="2 of 4 branches missed.">			switch ( s ) {</span>
+					case 0 : 
+<span class="fc" id="L4915">						int LA30_118 = input.LA(1);</span>
+<span class="fc" id="L4916">						s = -1;</span>
+<span class="pc bpc" id="L4917" title="1 of 2 branches missed.">						if ( (LA30_118=='/') ) {s = 168;}</span>
+<span class="pc bpc" id="L4918" title="6 of 8 branches missed.">						else if ( ((LA30_118 &gt;= '\u0000' &amp;&amp; LA30_118 &lt;= '.')||(LA30_118 &gt;= '0' &amp;&amp; LA30_118 &lt;= '\uFFFF')) ) {s = 169;}</span>
+<span class="pc bpc" id="L4919" title="1 of 2 branches missed.">						if ( s&gt;=0 ) return s;</span>
+						break;
+
+					case 1 : 
+<span class="fc" id="L4923">						int LA30_66 = input.LA(1);</span>
+<span class="fc" id="L4924">						s = -1;</span>
+<span class="fc bfc" id="L4925" title="All 2 branches covered.">						if ( (LA30_66=='*') ) {s = 118;}</span>
+<span class="pc bpc" id="L4926" title="6 of 8 branches missed.">						else if ( ((LA30_66 &gt;= '\u0000' &amp;&amp; LA30_66 &lt;= ')')||(LA30_66 &gt;= '+' &amp;&amp; LA30_66 &lt;= '\uFFFF')) ) {s = 119;}</span>
+<span class="pc bpc" id="L4927" title="1 of 2 branches missed.">						if ( s&gt;=0 ) return s;</span>
+						break;
+
+					case 2 : 
+<span class="nc" id="L4931">						int LA30_168 = input.LA(1);</span>
+<span class="nc" id="L4932">						s = -1;</span>
+<span class="nc bnc" id="L4933" title="All 4 branches missed.">						if ( ((LA30_168 &gt;= '\u0000' &amp;&amp; LA30_168 &lt;= '\uFFFF')) ) {s = 169;}</span>
+<span class="nc" id="L4934">						else s = 217;</span>
+<span class="nc bnc" id="L4935" title="All 2 branches missed.">						if ( s&gt;=0 ) return s;</span>
+						break;
+			}
+<span class="nc" id="L4938">			NoViableAltException nvae =</span>
+<span class="nc" id="L4939">				new NoViableAltException(getDescription(), 30, _s, input);</span>
+<span class="nc" id="L4940">			error(nvae);</span>
+<span class="nc" id="L4941">			throw nvae;</span>
+		}
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

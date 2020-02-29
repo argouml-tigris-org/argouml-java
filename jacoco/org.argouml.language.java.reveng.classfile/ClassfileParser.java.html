@@ -1,0 +1,1726 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ClassfileParser.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">argo_java</a> &gt; <a href="index.source.html" class="el_package">org.argouml.language.java.reveng.classfile</a> &gt; <span class="el_source">ClassfileParser.java</span></div><h1>ClassfileParser.java</h1><pre class="source lang-java linenums">// $ANTLR 2.7.7 (20060930): &quot;Classfile.g&quot; -&gt; &quot;ClassfileParser.java&quot;$
+
+package org.argouml.language.java.reveng.classfile;
+
+import antlr.*;
+import antlr.collections.*;
+import java.util.*;
+
+import antlr.TokenBuffer;
+import antlr.TokenStreamException;
+import antlr.TokenStreamIOException;
+import antlr.ANTLRException;
+import antlr.LLkParser;
+import antlr.Token;
+import antlr.TokenStream;
+import antlr.RecognitionException;
+import antlr.NoViableAltException;
+import antlr.MismatchedTokenException;
+import antlr.SemanticException;
+import antlr.ParserSharedInputState;
+import antlr.collections.impl.BitSet;
+import antlr.collections.AST;
+import java.util.Hashtable;
+import antlr.ASTFactory;
+import antlr.ASTPair;
+import antlr.collections.impl.ASTArray;
+
+/********************************
+ * A parser for a Java classfile.
+ ********************************/
+public class ClassfileParser extends antlr.LLkParser       implements ClassfileTokenTypes
+ {
+
+	// Constants as defined in the JVM classfile specs.
+	public static final byte CONSTANT_Class 		=  7; 
+ 	public static final byte CONSTANT_Fieldref 		=  9; 
+ 	public static final byte CONSTANT_Methodref 		= 10;
+ 	public static final byte CONSTANT_InterfaceMethodref 	= 11;
+ 	public static final byte CONSTANT_String 		=  8;
+ 	public static final byte CONSTANT_Integer 		=  3; 
+ 	public static final byte CONSTANT_Float 		=  4; 
+ 	public static final byte CONSTANT_Long 	 		=  5; 
+ 	public static final byte CONSTANT_Double 		=  6;
+ 	public static final byte CONSTANT_NameAndType 		= 12;
+ 	public static final byte CONSTANT_Utf8 			=  1;
+
+	// Access flags as defined in the JVM specs.
+	// CAUTION: Must be the same as in the Java grammar Java.g!
+	// TODO: Cleanup, so that it is only in one place
+ 	public static final short ACC_PUBLIC    = 0x0001;
+        public static final short ACC_PRIVATE   = 0x0002;
+        public static final short ACC_PROTECTED = 0x0004;
+        public static final short ACC_STATIC    = 0x0008;
+        public static final short ACC_FINAL     = 0x0010;
+
+        public static final short ACC_SUPER     = 0x0020;
+        public static final short ACC_VOLATILE  = 0x0040;
+        public static final short ACC_TRANSIENT = 0x0080;
+        
+        // Method access versions of above class access flags
+        public static final short ACC_SYNCHRONIZED = 0x0020;
+        public static final short ACC_BRIDGE       = 0x0040;
+        public static final short ACC_VARARGS      = 0x0080;
+                
+        public static final short ACC_NATIVE    = 0x0100;
+        public static final short ACC_INTERFACE = 0x0200;
+        public static final short ACC_ABSTRACT  = 0x0400;
+        public static final short ACC_SYNTHETIC = 0x1000;
+        public static final short ACC_ANNOTATION= 0x2000; // deleted in Java 1.5
+        public static final short ACC_ENUM      = 0x4000;
+                
+	// The name of the current class (to be used for constructors)
+<span class="pc" id="L73">	private String _className = null;</span>
+
+	// A array buffer for the constant pool.
+<span class="pc" id="L76">	private AST [] _constant = null;</span>
+
+	/**
+	 * Set the name of the currently parsed class.
+	 *
+	 * @param name The name of the class.
+	 */
+	private void setClassName(String name) {
+
+	    // Remove the package info.
+<span class="fc" id="L86">    	    int lastDot = name.lastIndexOf('/');</span>
+<span class="pc bpc" id="L87" title="1 of 2 branches missed.">            if(lastDot == -1) {</span>
+<span class="nc" id="L88">		_className = name;</span>
+            }  else {
+<span class="fc" id="L90">                _className = name.substring(lastDot+1);</span>
+            }    
+<span class="fc" id="L92">	}</span>
+
+	/**
+	 * Get the name of the currently parsed class.
+	 *
+	 * @return The name of the class.
+	 */
+	private String getClassName() {
+<span class="fc" id="L100">	    return _className;</span>
+	}
+
+	/**
+	 * Init the buffer for a given number of AST nodes.
+	 *
+	 * @param size The number of AST nodes.
+	 */
+	private void initPoolBuffer(int size) {
+	    // This is a casted short, so we have to remove the sign extension.
+<span class="fc" id="L110">	    _constant = new AST[size &amp; 0xffff];</span>
+<span class="fc" id="L111">	}	</span>
+
+	/**
+	 * Add a AST holding a constant to the buffer.
+	 *
+	 * @param index The index of the buffer, where the node is copied to.
+	 * @param node The AST node with the constant info.
+	 */
+	private void copyConstant(int index, AST node) {
+<span class="fc" id="L120">	    _constant[index] = node;</span>
+<span class="fc" id="L121">	}</span>
+
+	/**
+	 * Get a constant from the buffer.
+	 *
+	 * @param index The index of the node in the buffer.
+	 *
+	 * @return The AST at the given position.
+	 */
+	private AST getConstant(short index) {
+<span class="fc" id="L131">	    return _constant[(int)index &amp;0xffff];</span>
+	}
+
+	String convertDescriptor(String desc) {
+<span class="nc" id="L135">	    return ParserUtils.convertFieldDescriptor(desc);</span>
+	}
+
+	String [] convertMethodDescriptor(String desc) {
+<span class="fc" id="L139">	    return ParserUtils.convertMethodDescriptor(desc);</span>
+	}
+
+protected ClassfileParser(TokenBuffer tokenBuf, int k) {
+<span class="nc" id="L143">  super(tokenBuf,k);</span>
+<span class="nc" id="L144">  tokenNames = _tokenNames;</span>
+<span class="nc" id="L145">  buildTokenTypeASTClassMap();</span>
+<span class="nc" id="L146">  astFactory = new ASTFactory(getTokenTypeToASTClassMap());</span>
+<span class="nc" id="L147">}</span>
+
+public ClassfileParser(TokenBuffer tokenBuf) {
+<span class="nc" id="L150">  this(tokenBuf,1);</span>
+<span class="nc" id="L151">}</span>
+
+protected ClassfileParser(TokenStream lexer, int k) {
+<span class="fc" id="L154">  super(lexer,k);</span>
+<span class="fc" id="L155">  tokenNames = _tokenNames;</span>
+<span class="fc" id="L156">  buildTokenTypeASTClassMap();</span>
+<span class="fc" id="L157">  astFactory = new ASTFactory(getTokenTypeToASTClassMap());</span>
+<span class="fc" id="L158">}</span>
+
+public ClassfileParser(TokenStream lexer) {
+<span class="fc" id="L161">  this(lexer,1);</span>
+<span class="fc" id="L162">}</span>
+
+public ClassfileParser(ParserSharedInputState state) {
+<span class="nc" id="L165">  super(state,1);</span>
+<span class="nc" id="L166">  tokenNames = _tokenNames;</span>
+<span class="nc" id="L167">  buildTokenTypeASTClassMap();</span>
+<span class="nc" id="L168">  astFactory = new ASTFactory(getTokenTypeToASTClassMap());</span>
+<span class="nc" id="L169">}</span>
+
+	public final void classfile() throws RecognitionException, TokenStreamException {
+		
+<span class="fc" id="L173">		returnAST = null;</span>
+<span class="fc" id="L174">		ASTPair currentAST = new ASTPair();</span>
+<span class="fc" id="L175">		AST classfile_AST = null;</span>
+		
+<span class="fc" id="L177">		magic_number();</span>
+<span class="fc" id="L178">		astFactory.addASTChild(currentAST, returnAST);</span>
+<span class="fc" id="L179">		version_number();</span>
+<span class="fc" id="L180">		astFactory.addASTChild(currentAST, returnAST);</span>
+<span class="fc" id="L181">		constant_pool();</span>
+<span class="fc" id="L182">		astFactory.addASTChild(currentAST, returnAST);</span>
+<span class="fc" id="L183">		type_definition();</span>
+<span class="fc" id="L184">		astFactory.addASTChild(currentAST, returnAST);</span>
+<span class="fc" id="L185">		field_block();</span>
+<span class="fc" id="L186">		astFactory.addASTChild(currentAST, returnAST);</span>
+<span class="fc" id="L187">		method_block();</span>
+<span class="fc" id="L188">		astFactory.addASTChild(currentAST, returnAST);</span>
+<span class="fc" id="L189">		attribute_block();</span>
+<span class="fc" id="L190">		astFactory.addASTChild(currentAST, returnAST);</span>
+<span class="fc" id="L191">		AST tmp1_AST = null;</span>
+<span class="fc" id="L192">		tmp1_AST = astFactory.create(LT(1));</span>
+<span class="fc" id="L193">		astFactory.addASTChild(currentAST, tmp1_AST);</span>
+<span class="fc" id="L194">		match(Token.EOF_TYPE);</span>
+<span class="fc" id="L195">		classfile_AST = (AST)currentAST.root;</span>
+<span class="fc" id="L196">		returnAST = classfile_AST;</span>
+<span class="fc" id="L197">	}</span>
+	
+	public final void magic_number() throws RecognitionException, TokenStreamException {
+		
+<span class="fc" id="L201">		returnAST = null;</span>
+<span class="fc" id="L202">		ASTPair currentAST = new ASTPair();</span>
+<span class="fc" id="L203">		AST magic_number_AST = null;</span>
+<span class="fc" id="L204">		int magic=0;</span>
+		
+<span class="fc" id="L206">		magic=u4();</span>
+<span class="pc bpc" id="L207" title="1 of 2 branches missed.">		if (!(magic==0xcafebabe))</span>
+<span class="nc" id="L208">		  throw new SemanticException(&quot;magic==0xcafebabe&quot;);</span>
+<span class="fc" id="L209">		magic_number_AST = (AST)currentAST.root;</span>
+<span class="fc" id="L210">		magic_number_AST = astFactory.create(MAGIC,Integer.toHexString(magic));</span>
+<span class="fc" id="L211">		currentAST.root = magic_number_AST;</span>
+<span class="pc bpc" id="L212" title="2 of 4 branches missed.">		currentAST.child = magic_number_AST!=null &amp;&amp;magic_number_AST.getFirstChild()!=null ?</span>
+<span class="pc" id="L213">			magic_number_AST.getFirstChild() : magic_number_AST;</span>
+<span class="fc" id="L214">		currentAST.advanceChildToEnd();</span>
+<span class="fc" id="L215">		returnAST = magic_number_AST;</span>
+<span class="fc" id="L216">	}</span>
+	
+	public final void version_number() throws RecognitionException, TokenStreamException {
+		
+<span class="fc" id="L220">		returnAST = null;</span>
+<span class="fc" id="L221">		ASTPair currentAST = new ASTPair();</span>
+<span class="fc" id="L222">		AST version_number_AST = null;</span>
+<span class="fc" id="L223">		short minor=0,major=0; String verStr=null;</span>
+		
+<span class="fc" id="L225">		minor=u2();</span>
+<span class="fc" id="L226">		major=u2();</span>
+<span class="fc" id="L227">		version_number_AST = (AST)currentAST.root;</span>
+<span class="fc" id="L228">		verStr = &quot;&quot;+major+&quot;.&quot;+minor; version_number_AST = astFactory.create(VERSION,verStr);</span>
+<span class="fc" id="L229">		currentAST.root = version_number_AST;</span>
+<span class="pc bpc" id="L230" title="2 of 4 branches missed.">		currentAST.child = version_number_AST!=null &amp;&amp;version_number_AST.getFirstChild()!=null ?</span>
+<span class="pc" id="L231">			version_number_AST.getFirstChild() : version_number_AST;</span>
+<span class="fc" id="L232">		currentAST.advanceChildToEnd();</span>
+<span class="fc" id="L233">		returnAST = version_number_AST;</span>
+<span class="fc" id="L234">	}</span>
+	
+	public final void constant_pool() throws RecognitionException, TokenStreamException {
+		
+<span class="fc" id="L238">		returnAST = null;</span>
+<span class="fc" id="L239">		ASTPair currentAST = new ASTPair();</span>
+<span class="fc" id="L240">		AST constant_pool_AST = null;</span>
+<span class="fc" id="L241">		AST cp_AST = null;</span>
+<span class="fc" id="L242">		short poolSize=0; int index=1;</span>
+		
+<span class="fc" id="L244">		poolSize=u2();</span>
+<span class="fc" id="L245">		initPoolBuffer(poolSize);</span>
+		{
+		_loop6:
+		do {
+<span class="pc bpc" id="L249" title="1 of 4 branches missed.">			if (((LA(1)==BYTE))&amp;&amp;(index &lt; ((int)poolSize &amp; 0xffff))) {</span>
+<span class="fc" id="L250">				cp_info();</span>
+<span class="fc" id="L251">				cp_AST = (AST)returnAST;</span>
+				
+<span class="fc" id="L253">				copyConstant(index++, cp_AST); </span>
+				
+					       // 8 byte constants consume 2 constant pool entries (according to the JVM specs).
+<span class="pc bpc" id="L256" title="2 of 4 branches missed.">					       if( (cp_AST.getType() == CONSTANT_LONGINFO) || (cp_AST.getType() == CONSTANT_DOUBLEINFO)) {</span>
+<span class="nc" id="L257">						  index++;</span>
+					       }
+				
+			}
+			else {
+				break _loop6;
+			}
+			
+		} while (true);
+		}
+<span class="pc bpc" id="L267" title="1 of 2 branches missed.">		if (!(index==((int)poolSize &amp; 0xffff)))</span>
+<span class="nc" id="L268">		  throw new SemanticException(&quot;index==((int)poolSize &amp; 0xffff)&quot;);</span>
+<span class="fc" id="L269">		returnAST = constant_pool_AST;</span>
+<span class="fc" id="L270">	}</span>
+	
+	public final void type_definition() throws RecognitionException, TokenStreamException {
+		
+<span class="fc" id="L274">		returnAST = null;</span>
+<span class="fc" id="L275">		ASTPair currentAST = new ASTPair();</span>
+<span class="fc" id="L276">		AST type_definition_AST = null;</span>
+<span class="fc" id="L277">		AST m_AST = null;</span>
+<span class="fc" id="L278">		AST c_AST = null;</span>
+<span class="fc" id="L279">		AST s_AST = null;</span>
+<span class="fc" id="L280">		AST i_AST = null;</span>
+		
+<span class="fc" id="L282">		access_modifiers();</span>
+<span class="fc" id="L283">		m_AST = (AST)returnAST;</span>
+<span class="fc" id="L284">		class_info();</span>
+<span class="fc" id="L285">		c_AST = (AST)returnAST;</span>
+<span class="fc" id="L286">		superclass_info();</span>
+<span class="fc" id="L287">		s_AST = (AST)returnAST;</span>
+<span class="fc" id="L288">		interface_block();</span>
+<span class="fc" id="L289">		i_AST = (AST)returnAST;</span>
+<span class="fc" id="L290">		type_definition_AST = (AST)currentAST.root;</span>
+		
+<span class="pc bpc" id="L292" title="1 of 2 branches missed.">			     if( (((ShortAST)m_AST).getShortValue() &amp; ACC_INTERFACE) &gt; 0) {</span>
+<span class="nc" id="L293">			         type_definition_AST = (AST)astFactory.make( (new ASTArray(4)).add(astFactory.create(INTERFACE_DEF)).add(m_AST).add(c_AST).add((AST)astFactory.make( (new ASTArray(2)).add(astFactory.create(EXTENDS_CLAUSE)).add(i_AST))));</span>
+			     } else {
+<span class="fc" id="L295">				 type_definition_AST = (AST)astFactory.make( (new ASTArray(5)).add(astFactory.create(CLASS_DEF)).add(m_AST).add(c_AST).add((AST)astFactory.make( (new ASTArray(2)).add(astFactory.create(EXTENDS_CLAUSE)).add(s_AST))).add((AST)astFactory.make( (new ASTArray(2)).add(astFactory.create(IMPLEMENTS_CLAUSE)).add(i_AST))));</span>
+			     }
+			
+<span class="fc" id="L298">		currentAST.root = type_definition_AST;</span>
+<span class="pc bpc" id="L299" title="2 of 4 branches missed.">		currentAST.child = type_definition_AST!=null &amp;&amp;type_definition_AST.getFirstChild()!=null ?</span>
+<span class="pc" id="L300">			type_definition_AST.getFirstChild() : type_definition_AST;</span>
+<span class="fc" id="L301">		currentAST.advanceChildToEnd();</span>
+<span class="fc" id="L302">		returnAST = type_definition_AST;</span>
+<span class="fc" id="L303">	}</span>
+	
+	public final void field_block() throws RecognitionException, TokenStreamException {
+		
+<span class="fc" id="L307">		returnAST = null;</span>
+<span class="fc" id="L308">		ASTPair currentAST = new ASTPair();</span>
+<span class="fc" id="L309">		AST field_block_AST = null;</span>
+<span class="fc" id="L310">		short fields_count=0;</span>
+		
+<span class="fc" id="L312">		fields_count=u2();</span>
+<span class="fc" id="L313">		astFactory.addASTChild(currentAST, returnAST);</span>
+		{
+		_loop32:
+		do {
+<span class="pc bpc" id="L317" title="2 of 4 branches missed.">			if (((LA(1)==BYTE))&amp;&amp;(fields_count &gt; 0)) {</span>
+<span class="nc" id="L318">				field_info();</span>
+<span class="nc" id="L319">				astFactory.addASTChild(currentAST, returnAST);</span>
+<span class="nc" id="L320">				fields_count--;</span>
+			}
+			else {
+				break _loop32;
+			}
+			
+		} while (true);
+		}
+<span class="pc bpc" id="L328" title="1 of 2 branches missed.">		if (!(fields_count==0))</span>
+<span class="nc" id="L329">		  throw new SemanticException(&quot;fields_count==0&quot;);</span>
+<span class="fc" id="L330">		field_block_AST = (AST)currentAST.root;</span>
+<span class="fc" id="L331">		returnAST = field_block_AST;</span>
+<span class="fc" id="L332">	}</span>
+	
+	public final void method_block() throws RecognitionException, TokenStreamException {
+		
+<span class="fc" id="L336">		returnAST = null;</span>
+<span class="fc" id="L337">		ASTPair currentAST = new ASTPair();</span>
+<span class="fc" id="L338">		AST method_block_AST = null;</span>
+<span class="fc" id="L339">		int methods_count=0;</span>
+		
+<span class="fc" id="L341">		methods_count=u2();</span>
+<span class="fc" id="L342">		astFactory.addASTChild(currentAST, returnAST);</span>
+		{
+		_loop39:
+		do {
+<span class="pc bpc" id="L346" title="1 of 4 branches missed.">			if (((LA(1)==BYTE))&amp;&amp;(methods_count &gt; 0)) {</span>
+<span class="fc" id="L347">				method_info();</span>
+<span class="fc" id="L348">				astFactory.addASTChild(currentAST, returnAST);</span>
+<span class="fc" id="L349">				methods_count--;</span>
+			}
+			else {
+				break _loop39;
+			}
+			
+		} while (true);
+		}
+<span class="pc bpc" id="L357" title="1 of 2 branches missed.">		if (!(methods_count==0))</span>
+<span class="nc" id="L358">		  throw new SemanticException(&quot;methods_count==0&quot;);</span>
+<span class="fc" id="L359">		method_block_AST = (AST)currentAST.root;</span>
+<span class="fc" id="L360">		returnAST = method_block_AST;</span>
+<span class="fc" id="L361">	}</span>
+	
+	public final void attribute_block() throws RecognitionException, TokenStreamException {
+		
+<span class="fc" id="L365">		returnAST = null;</span>
+<span class="fc" id="L366">		ASTPair currentAST = new ASTPair();</span>
+<span class="fc" id="L367">		AST attribute_block_AST = null;</span>
+<span class="fc" id="L368">		int attributes_count=0;</span>
+		
+<span class="fc" id="L370">		attributes_count=u2();</span>
+<span class="fc" id="L371">		astFactory.addASTChild(currentAST, returnAST);</span>
+		{
+		_loop46:
+		do {
+<span class="pc bpc" id="L375" title="1 of 4 branches missed.">			if (((LA(1)==BYTE))&amp;&amp;(attributes_count &gt; 0)) {</span>
+<span class="fc" id="L376">				attribute_info();</span>
+<span class="fc" id="L377">				astFactory.addASTChild(currentAST, returnAST);</span>
+<span class="fc" id="L378">				attributes_count--;</span>
+			}
+			else {
+				break _loop46;
+			}
+			
+		} while (true);
+		}
+<span class="pc bpc" id="L386" title="1 of 2 branches missed.">		if (!(attributes_count==0))</span>
+<span class="nc" id="L387">		  throw new SemanticException(&quot;attributes_count==0&quot;);</span>
+<span class="fc" id="L388">		attribute_block_AST = (AST)currentAST.root;</span>
+<span class="fc" id="L389">		returnAST = attribute_block_AST;</span>
+<span class="fc" id="L390">	}</span>
+	
+	public final int  u4() throws RecognitionException, TokenStreamException {
+<span class="fc" id="L393">		int res=0;</span>
+		
+<span class="fc" id="L395">		returnAST = null;</span>
+<span class="fc" id="L396">		ASTPair currentAST = new ASTPair();</span>
+<span class="fc" id="L397">		AST u4_AST = null;</span>
+<span class="fc" id="L398">		Token  high1 = null;</span>
+<span class="fc" id="L399">		AST high1_AST = null;</span>
+<span class="fc" id="L400">		Token  high2 = null;</span>
+<span class="fc" id="L401">		AST high2_AST = null;</span>
+<span class="fc" id="L402">		Token  low1 = null;</span>
+<span class="fc" id="L403">		AST low1_AST = null;</span>
+<span class="fc" id="L404">		Token  low2 = null;</span>
+<span class="fc" id="L405">		AST low2_AST = null;</span>
+		
+		{
+<span class="fc" id="L408">		high1 = LT(1);</span>
+<span class="fc" id="L409">		high1_AST = astFactory.create(high1);</span>
+<span class="fc" id="L410">		match(BYTE);</span>
+<span class="fc" id="L411">		high2 = LT(1);</span>
+<span class="fc" id="L412">		high2_AST = astFactory.create(high2);</span>
+<span class="fc" id="L413">		match(BYTE);</span>
+<span class="fc" id="L414">		low1 = LT(1);</span>
+<span class="fc" id="L415">		low1_AST = astFactory.create(low1);</span>
+<span class="fc" id="L416">		match(BYTE);</span>
+<span class="fc" id="L417">		low2 = LT(1);</span>
+<span class="fc" id="L418">		low2_AST = astFactory.create(low2);</span>
+<span class="fc" id="L419">		match(BYTE);</span>
+		}
+		
+<span class="fc" id="L422">			    res = ((ByteToken)high1).getIntValue() &lt;&lt; 24</span>
+<span class="fc" id="L423">			          | ((ByteToken)high2).getIntValue() &lt;&lt; 16 </span>
+<span class="fc" id="L424">			          | ((ByteToken)low1).getIntValue() &lt;&lt; 8</span>
+<span class="fc" id="L425">			          | ((ByteToken)low2).getIntValue();</span>
+			
+<span class="fc" id="L427">		returnAST = u4_AST;</span>
+<span class="fc" id="L428">		return res;</span>
+	}
+	
+	public final short  u2() throws RecognitionException, TokenStreamException {
+<span class="fc" id="L432">		short res=0;</span>
+		
+<span class="fc" id="L434">		returnAST = null;</span>
+<span class="fc" id="L435">		ASTPair currentAST = new ASTPair();</span>
+<span class="fc" id="L436">		AST u2_AST = null;</span>
+<span class="fc" id="L437">		Token  high = null;</span>
+<span class="fc" id="L438">		AST high_AST = null;</span>
+<span class="fc" id="L439">		Token  low = null;</span>
+<span class="fc" id="L440">		AST low_AST = null;</span>
+		
+		{
+<span class="fc" id="L443">		high = LT(1);</span>
+<span class="fc" id="L444">		high_AST = astFactory.create(high);</span>
+<span class="fc" id="L445">		match(BYTE);</span>
+<span class="fc" id="L446">		low = LT(1);</span>
+<span class="fc" id="L447">		low_AST = astFactory.create(low);</span>
+<span class="fc" id="L448">		match(BYTE);</span>
+		}
+<span class="fc" id="L450">		res = (short)(((ByteToken)high).getShortValue() &lt;&lt; 8 | ((ByteToken)low).getShortValue());</span>
+<span class="fc" id="L451">		returnAST = u2_AST;</span>
+<span class="fc" id="L452">		return res;</span>
+	}
+	
+	public final void cp_info() throws RecognitionException, TokenStreamException {
+		
+<span class="fc" id="L457">		returnAST = null;</span>
+<span class="fc" id="L458">		ASTPair currentAST = new ASTPair();</span>
+<span class="fc" id="L459">		AST cp_info_AST = null;</span>
+<span class="fc" id="L460">		AST cl_AST = null;</span>
+<span class="fc" id="L461">		AST cf_AST = null;</span>
+<span class="fc" id="L462">		AST cm_AST = null;</span>
+<span class="fc" id="L463">		AST ci_AST = null;</span>
+<span class="fc" id="L464">		AST cs_AST = null;</span>
+<span class="fc" id="L465">		AST ct_AST = null;</span>
+<span class="fc" id="L466">		AST ca_AST = null;</span>
+<span class="fc" id="L467">		AST co_AST = null;</span>
+<span class="fc" id="L468">		AST cd_AST = null;</span>
+<span class="fc" id="L469">		AST cn_AST = null;</span>
+<span class="fc" id="L470">		AST cu_AST = null;</span>
+<span class="fc" id="L471">		byte tag=0;</span>
+		
+<span class="fc" id="L473">		tag=u1();</span>
+		{
+<span class="pc bpc" id="L475" title="1 of 4 branches missed.">		if (((LA(1)==BYTE))&amp;&amp;(tag == CONSTANT_Class)) {</span>
+<span class="fc" id="L476">			constant_class_info();</span>
+<span class="fc" id="L477">			cl_AST = (AST)returnAST;</span>
+<span class="fc" id="L478">			cp_info_AST = (AST)currentAST.root;</span>
+<span class="fc" id="L479">			cp_info_AST=cl_AST;</span>
+<span class="fc" id="L480">			currentAST.root = cp_info_AST;</span>
+<span class="pc bpc" id="L481" title="2 of 4 branches missed.">			currentAST.child = cp_info_AST!=null &amp;&amp;cp_info_AST.getFirstChild()!=null ?</span>
+<span class="pc" id="L482">				cp_info_AST.getFirstChild() : cp_info_AST;</span>
+<span class="fc" id="L483">			currentAST.advanceChildToEnd();</span>
+		}
+<span class="pc bpc" id="L485" title="2 of 4 branches missed.">		else if (((LA(1)==BYTE))&amp;&amp;(tag == CONSTANT_Fieldref)) {</span>
+<span class="nc" id="L486">			constant_fieldref_info();</span>
+<span class="nc" id="L487">			cf_AST = (AST)returnAST;</span>
+<span class="nc" id="L488">			cp_info_AST = (AST)currentAST.root;</span>
+<span class="nc" id="L489">			cp_info_AST=cf_AST;</span>
+<span class="nc" id="L490">			currentAST.root = cp_info_AST;</span>
+<span class="nc bnc" id="L491" title="All 4 branches missed.">			currentAST.child = cp_info_AST!=null &amp;&amp;cp_info_AST.getFirstChild()!=null ?</span>
+<span class="nc" id="L492">				cp_info_AST.getFirstChild() : cp_info_AST;</span>
+<span class="nc" id="L493">			currentAST.advanceChildToEnd();</span>
+		}
+<span class="pc bpc" id="L495" title="1 of 4 branches missed.">		else if (((LA(1)==BYTE))&amp;&amp;(tag == CONSTANT_Methodref)) {</span>
+<span class="fc" id="L496">			constant_methodref_info();</span>
+<span class="fc" id="L497">			cm_AST = (AST)returnAST;</span>
+<span class="fc" id="L498">			cp_info_AST = (AST)currentAST.root;</span>
+<span class="fc" id="L499">			cp_info_AST=cm_AST;</span>
+<span class="fc" id="L500">			currentAST.root = cp_info_AST;</span>
+<span class="pc bpc" id="L501" title="2 of 4 branches missed.">			currentAST.child = cp_info_AST!=null &amp;&amp;cp_info_AST.getFirstChild()!=null ?</span>
+<span class="pc" id="L502">				cp_info_AST.getFirstChild() : cp_info_AST;</span>
+<span class="fc" id="L503">			currentAST.advanceChildToEnd();</span>
+		}
+<span class="pc bpc" id="L505" title="2 of 4 branches missed.">		else if (((LA(1)==BYTE))&amp;&amp;(tag == CONSTANT_InterfaceMethodref)) {</span>
+<span class="nc" id="L506">			constant_interface_methodref_info();</span>
+<span class="nc" id="L507">			ci_AST = (AST)returnAST;</span>
+<span class="nc" id="L508">			cp_info_AST = (AST)currentAST.root;</span>
+<span class="nc" id="L509">			cp_info_AST=ci_AST;</span>
+<span class="nc" id="L510">			currentAST.root = cp_info_AST;</span>
+<span class="nc bnc" id="L511" title="All 4 branches missed.">			currentAST.child = cp_info_AST!=null &amp;&amp;cp_info_AST.getFirstChild()!=null ?</span>
+<span class="nc" id="L512">				cp_info_AST.getFirstChild() : cp_info_AST;</span>
+<span class="nc" id="L513">			currentAST.advanceChildToEnd();</span>
+		}
+<span class="pc bpc" id="L515" title="2 of 4 branches missed.">		else if (((LA(1)==BYTE))&amp;&amp;(tag == CONSTANT_String)) {</span>
+<span class="nc" id="L516">			constant_string_info();</span>
+<span class="nc" id="L517">			cs_AST = (AST)returnAST;</span>
+<span class="nc" id="L518">			cp_info_AST = (AST)currentAST.root;</span>
+<span class="nc" id="L519">			cp_info_AST=cs_AST;</span>
+<span class="nc" id="L520">			currentAST.root = cp_info_AST;</span>
+<span class="nc bnc" id="L521" title="All 4 branches missed.">			currentAST.child = cp_info_AST!=null &amp;&amp;cp_info_AST.getFirstChild()!=null ?</span>
+<span class="nc" id="L522">				cp_info_AST.getFirstChild() : cp_info_AST;</span>
+<span class="nc" id="L523">			currentAST.advanceChildToEnd();</span>
+		}
+<span class="pc bpc" id="L525" title="2 of 4 branches missed.">		else if (((LA(1)==BYTE))&amp;&amp;(tag == CONSTANT_Integer)) {</span>
+<span class="nc" id="L526">			constant_integer_info();</span>
+<span class="nc" id="L527">			ct_AST = (AST)returnAST;</span>
+<span class="nc" id="L528">			cp_info_AST = (AST)currentAST.root;</span>
+<span class="nc" id="L529">			cp_info_AST=ct_AST;</span>
+<span class="nc" id="L530">			currentAST.root = cp_info_AST;</span>
+<span class="nc bnc" id="L531" title="All 4 branches missed.">			currentAST.child = cp_info_AST!=null &amp;&amp;cp_info_AST.getFirstChild()!=null ?</span>
+<span class="nc" id="L532">				cp_info_AST.getFirstChild() : cp_info_AST;</span>
+<span class="nc" id="L533">			currentAST.advanceChildToEnd();</span>
+		}
+<span class="pc bpc" id="L535" title="2 of 4 branches missed.">		else if (((LA(1)==BYTE))&amp;&amp;(tag == CONSTANT_Float)) {</span>
+<span class="nc" id="L536">			constant_float_info();</span>
+<span class="nc" id="L537">			ca_AST = (AST)returnAST;</span>
+<span class="nc" id="L538">			cp_info_AST = (AST)currentAST.root;</span>
+<span class="nc" id="L539">			cp_info_AST=ca_AST;</span>
+<span class="nc" id="L540">			currentAST.root = cp_info_AST;</span>
+<span class="nc bnc" id="L541" title="All 4 branches missed.">			currentAST.child = cp_info_AST!=null &amp;&amp;cp_info_AST.getFirstChild()!=null ?</span>
+<span class="nc" id="L542">				cp_info_AST.getFirstChild() : cp_info_AST;</span>
+<span class="nc" id="L543">			currentAST.advanceChildToEnd();</span>
+		}
+<span class="pc bpc" id="L545" title="2 of 4 branches missed.">		else if (((LA(1)==BYTE))&amp;&amp;(tag == CONSTANT_Long)) {</span>
+<span class="nc" id="L546">			constant_long_info();</span>
+<span class="nc" id="L547">			co_AST = (AST)returnAST;</span>
+<span class="nc" id="L548">			cp_info_AST = (AST)currentAST.root;</span>
+<span class="nc" id="L549">			cp_info_AST=co_AST;</span>
+<span class="nc" id="L550">			currentAST.root = cp_info_AST;</span>
+<span class="nc bnc" id="L551" title="All 4 branches missed.">			currentAST.child = cp_info_AST!=null &amp;&amp;cp_info_AST.getFirstChild()!=null ?</span>
+<span class="nc" id="L552">				cp_info_AST.getFirstChild() : cp_info_AST;</span>
+<span class="nc" id="L553">			currentAST.advanceChildToEnd();</span>
+		}
+<span class="pc bpc" id="L555" title="2 of 4 branches missed.">		else if (((LA(1)==BYTE))&amp;&amp;(tag == CONSTANT_Double)) {</span>
+<span class="nc" id="L556">			constant_double_info();</span>
+<span class="nc" id="L557">			cd_AST = (AST)returnAST;</span>
+<span class="nc" id="L558">			cp_info_AST = (AST)currentAST.root;</span>
+<span class="nc" id="L559">			cp_info_AST=cd_AST;</span>
+<span class="nc" id="L560">			currentAST.root = cp_info_AST;</span>
+<span class="nc bnc" id="L561" title="All 4 branches missed.">			currentAST.child = cp_info_AST!=null &amp;&amp;cp_info_AST.getFirstChild()!=null ?</span>
+<span class="nc" id="L562">				cp_info_AST.getFirstChild() : cp_info_AST;</span>
+<span class="nc" id="L563">			currentAST.advanceChildToEnd();</span>
+		}
+<span class="pc bpc" id="L565" title="1 of 4 branches missed.">		else if (((LA(1)==BYTE))&amp;&amp;(tag == CONSTANT_NameAndType)) {</span>
+<span class="fc" id="L566">			constant_name_and_type_info();</span>
+<span class="fc" id="L567">			cn_AST = (AST)returnAST;</span>
+<span class="fc" id="L568">			cp_info_AST = (AST)currentAST.root;</span>
+<span class="fc" id="L569">			cp_info_AST=cn_AST;</span>
+<span class="fc" id="L570">			currentAST.root = cp_info_AST;</span>
+<span class="pc bpc" id="L571" title="2 of 4 branches missed.">			currentAST.child = cp_info_AST!=null &amp;&amp;cp_info_AST.getFirstChild()!=null ?</span>
+<span class="pc" id="L572">				cp_info_AST.getFirstChild() : cp_info_AST;</span>
+<span class="fc" id="L573">			currentAST.advanceChildToEnd();</span>
+		}
+<span class="pc bpc" id="L575" title="2 of 4 branches missed.">		else if (((LA(1)==BYTE))&amp;&amp;(tag == CONSTANT_Utf8)) {</span>
+<span class="fc" id="L576">			constant_utf8_info();</span>
+<span class="fc" id="L577">			cu_AST = (AST)returnAST;</span>
+<span class="fc" id="L578">			cp_info_AST = (AST)currentAST.root;</span>
+<span class="fc" id="L579">			cp_info_AST=cu_AST;</span>
+<span class="fc" id="L580">			currentAST.root = cp_info_AST;</span>
+<span class="pc bpc" id="L581" title="2 of 4 branches missed.">			currentAST.child = cp_info_AST!=null &amp;&amp;cp_info_AST.getFirstChild()!=null ?</span>
+<span class="pc" id="L582">				cp_info_AST.getFirstChild() : cp_info_AST;</span>
+<span class="fc" id="L583">			currentAST.advanceChildToEnd();</span>
+		}
+		else {
+<span class="nc" id="L586">			throw new NoViableAltException(LT(1), getFilename());</span>
+		}
+		
+		}
+<span class="fc" id="L590">		returnAST = cp_info_AST;</span>
+<span class="fc" id="L591">	}</span>
+	
+	public final byte  u1() throws RecognitionException, TokenStreamException {
+<span class="fc" id="L594">		byte res=0;</span>
+		
+<span class="fc" id="L596">		returnAST = null;</span>
+<span class="fc" id="L597">		ASTPair currentAST = new ASTPair();</span>
+<span class="fc" id="L598">		AST u1_AST = null;</span>
+<span class="fc" id="L599">		Token  val = null;</span>
+<span class="fc" id="L600">		AST val_AST = null;</span>
+		
+<span class="fc" id="L602">		val = LT(1);</span>
+<span class="fc" id="L603">		val_AST = astFactory.create(val);</span>
+<span class="fc" id="L604">		match(BYTE);</span>
+<span class="fc" id="L605">		res = ((ByteToken)val).getValue();</span>
+<span class="fc" id="L606">		returnAST = u1_AST;</span>
+<span class="fc" id="L607">		return res;</span>
+	}
+	
+	public final void constant_class_info() throws RecognitionException, TokenStreamException {
+		
+<span class="fc" id="L612">		returnAST = null;</span>
+<span class="fc" id="L613">		ASTPair currentAST = new ASTPair();</span>
+<span class="fc" id="L614">		AST constant_class_info_AST = null;</span>
+<span class="fc" id="L615">		short name_index=0;</span>
+		
+<span class="fc" id="L617">		name_index=u2();</span>
+<span class="fc" id="L618">		constant_class_info_AST = (AST)currentAST.root;</span>
+<span class="fc" id="L619">		constant_class_info_AST = new ShortAST( CONSTANT_CLASSINFO, name_index);</span>
+<span class="fc" id="L620">		currentAST.root = constant_class_info_AST;</span>
+<span class="pc bpc" id="L621" title="2 of 4 branches missed.">		currentAST.child = constant_class_info_AST!=null &amp;&amp;constant_class_info_AST.getFirstChild()!=null ?</span>
+<span class="pc" id="L622">			constant_class_info_AST.getFirstChild() : constant_class_info_AST;</span>
+<span class="fc" id="L623">		currentAST.advanceChildToEnd();</span>
+<span class="fc" id="L624">		returnAST = constant_class_info_AST;</span>
+<span class="fc" id="L625">	}</span>
+	
+	public final void constant_fieldref_info() throws RecognitionException, TokenStreamException {
+		
+<span class="nc" id="L629">		returnAST = null;</span>
+<span class="nc" id="L630">		ASTPair currentAST = new ASTPair();</span>
+<span class="nc" id="L631">		AST constant_fieldref_info_AST = null;</span>
+		
+<span class="nc" id="L633">		short class_index=0;</span>
+<span class="nc" id="L634">		short name_and_type_index=0;</span>
+		
+		
+<span class="nc" id="L637">		class_index=u2();</span>
+<span class="nc" id="L638">		name_and_type_index=u2();</span>
+<span class="nc" id="L639">		constant_fieldref_info_AST = (AST)currentAST.root;</span>
+		
+<span class="nc" id="L641">			     constant_fieldref_info_AST = new ShortAST( CONSTANT_FIELDINFO, class_index);</span>
+<span class="nc" id="L642">			     constant_fieldref_info_AST.addChild( new ShortAST( CONSTANT_NAME_TYPE_INFO, name_and_type_index));</span>
+		
+<span class="nc" id="L644">		currentAST.root = constant_fieldref_info_AST;</span>
+<span class="nc bnc" id="L645" title="All 4 branches missed.">		currentAST.child = constant_fieldref_info_AST!=null &amp;&amp;constant_fieldref_info_AST.getFirstChild()!=null ?</span>
+<span class="nc" id="L646">			constant_fieldref_info_AST.getFirstChild() : constant_fieldref_info_AST;</span>
+<span class="nc" id="L647">		currentAST.advanceChildToEnd();</span>
+<span class="nc" id="L648">		returnAST = constant_fieldref_info_AST;</span>
+<span class="nc" id="L649">	}</span>
+	
+	public final void constant_methodref_info() throws RecognitionException, TokenStreamException {
+		
+<span class="fc" id="L653">		returnAST = null;</span>
+<span class="fc" id="L654">		ASTPair currentAST = new ASTPair();</span>
+<span class="fc" id="L655">		AST constant_methodref_info_AST = null;</span>
+		
+<span class="fc" id="L657">		short class_index=0;</span>
+<span class="fc" id="L658">		short name_and_type_index=0;</span>
+		
+		
+<span class="fc" id="L661">		class_index=u2();</span>
+<span class="fc" id="L662">		name_and_type_index=u2();</span>
+<span class="fc" id="L663">		constant_methodref_info_AST = (AST)currentAST.root;</span>
+		
+<span class="fc" id="L665">			     constant_methodref_info_AST = new ShortAST(CONSTANT_METHODINFO, class_index);</span>
+<span class="fc" id="L666">			     constant_methodref_info_AST.addChild( new ShortAST( CONSTANT_NAME_TYPE_INFO, name_and_type_index));</span>
+			
+<span class="fc" id="L668">		currentAST.root = constant_methodref_info_AST;</span>
+<span class="pc bpc" id="L669" title="2 of 4 branches missed.">		currentAST.child = constant_methodref_info_AST!=null &amp;&amp;constant_methodref_info_AST.getFirstChild()!=null ?</span>
+<span class="pc" id="L670">			constant_methodref_info_AST.getFirstChild() : constant_methodref_info_AST;</span>
+<span class="fc" id="L671">		currentAST.advanceChildToEnd();</span>
+<span class="fc" id="L672">		returnAST = constant_methodref_info_AST;</span>
+<span class="fc" id="L673">	}</span>
+	
+	public final void constant_interface_methodref_info() throws RecognitionException, TokenStreamException {
+		
+<span class="nc" id="L677">		returnAST = null;</span>
+<span class="nc" id="L678">		ASTPair currentAST = new ASTPair();</span>
+<span class="nc" id="L679">		AST constant_interface_methodref_info_AST = null;</span>
+		
+<span class="nc" id="L681">		short class_index=0;</span>
+<span class="nc" id="L682">		short name_and_type_index=0;</span>
+		
+		
+<span class="nc" id="L685">		class_index=u2();</span>
+<span class="nc" id="L686">		name_and_type_index=u2();</span>
+<span class="nc" id="L687">		constant_interface_methodref_info_AST = (AST)currentAST.root;</span>
+		
+<span class="nc" id="L689">			     constant_interface_methodref_info_AST = new ShortAST(CONSTANT_INTERFACE_METHODINFO,class_index);</span>
+<span class="nc" id="L690">			     constant_interface_methodref_info_AST.addChild( new ShortAST( CONSTANT_NAME_TYPE_INFO,name_and_type_index));</span>
+			
+<span class="nc" id="L692">		currentAST.root = constant_interface_methodref_info_AST;</span>
+<span class="nc bnc" id="L693" title="All 4 branches missed.">		currentAST.child = constant_interface_methodref_info_AST!=null &amp;&amp;constant_interface_methodref_info_AST.getFirstChild()!=null ?</span>
+<span class="nc" id="L694">			constant_interface_methodref_info_AST.getFirstChild() : constant_interface_methodref_info_AST;</span>
+<span class="nc" id="L695">		currentAST.advanceChildToEnd();</span>
+<span class="nc" id="L696">		returnAST = constant_interface_methodref_info_AST;</span>
+<span class="nc" id="L697">	}</span>
+	
+	public final void constant_string_info() throws RecognitionException, TokenStreamException {
+		
+<span class="nc" id="L701">		returnAST = null;</span>
+<span class="nc" id="L702">		ASTPair currentAST = new ASTPair();</span>
+<span class="nc" id="L703">		AST constant_string_info_AST = null;</span>
+<span class="nc" id="L704">		short string_index=0;</span>
+		
+<span class="nc" id="L706">		string_index=u2();</span>
+<span class="nc" id="L707">		constant_string_info_AST = (AST)currentAST.root;</span>
+<span class="nc" id="L708">		constant_string_info_AST = new ShortAST( CONSTANT_STRINGINFO, string_index);</span>
+<span class="nc" id="L709">		currentAST.root = constant_string_info_AST;</span>
+<span class="nc bnc" id="L710" title="All 4 branches missed.">		currentAST.child = constant_string_info_AST!=null &amp;&amp;constant_string_info_AST.getFirstChild()!=null ?</span>
+<span class="nc" id="L711">			constant_string_info_AST.getFirstChild() : constant_string_info_AST;</span>
+<span class="nc" id="L712">		currentAST.advanceChildToEnd();</span>
+<span class="nc" id="L713">		returnAST = constant_string_info_AST;</span>
+<span class="nc" id="L714">	}</span>
+	
+	public final void constant_integer_info() throws RecognitionException, TokenStreamException {
+		
+<span class="nc" id="L718">		returnAST = null;</span>
+<span class="nc" id="L719">		ASTPair currentAST = new ASTPair();</span>
+<span class="nc" id="L720">		AST constant_integer_info_AST = null;</span>
+<span class="nc" id="L721">		int val=0;</span>
+		
+<span class="nc" id="L723">		val=u4();</span>
+<span class="nc" id="L724">		constant_integer_info_AST = (AST)currentAST.root;</span>
+<span class="nc" id="L725">		constant_integer_info_AST = new ObjectAST(CONSTANT_INTEGERINFO, new Integer(val));</span>
+<span class="nc" id="L726">		currentAST.root = constant_integer_info_AST;</span>
+<span class="nc bnc" id="L727" title="All 4 branches missed.">		currentAST.child = constant_integer_info_AST!=null &amp;&amp;constant_integer_info_AST.getFirstChild()!=null ?</span>
+<span class="nc" id="L728">			constant_integer_info_AST.getFirstChild() : constant_integer_info_AST;</span>
+<span class="nc" id="L729">		currentAST.advanceChildToEnd();</span>
+<span class="nc" id="L730">		returnAST = constant_integer_info_AST;</span>
+<span class="nc" id="L731">	}</span>
+	
+	public final void constant_float_info() throws RecognitionException, TokenStreamException {
+		
+<span class="nc" id="L735">		returnAST = null;</span>
+<span class="nc" id="L736">		ASTPair currentAST = new ASTPair();</span>
+<span class="nc" id="L737">		AST constant_float_info_AST = null;</span>
+<span class="nc" id="L738">		int bytes=0;</span>
+		
+<span class="nc" id="L740">		bytes=u4();</span>
+<span class="nc" id="L741">		constant_float_info_AST = (AST)currentAST.root;</span>
+<span class="nc" id="L742">		constant_float_info_AST = new ObjectAST(CONSTANT_FLOATINFO, new Double(Float.intBitsToFloat(bytes)));</span>
+<span class="nc" id="L743">		currentAST.root = constant_float_info_AST;</span>
+<span class="nc bnc" id="L744" title="All 4 branches missed.">		currentAST.child = constant_float_info_AST!=null &amp;&amp;constant_float_info_AST.getFirstChild()!=null ?</span>
+<span class="nc" id="L745">			constant_float_info_AST.getFirstChild() : constant_float_info_AST;</span>
+<span class="nc" id="L746">		currentAST.advanceChildToEnd();</span>
+<span class="nc" id="L747">		returnAST = constant_float_info_AST;</span>
+<span class="nc" id="L748">	}</span>
+	
+	public final void constant_long_info() throws RecognitionException, TokenStreamException {
+		
+<span class="nc" id="L752">		returnAST = null;</span>
+<span class="nc" id="L753">		ASTPair currentAST = new ASTPair();</span>
+<span class="nc" id="L754">		AST constant_long_info_AST = null;</span>
+<span class="nc" id="L755">		int high_bytes=0, low_bytes=0; long val = 0L;</span>
+		
+<span class="nc" id="L757">		high_bytes=u4();</span>
+<span class="nc" id="L758">		low_bytes=u4();</span>
+<span class="nc" id="L759">		constant_long_info_AST = (AST)currentAST.root;</span>
+<span class="nc" id="L760">		constant_long_info_AST = new ObjectAST(CONSTANT_LONGINFO, new Long((long)high_bytes | ((long)low_bytes &amp; 0xFFFFL)));</span>
+<span class="nc" id="L761">		currentAST.root = constant_long_info_AST;</span>
+<span class="nc bnc" id="L762" title="All 4 branches missed.">		currentAST.child = constant_long_info_AST!=null &amp;&amp;constant_long_info_AST.getFirstChild()!=null ?</span>
+<span class="nc" id="L763">			constant_long_info_AST.getFirstChild() : constant_long_info_AST;</span>
+<span class="nc" id="L764">		currentAST.advanceChildToEnd();</span>
+<span class="nc" id="L765">		returnAST = constant_long_info_AST;</span>
+<span class="nc" id="L766">	}</span>
+	
+	public final void constant_double_info() throws RecognitionException, TokenStreamException {
+		
+<span class="nc" id="L770">		returnAST = null;</span>
+<span class="nc" id="L771">		ASTPair currentAST = new ASTPair();</span>
+<span class="nc" id="L772">		AST constant_double_info_AST = null;</span>
+<span class="nc" id="L773">		int high_bytes=0, low_bytes=0;</span>
+		
+<span class="nc" id="L775">		high_bytes=u4();</span>
+<span class="nc" id="L776">		low_bytes=u4();</span>
+<span class="nc" id="L777">		constant_double_info_AST = (AST)currentAST.root;</span>
+<span class="nc" id="L778">		constant_double_info_AST = new ObjectAST(CONSTANT_DOUBLEINFO, new Double(Double.longBitsToDouble( (long)high_bytes | ((long)low_bytes &amp; 0xFFFFL))));</span>
+		
+<span class="nc" id="L780">		currentAST.root = constant_double_info_AST;</span>
+<span class="nc bnc" id="L781" title="All 4 branches missed.">		currentAST.child = constant_double_info_AST!=null &amp;&amp;constant_double_info_AST.getFirstChild()!=null ?</span>
+<span class="nc" id="L782">			constant_double_info_AST.getFirstChild() : constant_double_info_AST;</span>
+<span class="nc" id="L783">		currentAST.advanceChildToEnd();</span>
+<span class="nc" id="L784">		returnAST = constant_double_info_AST;</span>
+<span class="nc" id="L785">	}</span>
+	
+	public final void constant_name_and_type_info() throws RecognitionException, TokenStreamException {
+		
+<span class="fc" id="L789">		returnAST = null;</span>
+<span class="fc" id="L790">		ASTPair currentAST = new ASTPair();</span>
+<span class="fc" id="L791">		AST constant_name_and_type_info_AST = null;</span>
+<span class="fc" id="L792">		short name_index=0, descriptor_index=0;</span>
+		
+<span class="fc" id="L794">		name_index=u2();</span>
+<span class="fc" id="L795">		descriptor_index=u2();</span>
+<span class="fc" id="L796">		constant_name_and_type_info_AST = (AST)currentAST.root;</span>
+		
+<span class="fc" id="L798">			     constant_name_and_type_info_AST = new ShortAST(CONSTANT_NAME_TYPE_INFO,name_index);</span>
+<span class="fc" id="L799">			     constant_name_and_type_info_AST.addChild(new ShortAST(CONSTANT_STRINGINFO,descriptor_index));</span>
+			
+<span class="fc" id="L801">		currentAST.root = constant_name_and_type_info_AST;</span>
+<span class="pc bpc" id="L802" title="2 of 4 branches missed.">		currentAST.child = constant_name_and_type_info_AST!=null &amp;&amp;constant_name_and_type_info_AST.getFirstChild()!=null ?</span>
+<span class="pc" id="L803">			constant_name_and_type_info_AST.getFirstChild() : constant_name_and_type_info_AST;</span>
+<span class="fc" id="L804">		currentAST.advanceChildToEnd();</span>
+<span class="fc" id="L805">		returnAST = constant_name_and_type_info_AST;</span>
+<span class="fc" id="L806">	}</span>
+	
+	public final void constant_utf8_info() throws RecognitionException, TokenStreamException {
+		
+<span class="fc" id="L810">		returnAST = null;</span>
+<span class="fc" id="L811">		ASTPair currentAST = new ASTPair();</span>
+<span class="fc" id="L812">		AST constant_utf8_info_AST = null;</span>
+		
+<span class="fc" id="L814">		short length=0;</span>
+		byte [] bytes;
+<span class="fc" id="L816">		byte bytebuf=0;</span>
+<span class="fc" id="L817">		int bytepos=0;</span>
+		
+		
+<span class="fc" id="L820">		length=u2();</span>
+<span class="fc" id="L821">		bytes = new byte[length];</span>
+		{
+		_loop21:
+		do {
+<span class="pc bpc" id="L825" title="1 of 4 branches missed.">			if (((LA(1)==BYTE))&amp;&amp;(length &gt; 0)) {</span>
+<span class="fc" id="L826">				bytebuf=u1();</span>
+<span class="fc" id="L827">				bytes[bytepos++] = bytebuf; length--;</span>
+			}
+			else {
+				break _loop21;
+			}
+			
+		} while (true);
+		}
+<span class="pc bpc" id="L835" title="1 of 2 branches missed.">		if (!(length==0))</span>
+<span class="nc" id="L836">		  throw new SemanticException(&quot;length==0&quot;);</span>
+<span class="fc" id="L837">		constant_utf8_info_AST = (AST)currentAST.root;</span>
+		
+<span class="fc" id="L839">		String name = new String(bytes);</span>
+		//	    name= name.replace('/','.'); 
+		//	    if(name.startsWith(&quot;[&quot;) &amp;&amp; name.endsWith(&quot;]&quot;)) {
+		//		name = name.substring(1,name.length()-1) + &quot;[]&quot;;
+		//	    }
+<span class="fc" id="L844">			    constant_utf8_info_AST = astFactory.create(CONSTANT_UTF8STRING,name);</span>
+		
+<span class="fc" id="L846">		currentAST.root = constant_utf8_info_AST;</span>
+<span class="pc bpc" id="L847" title="2 of 4 branches missed.">		currentAST.child = constant_utf8_info_AST!=null &amp;&amp;constant_utf8_info_AST.getFirstChild()!=null ?</span>
+<span class="pc" id="L848">			constant_utf8_info_AST.getFirstChild() : constant_utf8_info_AST;</span>
+<span class="fc" id="L849">		currentAST.advanceChildToEnd();</span>
+<span class="fc" id="L850">		returnAST = constant_utf8_info_AST;</span>
+<span class="fc" id="L851">	}</span>
+	
+	public final void access_modifiers() throws RecognitionException, TokenStreamException {
+		
+<span class="fc" id="L855">		returnAST = null;</span>
+<span class="fc" id="L856">		ASTPair currentAST = new ASTPair();</span>
+<span class="fc" id="L857">		AST access_modifiers_AST = null;</span>
+<span class="fc" id="L858">		short modifiers=0;</span>
+		
+<span class="fc" id="L860">		modifiers=u2();</span>
+<span class="fc" id="L861">		access_modifiers_AST = (AST)currentAST.root;</span>
+<span class="fc" id="L862">		access_modifiers_AST = new ShortAST( ACCESS_MODIFIERS, modifiers);</span>
+<span class="fc" id="L863">		currentAST.root = access_modifiers_AST;</span>
+<span class="pc bpc" id="L864" title="2 of 4 branches missed.">		currentAST.child = access_modifiers_AST!=null &amp;&amp;access_modifiers_AST.getFirstChild()!=null ?</span>
+<span class="pc" id="L865">			access_modifiers_AST.getFirstChild() : access_modifiers_AST;</span>
+<span class="fc" id="L866">		currentAST.advanceChildToEnd();</span>
+<span class="fc" id="L867">		returnAST = access_modifiers_AST;</span>
+<span class="fc" id="L868">	}</span>
+	
+	public final void class_info() throws RecognitionException, TokenStreamException {
+		
+<span class="fc" id="L872">		returnAST = null;</span>
+<span class="fc" id="L873">		ASTPair currentAST = new ASTPair();</span>
+<span class="fc" id="L874">		AST class_info_AST = null;</span>
+<span class="fc" id="L875">		short class_info_index = 0;</span>
+		
+<span class="fc" id="L877">		class_info_index=u2();</span>
+<span class="fc" id="L878">		class_info_AST = (AST)currentAST.root;</span>
+		
+<span class="fc" id="L880">		String class_name = getConstant(((ShortAST)getConstant(class_info_index)).getShortValue()).getText();</span>
+<span class="fc" id="L881">			    setClassName(class_name);</span>
+<span class="fc" id="L882">			    class_info_AST = astFactory.create(IDENT,class_name);</span>
+			
+<span class="fc" id="L884">		currentAST.root = class_info_AST;</span>
+<span class="pc bpc" id="L885" title="2 of 4 branches missed.">		currentAST.child = class_info_AST!=null &amp;&amp;class_info_AST.getFirstChild()!=null ?</span>
+<span class="pc" id="L886">			class_info_AST.getFirstChild() : class_info_AST;</span>
+<span class="fc" id="L887">		currentAST.advanceChildToEnd();</span>
+<span class="fc" id="L888">		returnAST = class_info_AST;</span>
+<span class="fc" id="L889">	}</span>
+	
+	public final void superclass_info() throws RecognitionException, TokenStreamException {
+		
+<span class="fc" id="L893">		returnAST = null;</span>
+<span class="fc" id="L894">		ASTPair currentAST = new ASTPair();</span>
+<span class="fc" id="L895">		AST superclass_info_AST = null;</span>
+<span class="fc" id="L896">		short class_info_index = 0;</span>
+		
+<span class="fc" id="L898">		class_info_index=u2();</span>
+<span class="fc" id="L899">		superclass_info_AST = (AST)currentAST.root;</span>
+		
+<span class="fc" id="L901">		String class_name = getConstant(((ShortAST)getConstant(class_info_index)).getShortValue()).getText();</span>
+<span class="fc" id="L902">			    superclass_info_AST = astFactory.create(IDENT,class_name);</span>
+			
+<span class="fc" id="L904">		currentAST.root = superclass_info_AST;</span>
+<span class="pc bpc" id="L905" title="2 of 4 branches missed.">		currentAST.child = superclass_info_AST!=null &amp;&amp;superclass_info_AST.getFirstChild()!=null ?</span>
+<span class="pc" id="L906">			superclass_info_AST.getFirstChild() : superclass_info_AST;</span>
+<span class="fc" id="L907">		currentAST.advanceChildToEnd();</span>
+<span class="fc" id="L908">		returnAST = superclass_info_AST;</span>
+<span class="fc" id="L909">	}</span>
+	
+	public final void interface_block() throws RecognitionException, TokenStreamException {
+		
+<span class="fc" id="L913">		returnAST = null;</span>
+<span class="fc" id="L914">		ASTPair currentAST = new ASTPair();</span>
+<span class="fc" id="L915">		AST interface_block_AST = null;</span>
+<span class="fc" id="L916">		short interfaces_count=0;</span>
+		
+<span class="fc" id="L918">		interfaces_count=u2();</span>
+<span class="fc" id="L919">		astFactory.addASTChild(currentAST, returnAST);</span>
+		{
+		_loop28:
+		do {
+<span class="pc bpc" id="L923" title="2 of 4 branches missed.">			if (((LA(1)==BYTE))&amp;&amp;(interfaces_count &gt; 0)) {</span>
+<span class="nc" id="L924">				interface_info();</span>
+<span class="nc" id="L925">				astFactory.addASTChild(currentAST, returnAST);</span>
+<span class="nc" id="L926">				interfaces_count--;</span>
+			}
+			else {
+				break _loop28;
+			}
+			
+		} while (true);
+		}
+<span class="pc bpc" id="L934" title="1 of 2 branches missed.">		if (!(interfaces_count==0))</span>
+<span class="nc" id="L935">		  throw new SemanticException(&quot;interfaces_count==0&quot;);</span>
+<span class="fc" id="L936">		interface_block_AST = (AST)currentAST.root;</span>
+<span class="fc" id="L937">		returnAST = interface_block_AST;</span>
+<span class="fc" id="L938">	}</span>
+	
+	public final void interface_info() throws RecognitionException, TokenStreamException {
+		
+<span class="nc" id="L942">		returnAST = null;</span>
+<span class="nc" id="L943">		ASTPair currentAST = new ASTPair();</span>
+<span class="nc" id="L944">		AST interface_info_AST = null;</span>
+<span class="nc" id="L945">		short interface_index=0;</span>
+		
+<span class="nc" id="L947">		interface_index=u2();</span>
+<span class="nc" id="L948">		interface_info_AST = (AST)currentAST.root;</span>
+		
+<span class="nc" id="L950">		String interface_name = getConstant(((ShortAST)getConstant(interface_index)).getShortValue()).getText();</span>
+<span class="nc" id="L951">			     interface_info_AST = astFactory.create(IDENT,interface_name);</span>
+			
+<span class="nc" id="L953">		currentAST.root = interface_info_AST;</span>
+<span class="nc bnc" id="L954" title="All 4 branches missed.">		currentAST.child = interface_info_AST!=null &amp;&amp;interface_info_AST.getFirstChild()!=null ?</span>
+<span class="nc" id="L955">			interface_info_AST.getFirstChild() : interface_info_AST;</span>
+<span class="nc" id="L956">		currentAST.advanceChildToEnd();</span>
+<span class="nc" id="L957">		returnAST = interface_info_AST;</span>
+<span class="nc" id="L958">	}</span>
+	
+	public final void field_info() throws RecognitionException, TokenStreamException {
+		
+<span class="nc" id="L962">		returnAST = null;</span>
+<span class="nc" id="L963">		ASTPair currentAST = new ASTPair();</span>
+<span class="nc" id="L964">		AST field_info_AST = null;</span>
+<span class="nc" id="L965">		AST attr_AST = null;</span>
+		
+<span class="nc" id="L967">		short access_flags=0;</span>
+<span class="nc" id="L968">		short name_index=0;</span>
+<span class="nc" id="L969">		short descriptor_index=0;</span>
+		short attributes_count;
+<span class="nc" id="L971">		AST signature = astFactory.create(SIGNATURE);</span>
+		
+		
+<span class="nc" id="L974">		access_flags=u2();</span>
+<span class="nc" id="L975">		astFactory.addASTChild(currentAST, returnAST);</span>
+<span class="nc" id="L976">		name_index=u2();</span>
+<span class="nc" id="L977">		astFactory.addASTChild(currentAST, returnAST);</span>
+<span class="nc" id="L978">		descriptor_index=u2();</span>
+<span class="nc" id="L979">		astFactory.addASTChild(currentAST, returnAST);</span>
+<span class="nc" id="L980">		attributes_count=u2();</span>
+<span class="nc" id="L981">		astFactory.addASTChild(currentAST, returnAST);</span>
+		{
+		_loop36:
+		do {
+<span class="nc bnc" id="L985" title="All 4 branches missed.">			if (((LA(1)==BYTE))&amp;&amp;(attributes_count &gt; 0)) {</span>
+<span class="nc" id="L986">				attribute_info();</span>
+<span class="nc" id="L987">				attr_AST = (AST)returnAST;</span>
+<span class="nc" id="L988">				astFactory.addASTChild(currentAST, returnAST);</span>
+				{
+<span class="nc bnc" id="L990" title="All 4 branches missed.">				if (!(attr_AST != null &amp;&amp; SIGNATURE == attr_AST.getType()))</span>
+<span class="nc" id="L991">				  throw new SemanticException(&quot;attr_AST != null &amp;&amp; SIGNATURE == attr_AST.getType()&quot;);</span>
+<span class="nc" id="L992">				signature = attr_AST;</span>
+				}
+<span class="nc" id="L994">				attributes_count--;</span>
+			}
+			else {
+				break _loop36;
+			}
+			
+		} while (true);
+		}
+<span class="nc bnc" id="L1002" title="All 2 branches missed.">		if (!(attributes_count==0))</span>
+<span class="nc" id="L1003">		  throw new SemanticException(&quot;attributes_count==0&quot;);</span>
+<span class="nc" id="L1004">		field_info_AST = (AST)currentAST.root;</span>
+		
+<span class="nc" id="L1006">			     AST access = new ShortAST(ACCESS_MODIFIERS,access_flags);</span>
+<span class="nc" id="L1007">			     String typeIdent = convertDescriptor(getConstant(descriptor_index).getText());</span>
+<span class="nc" id="L1008">			     String name = getConstant(name_index).getText();</span>
+<span class="nc" id="L1009">			     field_info_AST = (AST)astFactory.make( (new ASTArray(5)).add(astFactory.create(VARIABLE_DEF)).add(access).add(astFactory.create(TYPE,typeIdent)).add(astFactory.create(IDENT,name)).add(signature));</span>
+			
+<span class="nc" id="L1011">		currentAST.root = field_info_AST;</span>
+<span class="nc bnc" id="L1012" title="All 4 branches missed.">		currentAST.child = field_info_AST!=null &amp;&amp;field_info_AST.getFirstChild()!=null ?</span>
+<span class="nc" id="L1013">			field_info_AST.getFirstChild() : field_info_AST;</span>
+<span class="nc" id="L1014">		currentAST.advanceChildToEnd();</span>
+<span class="nc" id="L1015">		field_info_AST = (AST)currentAST.root;</span>
+<span class="nc" id="L1016">		returnAST = field_info_AST;</span>
+<span class="nc" id="L1017">	}</span>
+	
+	public final void attribute_info() throws RecognitionException, TokenStreamException {
+		
+<span class="fc" id="L1021">		returnAST = null;</span>
+<span class="fc" id="L1022">		ASTPair currentAST = new ASTPair();</span>
+<span class="fc" id="L1023">		AST attribute_info_AST = null;</span>
+<span class="fc" id="L1024">		AST cattr_AST = null;</span>
+<span class="fc" id="L1025">		AST cvattr_AST = null;</span>
+<span class="fc" id="L1026">		AST exattr_AST = null;</span>
+<span class="fc" id="L1027">		AST icattr_AST = null;</span>
+<span class="fc" id="L1028">		AST lnattr_AST = null;</span>
+<span class="fc" id="L1029">		AST lattr_AST = null;</span>
+<span class="fc" id="L1030">		AST lvtattr_AST = null;</span>
+<span class="fc" id="L1031">		AST sigattr_AST = null;</span>
+<span class="fc" id="L1032">		AST sattr_AST = null;</span>
+		
+<span class="fc" id="L1034">		short attribute_name_index=0;</span>
+<span class="fc" id="L1035">		int attribute_length=0;</span>
+<span class="fc" id="L1036">		String attribute_name=null;</span>
+		byte [] info;
+<span class="fc" id="L1038">		int bytepos=0;</span>
+<span class="fc" id="L1039">		byte bytebuf=0;</span>
+		
+		
+		try {      // for error handling
+<span class="fc" id="L1043">			attribute_name_index=u2();</span>
+<span class="pc bpc" id="L1044" title="1 of 2 branches missed.">			if (!(getConstant(attribute_name_index).getType()==CONSTANT_UTF8STRING))</span>
+<span class="nc" id="L1045">			  throw new SemanticException(&quot;getConstant(attribute_name_index).getType()==CONSTANT_UTF8STRING&quot;);</span>
+<span class="fc" id="L1046">			attribute_name = getConstant(attribute_name_index).getText();</span>
+<span class="fc" id="L1047">			attribute_length=u4();</span>
+			{
+<span class="pc bpc" id="L1049" title="1 of 4 branches missed.">			if (((LA(1)==BYTE))&amp;&amp;(&quot;Code&quot;.equals(attribute_name))) {</span>
+<span class="fc" id="L1050">				code_attribute();</span>
+<span class="fc" id="L1051">				cattr_AST = (AST)returnAST;</span>
+<span class="fc" id="L1052">				attribute_info_AST = (AST)currentAST.root;</span>
+<span class="fc" id="L1053">				attribute_info_AST = cattr_AST;</span>
+<span class="fc" id="L1054">				currentAST.root = attribute_info_AST;</span>
+<span class="pc bpc" id="L1055" title="3 of 4 branches missed.">				currentAST.child = attribute_info_AST!=null &amp;&amp;attribute_info_AST.getFirstChild()!=null ?</span>
+<span class="pc" id="L1056">					attribute_info_AST.getFirstChild() : attribute_info_AST;</span>
+<span class="fc" id="L1057">				currentAST.advanceChildToEnd();</span>
+			}
+<span class="pc bpc" id="L1059" title="2 of 4 branches missed.">			else if (((LA(1)==BYTE))&amp;&amp;(&quot;ConstantValue&quot;.equals(attribute_name))) {</span>
+<span class="nc" id="L1060">				constantValue_attribute();</span>
+<span class="nc" id="L1061">				cvattr_AST = (AST)returnAST;</span>
+<span class="nc" id="L1062">				attribute_info_AST = (AST)currentAST.root;</span>
+<span class="nc" id="L1063">				attribute_info_AST = cvattr_AST;</span>
+<span class="nc" id="L1064">				currentAST.root = attribute_info_AST;</span>
+<span class="nc bnc" id="L1065" title="All 4 branches missed.">				currentAST.child = attribute_info_AST!=null &amp;&amp;attribute_info_AST.getFirstChild()!=null ?</span>
+<span class="nc" id="L1066">					attribute_info_AST.getFirstChild() : attribute_info_AST;</span>
+<span class="nc" id="L1067">				currentAST.advanceChildToEnd();</span>
+			}
+<span class="pc bpc" id="L1069" title="2 of 4 branches missed.">			else if (((LA(1)==BYTE))&amp;&amp;(&quot;Exceptions&quot;.equals(attribute_name))) {</span>
+<span class="nc" id="L1070">				exceptions_attribute();</span>
+<span class="nc" id="L1071">				exattr_AST = (AST)returnAST;</span>
+<span class="nc" id="L1072">				attribute_info_AST = (AST)currentAST.root;</span>
+<span class="nc" id="L1073">				attribute_info_AST = exattr_AST;</span>
+<span class="nc" id="L1074">				currentAST.root = attribute_info_AST;</span>
+<span class="nc bnc" id="L1075" title="All 4 branches missed.">				currentAST.child = attribute_info_AST!=null &amp;&amp;attribute_info_AST.getFirstChild()!=null ?</span>
+<span class="nc" id="L1076">					attribute_info_AST.getFirstChild() : attribute_info_AST;</span>
+<span class="nc" id="L1077">				currentAST.advanceChildToEnd();</span>
+			}
+<span class="pc bpc" id="L1079" title="1 of 4 branches missed.">			else if (((LA(1)==BYTE))&amp;&amp;(&quot;InnerClasses&quot;.equals(attribute_name))) {</span>
+<span class="fc" id="L1080">				innerClasses_attribute();</span>
+<span class="fc" id="L1081">				icattr_AST = (AST)returnAST;</span>
+<span class="fc" id="L1082">				attribute_info_AST = (AST)currentAST.root;</span>
+<span class="fc" id="L1083">				attribute_info_AST = icattr_AST;</span>
+<span class="fc" id="L1084">				currentAST.root = attribute_info_AST;</span>
+<span class="pc bpc" id="L1085" title="3 of 4 branches missed.">				currentAST.child = attribute_info_AST!=null &amp;&amp;attribute_info_AST.getFirstChild()!=null ?</span>
+<span class="pc" id="L1086">					attribute_info_AST.getFirstChild() : attribute_info_AST;</span>
+<span class="fc" id="L1087">				currentAST.advanceChildToEnd();</span>
+			}
+<span class="pc bpc" id="L1089" title="1 of 4 branches missed.">			else if (((LA(1)==BYTE))&amp;&amp;(&quot;LineNumberTable&quot;.equals(attribute_name))) {</span>
+<span class="fc" id="L1090">				lineNumberTable_attribute();</span>
+<span class="fc" id="L1091">				lnattr_AST = (AST)returnAST;</span>
+<span class="fc" id="L1092">				attribute_info_AST = (AST)currentAST.root;</span>
+<span class="fc" id="L1093">				attribute_info_AST = lnattr_AST;</span>
+<span class="fc" id="L1094">				currentAST.root = attribute_info_AST;</span>
+<span class="pc bpc" id="L1095" title="3 of 4 branches missed.">				currentAST.child = attribute_info_AST!=null &amp;&amp;attribute_info_AST.getFirstChild()!=null ?</span>
+<span class="pc" id="L1096">					attribute_info_AST.getFirstChild() : attribute_info_AST;</span>
+<span class="fc" id="L1097">				currentAST.advanceChildToEnd();</span>
+			}
+<span class="pc bpc" id="L1099" title="1 of 4 branches missed.">			else if (((LA(1)==BYTE))&amp;&amp;(&quot;LocalVariableTable&quot;.equals(attribute_name))) {</span>
+<span class="fc" id="L1100">				localVariableTable_attribute();</span>
+<span class="fc" id="L1101">				lattr_AST = (AST)returnAST;</span>
+<span class="fc" id="L1102">				attribute_info_AST = (AST)currentAST.root;</span>
+<span class="fc" id="L1103">				attribute_info_AST = lattr_AST;</span>
+<span class="fc" id="L1104">				currentAST.root = attribute_info_AST;</span>
+<span class="pc bpc" id="L1105" title="3 of 4 branches missed.">				currentAST.child = attribute_info_AST!=null &amp;&amp;attribute_info_AST.getFirstChild()!=null ?</span>
+<span class="pc" id="L1106">					attribute_info_AST.getFirstChild() : attribute_info_AST;</span>
+<span class="fc" id="L1107">				currentAST.advanceChildToEnd();</span>
+			}
+<span class="pc bpc" id="L1109" title="1 of 4 branches missed.">			else if (((LA(1)==BYTE))&amp;&amp;(&quot;LocalVariableTypeTable&quot;.equals(attribute_name))) {</span>
+<span class="fc" id="L1110">				localVariableTypeTable_attribute();</span>
+<span class="fc" id="L1111">				lvtattr_AST = (AST)returnAST;</span>
+<span class="fc" id="L1112">				attribute_info_AST = (AST)currentAST.root;</span>
+<span class="fc" id="L1113">				attribute_info_AST = lvtattr_AST;</span>
+<span class="fc" id="L1114">				currentAST.root = attribute_info_AST;</span>
+<span class="pc bpc" id="L1115" title="3 of 4 branches missed.">				currentAST.child = attribute_info_AST!=null &amp;&amp;attribute_info_AST.getFirstChild()!=null ?</span>
+<span class="pc" id="L1116">					attribute_info_AST.getFirstChild() : attribute_info_AST;</span>
+<span class="fc" id="L1117">				currentAST.advanceChildToEnd();</span>
+			}
+<span class="pc bpc" id="L1119" title="1 of 4 branches missed.">			else if (((LA(1)==BYTE))&amp;&amp;(&quot;Signature&quot;.equals(attribute_name))) {</span>
+<span class="fc" id="L1120">				signature_attribute();</span>
+<span class="fc" id="L1121">				sigattr_AST = (AST)returnAST;</span>
+<span class="fc" id="L1122">				attribute_info_AST = (AST)currentAST.root;</span>
+<span class="fc" id="L1123">				attribute_info_AST = sigattr_AST;</span>
+<span class="fc" id="L1124">				currentAST.root = attribute_info_AST;</span>
+<span class="pc bpc" id="L1125" title="2 of 4 branches missed.">				currentAST.child = attribute_info_AST!=null &amp;&amp;attribute_info_AST.getFirstChild()!=null ?</span>
+<span class="pc" id="L1126">					attribute_info_AST.getFirstChild() : attribute_info_AST;</span>
+<span class="fc" id="L1127">				currentAST.advanceChildToEnd();</span>
+			}
+<span class="pc bpc" id="L1129" title="3 of 6 branches missed.">			else if (((LA(1)==BYTE))&amp;&amp;(attribute_length==2 &amp;&amp; &quot;SourceFile&quot;.equals(attribute_name))) {</span>
+<span class="fc" id="L1130">				sourcefile_attribute();</span>
+<span class="fc" id="L1131">				sattr_AST = (AST)returnAST;</span>
+<span class="fc" id="L1132">				attribute_info_AST = (AST)currentAST.root;</span>
+<span class="fc" id="L1133">				attribute_info_AST = sattr_AST;</span>
+<span class="fc" id="L1134">				currentAST.root = attribute_info_AST;</span>
+<span class="pc bpc" id="L1135" title="2 of 4 branches missed.">				currentAST.child = attribute_info_AST!=null &amp;&amp;attribute_info_AST.getFirstChild()!=null ?</span>
+<span class="pc" id="L1136">					attribute_info_AST.getFirstChild() : attribute_info_AST;</span>
+<span class="fc" id="L1137">				currentAST.advanceChildToEnd();</span>
+			}
+<span class="nc bnc" id="L1139" title="All 4 branches missed.">			else if ((LA(1)==EOF||LA(1)==BYTE)) {</span>
+<span class="nc" id="L1140">				info = new byte[attribute_length];</span>
+				{
+				_loop50:
+				do {
+<span class="nc bnc" id="L1144" title="All 4 branches missed.">					if (((LA(1)==BYTE))&amp;&amp;(bytepos &lt; attribute_length)) {</span>
+<span class="nc" id="L1145">						bytebuf=u1();</span>
+<span class="nc" id="L1146">						info[bytepos++] = bytebuf;</span>
+					}
+					else {
+						break _loop50;
+					}
+					
+				} while (true);
+				}
+<span class="nc bnc" id="L1154" title="All 2 branches missed.">				if (!(bytepos==attribute_length))</span>
+<span class="nc" id="L1155">				  throw new SemanticException(&quot;bytepos==attribute_length&quot;);</span>
+<span class="nc" id="L1156">				attribute_info_AST = (AST)currentAST.root;</span>
+<span class="nc" id="L1157">				attribute_info_AST = astFactory.create(UNKNOWN_ATTRIBUTE,attribute_name);</span>
+<span class="nc" id="L1158">				currentAST.root = attribute_info_AST;</span>
+<span class="nc bnc" id="L1159" title="All 4 branches missed.">				currentAST.child = attribute_info_AST!=null &amp;&amp;attribute_info_AST.getFirstChild()!=null ?</span>
+<span class="nc" id="L1160">					attribute_info_AST.getFirstChild() : attribute_info_AST;</span>
+<span class="nc" id="L1161">				currentAST.advanceChildToEnd();</span>
+			}
+			else {
+<span class="nc" id="L1164">				throw new NoViableAltException(LT(1), getFilename());</span>
+			}
+			
+			}
+		}
+<span class="nc" id="L1169">		catch (SemanticException se) {</span>
+<span class="fc" id="L1170">		}</span>
+<span class="fc" id="L1171">		returnAST = attribute_info_AST;</span>
+<span class="fc" id="L1172">	}</span>
+	
+	public final void method_info() throws RecognitionException, TokenStreamException {
+		
+<span class="fc" id="L1176">		returnAST = null;</span>
+<span class="fc" id="L1177">		ASTPair currentAST = new ASTPair();</span>
+<span class="fc" id="L1178">		AST method_info_AST = null;</span>
+<span class="fc" id="L1179">		AST attr_AST = null;</span>
+		
+<span class="fc" id="L1181">		short access_flags=0;</span>
+<span class="fc" id="L1182">		short name_index=0;</span>
+<span class="fc" id="L1183">		short descriptor_index=0;</span>
+<span class="fc" id="L1184">		short attributes_count=0;</span>
+<span class="fc" id="L1185">		AST exceptions = astFactory.create(THROWS);  // Create a empty exception clause.</span>
+<span class="fc" id="L1186">		AST signature = astFactory.create(SIGNATURE);</span>
+		
+		
+<span class="fc" id="L1189">		access_flags=u2();</span>
+<span class="fc" id="L1190">		name_index=u2();</span>
+<span class="fc" id="L1191">		descriptor_index=u2();</span>
+<span class="fc" id="L1192">		attributes_count=u2();</span>
+		{
+		_loop43:
+		do {
+<span class="pc bpc" id="L1196" title="1 of 4 branches missed.">			if (((LA(1)==BYTE))&amp;&amp;(attributes_count &gt; 0)) {</span>
+<span class="fc" id="L1197">				attribute_info();</span>
+<span class="fc" id="L1198">				attr_AST = (AST)returnAST;</span>
+				{
+<span class="pc bpc" id="L1200" title="4 of 6 branches missed.">				if (((LA(1)==BYTE))&amp;&amp;(attr_AST != null &amp;&amp; THROWS == attr_AST.getType())) {</span>
+<span class="nc" id="L1201">					exceptions = attr_AST;</span>
+				}
+<span class="pc bpc" id="L1203" title="4 of 6 branches missed.">				else if (((LA(1)==BYTE))&amp;&amp;(attr_AST != null &amp;&amp; SIGNATURE == attr_AST.getType())) {</span>
+<span class="nc" id="L1204">					signature = attr_AST;</span>
+				}
+<span class="pc bpc" id="L1206" title="1 of 2 branches missed.">				else if ((LA(1)==BYTE)) {</span>
+				}
+				else {
+<span class="nc" id="L1209">					throw new NoViableAltException(LT(1), getFilename());</span>
+				}
+				
+				}
+<span class="fc" id="L1213">				attributes_count--;</span>
+			}
+			else {
+				break _loop43;
+			}
+			
+		} while (true);
+		}
+<span class="pc bpc" id="L1221" title="1 of 2 branches missed.">		if (!(attributes_count==0))</span>
+<span class="nc" id="L1222">		  throw new SemanticException(&quot;attributes_count==0&quot;);</span>
+<span class="fc" id="L1223">		method_info_AST = (AST)currentAST.root;</span>
+		
+<span class="fc" id="L1225">			      String [] method_descriptor = convertMethodDescriptor(getConstant(descriptor_index).getText());</span>
+<span class="fc" id="L1226">			      AST parameters = new CommonAST();</span>
+<span class="fc" id="L1227">			      parameters.setType(PARAMETERS);</span>
+<span class="pc bpc" id="L1228" title="1 of 2 branches missed.">			      for(int i=1; i &lt; method_descriptor.length; i++) {</span>
+<span class="nc" id="L1229">				 ShortAST access = new ShortAST(ACCESS_MODIFIERS, (short)0);</span>
+<span class="nc" id="L1230">				 String paramType = method_descriptor[i];</span>
+<span class="nc" id="L1231">				 String paramIdent = &quot;param&quot; + i;</span>
+<span class="nc" id="L1232">				 AST param = (AST)astFactory.make( (new ASTArray(4)).add(astFactory.create(PARAMETER_DEF)).add(access).add(astFactory.create(TYPE,paramType)).add(astFactory.create(IDENT,paramIdent)));</span>
+<span class="nc" id="L1233">				 parameters.addChild(param);</span>
+			      }
+		
+<span class="fc" id="L1236">			      AST access = new ShortAST(ACCESS_MODIFIERS,access_flags);</span>
+<span class="fc" id="L1237">			      String ident = getConstant(name_index).getText();</span>
+<span class="pc bpc" id="L1238" title="1 of 2 branches missed.">			      if( &quot;&lt;init&gt;&quot;.equals(ident)) {  // is this a constructor?</span>
+<span class="fc" id="L1239">				  ident = getClassName();  // Use the class name as the constructor's method name.</span>
+<span class="fc" id="L1240">				  method_info_AST = (AST)astFactory.make( (new ASTArray(6)).add(astFactory.create(CTOR_DEF)).add(access).add(astFactory.create(IDENT,ident)).add(parameters).add(exceptions).add(signature));</span>
+			      } else {
+<span class="nc" id="L1242">			          String retType = method_descriptor[0];</span>
+<span class="nc" id="L1243">			          method_info_AST = (AST)astFactory.make( (new ASTArray(7)).add(astFactory.create(METHOD_DEF)).add(access).add(astFactory.create(TYPE,retType)).add(astFactory.create(IDENT,ident)).add(parameters).add(exceptions).add(signature));</span>
+			      }
+			
+<span class="fc" id="L1246">		currentAST.root = method_info_AST;</span>
+<span class="pc bpc" id="L1247" title="2 of 4 branches missed.">		currentAST.child = method_info_AST!=null &amp;&amp;method_info_AST.getFirstChild()!=null ?</span>
+<span class="pc" id="L1248">			method_info_AST.getFirstChild() : method_info_AST;</span>
+<span class="fc" id="L1249">		currentAST.advanceChildToEnd();</span>
+<span class="fc" id="L1250">		returnAST = method_info_AST;</span>
+<span class="fc" id="L1251">	}</span>
+	
+	public final void code_attribute() throws RecognitionException, TokenStreamException {
+		
+<span class="fc" id="L1255">		returnAST = null;</span>
+<span class="fc" id="L1256">		ASTPair currentAST = new ASTPair();</span>
+<span class="fc" id="L1257">		AST code_attribute_AST = null;</span>
+		
+<span class="fc" id="L1259">		short max_stack = 0;</span>
+<span class="fc" id="L1260">		short max_locals = 0;</span>
+<span class="fc" id="L1261">		int code_length = 0;</span>
+<span class="fc" id="L1262">		int codepos = 0;  // This should be long, but Java seems cause problems with array sizes &gt; max_int.</span>
+<span class="fc" id="L1263">		byte [] code = null;</span>
+<span class="fc" id="L1264">		byte bytebuf = 0;</span>
+<span class="fc" id="L1265">		short exception_table_length = 0;</span>
+<span class="fc" id="L1266">		int exceptionpos=0;</span>
+<span class="fc" id="L1267">		short attribute_count=0;</span>
+<span class="fc" id="L1268">		int attributepos=0;</span>
+		
+		
+<span class="fc" id="L1271">		max_stack=u2();</span>
+<span class="fc" id="L1272">		astFactory.addASTChild(currentAST, returnAST);</span>
+<span class="fc" id="L1273">		max_locals=u2();</span>
+<span class="fc" id="L1274">		astFactory.addASTChild(currentAST, returnAST);</span>
+<span class="fc" id="L1275">		code_length=u4();</span>
+<span class="fc" id="L1276">		astFactory.addASTChild(currentAST, returnAST);</span>
+<span class="fc" id="L1277">		code = new byte[code_length];</span>
+		{
+		_loop56:
+		do {
+<span class="pc bpc" id="L1281" title="1 of 4 branches missed.">			if (((LA(1)==BYTE))&amp;&amp;(codepos &lt; code_length)) {</span>
+<span class="fc" id="L1282">				bytebuf=u1();</span>
+<span class="fc" id="L1283">				astFactory.addASTChild(currentAST, returnAST);</span>
+<span class="fc" id="L1284">				code[codepos++] = bytebuf;</span>
+			}
+			else {
+				break _loop56;
+			}
+			
+		} while (true);
+		}
+<span class="pc bpc" id="L1292" title="1 of 2 branches missed.">		if (!(codepos==code_length))</span>
+<span class="nc" id="L1293">		  throw new SemanticException(&quot;codepos==code_length&quot;);</span>
+<span class="fc" id="L1294">		exception_table_length=u2();</span>
+<span class="fc" id="L1295">		astFactory.addASTChild(currentAST, returnAST);</span>
+		{
+		_loop58:
+		do {
+<span class="pc bpc" id="L1299" title="2 of 4 branches missed.">			if (((LA(1)==BYTE))&amp;&amp;(exceptionpos &lt; ((int)exception_table_length &amp; 0xffff))) {</span>
+<span class="nc" id="L1300">				exception_table_entry();</span>
+<span class="nc" id="L1301">				astFactory.addASTChild(currentAST, returnAST);</span>
+<span class="nc" id="L1302">				exceptionpos++;</span>
+			}
+			else {
+				break _loop58;
+			}
+			
+		} while (true);
+		}
+<span class="pc bpc" id="L1310" title="1 of 2 branches missed.">		if (!(exceptionpos==((int)exception_table_length &amp; 0xffff)))</span>
+<span class="nc" id="L1311">		  throw new SemanticException(&quot;exceptionpos==((int)exception_table_length &amp; 0xffff)&quot;);</span>
+<span class="fc" id="L1312">		attribute_count=u2();</span>
+<span class="fc" id="L1313">		astFactory.addASTChild(currentAST, returnAST);</span>
+		{
+		_loop60:
+		do {
+<span class="pc bpc" id="L1317" title="1 of 4 branches missed.">			if (((LA(1)==BYTE))&amp;&amp;(attributepos &lt; ((int)attribute_count &amp; 0xffff))) {</span>
+<span class="fc" id="L1318">				attribute_info();</span>
+<span class="fc" id="L1319">				astFactory.addASTChild(currentAST, returnAST);</span>
+<span class="fc" id="L1320">				attributepos++;</span>
+			}
+			else {
+				break _loop60;
+			}
+			
+		} while (true);
+		}
+<span class="pc bpc" id="L1328" title="1 of 2 branches missed.">		if (!(attributepos==((int)attribute_count &amp; 0xffff)))</span>
+<span class="nc" id="L1329">		  throw new SemanticException(&quot;attributepos==((int)attribute_count &amp; 0xffff)&quot;);</span>
+<span class="fc" id="L1330">		code_attribute_AST = (AST)currentAST.root;</span>
+<span class="fc" id="L1331">		returnAST = code_attribute_AST;</span>
+<span class="fc" id="L1332">	}</span>
+	
+	public final void constantValue_attribute() throws RecognitionException, TokenStreamException {
+		
+<span class="nc" id="L1336">		returnAST = null;</span>
+<span class="nc" id="L1337">		ASTPair currentAST = new ASTPair();</span>
+<span class="nc" id="L1338">		AST constantValue_attribute_AST = null;</span>
+<span class="nc" id="L1339">		short constantvalue_index = 0;</span>
+		
+<span class="nc" id="L1341">		constantvalue_index=u2();</span>
+<span class="nc" id="L1342">		constantValue_attribute_AST = (AST)currentAST.root;</span>
+<span class="nc" id="L1343">		constantValue_attribute_AST = new ShortAST(ATTRIBUTE_CONSTANT, constantvalue_index);</span>
+<span class="nc" id="L1344">		currentAST.root = constantValue_attribute_AST;</span>
+<span class="nc bnc" id="L1345" title="All 4 branches missed.">		currentAST.child = constantValue_attribute_AST!=null &amp;&amp;constantValue_attribute_AST.getFirstChild()!=null ?</span>
+<span class="nc" id="L1346">			constantValue_attribute_AST.getFirstChild() : constantValue_attribute_AST;</span>
+<span class="nc" id="L1347">		currentAST.advanceChildToEnd();</span>
+<span class="nc" id="L1348">		returnAST = constantValue_attribute_AST;</span>
+<span class="nc" id="L1349">	}</span>
+	
+	public final void exceptions_attribute() throws RecognitionException, TokenStreamException {
+		
+<span class="nc" id="L1353">		returnAST = null;</span>
+<span class="nc" id="L1354">		ASTPair currentAST = new ASTPair();</span>
+<span class="nc" id="L1355">		AST exceptions_attribute_AST = null;</span>
+		
+<span class="nc" id="L1357">		short number_of_exceptions = 0;</span>
+<span class="nc" id="L1358">		int indexpos=0;</span>
+		
+		
+<span class="nc" id="L1361">		number_of_exceptions=u2();</span>
+<span class="nc" id="L1362">		astFactory.addASTChild(currentAST, returnAST);</span>
+		{
+		_loop64:
+		do {
+<span class="nc bnc" id="L1366" title="All 4 branches missed.">			if (((LA(1)==BYTE))&amp;&amp;(indexpos &lt; ((int)number_of_exceptions &amp; 0xffff))) {</span>
+<span class="nc" id="L1367">				exception_index_entry();</span>
+<span class="nc" id="L1368">				astFactory.addASTChild(currentAST, returnAST);</span>
+<span class="nc" id="L1369">				indexpos++;</span>
+			}
+			else {
+				break _loop64;
+			}
+			
+		} while (true);
+		}
+<span class="nc bnc" id="L1377" title="All 2 branches missed.">		if (!(indexpos==((int)number_of_exceptions &amp; 0xffff)))</span>
+<span class="nc" id="L1378">		  throw new SemanticException(&quot;indexpos==((int)number_of_exceptions &amp; 0xffff)&quot;);</span>
+<span class="nc" id="L1379">		exceptions_attribute_AST = (AST)currentAST.root;</span>
+<span class="nc" id="L1380">		exceptions_attribute_AST = (AST)astFactory.make( (new ASTArray(2)).add(astFactory.create(THROWS)).add(exceptions_attribute_AST));</span>
+<span class="nc" id="L1381">		currentAST.root = exceptions_attribute_AST;</span>
+<span class="nc bnc" id="L1382" title="All 4 branches missed.">		currentAST.child = exceptions_attribute_AST!=null &amp;&amp;exceptions_attribute_AST.getFirstChild()!=null ?</span>
+<span class="nc" id="L1383">			exceptions_attribute_AST.getFirstChild() : exceptions_attribute_AST;</span>
+<span class="nc" id="L1384">		currentAST.advanceChildToEnd();</span>
+<span class="nc" id="L1385">		exceptions_attribute_AST = (AST)currentAST.root;</span>
+<span class="nc" id="L1386">		returnAST = exceptions_attribute_AST;</span>
+<span class="nc" id="L1387">	}</span>
+	
+	public final void innerClasses_attribute() throws RecognitionException, TokenStreamException {
+		
+<span class="fc" id="L1391">		returnAST = null;</span>
+<span class="fc" id="L1392">		ASTPair currentAST = new ASTPair();</span>
+<span class="fc" id="L1393">		AST innerClasses_attribute_AST = null;</span>
+		
+<span class="fc" id="L1395">		short inner_class_table_length = 0; </span>
+<span class="fc" id="L1396">		int entrypos=0;</span>
+		
+		
+<span class="fc" id="L1399">		inner_class_table_length=u2();</span>
+<span class="fc" id="L1400">		astFactory.addASTChild(currentAST, returnAST);</span>
+		{
+		_loop80:
+		do {
+<span class="pc bpc" id="L1404" title="1 of 4 branches missed.">			if (((LA(1)==BYTE))&amp;&amp;(entrypos &lt; ((int)inner_class_table_length &amp; 0xffff))) {</span>
+<span class="fc" id="L1405">				innerClassTableEntry();</span>
+<span class="fc" id="L1406">				astFactory.addASTChild(currentAST, returnAST);</span>
+<span class="fc" id="L1407">				entrypos++;</span>
+			}
+			else {
+				break _loop80;
+			}
+			
+		} while (true);
+		}
+<span class="pc bpc" id="L1415" title="1 of 2 branches missed.">		if (!(entrypos==((int)inner_class_table_length &amp; 0xffff)))</span>
+<span class="nc" id="L1416">		  throw new SemanticException(&quot;entrypos==((int)inner_class_table_length &amp; 0xffff)&quot;);</span>
+<span class="fc" id="L1417">		innerClasses_attribute_AST = (AST)currentAST.root;</span>
+<span class="fc" id="L1418">		returnAST = innerClasses_attribute_AST;</span>
+<span class="fc" id="L1419">	}</span>
+	
+	public final void lineNumberTable_attribute() throws RecognitionException, TokenStreamException {
+		
+<span class="fc" id="L1423">		returnAST = null;</span>
+<span class="fc" id="L1424">		ASTPair currentAST = new ASTPair();</span>
+<span class="fc" id="L1425">		AST lineNumberTable_attribute_AST = null;</span>
+		
+<span class="fc" id="L1427">		short line_number_table_length = 0; </span>
+<span class="fc" id="L1428">		int entrypos = 0;</span>
+		
+		
+<span class="fc" id="L1431">		line_number_table_length=u2();</span>
+<span class="fc" id="L1432">		astFactory.addASTChild(currentAST, returnAST);</span>
+		{
+		_loop68:
+		do {
+<span class="pc bpc" id="L1436" title="1 of 4 branches missed.">			if (((LA(1)==BYTE))&amp;&amp;(entrypos &lt; ((int)line_number_table_length &amp; 0xffff))) {</span>
+<span class="fc" id="L1437">				lineNumberTableEntry();</span>
+<span class="fc" id="L1438">				astFactory.addASTChild(currentAST, returnAST);</span>
+<span class="fc" id="L1439">				entrypos++;</span>
+			}
+			else {
+				break _loop68;
+			}
+			
+		} while (true);
+		}
+<span class="pc bpc" id="L1447" title="1 of 2 branches missed.">		if (!(entrypos==((int)line_number_table_length &amp; 0xffff)))</span>
+<span class="nc" id="L1448">		  throw new SemanticException(&quot;entrypos==((int)line_number_table_length &amp; 0xffff)&quot;);</span>
+<span class="fc" id="L1449">		lineNumberTable_attribute_AST = (AST)currentAST.root;</span>
+<span class="fc" id="L1450">		returnAST = lineNumberTable_attribute_AST;</span>
+<span class="fc" id="L1451">	}</span>
+	
+	public final void localVariableTable_attribute() throws RecognitionException, TokenStreamException {
+		
+<span class="fc" id="L1455">		returnAST = null;</span>
+<span class="fc" id="L1456">		ASTPair currentAST = new ASTPair();</span>
+<span class="fc" id="L1457">		AST localVariableTable_attribute_AST = null;</span>
+		
+<span class="fc" id="L1459">		short local_variable_table_length = 0; </span>
+<span class="fc" id="L1460">		int entrypos=0;</span>
+		
+		
+<span class="fc" id="L1463">		local_variable_table_length=u2();</span>
+<span class="fc" id="L1464">		astFactory.addASTChild(currentAST, returnAST);</span>
+		{
+		_loop72:
+		do {
+<span class="pc bpc" id="L1468" title="1 of 4 branches missed.">			if (((LA(1)==BYTE))&amp;&amp;(entrypos &lt; ((int)local_variable_table_length &amp; 0xffff))) {</span>
+<span class="fc" id="L1469">				localVariableTableEntry();</span>
+<span class="fc" id="L1470">				astFactory.addASTChild(currentAST, returnAST);</span>
+<span class="fc" id="L1471">				entrypos++;</span>
+			}
+			else {
+				break _loop72;
+			}
+			
+		} while (true);
+		}
+<span class="pc bpc" id="L1479" title="1 of 2 branches missed.">		if (!(entrypos==((int)local_variable_table_length &amp; 0xffff)))</span>
+<span class="nc" id="L1480">		  throw new SemanticException(&quot;entrypos==((int)local_variable_table_length &amp; 0xffff)&quot;);</span>
+<span class="fc" id="L1481">		localVariableTable_attribute_AST = (AST)currentAST.root;</span>
+<span class="fc" id="L1482">		returnAST = localVariableTable_attribute_AST;</span>
+<span class="fc" id="L1483">	}</span>
+	
+	public final void localVariableTypeTable_attribute() throws RecognitionException, TokenStreamException {
+		
+<span class="fc" id="L1487">		returnAST = null;</span>
+<span class="fc" id="L1488">		ASTPair currentAST = new ASTPair();</span>
+<span class="fc" id="L1489">		AST localVariableTypeTable_attribute_AST = null;</span>
+		
+<span class="fc" id="L1491">		short local_variable_type_table_length = 0; </span>
+<span class="fc" id="L1492">		int entrypos=0;</span>
+		
+		
+<span class="fc" id="L1495">		local_variable_type_table_length=u2();</span>
+<span class="fc" id="L1496">		astFactory.addASTChild(currentAST, returnAST);</span>
+		{
+		_loop76:
+		do {
+<span class="pc bpc" id="L1500" title="1 of 4 branches missed.">			if (((LA(1)==BYTE))&amp;&amp;(entrypos &lt; ((int)local_variable_type_table_length &amp; 0xffff))) {</span>
+<span class="fc" id="L1501">				localVariableTypeTableEntry();</span>
+<span class="fc" id="L1502">				astFactory.addASTChild(currentAST, returnAST);</span>
+<span class="fc" id="L1503">				entrypos++;</span>
+			}
+			else {
+				break _loop76;
+			}
+			
+		} while (true);
+		}
+<span class="pc bpc" id="L1511" title="1 of 2 branches missed.">		if (!(entrypos==((int)local_variable_type_table_length &amp; 0xffff)))</span>
+<span class="nc" id="L1512">		  throw new SemanticException(&quot;entrypos==((int)local_variable_type_table_length &amp; 0xffff)&quot;);</span>
+<span class="fc" id="L1513">		localVariableTypeTable_attribute_AST = (AST)currentAST.root;</span>
+<span class="fc" id="L1514">		returnAST = localVariableTypeTable_attribute_AST;</span>
+<span class="fc" id="L1515">	}</span>
+	
+	public final void signature_attribute() throws RecognitionException, TokenStreamException {
+		
+<span class="fc" id="L1519">		returnAST = null;</span>
+<span class="fc" id="L1520">		ASTPair currentAST = new ASTPair();</span>
+<span class="fc" id="L1521">		AST signature_attribute_AST = null;</span>
+<span class="fc" id="L1522">		short signature_index = 0;</span>
+		
+<span class="fc" id="L1524">		signature_index=u2();</span>
+<span class="fc" id="L1525">		signature_attribute_AST = (AST)currentAST.root;</span>
+		
+<span class="fc" id="L1527">			     String signature_name = getConstant(signature_index).getText();</span>
+<span class="fc" id="L1528">			     signature_attribute_AST = astFactory.create(SIGNATURE,signature_name);</span>
+			
+<span class="fc" id="L1530">		currentAST.root = signature_attribute_AST;</span>
+<span class="pc bpc" id="L1531" title="2 of 4 branches missed.">		currentAST.child = signature_attribute_AST!=null &amp;&amp;signature_attribute_AST.getFirstChild()!=null ?</span>
+<span class="pc" id="L1532">			signature_attribute_AST.getFirstChild() : signature_attribute_AST;</span>
+<span class="fc" id="L1533">		currentAST.advanceChildToEnd();</span>
+<span class="fc" id="L1534">		returnAST = signature_attribute_AST;</span>
+<span class="fc" id="L1535">	}</span>
+	
+	public final void sourcefile_attribute() throws RecognitionException, TokenStreamException {
+		
+<span class="fc" id="L1539">		returnAST = null;</span>
+<span class="fc" id="L1540">		ASTPair currentAST = new ASTPair();</span>
+<span class="fc" id="L1541">		AST sourcefile_attribute_AST = null;</span>
+<span class="fc" id="L1542">		short sourcefile_index = 0;</span>
+		
+<span class="fc" id="L1544">		sourcefile_index=u2();</span>
+<span class="fc" id="L1545">		sourcefile_attribute_AST = (AST)currentAST.root;</span>
+		
+<span class="fc" id="L1547">			     String sourcefile_name = getConstant(sourcefile_index).getText();</span>
+<span class="fc" id="L1548">			     sourcefile_attribute_AST = astFactory.create(SOURCEFILE,sourcefile_name);</span>
+			
+<span class="fc" id="L1550">		currentAST.root = sourcefile_attribute_AST;</span>
+<span class="pc bpc" id="L1551" title="2 of 4 branches missed.">		currentAST.child = sourcefile_attribute_AST!=null &amp;&amp;sourcefile_attribute_AST.getFirstChild()!=null ?</span>
+<span class="pc" id="L1552">			sourcefile_attribute_AST.getFirstChild() : sourcefile_attribute_AST;</span>
+<span class="fc" id="L1553">		currentAST.advanceChildToEnd();</span>
+<span class="fc" id="L1554">		returnAST = sourcefile_attribute_AST;</span>
+<span class="fc" id="L1555">	}</span>
+	
+	public final void exception_table_entry() throws RecognitionException, TokenStreamException {
+		
+<span class="nc" id="L1559">		returnAST = null;</span>
+<span class="nc" id="L1560">		ASTPair currentAST = new ASTPair();</span>
+<span class="nc" id="L1561">		AST exception_table_entry_AST = null;</span>
+		
+<span class="nc" id="L1563">		short start_pc = 0;</span>
+<span class="nc" id="L1564">		short end_pc = 0;</span>
+<span class="nc" id="L1565">		short handler_pc = 0;</span>
+<span class="nc" id="L1566">		short catch_type = 0;</span>
+		
+		
+<span class="nc" id="L1569">		start_pc=u2();</span>
+<span class="nc" id="L1570">		astFactory.addASTChild(currentAST, returnAST);</span>
+<span class="nc" id="L1571">		end_pc=u2();</span>
+<span class="nc" id="L1572">		astFactory.addASTChild(currentAST, returnAST);</span>
+<span class="nc" id="L1573">		handler_pc=u2();</span>
+<span class="nc" id="L1574">		astFactory.addASTChild(currentAST, returnAST);</span>
+<span class="nc" id="L1575">		catch_type=u2();</span>
+<span class="nc" id="L1576">		astFactory.addASTChild(currentAST, returnAST);</span>
+<span class="nc" id="L1577">		exception_table_entry_AST = (AST)currentAST.root;</span>
+<span class="nc" id="L1578">		returnAST = exception_table_entry_AST;</span>
+<span class="nc" id="L1579">	}</span>
+	
+	public final void exception_index_entry() throws RecognitionException, TokenStreamException {
+		
+<span class="nc" id="L1583">		returnAST = null;</span>
+<span class="nc" id="L1584">		ASTPair currentAST = new ASTPair();</span>
+<span class="nc" id="L1585">		AST exception_index_entry_AST = null;</span>
+<span class="nc" id="L1586">		short index=0;</span>
+		
+<span class="nc" id="L1588">		index=u2();</span>
+<span class="nc bnc" id="L1589" title="All 2 branches missed.">		if (!(index != 0))</span>
+<span class="nc" id="L1590">		  throw new SemanticException(&quot;index != 0&quot;);</span>
+<span class="nc" id="L1591">		exception_index_entry_AST = (AST)currentAST.root;</span>
+		
+			     // The index references a Class_info structure in the constant pool,
+			     // that we can use to get the name of the exception (class).
+<span class="nc" id="L1595">		String exception_name = getConstant(((ShortAST)getConstant(index)).getShortValue()).getText();</span>
+<span class="nc" id="L1596">			     exception_index_entry_AST = astFactory.create(IDENT,exception_name);</span>
+			
+<span class="nc" id="L1598">		currentAST.root = exception_index_entry_AST;</span>
+<span class="nc bnc" id="L1599" title="All 4 branches missed.">		currentAST.child = exception_index_entry_AST!=null &amp;&amp;exception_index_entry_AST.getFirstChild()!=null ?</span>
+<span class="nc" id="L1600">			exception_index_entry_AST.getFirstChild() : exception_index_entry_AST;</span>
+<span class="nc" id="L1601">		currentAST.advanceChildToEnd();</span>
+<span class="nc" id="L1602">		returnAST = exception_index_entry_AST;</span>
+<span class="nc" id="L1603">	}</span>
+	
+	public final void lineNumberTableEntry() throws RecognitionException, TokenStreamException {
+		
+<span class="fc" id="L1607">		returnAST = null;</span>
+<span class="fc" id="L1608">		ASTPair currentAST = new ASTPair();</span>
+<span class="fc" id="L1609">		AST lineNumberTableEntry_AST = null;</span>
+<span class="fc" id="L1610">		short start_pc=0, line_number=0;</span>
+		
+<span class="fc" id="L1612">		start_pc=u2();</span>
+<span class="fc" id="L1613">		astFactory.addASTChild(currentAST, returnAST);</span>
+<span class="fc" id="L1614">		line_number=u2();</span>
+<span class="fc" id="L1615">		astFactory.addASTChild(currentAST, returnAST);</span>
+<span class="fc" id="L1616">		lineNumberTableEntry_AST = (AST)currentAST.root;</span>
+<span class="fc" id="L1617">		returnAST = lineNumberTableEntry_AST;</span>
+<span class="fc" id="L1618">	}</span>
+	
+	public final void localVariableTableEntry() throws RecognitionException, TokenStreamException {
+		
+<span class="fc" id="L1622">		returnAST = null;</span>
+<span class="fc" id="L1623">		ASTPair currentAST = new ASTPair();</span>
+<span class="fc" id="L1624">		AST localVariableTableEntry_AST = null;</span>
+<span class="fc" id="L1625">		short start_pc = 0, length = 0, name_index = 0, descriptor_index = 0, index = 0;</span>
+		
+<span class="fc" id="L1627">		start_pc=u2();</span>
+<span class="fc" id="L1628">		astFactory.addASTChild(currentAST, returnAST);</span>
+<span class="fc" id="L1629">		length=u2();</span>
+<span class="fc" id="L1630">		astFactory.addASTChild(currentAST, returnAST);</span>
+<span class="fc" id="L1631">		name_index=u2();</span>
+<span class="fc" id="L1632">		astFactory.addASTChild(currentAST, returnAST);</span>
+<span class="fc" id="L1633">		descriptor_index=u2();</span>
+<span class="fc" id="L1634">		astFactory.addASTChild(currentAST, returnAST);</span>
+<span class="fc" id="L1635">		index=u2();</span>
+<span class="fc" id="L1636">		astFactory.addASTChild(currentAST, returnAST);</span>
+<span class="fc" id="L1637">		localVariableTableEntry_AST = (AST)currentAST.root;</span>
+<span class="fc" id="L1638">		returnAST = localVariableTableEntry_AST;</span>
+<span class="fc" id="L1639">	}</span>
+	
+	public final void localVariableTypeTableEntry() throws RecognitionException, TokenStreamException {
+		
+<span class="fc" id="L1643">		returnAST = null;</span>
+<span class="fc" id="L1644">		ASTPair currentAST = new ASTPair();</span>
+<span class="fc" id="L1645">		AST localVariableTypeTableEntry_AST = null;</span>
+<span class="fc" id="L1646">		short start_pc = 0, length = 0, name_index = 0, signature_index = 0, index = 0;</span>
+		
+<span class="fc" id="L1648">		start_pc=u2();</span>
+<span class="fc" id="L1649">		astFactory.addASTChild(currentAST, returnAST);</span>
+<span class="fc" id="L1650">		length=u2();</span>
+<span class="fc" id="L1651">		astFactory.addASTChild(currentAST, returnAST);</span>
+<span class="fc" id="L1652">		name_index=u2();</span>
+<span class="fc" id="L1653">		astFactory.addASTChild(currentAST, returnAST);</span>
+<span class="fc" id="L1654">		signature_index=u2();</span>
+<span class="fc" id="L1655">		astFactory.addASTChild(currentAST, returnAST);</span>
+<span class="fc" id="L1656">		index=u2();</span>
+<span class="fc" id="L1657">		astFactory.addASTChild(currentAST, returnAST);</span>
+<span class="fc" id="L1658">		localVariableTypeTableEntry_AST = (AST)currentAST.root;</span>
+<span class="fc" id="L1659">		returnAST = localVariableTypeTableEntry_AST;</span>
+<span class="fc" id="L1660">	}</span>
+	
+	public final void innerClassTableEntry() throws RecognitionException, TokenStreamException {
+		
+<span class="fc" id="L1664">		returnAST = null;</span>
+<span class="fc" id="L1665">		ASTPair currentAST = new ASTPair();</span>
+<span class="fc" id="L1666">		AST innerClassTableEntry_AST = null;</span>
+<span class="fc" id="L1667">		short inner_class_info_index = 0, outer_class_info_index = 0, inner_name_index = 0, inner_class_access_flags = 0;</span>
+		
+<span class="fc" id="L1669">		inner_class_info_index=u2();</span>
+<span class="fc" id="L1670">		astFactory.addASTChild(currentAST, returnAST);</span>
+<span class="fc" id="L1671">		outer_class_info_index=u2();</span>
+<span class="fc" id="L1672">		astFactory.addASTChild(currentAST, returnAST);</span>
+<span class="fc" id="L1673">		inner_name_index=u2();</span>
+<span class="fc" id="L1674">		astFactory.addASTChild(currentAST, returnAST);</span>
+<span class="fc" id="L1675">		inner_class_access_flags=u2();</span>
+<span class="fc" id="L1676">		astFactory.addASTChild(currentAST, returnAST);</span>
+<span class="fc" id="L1677">		innerClassTableEntry_AST = (AST)currentAST.root;</span>
+<span class="fc" id="L1678">		returnAST = innerClassTableEntry_AST;</span>
+<span class="fc" id="L1679">	}</span>
+	
+	
+<span class="fc" id="L1682">	public static final String[] _tokenNames = {</span>
+		&quot;&lt;0&gt;&quot;,
+		&quot;EOF&quot;,
+		&quot;&lt;2&gt;&quot;,
+		&quot;NULL_TREE_LOOKAHEAD&quot;,
+		&quot;ACCESS_MODIFIERS&quot;,
+		&quot;ATTRIBUTE_CONSTANT&quot;,
+		&quot;CLASS_DEF&quot;,
+		&quot;CONSTANT_CLASSINFO&quot;,
+		&quot;CONSTANT_DOUBLEINFO&quot;,
+		&quot;CONSTANT_FIELDINFO&quot;,
+		&quot;CONSTANT_FLOATINFO&quot;,
+		&quot;CONSTANT_INTEGERINFO&quot;,
+		&quot;CONSTANT_INTERFACE_METHODINFO&quot;,
+		&quot;CONSTANT_LONGINFO&quot;,
+		&quot;CONSTANT_METHODINFO&quot;,
+		&quot;CONSTANT_NAME_TYPE_INFO&quot;,
+		&quot;CONSTANT_STRINGINFO&quot;,
+		&quot;CONSTANT_UTF8STRING&quot;,
+		&quot;CTOR_DEF&quot;,
+		&quot;EXTENDS_CLAUSE&quot;,
+		&quot;IDENT&quot;,
+		&quot;IMPLEMENTS_CLAUSE&quot;,
+		&quot;INTERFACE_DEF&quot;,
+		&quot;MAGIC&quot;,
+		&quot;METHOD_DEF&quot;,
+		&quot;PARAMETERS&quot;,
+		&quot;PARAMETER_DEF&quot;,
+		&quot;SOURCEFILE&quot;,
+		&quot;THROWS&quot;,
+		&quot;TYPE&quot;,
+		&quot;UNKNOWN_ATTRIBUTE&quot;,
+		&quot;VARIABLE_DEF&quot;,
+		&quot;VERSION&quot;,
+		&quot;SIGNATURE&quot;,
+		&quot;BYTE&quot;
+	};
+	
+	protected void buildTokenTypeASTClassMap() {
+<span class="fc" id="L1721">		tokenTypeToASTClassMap=null;</span>
+<span class="fc" id="L1722">	};</span>
+	
+	
+	}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

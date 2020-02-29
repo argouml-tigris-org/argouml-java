@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Context.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">argo_java</a> &gt; <a href="index.source.html" class="el_package">org.argouml.language.java.reveng.classfile</a> &gt; <span class="el_source">Context.java</span></div><h1>Context.java</h1><pre class="source lang-java linenums">/* $Id$
+ *****************************************************************************
+ * Copyright (c) 2009-2013 Contributors - see below
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    thn
+ *****************************************************************************
+ *
+ * Some portions of this file was previously release using the BSD License:
+ */
+
+// Copyright (c) 1996-2007 The Regents of the University of California. All
+// Rights Reserved. Permission to use, copy, modify, and distribute this
+// software and its documentation without fee, and without a written
+// agreement is hereby granted, provided that the above copyright notice
+// and this paragraph appear in all copies.  This software program and
+// documentation are copyrighted by The Regents of the University of
+// California. The software program and documentation are supplied &quot;AS
+// IS&quot;, without any accompanying services from The Regents. The Regents
+// does not warrant that the operation of the program will be
+// uninterrupted or error-free. The end-user understands that the program
+// was developed for research purposes and is advised not to rely
+// exclusively on the program for any reason.  IN NO EVENT SHALL THE
+// UNIVERSITY OF CALIFORNIA BE LIABLE TO ANY PARTY FOR DIRECT, INDIRECT,
+// SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES, INCLUDING LOST PROFITS,
+// ARISING OUT OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF
+// THE UNIVERSITY OF CALIFORNIA HAS BEEN ADVISED OF THE POSSIBILITY OF
+// SUCH DAMAGE. THE UNIVERSITY OF CALIFORNIA SPECIFICALLY DISCLAIMS ANY
+// WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+// MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE SOFTWARE
+// PROVIDED HEREUNDER IS ON AN &quot;AS IS&quot; BASIS, AND THE UNIVERSITY OF
+// CALIFORNIA HAS NO OBLIGATIONS TO PROVIDE MAINTENANCE, SUPPORT,
+// UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
+
+/*
+  JavaRE - Code generation and reverse engineering for UML and Java
+  Copyright (C) 2000 Marcus Andersson andersson@users.sourceforge.net
+*/
+
+package org.argouml.language.java.reveng.classfile;
+
+import java.net.MalformedURLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.argouml.model.Model;
+import org.argouml.uml.reveng.ImportClassLoader;
+
+/**
+   The context is the current available namespaces via import in the
+   class that is currently parsed. It is non mutable and a new
+   context can be based on the current context with an
+   additional namespace.
+*/
+// TODO: This file is similar to the ../Context.java file. The difference
+// seems to be that this file doesn't handle profiles. I hope this is
+// deliberate. /Linus 2013-01-01.
+abstract class Context
+{
+<span class="nc" id="L64">    private static final Logger LOG =</span>
+<span class="nc" id="L65">        Logger.getLogger(Context.class.getName());</span>
+
+    /** The parent context. May be null. */
+    private Context context;
+
+    /**
+       Create a new context.
+
+       @param base Based on this context, may be null.
+    */
+    public Context(Context base)
+<span class="nc" id="L76">    {</span>
+<span class="nc" id="L77">	context = base;</span>
+<span class="nc" id="L78">    }</span>
+
+    /**
+     * Get a classifier from the model. If it is not in the model, try
+     * to find it with the CLASSPATH. If found, in the classpath, the
+     * classifier is created and added to the model. If not found at
+     * all, a datatype is created and added to the model.
+     *
+     * @param name The name of the classifier to find.
+     * @return Found classifier.
+     */
+    public abstract Object get(String name)
+	throws ClassifierNotFoundException;
+
+    public abstract Object get(String name, boolean interfacesOnly)
+        throws ClassifierNotFoundException;
+
+    /**
+     * Return a classifier restricting the search to Interfaces only.
+     *
+     * @param name the name of the Interface to search for
+     * @return an Interface with the given name
+     * @throws ClassifierNotFoundException
+     */
+    public abstract Object getInterface(String name)
+	throws ClassifierNotFoundException;
+
+    /**
+       Get the complete java name for a package.
+
+       @param mPackage The package.
+       @return Package name in java format
+    */
+    protected String getJavaName(Object mPackage)
+    {
+<span class="nc" id="L113">	Object parent = Model.getFacade().getNamespace(mPackage);</span>
+<span class="nc bnc" id="L114" title="All 2 branches missed.">	if (Model.getFacade().isAModel(parent)) {</span>
+<span class="nc" id="L115">	    return Model.getFacade().getName(mPackage);</span>
+	}
+<span class="nc bnc" id="L117" title="All 2 branches missed.">	else if (parent != null) {</span>
+<span class="nc" id="L118">	    return getJavaName(parent) + &quot;.&quot;</span>
+<span class="nc" id="L119">	            + Model.getFacade().getName(mPackage);</span>
+	}
+	else {
+<span class="nc" id="L122">	    return &quot;&quot;;</span>
+	}
+    }
+
+    /**
+     * @param c The context to set.
+     */
+    protected void setContext(Context c) {
+<span class="nc" id="L130">        this.context = c;</span>
+<span class="nc" id="L131">    }</span>
+
+    /**
+     * @return Returns the context.
+     */
+    protected Context getContext() {
+<span class="nc" id="L137">        return context;</span>
+    }
+
+    protected Class&lt;?&gt; findClass(String name, boolean interfacesOnly) {
+<span class="nc" id="L141">        Class&lt;?&gt; clazz = null;</span>
+        try {
+            // TODO: Do we ever want to look up things on our own classpath?
+            // This really should only be used for default Java types and even
+            // then probably should be done after searching the user classpath
+<span class="nc" id="L146">            clazz = Class.forName(name);</span>
+<span class="nc" id="L147">        } catch (ClassNotFoundException e) {</span>
+<span class="nc" id="L148">            clazz = findClassOnUserClasspath(name, interfacesOnly);</span>
+<span class="nc" id="L149">        } catch (LinkageError e) {</span>
+            // We found the class, but we couldn't load it for some reason
+            // most likely a missing dependency on the class path, but could
+            // be wrong class file version or something else
+            // TODO: Need to make this visible to the user
+<span class="nc" id="L154">            LOG.log(Level.WARNING,</span>
+                    &quot;Linkage error loading found class &quot; + name,
+                    e);
+            // We'll continue the search, but this is probably the one we wanted
+<span class="nc" id="L158">            clazz = findClassOnUserClasspath(name, interfacesOnly);</span>
+<span class="nc" id="L159">        }</span>
+        // Got something, but it wasn't what we wanted.  Try again.
+<span class="nc bnc" id="L161" title="All 6 branches missed.">        if (clazz != null &amp;&amp; interfacesOnly &amp;&amp; !clazz.isInterface()) {</span>
+<span class="nc" id="L162">            clazz = findClassOnUserClasspath(name, interfacesOnly);</span>
+        }
+<span class="nc" id="L164">        return clazz;</span>
+    }
+
+    private Class&lt;?&gt; findClassOnUserClasspath(String name,
+            boolean interfacesOnly) {
+<span class="nc" id="L169">        Class&lt;?&gt; clazz = null;</span>
+        try {
+<span class="nc" id="L171">            clazz = ImportClassLoader.getInstance().loadClass(name);</span>
+<span class="nc" id="L172">        } catch (MalformedURLException e) {</span>
+            // TODO: Need to make this visible to the user
+<span class="nc" id="L174">            LOG.log(Level.WARNING, &quot;Classpath configuration error&quot;, e);</span>
+<span class="nc" id="L175">        } catch (ClassNotFoundException e) {</span>
+<span class="nc" id="L176">            return null;</span>
+<span class="nc" id="L177">        } catch (LinkageError e) {</span>
+            // We found the class, but we couldn't load it for some reason
+            // most likely a missing dependency on the class path
+            // TODO: Need to make this visible to the user
+<span class="nc" id="L181">            LOG.log(Level.WARNING,</span>
+                    &quot;Linkage error loading found class &quot; + name,
+                    e);
+<span class="nc" id="L184">            return null;</span>
+<span class="nc" id="L185">        }</span>
+<span class="nc bnc" id="L186" title="All 6 branches missed.">        if (clazz != null &amp;&amp; interfacesOnly &amp;&amp; !clazz.isInterface()) {</span>
+<span class="nc" id="L187">            return null;</span>
+        }
+<span class="nc" id="L189">        return clazz;</span>
+    }
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

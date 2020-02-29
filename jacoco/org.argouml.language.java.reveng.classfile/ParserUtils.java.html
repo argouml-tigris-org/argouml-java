@@ -1,0 +1,1092 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ParserUtils.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">argo_java</a> &gt; <a href="index.source.html" class="el_package">org.argouml.language.java.reveng.classfile</a> &gt; <span class="el_source">ParserUtils.java</span></div><h1>ParserUtils.java</h1><pre class="source lang-java linenums">/* $Id$
+ *****************************************************************************
+ * Copyright (c) 2009-2012 Contributors - see below
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    lepekhine
+ *****************************************************************************
+ *
+ * Some portions of this file was previously release using the BSD License:
+ */
+
+// Rights Reserved. Permission to use, copy, modify, and distribute this
+// software and its documentation without fee, and without a written
+// agreement is hereby granted, provided that the above copyright notice
+// and this paragraph appear in all copies.  This software program and
+// documentation are copyrighted by The Regents of the University of
+// California. The software program and documentation are supplied &quot;AS
+// IS&quot;, without any accompanying services from The Regents. The Regents
+// does not warrant that the operation of the program will be
+// uninterrupted or error-free. The end-user understands that the program
+// was developed for research purposes and is advised not to rely
+// exclusively on the program for any reason.  IN NO EVENT SHALL THE
+// UNIVERSITY OF CALIFORNIA BE LIABLE TO ANY PARTY FOR DIRECT, INDIRECT,
+// SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES, INCLUDING LOST PROFITS,
+// ARISING OUT OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF
+// THE UNIVERSITY OF CALIFORNIA HAS BEEN ADVISED OF THE POSSIBILITY OF
+// SUCH DAMAGE. THE UNIVERSITY OF CALIFORNIA SPECIFICALLY DISCLAIMS ANY
+// WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+// MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE SOFTWARE
+// PROVIDED HEREUNDER IS ON AN &quot;AS IS&quot; BASIS, AND THE UNIVERSITY OF
+// CALIFORNIA HAS NO OBLIGATIONS TO PROVIDE MAINTENANCE, SUPPORT,
+// UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
+package org.argouml.language.java.reveng.classfile;
+
+import java.util.LinkedList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+/**
+ * Contains methods used in Classfile.g to parse descriptors and signatures.
+ * 
+ * @author Alexander Lepekhin
+ */
+<span class="nc" id="L49">public class ParserUtils {</span>
+
+    /**
+     * Convert a classfile field descriptor.
+     * 
+     * @param desc The descriptor as a string.
+     * @return The descriptor as it would appear in a Java sourcefile.
+     */
+    public static String convertFieldDescriptor(String desc) {
+<span class="fc" id="L58">        return convertFieldDescriptor(new FieldDescriptorLexer(desc).parse());</span>
+    }
+
+    /**
+     * Convert a method descriptor.
+     * 
+     * @param desc The method descriptor as a String.
+     * @return The method descriptor as a array of Strings, that holds Java
+     *         types.
+     */
+    public static String[] convertMethodDescriptor(String desc) {
+<span class="fc" id="L69">        List&lt;String&gt; buf = new LinkedList&lt;String&gt;();</span>
+<span class="fc" id="L70">        MethodDescriptorLexer lexer = new MethodDescriptorLexer(desc);</span>
+<span class="fc bfc" id="L71" title="All 2 branches covered.">        for (Token t : lexer.parse()) {</span>
+<span class="fc" id="L72">            buf.add(t.getValue());</span>
+<span class="fc" id="L73">        }</span>
+<span class="fc" id="L74">        return buf.toArray(new String[] {});</span>
+    }
+
+    /**
+     * 
+     * Convert a field type signature.
+     * 
+     * @param desc The signature as a string.
+     * @return The signature as it would appear in a Java sourcefile.
+     */
+    public static String convertFieldTypeSignature(String desc) {
+<span class="fc" id="L85">        List&lt;Token&gt; lexer = new FieldTypeSignatureLexer(desc).parse();</span>
+<span class="fc" id="L86">        return convertFieldTypeSignature(lexer);</span>
+    }
+
+    /**
+     * 
+     * Convert class type signature.
+     * 
+     * @param desc The signature as a string.
+     * @return The signature as it would appear in a Java sourcefile.
+     */
+    public static String convertClassTypeSignature(String desc) {
+<span class="fc" id="L97">        List&lt;Token&gt; lexer = new ClassTypeSignatureLexer(desc).parse();</span>
+<span class="fc" id="L98">        return convertClassTypeSignature(lexer);</span>
+    }
+
+    /**
+     * 
+     * Convert class signature.
+     * 
+     * @param desc The signature as a string.
+     * @return The signature as it would appear in a Java sourcefile.
+     */
+    public static String convertClassSignature(String desc) {
+<span class="fc" id="L109">        return convertClassSignature(new ClassSignatureLexer(desc).parse());</span>
+    }
+
+    /**
+     * 
+     * Convert class signature.
+     * 
+     * @param desc The signature as a string in a java source .
+     * @return A list of type parameters.
+     */
+    public static List&lt;String&gt; extractTypeParameters(String desc) {
+<span class="fc" id="L120">        List&lt;String&gt; result = new LinkedList&lt;String&gt;();</span>
+<span class="pc bpc" id="L121" title="1 of 2 branches missed.">        if (desc.startsWith(&quot;&lt;&quot;)) {</span>
+<span class="fc" id="L122">            int endIndex =</span>
+<span class="fc" id="L123">                AbstractLexer.balancedBracketPosition(desc, '&lt;', '&gt;');</span>
+<span class="fc" id="L124">            desc = desc.substring(1, endIndex);</span>
+<span class="fc bfc" id="L125" title="All 2 branches covered.">            while (desc.length() &gt; 0) {</span>
+<span class="fc" id="L126">                int index =</span>
+<span class="fc" id="L127">                    AbstractLexer.firstIndexNotInside(',', '&lt;', '&gt;', desc);</span>
+<span class="pc bpc" id="L128" title="1 of 4 branches missed.">                if (index == 0 || index == desc.length()) {</span>
+<span class="fc" id="L129">                    result.add(desc.trim());</span>
+<span class="fc" id="L130">                    desc = &quot;&quot;;</span>
+                } else {
+<span class="fc" id="L132">                    result.add(desc.substring(0, index).trim());</span>
+<span class="fc" id="L133">                    desc = desc.substring(index + 1);</span>
+                }
+<span class="fc" id="L135">            }</span>
+        }
+<span class="fc" id="L137">        return result;</span>
+    }
+
+    public static List&lt;Token&gt; parseClassSignature(String s) {
+<span class="nc" id="L141">        return new ClassSignatureLexer(s).parse();</span>
+    }
+
+    /**
+     * Convert a method type signature.
+     * 
+     * @param desc The signature as a string.
+     * @return The signature as it would appear in a Java sourcefile.
+     */
+    public static String convertMethodTypeSignature(String desc) {
+<span class="fc" id="L151">        return convertMethodTypeSignature(new MethodTypeSignatureLexer(desc)</span>
+<span class="fc" id="L152">                .parse());</span>
+    }
+
+    protected static String convertFieldDescriptor(List&lt;Token&gt; tokens) {
+<span class="fc" id="L156">        String brackets = &quot;&quot;;</span>
+<span class="pc bpc" id="L157" title="1 of 2 branches missed.">        for (Token t : tokens) {</span>
+<span class="fc bfc" id="L158" title="All 2 branches covered.">            if (t.getType() == Token.BASE_TYPE) {</span>
+<span class="fc" id="L159">                return convertBaseType(t.getValue()) + brackets;</span>
+<span class="fc bfc" id="L160" title="All 2 branches covered.">            } else if (t.getType() == Token.CLASS_NAME) {</span>
+<span class="fc" id="L161">                return t.getValue().replaceAll(&quot;/&quot;, &quot;.&quot;) + brackets;</span>
+<span class="pc bpc" id="L162" title="1 of 2 branches missed.">            } else if (t.getType() == Token.ARRAY_BRACKET) {</span>
+<span class="fc" id="L163">                brackets += t.getValue();</span>
+            }
+<span class="fc" id="L165">        }</span>
+<span class="nc" id="L166">        throw new IllegalArgumentException(&quot;Can not parse field descriptor&quot;);</span>
+    }
+
+    protected static String convertClassTypeSignature(List&lt;Token&gt; tokens) {
+<span class="fc" id="L170">        StringBuilder buf = new StringBuilder();</span>
+<span class="fc bfc" id="L171" title="All 2 branches covered.">        for (Token t : tokens) {</span>
+<span class="fc" id="L172">            buf.append(t.getValue());</span>
+<span class="fc" id="L173">        }</span>
+<span class="fc" id="L174">        return buf.toString();</span>
+    }
+
+    protected static String convertFieldTypeSignature(List&lt;Token&gt; tokens) {
+<span class="fc" id="L178">        StringBuilder buf = new StringBuilder();</span>
+<span class="fc bfc" id="L179" title="All 2 branches covered.">        for (Token t : tokens) {</span>
+<span class="fc" id="L180">            buf.append(t.getValue());</span>
+<span class="fc" id="L181">        }</span>
+<span class="fc" id="L182">        return buf.toString();</span>
+    }
+
+    protected static String convertClassSignature(List&lt;Token&gt; tokens) {
+<span class="fc" id="L186">        StringBuilder buf = new StringBuilder();</span>
+<span class="fc bfc" id="L187" title="All 2 branches covered.">        for (Token t : tokens) {</span>
+<span class="fc" id="L188">            buf.append(t.getValue());</span>
+<span class="fc" id="L189">        }</span>
+<span class="fc" id="L190">        return buf.toString();</span>
+    }
+
+    protected static String convertMethodTypeSignature(List&lt;Token&gt; tokens) {
+<span class="fc" id="L194">        StringBuilder buf = new StringBuilder();</span>
+<span class="fc bfc" id="L195" title="All 2 branches covered.">        for (Token t : tokens) {</span>
+<span class="fc" id="L196">            buf.append(t.getValue());</span>
+<span class="fc" id="L197">        }</span>
+<span class="fc" id="L198">        return buf.toString();</span>
+    }
+
+    protected static String convertBaseType(String s) {
+<span class="pc bpc" id="L202" title="1 of 9 branches missed.">        switch (s.charAt(0)) {</span>
+        case 'B':
+<span class="fc" id="L204">            return &quot;byte&quot;;</span>
+        case 'C':
+<span class="fc" id="L206">            return &quot;char&quot;;</span>
+        case 'D':
+<span class="fc" id="L208">            return &quot;double&quot;;</span>
+        case 'F':
+<span class="fc" id="L210">            return &quot;float&quot;;</span>
+        case 'I':
+<span class="fc" id="L212">            return &quot;int&quot;;</span>
+        case 'J':
+<span class="fc" id="L214">            return &quot;long&quot;;</span>
+        case 'S':
+<span class="fc" id="L216">            return &quot;short&quot;;</span>
+        case 'Z':
+<span class="fc" id="L218">            return &quot;boolean&quot;;</span>
+        }
+<span class="nc" id="L220">        throw new IllegalArgumentException(s + &quot; is not a base type&quot;);</span>
+    }
+
+    /**
+     * Tokens.
+     */
+    /**
+     *
+     * @author Linus
+     */
+    public static class Token {
+
+        /**
+         * B|C|D
+         */
+        public static final int BASE_TYPE = 0; // B|C|D...
+
+        /**
+         * V
+         */
+        public static final int VOID_TYPE = 1; // V
+
+        /**
+         * with slashes
+         */
+        public static final int CLASS_NAME = 2; // with slashes
+
+        /**
+         * [
+         */
+        public static final int ARRAY_BRACKET = 3; // [
+
+        /**
+         * method parameter
+         */
+        public static final int FIELD_DESCRIPTOR = 4; // method parameter
+
+        /**
+         * as a.b.c
+         */
+        public static final int PACKAGE = 5; // as a.b.c
+
+        /**
+         * identifier
+         */
+        public static final int IDENTIFIER = 6; // 
+
+        /**
+         * &amp;lt;
+         */
+        public static final int LABRACKET = 7; // &lt;
+
+        /**
+         * &amp;gt;
+         */
+        public static final int RABRACKET = 8; // &gt;
+
+        /**
+         * +-*
+         */
+        public static final int WILDCARD = 9; // +-*
+
+        /**
+         * ,
+         */
+        public static final int COMMA = 10; // ,
+
+        /**
+         * .
+         */
+        public static final int POINT = 11; // .
+
+        /**
+         * :
+         */
+        public static final int COLON = 12; // .
+
+        /**
+         * extends
+         */
+        public static final int SUPERCLASS = 13; // extends
+
+        /**
+         * implements
+         */
+        public static final int SUPERINTERFACE = 15; // implements
+
+        /**
+         * (
+         */
+        public static final int LBRACKET = 16; // (
+
+        /**
+         * )
+         */
+        public static final int RBRACKET = 17; // )
+
+        /**
+         * throws
+         */
+        public static final int THROWS = 18; // throws
+
+        /**
+         * return
+         */
+        public static final int RETURN = 19; // return
+
+        /**
+         * &amp;amp;
+         */
+        public static final int AMPERSAND = 20; // &amp;
+
+        private String value;
+
+        private int type;
+
+<span class="fc" id="L336">        public Token(int t, String v) {</span>
+<span class="fc" id="L337">            type = t;</span>
+<span class="fc" id="L338">            value = v;</span>
+<span class="fc" id="L339">        }</span>
+
+        public int getType() {
+<span class="fc" id="L342">            return type;</span>
+        }
+
+        public String getValue() {
+<span class="fc" id="L346">            return value;</span>
+        }
+
+        @Override
+        public String toString() {
+<span class="nc" id="L351">            return type + &quot;:&quot; + value;</span>
+        }
+
+    }
+
+    /**
+     * Lexer for the a field descriptor.
+     */
+    protected static class FieldDescriptorLexer 
+        extends AbstractLexer {
+
+        public FieldDescriptorLexer(String desc) {
+<span class="fc" id="L363">            super(desc);</span>
+<span class="fc" id="L364">        }</span>
+
+        /**
+         * Parse field descriptor according the grammar:
+         * 
+         * &lt;pre&gt;
+         * FieldDescriptor:=BaseType|ObjectType|ArrayType
+         *         BaseType:=B|C|D|F|J|S|Z
+         *         ObjectType:=L Classname;
+         *         ArrayType:=[FieldDescriptor
+         * &lt;/pre&gt;
+         * 
+         * @return a List of matched Token.
+         */
+        public List&lt;Token&gt; parse() {
+<span class="fc" id="L379">            List&lt;Token&gt; result = new LinkedList&lt;Token&gt;();</span>
+
+            // Object type?
+<span class="fc" id="L382">            Matcher m = Pattern.compile(&quot;^(L)(.+)(;)&quot;).matcher(desc);</span>
+<span class="fc bfc" id="L383" title="All 2 branches covered.">            if (m.matches()) {</span>
+                // Classname
+<span class="fc" id="L385">                result.add(new Token(Token.CLASS_NAME, m.group(2)));</span>
+<span class="fc" id="L386">                desc = desc.substring(m.group(0).length()); // the rest after ;</span>
+<span class="fc" id="L387">                return result;</span>
+            }
+            // Array type?
+<span class="fc" id="L390">            m = Pattern.compile(&quot;^(\\[)((.+))&quot;).matcher(desc);</span>
+<span class="fc bfc" id="L391" title="All 2 branches covered.">            if (m.matches()) {</span>
+<span class="fc" id="L392">                result.add(new Token(Token.ARRAY_BRACKET, &quot;[]&quot;));</span>
+<span class="fc" id="L393">                desc = desc.substring(1);</span>
+<span class="fc" id="L394">                result.addAll(parse());</span>
+<span class="fc" id="L395">                return result;</span>
+            }
+            // Base type?
+<span class="fc" id="L398">            m = Pattern.compile(&quot;^(B|C|D|F|I|J|S|Z)((.*))&quot;).matcher(desc);</span>
+<span class="pc bpc" id="L399" title="1 of 2 branches missed.">            if (m.matches()) {</span>
+<span class="fc" id="L400">                result.add(new Token(Token.BASE_TYPE, m.group(1)));</span>
+<span class="fc" id="L401">                desc = desc.substring(1);</span>
+<span class="fc" id="L402">                return result;</span>
+            }
+<span class="nc bnc" id="L404" title="All 2 branches missed.">            if (desc.length() == 0) {</span>
+<span class="nc" id="L405">                return result;</span>
+            }
+<span class="nc" id="L407">            throw new IllegalArgumentException(desc</span>
+                    + &quot; is not a FieldDescriptor&quot;);
+        }
+
+    }
+
+    /**
+     * Lexer for the method descriptor.
+     */
+    protected static class MethodDescriptorLexer 
+        extends AbstractLexer {
+
+        public MethodDescriptorLexer(String desc) {
+<span class="fc" id="L420">            super(desc);</span>
+<span class="fc" id="L421">        }</span>
+
+        /**
+         * Parse method descriptor according the grammar:
+         * 
+         * &lt;pre&gt;
+         * MethodDescriptor:= ( FieldDescriptor* ) ReturnDescriptor
+         * ReturnDescriptor:=FieldDescriptor|V
+         * 
+         * &lt;/pre&gt;
+         * 
+         * @return a List of matched Token.
+         */
+        public List&lt;Token&gt; parse() {
+<span class="fc" id="L435">            List&lt;Token&gt; result = new LinkedList&lt;Token&gt;();</span>
+
+            // Object type?
+<span class="fc" id="L438">            Matcher m = Pattern.compile(&quot;^(\\()(.*)(\\))((.+))&quot;).matcher(desc);</span>
+<span class="pc bpc" id="L439" title="1 of 2 branches missed.">            if (m.matches()) {</span>
+<span class="fc" id="L440">                String returnDescriptor = m.group(4);</span>
+<span class="fc" id="L441">                String parameters = m.group(2);</span>
+<span class="fc bfc" id="L442" title="All 2 branches covered.">                while (parameters.length() &gt; 0) {</span>
+<span class="fc" id="L443">                    FieldDescriptorLexer lexer = new FieldDescriptorLexer(</span>
+                            parameters);
+<span class="fc" id="L445">                    result.add(new Token(Token.FIELD_DESCRIPTOR,</span>
+<span class="fc" id="L446">                            convertFieldDescriptor(lexer.parse())));</span>
+<span class="fc" id="L447">                    parameters = lexer.getRest();</span>
+<span class="fc" id="L448">                }</span>
+<span class="fc bfc" id="L449" title="All 2 branches covered.">                if (returnDescriptor.equals(&quot;V&quot;)) {</span>
+<span class="fc" id="L450">                    result.add(new Token(Token.VOID_TYPE, &quot;void&quot;));</span>
+                } else {
+<span class="fc" id="L452">                    FieldDescriptorLexer lexer = new FieldDescriptorLexer(</span>
+                            returnDescriptor);
+<span class="fc" id="L454">                    result.add(new Token(Token.FIELD_DESCRIPTOR,</span>
+<span class="fc" id="L455">                            convertFieldDescriptor(lexer.parse())));</span>
+                }
+<span class="fc" id="L457">                return result;</span>
+            }
+<span class="nc" id="L459">            throw new IllegalArgumentException(desc</span>
+                    + &quot; is not a MethodDescriptor&quot;);
+
+        }
+
+    }
+
+    /**
+     * Lexer for the signature of a field type.
+     */
+    protected static class FieldTypeSignatureLexer extends AbstractLexer {
+
+        public FieldTypeSignatureLexer(String desc) {
+<span class="fc" id="L472">            super(desc);</span>
+<span class="fc" id="L473">        }</span>
+
+        /**
+         * Parse FieldTypeSignature according the grammar:
+         * 
+         * &lt;pre&gt;
+         * FieldTypeSignature: ClassTypeSignature
+         *                     |ArrayTypeSignature
+         *                     |TypeVariableSignature
+         * &lt;/pre&gt;
+         * 
+         * @return a List of matched Token.
+         */
+        @Override
+        public List&lt;Token&gt; parse() {
+<span class="fc" id="L488">            List&lt;Token&gt; result = new LinkedList&lt;Token&gt;();</span>
+
+            // while (desc.length() &gt; 0) {
+<span class="fc" id="L491">            AbstractLexer lexer = null;</span>
+<span class="pc bpc" id="L492" title="1 of 4 branches missed.">            switch (desc.charAt(0)) {</span>
+            case 'L':
+<span class="fc" id="L494">                lexer = new ClassTypeSignatureLexer(desc);</span>
+<span class="fc" id="L495">                break;</span>
+            case '[':
+<span class="fc" id="L497">                lexer = new ArrayTypeSignatureLexer(desc);</span>
+<span class="fc" id="L498">                break;</span>
+            case 'T':
+<span class="fc" id="L500">                lexer = new TypeVariableSignatureLexer(desc);</span>
+<span class="fc" id="L501">                break;</span>
+            default:
+<span class="nc" id="L503">                throw new IllegalArgumentException(desc</span>
+                        + &quot; is not a field type signature&quot;);
+            }
+<span class="fc" id="L506">            result.addAll(lexer.parse());</span>
+<span class="fc" id="L507">            desc = lexer.getRest();</span>
+            // }
+<span class="fc" id="L509">            return result;</span>
+        }
+    }
+
+    /**
+     * Lexer for the signature of a variable declaration.
+     */
+    protected static class TypeVariableSignatureLexer extends AbstractLexer {
+
+        public TypeVariableSignatureLexer(String desc) {
+<span class="fc" id="L519">            super(desc);</span>
+<span class="fc" id="L520">        }</span>
+
+        /**
+         * Parse type variable signature according the grammar:
+         * 
+         * &lt;pre&gt;
+         * TypeVariableSignature: T Identifer ;
+         * &lt;/pre&gt;
+         * 
+         * @return a List of matched Token.
+         */
+        @Override
+        public List&lt;Token&gt; parse() {
+<span class="fc" id="L533">            List&lt;Token&gt; result = new LinkedList&lt;Token&gt;();</span>
+
+<span class="fc" id="L535">            Matcher m = Pattern.compile(&quot;T([^;]*);((.*))&quot;).matcher(desc);</span>
+<span class="pc bpc" id="L536" title="1 of 2 branches missed.">            if (m.matches()) {</span>
+<span class="fc" id="L537">                result.add(new Token(Token.IDENTIFIER, m.group(1)));</span>
+<span class="fc" id="L538">                desc = m.group(2);</span>
+            } else {
+<span class="nc" id="L540">                new IllegalArgumentException(desc</span>
+                        + &quot; is not a type variable signature&quot;);
+            }
+<span class="fc" id="L543">            return result;</span>
+        }
+    }
+
+    /**
+     * Lexer for the signature of an array type.
+     */
+    protected static class ArrayTypeSignatureLexer extends AbstractLexer {
+
+        public ArrayTypeSignatureLexer(String desc) {
+<span class="fc" id="L553">            super(desc);</span>
+<span class="fc" id="L554">        }</span>
+
+        /**
+         * Parse array type signature according the grammar:
+         * 
+         * &lt;pre&gt;
+         * ArrayTypeSignature:  [TypeSignature
+         * 	       TypeSignature: FieldTypeSignature|BaseType
+         * &lt;/pre&gt;
+         * 
+         * @return a List of matched Token.
+         */
+        @Override
+        public List&lt;Token&gt; parse() {
+<span class="fc" id="L568">            List&lt;Token&gt; result = new LinkedList&lt;Token&gt;();</span>
+
+<span class="pc bpc" id="L570" title="1 of 2 branches missed.">            if (desc.charAt(0) == '[') {</span>
+<span class="fc" id="L571">                desc = desc.substring(1);</span>
+<span class="fc" id="L572">                TypeSignatureLexer l = new TypeSignatureLexer(desc);</span>
+<span class="fc" id="L573">                result.addAll(l.parse());</span>
+<span class="fc" id="L574">                desc = l.getRest();</span>
+<span class="fc" id="L575">                result.add(new Token(Token.ARRAY_BRACKET, &quot;[]&quot;));</span>
+<span class="fc" id="L576">                return result;</span>
+            } else {
+<span class="nc" id="L578">                throw new IllegalArgumentException(desc</span>
+                        + &quot; is not an array type signature&quot;);
+            }
+        }
+    }
+
+    /**
+     * Lexer for the signature of a type.
+     */
+    protected static class TypeSignatureLexer extends AbstractLexer {
+
+        public TypeSignatureLexer(String desc) {
+<span class="fc" id="L590">            super(desc);</span>
+<span class="fc" id="L591">        }</span>
+
+        /**
+         * Parse type signature according the grammar:
+         * 
+         * &lt;pre&gt;
+         * TypeSignature: FieldTypeSignature|BaseType
+         * &lt;/pre&gt;
+         * 
+         * @return a List of matched Token.
+         */
+        @Override
+        public List&lt;Token&gt; parse() {
+<span class="fc" id="L604">            List&lt;Token&gt; result = new LinkedList&lt;Token&gt;();</span>
+
+<span class="fc" id="L606">            Matcher m = Pattern.compile(&quot;^(B|C|D|F|I|J|S|Z)((.*))&quot;).matcher(</span>
+                    desc);
+<span class="fc bfc" id="L608" title="All 2 branches covered.">            if (m.matches()) {</span>
+<span class="fc" id="L609">                result.add(new Token(Token.BASE_TYPE, convertBaseType(m</span>
+<span class="fc" id="L610">                        .group(1))));</span>
+<span class="fc" id="L611">                desc = desc.substring(1);</span>
+            } else {
+<span class="fc" id="L613">                AbstractLexer l = new FieldTypeSignatureLexer(desc);</span>
+<span class="fc" id="L614">                result.addAll(l.parse());</span>
+<span class="fc" id="L615">                desc = l.getRest();</span>
+            }
+<span class="fc" id="L617">            return result;</span>
+        }
+    }
+
+    /**
+     * Lexer for the signature of a simple class type.
+     */
+    protected static class SimpleClassTypeSignatureLexer extends AbstractLexer {
+
+        public SimpleClassTypeSignatureLexer(String desc) {
+<span class="fc" id="L627">            super(desc);</span>
+<span class="fc" id="L628">        }</span>
+
+        /**
+         * Parse simple class type signature according the grammar:
+         * 
+         * &lt;pre&gt;
+         * SimpleClassTypeSignature:=Identifier TypeArgumentsopt
+         * TypeArguments:&amp;lt;TypeArgument+&amp;gt;
+         * TypeArgument:WildcardIndicatoropt FieldTypeSignature|*
+         * WildcardIndicator:+|-
+         * &lt;/pre&gt;
+         * 
+         * @return a List of matched Token.
+         */
+        @Override
+        public List&lt;Token&gt; parse() {
+<span class="fc" id="L644">            List&lt;Token&gt; result = new LinkedList&lt;Token&gt;();</span>
+
+<span class="fc" id="L646">            Matcher m = Pattern.compile(&quot;([^&lt;.]*)(&lt;.*&gt;)?((.*))&quot;).matcher(desc);</span>
+<span class="pc bpc" id="L647" title="1 of 2 branches missed.">            if (m.matches()) {</span>
+<span class="fc" id="L648">                String identifier = m.group(1);</span>
+<span class="fc" id="L649">                String typeArguments = m.group(2);</span>
+<span class="pc bpc" id="L650" title="2 of 4 branches missed.">                if (identifier != null &amp;&amp; identifier.length() &gt; 0) {</span>
+<span class="fc" id="L651">                    result.add(new Token(Token.IDENTIFIER, identifier));</span>
+                } else {
+<span class="nc" id="L653">                    throw new IllegalArgumentException(desc</span>
+                            + &quot; is not a SimpleClassTypeSignature&quot;);
+                }
+<span class="pc bpc" id="L656" title="1 of 4 branches missed.">                if (typeArguments != null &amp;&amp; typeArguments.length() &gt; 0) {</span>
+<span class="fc" id="L657">                    result.add(new Token(Token.LABRACKET, &quot;&lt;&quot;));</span>
+<span class="fc" id="L658">                    String arguments = typeArguments.substring(1, typeArguments</span>
+<span class="fc" id="L659">                            .length() - 1);</span>
+<span class="fc bfc" id="L660" title="All 2 branches covered.">                    if (arguments.charAt(0) == '*') {</span>
+<span class="fc" id="L661">                        result.add(new Token(Token.WILDCARD, &quot;?&quot;));</span>
+                    } else {
+<span class="fc bfc" id="L663" title="All 2 branches covered.">                        if (arguments.charAt(0) == '+') {</span>
+<span class="fc" id="L664">                            result.add(new Token(Token.WILDCARD, &quot;? extends &quot;));</span>
+<span class="fc" id="L665">                            arguments = arguments.substring(1);</span>
+<span class="fc bfc" id="L666" title="All 2 branches covered.">                        } else if (arguments.charAt(0) == '-') {</span>
+<span class="fc" id="L667">                            result.add(new Token(Token.WILDCARD, &quot;? super &quot;));</span>
+<span class="fc" id="L668">                            arguments = arguments.substring(1);</span>
+                        }
+<span class="fc bfc" id="L670" title="All 2 branches covered.">                        while (arguments.length() &gt; 0) {</span>
+<span class="fc" id="L671">                            FieldTypeSignatureLexer l = </span>
+                                new FieldTypeSignatureLexer(arguments);
+<span class="fc" id="L673">                            result.addAll(l.parse());</span>
+<span class="fc" id="L674">                            arguments = l.getRest();</span>
+<span class="fc bfc" id="L675" title="All 2 branches covered.">                            if (arguments.length() &gt; 0) {</span>
+<span class="fc" id="L676">                                result.add(new Token(Token.COMMA, &quot;,&quot;));</span>
+                            }
+<span class="fc" id="L678">                        }</span>
+                    }
+<span class="fc" id="L680">                    result.add(new Token(Token.RABRACKET, &quot;&gt;&quot;));</span>
+                }
+            }
+<span class="fc" id="L683">            desc = m.group(3);</span>
+<span class="fc" id="L684">            return result;</span>
+        }
+    }
+
+    /**
+     * Lexer for the signature of a class type.
+     */
+    protected static class ClassTypeSignatureLexer extends AbstractLexer {
+
+        public ClassTypeSignatureLexer(String desc) {
+<span class="fc" id="L694">            super(desc);</span>
+<span class="fc" id="L695">        }</span>
+
+        /**
+         * Parse class type signature according the grammar:
+         * 
+         * &lt;pre&gt;
+         * ClassTypeSignature:=L PackageSpecifier* SimpleClassTypeSignature ClassTypeSignatureSuffix* ; 
+         * PackageSpecifier:=Identifier / PackageSpecifier* 
+         * ClassTypeSignatureSuffix:=. SimpleClassTypeSignature
+         * &lt;/pre&gt;
+         * 
+         * @return a List of matched Token.
+         */
+        @Override
+        public List&lt;Token&gt; parse() {
+<span class="fc" id="L710">            List&lt;Token&gt; result = new LinkedList&lt;Token&gt;();</span>
+
+            // find signature in desc
+<span class="fc" id="L713">            int index = firstIndexNotInside(';', '&lt;', '&gt;', desc);</span>
+<span class="fc" id="L714">            String classTypeSignature = desc.substring(0, index + 1);</span>
+<span class="fc" id="L715">            desc = desc.substring(index + 1);</span>
+<span class="fc" id="L716">            Matcher m = Pattern.compile(&quot;L([^&lt;\\.;]*/)*([^&lt;\\.;]*)((.*));$&quot;)</span>
+<span class="fc" id="L717">                    .matcher(classTypeSignature);</span>
+<span class="pc bpc" id="L718" title="1 of 2 branches missed.">            if (m.matches()) {</span>
+<span class="fc" id="L719">                String packageSpecifier = m.group(1);</span>
+<span class="fc" id="L720">                String identifier = m.group(2);</span>
+<span class="fc" id="L721">                String other = m.group(3);</span>
+<span class="fc" id="L722">                String arguments = &quot;&quot;;</span>
+<span class="fc" id="L723">                String suffixes = &quot;&quot;;</span>
+<span class="pc bpc" id="L724" title="1 of 4 branches missed.">                if (other != null &amp;&amp; other.length() &gt; 0) {</span>
+<span class="fc bfc" id="L725" title="All 2 branches covered.">                    if (other.charAt(0) == '&lt;') {</span>
+                        // this is type arguments
+<span class="fc" id="L727">                        arguments = other.substring(0, balancedBracketPosition(</span>
+                                other, '&lt;', '&gt;') + 1);
+                    }
+<span class="fc" id="L730">                    suffixes = other.substring(arguments.length());</span>
+                }
+<span class="pc bpc" id="L732" title="1 of 4 branches missed.">                if (packageSpecifier != null &amp;&amp; packageSpecifier.length() &gt; 0) {</span>
+<span class="fc" id="L733">                    result.add(new Token(Token.PACKAGE, packageSpecifier</span>
+<span class="fc" id="L734">                            .replaceAll(&quot;/&quot;, &quot;.&quot;)));</span>
+                }
+<span class="fc" id="L736">                SimpleClassTypeSignatureLexer sl =</span>
+                    new SimpleClassTypeSignatureLexer(
+                        identifier + arguments);
+<span class="fc" id="L739">                result.addAll(sl.parse());</span>
+                // parse suffixes
+<span class="fc bfc" id="L741" title="All 2 branches covered.">                while (suffixes.length() &gt; 0) {</span>
+                    // find suffix in suffixes
+<span class="fc" id="L743">                    suffixes = suffixes.substring(1);</span>
+<span class="fc" id="L744">                    index = firstIndexNotInside('.', '&lt;', '&gt;', suffixes);</span>
+<span class="fc" id="L745">                    String suffix = suffixes.substring(0, index);</span>
+<span class="fc" id="L746">                    result.add(new Token(Token.POINT, &quot;.&quot;));</span>
+<span class="fc" id="L747">                    result.addAll(new SimpleClassTypeSignatureLexer(suffix)</span>
+<span class="fc" id="L748">                            .parse());</span>
+<span class="fc" id="L749">                    suffixes = suffixes.substring(index);</span>
+<span class="fc" id="L750">                }</span>
+            }
+<span class="fc" id="L752">            return result;</span>
+        }
+    }
+
+    /**
+     * Lexer for a signature of a class.
+     */
+    protected static class ClassSignatureLexer extends AbstractLexer {
+
+        public ClassSignatureLexer(String desc) {
+<span class="fc" id="L762">            super(desc);</span>
+<span class="fc" id="L763">        }</span>
+
+        /**
+         * Parse class signature according the grammar:
+         * 
+         * &lt;pre&gt;
+         * ClassSignature: FormalTypeParametersopt SuperclassSignature SuperinterfaceSignature*
+         * FormalTypeParameters: &amp;lt;FormalTypeParameter+&amp;gt;
+         * FormalTypeParameter: Identifier ClassBound InterfaceBound*
+         * ClassBound:  : FieldTypeSignatureopt
+         * InterfaceBound:  : FieldTypeSignature
+         * SuperclassSignature:   ClassTypeSignature
+         * SuperinterfaceSignature:  ClassTypeSignature
+         * &lt;/pre&gt;
+         * 
+         * @return a List of matched Token.
+         */
+        @Override
+        public List&lt;Token&gt; parse() {
+<span class="fc" id="L782">            List&lt;Token&gt; result = new LinkedList&lt;Token&gt;();</span>
+
+<span class="pc bpc" id="L784" title="1 of 2 branches missed.">            if (desc.charAt(0) == '&lt;') {</span>
+<span class="fc" id="L785">                result.add(new Token(Token.LABRACKET, &quot;&lt;&quot;));</span>
+<span class="fc" id="L786">                int formalTypeParametersEndIndex = balancedBracketPosition(</span>
+                        desc, '&lt;', '&gt;');
+<span class="fc" id="L788">                String formalTypeParameters = desc.substring(1,</span>
+                        formalTypeParametersEndIndex);
+<span class="fc" id="L790">                desc = desc.substring(formalTypeParametersEndIndex + 1);</span>
+<span class="fc" id="L791">                FormalTypeParameterLexer l = new FormalTypeParameterLexer(</span>
+                        formalTypeParameters);
+<span class="fc" id="L793">                result.addAll(l.parse());</span>
+<span class="fc" id="L794">                Pattern.compile(&quot;([^:]*):((.*))&quot;).matcher(formalTypeParameters);</span>
+<span class="fc" id="L795">                result.add(new Token(Token.RABRACKET, &quot;&gt;&quot;));</span>
+            }
+            // parse super type
+<span class="fc" id="L798">            ClassTypeSignatureLexer l = new ClassTypeSignatureLexer(desc);</span>
+<span class="fc" id="L799">            result.add(new Token(Token.SUPERCLASS, &quot; extends &quot;));</span>
+<span class="fc" id="L800">            result.addAll(l.parse());</span>
+<span class="fc" id="L801">            String interfaces = l.getRest();</span>
+<span class="fc bfc" id="L802" title="All 2 branches covered.">            if (interfaces.length() &gt; 0) {</span>
+                // parse super interfaces
+<span class="fc" id="L804">                result.add(new Token(Token.SUPERCLASS, &quot; implements &quot;));</span>
+<span class="fc" id="L805">                ClassTypeSignatureLexer l2 = new ClassTypeSignatureLexer(</span>
+                        interfaces);
+<span class="fc" id="L807">                result.addAll(l2.parse());</span>
+<span class="fc" id="L808">                String others = l2.getRest();</span>
+<span class="fc bfc" id="L809" title="All 2 branches covered.">                while (others.length() &gt; 0) {</span>
+<span class="fc" id="L810">                    l2 = new ClassTypeSignatureLexer(others);</span>
+<span class="fc" id="L811">                    result.add(new Token(Token.COMMA, &quot;,&quot;));</span>
+<span class="fc" id="L812">                    result.addAll(l2.parse());</span>
+<span class="fc" id="L813">                    others = l2.getRest();</span>
+                }
+            }
+
+<span class="fc" id="L817">            return result;</span>
+        }
+    }
+
+    /**
+     * Lexer for the formal type parameter.
+     */
+    protected static class FormalTypeParameterLexer extends AbstractLexer {
+
+        public FormalTypeParameterLexer(String desc) {
+<span class="fc" id="L827">            super(desc);</span>
+<span class="fc" id="L828">        }</span>
+
+        /**
+         * Parse formal type parameters according the grammar:
+         * 
+         * &lt;pre&gt;
+         * FormalTypeParameters: &amp;lt;FormalTypeParameter+&amp;gt;
+         * FormalTypeParameter: Identifier ClassBound InterfaceBound*
+         * ClassBound:  : FieldTypeSignatureopt
+         * InterfaceBound:  : FieldTypeSignature
+         * &lt;/pre&gt;
+         * 
+         * @return a List of matched Token.
+         */
+        @Override
+        public List&lt;Token&gt; parse() {
+<span class="fc" id="L844">            List&lt;Token&gt; result = new LinkedList&lt;Token&gt;();</span>
+
+<span class="fc" id="L846">            Matcher m = Pattern.compile(&quot;([^:]*):((.*))&quot;).matcher(desc);</span>
+<span class="pc bpc" id="L847" title="1 of 2 branches missed.">            if (m.matches()) {</span>
+<span class="fc" id="L848">                String identifier = m.group(1);</span>
+<span class="fc" id="L849">                String other = m.group(2);</span>
+<span class="fc" id="L850">                result.add(new Token(Token.IDENTIFIER, identifier));</span>
+<span class="fc" id="L851">                result.add(new Token(Token.SUPERCLASS, &quot; extends &quot;));</span>
+                // other begins with &quot;:&quot; if ClassBound is absent
+                // that is parameter extends interface, not a class
+<span class="fc bfc" id="L854" title="All 2 branches covered.">                if (other.charAt(0) == ':') {</span>
+<span class="fc" id="L855">                    other = other.substring(1);</span>
+                }
+<span class="fc" id="L857">                FieldTypeSignatureLexer f = new FieldTypeSignatureLexer(other);</span>
+<span class="fc" id="L858">                result.addAll(f.parse());</span>
+<span class="fc" id="L859">                other = f.getRest();</span>
+<span class="fc bfc" id="L860" title="All 2 branches covered.">                if (other.length() &gt; 0) {</span>
+<span class="fc bfc" id="L861" title="All 2 branches covered.">                    if (other.startsWith(&quot;:&quot;)) {</span>
+                        // interface bounds begins here
+<span class="fc bfc" id="L863" title="All 2 branches covered.">                        while (other.startsWith(&quot;:&quot;)) {</span>
+<span class="fc" id="L864">                            result.add(new Token(Token.AMPERSAND, &quot; &amp; &quot;));</span>
+<span class="fc" id="L865">                            FieldTypeSignatureLexer l =</span>
+                                new FieldTypeSignatureLexer(
+<span class="fc" id="L867">                                    other.substring(1));</span>
+<span class="fc" id="L868">                            result.addAll(l.parse());</span>
+<span class="fc" id="L869">                            other = l.getRest();</span>
+<span class="fc" id="L870">                        }</span>
+                    }
+                }
+<span class="fc bfc" id="L873" title="All 2 branches covered.">                if (other.length() &gt; 0) {</span>
+                    // new FormalTypeParameter begins here
+<span class="fc" id="L875">                    result.add(new Token(Token.COMMA, &quot;,&quot;));</span>
+<span class="fc" id="L876">                    FormalTypeParameterLexer l = new FormalTypeParameterLexer(</span>
+                            other);
+<span class="fc" id="L878">                    result.addAll(l.parse());</span>
+                }
+<span class="fc" id="L880">                desc = other;</span>
+            }
+<span class="fc" id="L882">            return result;</span>
+        }
+    }
+
+    /**
+     * Lexer for the signature of the method type.
+     */
+    protected static class MethodTypeSignatureLexer extends AbstractLexer {
+
+        public MethodTypeSignatureLexer(String desc) {
+<span class="fc" id="L892">            super(desc);</span>
+<span class="fc" id="L893">        }</span>
+
+        /**
+         * Parse method type signature according the grammar:
+         * 
+         * &lt;pre&gt;
+         * MethodTypeSignature:  FormalTypeParametersopt (TypeSignature*) ReturnType ThrowsSignature*
+         *          ReturnType:  TypeSignature VoidDescriptor
+         *     ThrowsSignature:   &amp;circ;ClassTypeSignature &amp;circ;TypeVariableSignature
+         * &lt;/pre&gt;
+         * 
+         * @return a List of matched Token.
+         */
+        @Override
+        public List&lt;Token&gt; parse() {
+<span class="fc" id="L908">            List&lt;Token&gt; result = new LinkedList&lt;Token&gt;();</span>
+
+<span class="pc bpc" id="L910" title="1 of 2 branches missed.">            if (desc.charAt(0) == '&lt;') {</span>
+<span class="nc" id="L911">                result.add(new Token(Token.LABRACKET, &quot;&lt;&quot;));</span>
+<span class="nc" id="L912">                int formalTypeParametersEndIndex = balancedBracketPosition(</span>
+                        desc, '&lt;', '&gt;');
+<span class="nc" id="L914">                String formalTypeParameters = desc.substring(1,</span>
+                        formalTypeParametersEndIndex);
+<span class="nc" id="L916">                desc = desc.substring(formalTypeParametersEndIndex + 1);</span>
+<span class="nc" id="L917">                FormalTypeParameterLexer l = new FormalTypeParameterLexer(</span>
+                        formalTypeParameters);
+<span class="nc" id="L919">                result.addAll(l.parse());</span>
+<span class="nc" id="L920">                Pattern.compile(&quot;([^:]*):((.*))&quot;)</span>
+<span class="nc" id="L921">                    .matcher(formalTypeParameters);</span>
+<span class="nc" id="L922">                result.add(new Token(Token.RABRACKET, &quot;&gt;&quot;));</span>
+            }
+            // parse type signatures
+<span class="fc" id="L925">            result.add(new Token(Token.LBRACKET, &quot;(&quot;));</span>
+<span class="fc" id="L926">            int typeSignaturesEndIndex =</span>
+<span class="fc" id="L927">                balancedBracketPosition(desc, '(', ')');</span>
+<span class="fc" id="L928">            String typeSignatures = desc.substring(1, typeSignaturesEndIndex);</span>
+<span class="fc" id="L929">            desc = desc.substring(typeSignaturesEndIndex + 1);</span>
+<span class="fc bfc" id="L930" title="All 2 branches covered.">            if (typeSignatures.length() &gt; 0) {</span>
+<span class="fc" id="L931">                TypeSignatureLexer t = new TypeSignatureLexer(typeSignatures);</span>
+<span class="fc" id="L932">                result.addAll(t.parse());</span>
+<span class="fc" id="L933">                typeSignatures = t.getRest();</span>
+<span class="fc bfc" id="L934" title="All 2 branches covered.">                while (typeSignatures.length() &gt; 0) {</span>
+<span class="fc" id="L935">                    result.add(new Token(Token.COMMA, &quot;,&quot;));</span>
+<span class="fc" id="L936">                    TypeSignatureLexer t2 = new TypeSignatureLexer(</span>
+                            typeSignatures);
+<span class="fc" id="L938">                    result.addAll(t2.parse());</span>
+<span class="fc" id="L939">                    typeSignatures = t2.getRest();</span>
+<span class="fc" id="L940">                }</span>
+            }
+<span class="fc" id="L942">            result.add(new Token(Token.RBRACKET, &quot;)&quot;));</span>
+            // parse return type
+<span class="fc" id="L944">            result.add(new Token(Token.RETURN, &quot; return &quot;));</span>
+<span class="fc bfc" id="L945" title="All 2 branches covered.">            if (desc.charAt(0) == 'V') {</span>
+<span class="fc" id="L946">                result.add(new Token(Token.VOID_TYPE, &quot;void&quot;));</span>
+<span class="fc" id="L947">                desc = desc.substring(1);</span>
+            } else {
+<span class="fc" id="L949">                TypeSignatureLexer t3 = new TypeSignatureLexer(desc);</span>
+<span class="fc" id="L950">                result.addAll(t3.parse());</span>
+<span class="fc" id="L951">                desc = t3.getRest();</span>
+            }
+            // parse throws signatures
+<span class="fc bfc" id="L954" title="All 2 branches covered.">            if (desc.length() &gt; 0) {</span>
+<span class="fc" id="L955">                result.add(new Token(Token.THROWS, &quot; throws &quot;));</span>
+<span class="fc" id="L956">                ThrowsSignatureLexer t4 = new ThrowsSignatureLexer(desc);</span>
+<span class="fc" id="L957">                result.addAll(t4.parse());</span>
+<span class="fc" id="L958">                desc = t4.getRest();</span>
+<span class="fc bfc" id="L959" title="All 2 branches covered.">                while (desc.length() &gt; 0) {</span>
+<span class="fc" id="L960">                    result.add(new Token(Token.COMMA, &quot;,&quot;));</span>
+<span class="fc" id="L961">                    ThrowsSignatureLexer t2 = new ThrowsSignatureLexer(desc);</span>
+<span class="fc" id="L962">                    result.addAll(t2.parse());</span>
+<span class="fc" id="L963">                    desc = t2.getRest();</span>
+<span class="fc" id="L964">                }</span>
+            }
+<span class="fc" id="L966">            return result;</span>
+        }
+    }
+
+    /**
+     * Lexer for the throws signature.
+     */
+    protected static class ThrowsSignatureLexer extends AbstractLexer {
+
+        public ThrowsSignatureLexer(String desc) {
+<span class="fc" id="L976">            super(desc);</span>
+<span class="fc" id="L977">        }</span>
+
+        /**
+         * Parse throws signature according the grammar:
+         * 
+         * &lt;pre&gt;
+         * ThrowsSignature: &amp;circ;ClassTypeSignature &amp;circ;TypeVariableSignature
+         * &lt;/pre&gt;
+         * 
+         * @return a List of matched Token.
+         */
+        @Override
+        public List&lt;Token&gt; parse() {
+<span class="fc" id="L990">            List&lt;Token&gt; result = new LinkedList&lt;Token&gt;();</span>
+
+<span class="pc bpc" id="L992" title="1 of 2 branches missed.">            if (desc.charAt(0) == '^') {</span>
+<span class="fc" id="L993">                desc = desc.substring(1);</span>
+<span class="fc bfc" id="L994" title="All 2 branches covered.">                if (desc.charAt(0) == 'T') {</span>
+<span class="fc" id="L995">                    TypeVariableSignatureLexer l =</span>
+                        new TypeVariableSignatureLexer(desc);
+<span class="fc" id="L997">                    result.addAll(l.parse());</span>
+<span class="fc" id="L998">                    desc = l.getRest();</span>
+<span class="fc" id="L999">                } else {</span>
+<span class="fc" id="L1000">                    ClassTypeSignatureLexer l = new ClassTypeSignatureLexer(</span>
+                            desc);
+<span class="fc" id="L1002">                    result.addAll(l.parse());</span>
+<span class="fc" id="L1003">                    desc = l.getRest();</span>
+<span class="fc" id="L1004">                }</span>
+            } else {
+<span class="nc" id="L1006">                throw new IllegalArgumentException(desc</span>
+                        + &quot; is not a throws signature&quot;);
+            }
+<span class="fc" id="L1009">            return result;</span>
+        }
+    }
+
+    /**
+     * The abstract lexer.
+     */
+    protected abstract static class AbstractLexer {
+        /**
+         * Description of the lexer.
+         */
+        protected String desc;
+
+<span class="fc" id="L1022">        public AbstractLexer(String d) {</span>
+<span class="fc" id="L1023">            desc = d;</span>
+<span class="fc" id="L1024">        }</span>
+
+        public abstract List&lt;Token&gt; parse();
+
+        public String getRest() {
+<span class="fc" id="L1029">            return desc;</span>
+        }
+
+        /**
+         * Find the index of the first occurrence of symbol in text outside of
+         * brackets.
+         * 
+         * @param symbol
+         * @param openBracket
+         * @param closeBracket
+         * @param text
+         * @return index
+         */
+        protected static int firstIndexNotInside(char symbol, char openBracket,
+                char closeBracket, String text) {
+<span class="fc" id="L1044">            int count = 0;</span>
+<span class="fc" id="L1045">            int index = 0;</span>
+<span class="fc bfc" id="L1046" title="All 2 branches covered.">            for (char c : text.toCharArray()) {</span>
+<span class="fc bfc" id="L1047" title="All 4 branches covered.">                if (c == symbol &amp;&amp; count == 0) {</span>
+<span class="fc" id="L1048">                    break;</span>
+                }
+<span class="fc bfc" id="L1050" title="All 2 branches covered.">                if (c == openBracket) {</span>
+<span class="fc" id="L1051">                    count++;</span>
+                }
+<span class="fc bfc" id="L1053" title="All 2 branches covered.">                if (c == closeBracket) {</span>
+<span class="fc" id="L1054">                    count--;</span>
+                }
+<span class="fc" id="L1056">                index++;</span>
+            }
+<span class="fc" id="L1058">            return index;</span>
+        }
+
+        protected static int balancedBracketPosition(String text,
+                char openBracket, char closeBracket) {
+<span class="pc bpc" id="L1063" title="1 of 2 branches missed.">            if (text.charAt(0) != openBracket) {</span>
+<span class="nc" id="L1064">                throw new IllegalArgumentException(text</span>
+                        + &quot; does not start with open bracket &quot;);
+            }
+<span class="pc bpc" id="L1067" title="1 of 2 branches missed.">            if (text.indexOf(closeBracket) == -1) {</span>
+<span class="nc" id="L1068">                throw new IllegalArgumentException(text</span>
+                        + &quot; does not contain close bracket &quot;);
+            }
+<span class="fc" id="L1071">            int count = -1;</span>
+<span class="fc" id="L1072">            char[] chars = text.toCharArray();</span>
+<span class="pc bpc" id="L1073" title="1 of 2 branches missed.">            for (int i = 0; i &lt; chars.length; i++) {</span>
+<span class="fc" id="L1074">                char c = chars[i];</span>
+<span class="fc bfc" id="L1075" title="All 2 branches covered.">                if (c == openBracket) {</span>
+<span class="fc" id="L1076">                    count++;</span>
+<span class="fc bfc" id="L1077" title="All 2 branches covered.">                } else if (c == closeBracket) {</span>
+<span class="fc bfc" id="L1078" title="All 2 branches covered.">                    if (count == 0) {</span>
+<span class="fc" id="L1079">                        return i;</span>
+                    } else {
+<span class="fc" id="L1081">                        count--;</span>
+                    }
+                }
+            }
+<span class="nc" id="L1085">            throw new IllegalArgumentException(text</span>
+                    + &quot; has no balanced bracket for &quot; + openBracket);
+        }
+
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

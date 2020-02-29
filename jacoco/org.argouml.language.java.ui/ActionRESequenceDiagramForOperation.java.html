@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ActionRESequenceDiagramForOperation.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">argo_java</a> &gt; <a href="index.source.html" class="el_package">org.argouml.language.java.ui</a> &gt; <span class="el_source">ActionRESequenceDiagramForOperation.java</span></div><h1>ActionRESequenceDiagramForOperation.java</h1><pre class="source lang-java linenums">/* $Id$
+ *****************************************************************************
+ * Copyright (c) 2009 Contributors - see below
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    bobtarling
+ *****************************************************************************
+ *
+ * Some portions of this file was previously release using the BSD License:
+ */
+
+// Copyright (c) 1996-2008 The Regents of the University of California. All
+// Rights Reserved. Permission to use, copy, modify, and distribute this
+// software and its documentation without fee, and without a written
+// agreement is hereby granted, provided that the above copyright notice
+// and this paragraph appear in all copies.  This software program and
+// documentation are copyrighted by The Regents of the University of
+// California. The software program and documentation are supplied &quot;AS
+// IS&quot;, without any accompanying services from The Regents. The Regents
+// does not warrant that the operation of the program will be
+// uninterrupted or error-free. The end-user understands that the program
+// was developed for research purposes and is advised not to rely
+// exclusively on the program for any reason.  IN NO EVENT SHALL THE
+// UNIVERSITY OF CALIFORNIA BE LIABLE TO ANY PARTY FOR DIRECT, INDIRECT,
+// SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES, INCLUDING LOST PROFITS,
+// ARISING OUT OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF
+// THE UNIVERSITY OF CALIFORNIA HAS BEEN ADVISED OF THE POSSIBILITY OF
+// SUCH DAMAGE. THE UNIVERSITY OF CALIFORNIA SPECIFICALLY DISCLAIMS ANY
+// WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+// MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE SOFTWARE
+// PROVIDED HEREUNDER IS ON AN &quot;AS IS&quot; BASIS, AND THE UNIVERSITY OF
+// CALIFORNIA HAS NO OBLIGATIONS TO PROVIDE MAINTENANCE, SUPPORT,
+// UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
+
+package org.argouml.language.java.ui;
+
+import java.awt.event.ActionEvent;
+
+import javax.swing.AbstractAction;
+
+import org.argouml.i18n.Translator;
+import org.argouml.kernel.Project;
+import org.argouml.kernel.ProjectManager;
+import org.argouml.model.Model;
+import org.argouml.ui.targetmanager.TargetManager;
+import org.argouml.uml.diagram.ArgoDiagram;
+import org.argouml.uml.diagram.DiagramFactory;
+import org.argouml.uml.diagram.DiagramSettings;
+import org.argouml.uml.diagram.DiagramFactory.DiagramType;
+
+/**
+ * Action to reverse engineer a sequence diagram from the operation bodies.
+ * 
+ * @author Thomas Neustupny (thn@tigris.org)
+ */
+public class ActionRESequenceDiagramForOperation extends AbstractAction {
+
+    /**
+     * The UID.
+     */
+    private static final long serialVersionUID = -7836156263016892787L;
+
+    /**
+     * The constructor. If a figure is given, then it is invoked inside of a
+     * sequence diagram, so it will work with this diagram. If figure is null,
+     * then this causes the creation of a new sequence diagram.
+     */
+    public ActionRESequenceDiagramForOperation() {
+<span class="nc" id="L73">        super(Translator.localize(&quot;java.action.create-seq-operation&quot;));</span>
+<span class="nc" id="L74">    }</span>
+
+    /*
+     * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+     */
+    public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L80">        final Object target = TargetManager.getInstance().getTarget();</span>
+<span class="nc bnc" id="L81" title="All 2 branches missed.">        if (!Model.getFacade().isAOperation(target)) {</span>
+<span class="nc" id="L82">            return;</span>
+        }
+<span class="nc" id="L84">        buildSequenceDiagram(target);</span>
+<span class="nc" id="L85">    }</span>
+
+    /*
+     * @see javax.swing.Action#isEnabled()
+     */
+    @Override
+    public boolean isEnabled() {
+        // TODO: the following is not invoked when showing the menu item, so
+        // it need to be made work:
+        // Object target = TargetManager.getInstance().getModelTarget();
+        // if (Model.getFacade().isAOperation(target)) {
+        // //Model.getFacade().getBody(target);
+        // return true;
+        // }
+<span class="nc" id="L99">        return true;</span>
+    }
+
+    /**
+     * Builds the sequence diagram for an operation.
+     * &lt;p&gt;
+     * TODO: find a better place for a similar method.
+     */
+    private void buildSequenceDiagram(Object operation) {
+        // create an empty diagram for the operations owner
+<span class="nc" id="L109">        Object classifier = Model.getFacade().getOwner(operation);</span>
+<span class="nc" id="L110">        Object collaboration = Model.getCollaborationsFactory()</span>
+<span class="nc" id="L111">                .buildCollaboration(classifier);</span>
+<span class="nc" id="L112">        Project project = ProjectManager.getManager().getOpenProjects().get(0);</span>
+<span class="nc" id="L113">        DiagramSettings settings =</span>
+<span class="nc" id="L114">            project.getProjectSettings().getDefaultDiagramSettings();</span>
+<span class="nc" id="L115">        final ArgoDiagram diagram = DiagramFactory.getInstance().create(</span>
+                DiagramType.Sequence, collaboration,
+                settings);
+        // create an anonymous classifier role in the diagram
+        // Object node = 
+<span class="nc" id="L120">        Model.getCollaborationsFactory().buildClassifierRole(collaboration);</span>
+        //Fig crFig =
+        //    new FigClassifierRole(node,
+        //        new Rectangle(10, 10, 50, 200), settings);
+        //diagram.add(crFig);
+        //((MutableGraphModel)
+        //        (diagram.getGraphModel())).addNode(node);
+        // create a classifier role for the operations owner
+        // create a message between the two CRs for the operation
+        // add diagram to project and show it
+<span class="nc" id="L130">        project.addMember(diagram);</span>
+<span class="nc" id="L131">        TargetManager.getInstance().setTarget(diagram);</span>
+        // Object model = project.getUserDefinedModelList().get(0);
+<span class="nc" id="L133">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>
