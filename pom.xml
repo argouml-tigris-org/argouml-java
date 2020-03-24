@@ -115,8 +115,7 @@ Java support for argouml.
   </description>
 
   <scm>
-    <connection>scm:svn:http://argouml-java.tigris.org/svn/argouml-java/trunk/</connection>
-    <developerConnection>scm:svn:http://argouml-java.tigris.org/svn/argouml-java/trunk/</developerConnection>
-    <url>http://argouml-java.tigris.org/source/browse/argouml-java/trunk</url>
+    <!-- Specify this or maven will add artifactId. -->
+    <url>https://github.com/argouml-tigris-org/${github.site.repositoryName}</url>
   </scm>
 </project>
