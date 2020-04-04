@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <pmd-cpd>
 <duplication lines="113" tokens="792">
-<file line="13" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaLexer.java"/>
-<file line="206" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="13" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaLexer.java"/>
+<file line="206" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
 <codefragment>
 <![CDATA[
 	public static final int EOF=-1;
@@ -122,8 +122,8 @@
 </codefragment>
 </duplication>
 <duplication lines="177" tokens="462">
-<file line="190" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/src/org/argouml/language/java/reveng/ParseState.java"/>
-<file line="173" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/src/org/argouml/language/java/reveng/classfile/ParseState.java"/>
+<file line="190" path="/var/jenkins_home/workspace/organization_argouml-java_master/src/org/argouml/language/java/reveng/ParseState.java"/>
+<file line="173" path="/var/jenkins_home/workspace/organization_argouml-java_master/src/org/argouml/language/java/reveng/classfile/ParseState.java"/>
 <codefragment>
 <![CDATA[
     }
@@ -307,8 +307,8 @@
 </codefragment>
 </duplication>
 <duplication lines="9" tokens="237">
-<file line="3153" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaLexer.java"/>
-<file line="3186" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaLexer.java"/>
+<file line="3153" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaLexer.java"/>
+<file line="3186" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaLexer.java"/>
 <codefragment>
 <![CDATA[
 					if ( input.LA(1)=='$'||(input.LA(1) >= '0' && input.LA(1) <= '9')||(input.LA(1) >= 'A' && input.LA(1) <= 'Z')||input.LA(1)=='_'||(input.LA(1) >= 'a' && input.LA(1) <= 'z')||(input.LA(1) >= '\u00C0' && input.LA(1) <= '\u00D6')||(input.LA(1) >= '\u00D8' && input.LA(1) <= '\u00F6')||(input.LA(1) >= '\u00F8' && input.LA(1) <= '\u1FFF')||(input.LA(1) >= '\u3040' && input.LA(1) <= '\u318F')||(input.LA(1) >= '\u3300' && input.LA(1) <= '\u337F')||(input.LA(1) >= '\u3400' && input.LA(1) <= '\u3D2D')||(input.LA(1) >= '\u4E00' && input.LA(1) <= '\u9FFF')||(input.LA(1) >= '\uF900' && input.LA(1) <= '\uFAFF') ) {
@@ -324,8 +324,8 @@
 </codefragment>
 </duplication>
 <duplication lines="91" tokens="180">
-<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
-<file line="15835" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15835" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
 <codefragment>
 <![CDATA[
 			"\1\uffff",
@@ -423,8 +423,8 @@
 </codefragment>
 </duplication>
 <duplication lines="90" tokens="178">
-<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
-<file line="15836" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15836" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
 <codefragment>
 <![CDATA[
 			"\1\uffff",
@@ -521,8 +521,8 @@
 </codefragment>
 </duplication>
 <duplication lines="63" tokens="177">
-<file line="104" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/src/org/argouml/language/java/reveng/ParseState.java"/>
-<file line="103" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/src/org/argouml/language/java/reveng/classfile/ParseState.java"/>
+<file line="104" path="/var/jenkins_home/workspace/organization_argouml-java_master/src/org/argouml/language/java/reveng/ParseState.java"/>
+<file line="103" path="/var/jenkins_home/workspace/organization_argouml-java_master/src/org/argouml/language/java/reveng/classfile/ParseState.java"/>
 <codefragment>
 <![CDATA[
     public ParseState(Object model, Object javaLangPackage) {
@@ -592,8 +592,8 @@
 </codefragment>
 </duplication>
 <duplication lines="89" tokens="176">
-<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
-<file line="15837" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15837" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
 <codefragment>
 <![CDATA[
 			"\1\uffff",
@@ -689,8 +689,8 @@
 </codefragment>
 </duplication>
 <duplication lines="88" tokens="174">
-<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
-<file line="15838" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15838" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
 <codefragment>
 <![CDATA[
 			"\1\uffff",
@@ -785,8 +785,8 @@
 </codefragment>
 </duplication>
 <duplication lines="87" tokens="172">
-<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
-<file line="15839" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15839" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
 <codefragment>
 <![CDATA[
 			"\1\uffff",
@@ -880,8 +880,8 @@
 </codefragment>
 </duplication>
 <duplication lines="86" tokens="170">
-<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
-<file line="15840" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15840" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
 <codefragment>
 <![CDATA[
 			"\1\uffff",
@@ -974,8 +974,8 @@
 </codefragment>
 </duplication>
 <duplication lines="85" tokens="168">
-<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
-<file line="15841" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15841" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
 <codefragment>
 <![CDATA[
 			"\1\uffff",
@@ -1067,8 +1067,8 @@
 </codefragment>
 </duplication>
 <duplication lines="84" tokens="166">
-<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
-<file line="15842" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15842" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
 <codefragment>
 <![CDATA[
 			"\1\uffff",
@@ -1159,8 +1159,8 @@
 </codefragment>
 </duplication>
 <duplication lines="83" tokens="164">
-<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
-<file line="15843" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15843" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
 <codefragment>
 <![CDATA[
 			"\1\uffff",
@@ -1250,8 +1250,8 @@
 </codefragment>
 </duplication>
 <duplication lines="82" tokens="162">
-<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
-<file line="15844" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15844" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
 <codefragment>
 <![CDATA[
 			"\1\uffff",
@@ -1340,8 +1340,8 @@
 </codefragment>
 </duplication>
 <duplication lines="81" tokens="160">
-<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
-<file line="15845" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15845" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
 <codefragment>
 <![CDATA[
 			"\1\uffff",
@@ -1429,8 +1429,8 @@
 </codefragment>
 </duplication>
 <duplication lines="80" tokens="158">
-<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
-<file line="15846" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15846" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
 <codefragment>
 <![CDATA[
 			"\1\uffff",
@@ -1517,8 +1517,8 @@
 </codefragment>
 </duplication>
 <duplication lines="79" tokens="156">
-<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
-<file line="15847" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15847" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
 <codefragment>
 <![CDATA[
 			"\1\uffff",
@@ -1604,8 +1604,8 @@
 </codefragment>
 </duplication>
 <duplication lines="78" tokens="154">
-<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
-<file line="15848" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15848" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
 <codefragment>
 <![CDATA[
 			"\1\uffff",
@@ -1690,8 +1690,8 @@
 </codefragment>
 </duplication>
 <duplication lines="77" tokens="152">
-<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
-<file line="15849" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15849" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
 <codefragment>
 <![CDATA[
 			"\1\uffff",
@@ -1775,8 +1775,8 @@
 </codefragment>
 </duplication>
 <duplication lines="76" tokens="150">
-<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
-<file line="15850" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15850" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
 <codefragment>
 <![CDATA[
 			"\1\uffff",
@@ -1859,8 +1859,8 @@
 </codefragment>
 </duplication>
 <duplication lines="75" tokens="148">
-<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
-<file line="15851" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15851" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
 <codefragment>
 <![CDATA[
 			"\1\uffff",
@@ -1942,8 +1942,8 @@
 </codefragment>
 </duplication>
 <duplication lines="74" tokens="146">
-<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
-<file line="15852" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15852" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
 <codefragment>
 <![CDATA[
 			"\1\uffff",
@@ -2024,8 +2024,8 @@
 </codefragment>
 </duplication>
 <duplication lines="73" tokens="144">
-<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
-<file line="15853" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15853" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
 <codefragment>
 <![CDATA[
 			"\1\uffff",
@@ -2105,8 +2105,8 @@
 </codefragment>
 </duplication>
 <duplication lines="72" tokens="142">
-<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
-<file line="15854" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15854" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
 <codefragment>
 <![CDATA[
 			"\1\uffff",
@@ -2185,8 +2185,8 @@
 </codefragment>
 </duplication>
 <duplication lines="71" tokens="140">
-<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
-<file line="15855" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15855" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
 <codefragment>
 <![CDATA[
 			"\1\uffff",
@@ -2264,8 +2264,8 @@
 </codefragment>
 </duplication>
 <duplication lines="70" tokens="138">
-<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
-<file line="15856" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15856" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
 <codefragment>
 <![CDATA[
 			"\1\uffff",
@@ -2342,8 +2342,8 @@
 </codefragment>
 </duplication>
 <duplication lines="36" tokens="136">
-<file line="761" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/src/org/argouml/language/java/reveng/classfile/ParserUtils.java"/>
-<file line="891" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/src/org/argouml/language/java/reveng/classfile/ParserUtils.java"/>
+<file line="761" path="/var/jenkins_home/workspace/organization_argouml-java_master/src/org/argouml/language/java/reveng/classfile/ParserUtils.java"/>
+<file line="891" path="/var/jenkins_home/workspace/organization_argouml-java_master/src/org/argouml/language/java/reveng/classfile/ParserUtils.java"/>
 <codefragment>
 <![CDATA[
         public ClassSignatureLexer(String desc) {
@@ -2386,8 +2386,8 @@
 </codefragment>
 </duplication>
 <duplication lines="69" tokens="136">
-<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
-<file line="15857" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15857" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
 <codefragment>
 <![CDATA[
 			"\1\uffff",
@@ -2463,8 +2463,8 @@
 </codefragment>
 </duplication>
 <duplication lines="35" tokens="134">
-<file line="9" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr/org/argouml/language/java/reveng/classfile/ClassfileTokenTypes.java"/>
-<file line="8" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr/org/argouml/language/java/reveng/classfile/ClassfileTreeParserTokenTypes.java"/>
+<file line="9" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr/org/argouml/language/java/reveng/classfile/ClassfileTokenTypes.java"/>
+<file line="8" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr/org/argouml/language/java/reveng/classfile/ClassfileTreeParserTokenTypes.java"/>
 <codefragment>
 <![CDATA[
 public interface ClassfileTokenTypes {
@@ -2506,8 +2506,8 @@ public interface ClassfileTokenTypes {
 </codefragment>
 </duplication>
 <duplication lines="68" tokens="134">
-<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
-<file line="15858" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15858" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
 <codefragment>
 <![CDATA[
 			"\1\uffff",
@@ -2582,8 +2582,8 @@ public interface ClassfileTokenTypes {
 </codefragment>
 </duplication>
 <duplication lines="67" tokens="132">
-<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
-<file line="15859" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15859" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
 <codefragment>
 <![CDATA[
 			"\1\uffff",
@@ -2657,8 +2657,8 @@ public interface ClassfileTokenTypes {
 </codefragment>
 </duplication>
 <duplication lines="66" tokens="130">
-<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
-<file line="15860" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15860" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
 <codefragment>
 <![CDATA[
 			"\1\uffff",
@@ -2731,8 +2731,8 @@ public interface ClassfileTokenTypes {
 </codefragment>
 </duplication>
 <duplication lines="65" tokens="128">
-<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
-<file line="15861" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15861" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
 <codefragment>
 <![CDATA[
 			"\1\uffff",
@@ -2804,8 +2804,8 @@ public interface ClassfileTokenTypes {
 </codefragment>
 </duplication>
 <duplication lines="64" tokens="126">
-<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
-<file line="15862" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15862" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
 <codefragment>
 <![CDATA[
 			"\1\uffff",
@@ -2876,8 +2876,8 @@ public interface ClassfileTokenTypes {
 </codefragment>
 </duplication>
 <duplication lines="24" tokens="124">
-<file line="5594" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
-<file line="7149" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="5594" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="7149" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
 <codefragment>
 <![CDATA[
 			match(input,114,FOLLOW_114_in_constructorBody4169); if (state.failed) return retval;
@@ -2908,8 +2908,8 @@ public interface ClassfileTokenTypes {
 </codefragment>
 </duplication>
 <duplication lines="63" tokens="124">
-<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
-<file line="15863" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15863" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
 <codefragment>
 <![CDATA[
 			"\1\uffff",
@@ -2979,8 +2979,8 @@ public interface ClassfileTokenTypes {
 </codefragment>
 </duplication>
 <duplication lines="62" tokens="122">
-<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
-<file line="15864" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15864" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
 <codefragment>
 <![CDATA[
 			"\1\uffff",
@@ -3049,8 +3049,8 @@ public interface ClassfileTokenTypes {
 </codefragment>
 </duplication>
 <duplication lines="61" tokens="120">
-<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
-<file line="15865" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15865" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
 <codefragment>
 <![CDATA[
 			"\1\uffff",
@@ -3118,8 +3118,8 @@ public interface ClassfileTokenTypes {
 </codefragment>
 </duplication>
 <duplication lines="60" tokens="118">
-<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
-<file line="15866" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15866" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
 <codefragment>
 <![CDATA[
 			"\1\uffff",
@@ -3186,8 +3186,8 @@ public interface ClassfileTokenTypes {
 </codefragment>
 </duplication>
 <duplication lines="59" tokens="116">
-<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
-<file line="15867" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15867" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
 <codefragment>
 <![CDATA[
 			"\1\uffff",
@@ -3253,8 +3253,8 @@ public interface ClassfileTokenTypes {
 </codefragment>
 </duplication>
 <duplication lines="20" tokens="115">
-<file line="116" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/src/org/argouml/language/java/reveng/OuterClassifierContext.java"/>
-<file line="106" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/src/org/argouml/language/java/reveng/classfile/OuterClassifierContext.java"/>
+<file line="116" path="/var/jenkins_home/workspace/organization_argouml-java_master/src/org/argouml/language/java/reveng/OuterClassifierContext.java"/>
+<file line="106" path="/var/jenkins_home/workspace/organization_argouml-java_master/src/org/argouml/language/java/reveng/classfile/OuterClassifierContext.java"/>
 <codefragment>
 <![CDATA[
             Class classifier;
@@ -3281,8 +3281,8 @@ public interface ClassfileTokenTypes {
 </codefragment>
 </duplication>
 <duplication lines="58" tokens="114">
-<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
-<file line="15868" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15868" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
 <codefragment>
 <![CDATA[
 			"\1\uffff",
@@ -3347,8 +3347,8 @@ public interface ClassfileTokenTypes {
 </codefragment>
 </duplication>
 <duplication lines="57" tokens="112">
-<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
-<file line="15869" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15869" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
 <codefragment>
 <![CDATA[
 			"\1\uffff",
@@ -3412,8 +3412,8 @@ public interface ClassfileTokenTypes {
 </codefragment>
 </duplication>
 <duplication lines="26" tokens="111">
-<file line="136" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/src/org/argouml/language/java/reveng/Context.java"/>
-<file line="165" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/src/org/argouml/language/java/reveng/classfile/Context.java"/>
+<file line="136" path="/var/jenkins_home/workspace/organization_argouml-java_master/src/org/argouml/language/java/reveng/Context.java"/>
+<file line="165" path="/var/jenkins_home/workspace/organization_argouml-java_master/src/org/argouml/language/java/reveng/classfile/Context.java"/>
 <codefragment>
 <![CDATA[
     }
@@ -3446,8 +3446,8 @@ public interface ClassfileTokenTypes {
 </codefragment>
 </duplication>
 <duplication lines="56" tokens="110">
-<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
-<file line="15870" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15870" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
 <codefragment>
 <![CDATA[
 			"\1\uffff",
@@ -3510,8 +3510,8 @@ public interface ClassfileTokenTypes {
 </codefragment>
 </duplication>
 <duplication lines="26" tokens="109">
-<file line="99" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/src/org/argouml/language/java/reveng/Context.java"/>
-<file line="113" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/src/org/argouml/language/java/reveng/classfile/Context.java"/>
+<file line="99" path="/var/jenkins_home/workspace/organization_argouml-java_master/src/org/argouml/language/java/reveng/Context.java"/>
+<file line="113" path="/var/jenkins_home/workspace/organization_argouml-java_master/src/org/argouml/language/java/reveng/classfile/Context.java"/>
 <codefragment>
 <![CDATA[
         Object parent = Model.getFacade().getNamespace(mPackage);
@@ -3544,8 +3544,8 @@ public interface ClassfileTokenTypes {
 </codefragment>
 </duplication>
 <duplication lines="55" tokens="109">
-<file line="14695" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
-<file line="15058" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="14695" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15058" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
 <codefragment>
 <![CDATA[
 			"\1\55\34\uffff\1\16\13\uffff\1\130",
@@ -3607,8 +3607,8 @@ public interface ClassfileTokenTypes {
 </codefragment>
 </duplication>
 <duplication lines="55" tokens="108">
-<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
-<file line="15871" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15871" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
 <codefragment>
 <![CDATA[
 			"\1\uffff",
@@ -3670,8 +3670,8 @@ public interface ClassfileTokenTypes {
 </codefragment>
 </duplication>
 <duplication lines="54" tokens="106">
-<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
-<file line="15872" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15872" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
 <codefragment>
 <![CDATA[
 			"\1\uffff",
@@ -3732,8 +3732,8 @@ public interface ClassfileTokenTypes {
 </codefragment>
 </duplication>
 <duplication lines="53" tokens="104">
-<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
-<file line="15873" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15873" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
 <codefragment>
 <![CDATA[
 			"\1\uffff",
@@ -3793,8 +3793,8 @@ public interface ClassfileTokenTypes {
 </codefragment>
 </duplication>
 <duplication lines="52" tokens="103">
-<file line="13928" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
-<file line="14028" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="13928" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="14028" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
 <codefragment>
 <![CDATA[
 			"\1\uffff",
@@ -3853,8 +3853,8 @@ public interface ClassfileTokenTypes {
 </codefragment>
 </duplication>
 <duplication lines="34" tokens="102">
-<file line="142" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/src/org/argouml/language/java/reveng/PackageContext.java"/>
-<file line="149" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/src/org/argouml/language/java/reveng/classfile/PackageContext.java"/>
+<file line="142" path="/var/jenkins_home/workspace/organization_argouml-java_master/src/org/argouml/language/java/reveng/PackageContext.java"/>
+<file line="149" path="/var/jenkins_home/workspace/organization_argouml-java_master/src/org/argouml/language/java/reveng/classfile/PackageContext.java"/>
 <codefragment>
 <![CDATA[
                 }
@@ -3895,8 +3895,8 @@ public interface ClassfileTokenTypes {
 </codefragment>
 </duplication>
 <duplication lines="52" tokens="102">
-<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
-<file line="15874" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15874" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
 <codefragment>
 <![CDATA[
 			"\1\uffff",
@@ -3955,8 +3955,8 @@ public interface ClassfileTokenTypes {
 </codefragment>
 </duplication>
 <duplication lines="51" tokens="100">
-<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
-<file line="15875" path="/var/jenkins_home/workspace/organization_argouml-java_master@2/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15744" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
+<file line="15875" path="/var/jenkins_home/workspace/organization_argouml-java_master/target/generated-sources/antlr3/org/argouml/language/java/reveng/JavaParser.java"/>
 <codefragment>
 <![CDATA[
 			"\1\uffff",
