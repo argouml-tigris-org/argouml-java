@@ -337,20 +337,6 @@
               </tr>
                           <tr>
                 <td>
-                  <a href="http://nexus.sonatype.org/oss-repository-hosting.html/parentpom/argouml-java/checkstyle.html#org.argouml.language.java.ui.ActionRESequenceDiagramForOperation.java">org/argouml/language/java/ui/ActionRESequenceDiagramForOperation.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-              </tr>
-                          <tr>
-                <td>
                   <a href="http://nexus.sonatype.org/oss-repository-hosting.html/parentpom/argouml-java/checkstyle.html#org.argouml.language.java.generator.GeneratorJava.java">org/argouml/language/java/generator/GeneratorJava.java</a>
                 </td>
                 <td>
@@ -358,6 +344,20 @@
                 </td>
                 <td>
                   1
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nexus.sonatype.org/oss-repository-hosting.html/parentpom/argouml-java/checkstyle.html#org.argouml.language.java.ui.ActionRESequenceDiagramForOperation.java">org/argouml/language/java/ui/ActionRESequenceDiagramForOperation.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
                 </td>
                 <td>
                   0
@@ -477,20 +477,6 @@
               </tr>
                           <tr>
                 <td>
-                  <a href="http://nexus.sonatype.org/oss-repository-hosting.html/parentpom/argouml-java/checkstyle.html#org.argouml.language.java.reveng.Modeller.java">org/argouml/language/java/reveng/Modeller.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  7
-                </td>
-                <td>
-                  0
-                </td>
-              </tr>
-                          <tr>
-                <td>
                   <a href="http://nexus.sonatype.org/oss-repository-hosting.html/parentpom/argouml-java/checkstyle.html#org.argouml.language.java.reveng.ClassifierContext.java">org/argouml/language/java/reveng/ClassifierContext.java</a>
                 </td>
                 <td>
@@ -498,6 +484,20 @@
                 </td>
                 <td>
                   0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nexus.sonatype.org/oss-repository-hosting.html/parentpom/argouml-java/checkstyle.html#org.argouml.language.java.reveng.Modeller.java">org/argouml/language/java/reveng/Modeller.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  7
                 </td>
                 <td>
                   0
@@ -561,7 +561,7 @@
               </tr>
                           <tr>
                 <td>
-                  <a href="http://nexus.sonatype.org/oss-repository-hosting.html/parentpom/argouml-java/checkstyle.html#org.argouml.language.java.reveng.classfile.PackageContext.java">org/argouml/language/java/reveng/classfile/PackageContext.java</a>
+                  <a href="http://nexus.sonatype.org/oss-repository-hosting.html/parentpom/argouml-java/checkstyle.html#org.argouml.language.java.reveng.ParseState.java">org/argouml/language/java/reveng/ParseState.java</a>
                 </td>
                 <td>
                   0
@@ -575,7 +575,7 @@
               </tr>
                           <tr>
                 <td>
-                  <a href="http://nexus.sonatype.org/oss-repository-hosting.html/parentpom/argouml-java/checkstyle.html#org.argouml.language.java.reveng.ParseState.java">org/argouml/language/java/reveng/ParseState.java</a>
+                  <a href="http://nexus.sonatype.org/oss-repository-hosting.html/parentpom/argouml-java/checkstyle.html#org.argouml.language.java.reveng.classfile.PackageContext.java">org/argouml/language/java/reveng/classfile/PackageContext.java</a>
                 </td>
                 <td>
                   0
