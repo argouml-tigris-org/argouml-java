@@ -78,7 +78,7 @@ import antlr.TokenStreamException;
  *
  * @author Andreas Rueckert <a_rueckert@gmx.net>
  */
-public class ClassfileImport implements ImportInterface {
+public class ClassfileImport implements ModuleInterface, ImportInterface {
 
     /** The files that needs a second RE pass. */
     private Collection secondPassFiles;
