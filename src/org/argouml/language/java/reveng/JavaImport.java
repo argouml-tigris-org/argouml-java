@@ -77,7 +77,7 @@ import org.argouml.util.SuffixFilter;
  * 
  * @author Andreas Rueckert <a_rueckert@gmx.net>
  */
-public class JavaImport implements ImportInterface {
+public class JavaImport implements ModuleInterface, ImportInterface {
 
     /** Logger. */
     private static final Logger LOG =
