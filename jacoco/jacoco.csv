@@ -12,10 +12,10 @@ argo_java,org.argouml.language.java.profile,ProfileJava,91,96,11,6,28,32,12,10,3
 argo_java,org.argouml.language.java.profile,ProfileJava.new DefaultTypeStrategy() {...},24,6,0,0,6,1,3,1,3,1
 argo_java,org.argouml.language.java.reveng,JavaParser.DFA124,656,33,118,0,193,11,72,1,2,1
 argo_java,org.argouml.language.java.reveng,JavaParser.DFA127,300,65,55,3,87,21,35,2,1,2
-argo_java,org.argouml.language.java.reveng,JavaParser.block_return,0,3,0,0,0,1,0,1,0,1
 argo_java,org.argouml.language.java.reveng,JavaParser.equalsVariableInitializer_return,0,3,0,0,0,1,0,1,0,1
-argo_java,org.argouml.language.java.reveng,Context,44,57,7,5,13,18,5,8,1,6
+argo_java,org.argouml.language.java.reveng,JavaParser.block_return,0,3,0,0,0,1,0,1,0,1
 argo_java,org.argouml.language.java.reveng,JavaLexer.DFA30,51,82,23,11,10,24,17,4,1,2
+argo_java,org.argouml.language.java.reveng,Context,44,57,7,5,13,18,5,8,1,6
 argo_java,org.argouml.language.java.reveng,JavaParser.primitiveType_return,0,3,0,0,0,1,0,1,0,1
 argo_java,org.argouml.language.java.reveng,JavaParser.annotationName_return,3,0,0,0,1,0,1,0,1,0
 argo_java,org.argouml.language.java.reveng,JavaLexer,3391,2928,637,175,891,463,461,121,72,47
@@ -26,8 +26,8 @@ argo_java,org.argouml.language.java.reveng,ClassifierNotFoundException,0,11,0,0,
 argo_java,org.argouml.language.java.reveng,JavaParser.DFA115,2,33,0,0,1,11,1,1,1,1
 argo_java,org.argouml.language.java.reveng,JavaImportSettings,224,0,14,0,57,0,15,0,8,0
 argo_java,org.argouml.language.java.reveng,JavaParser.typeArguments_return,3,0,0,0,1,0,1,0,1,0
-argo_java,org.argouml.language.java.reveng,OuterClassifierContext,33,101,6,12,6,23,8,6,3,2
 argo_java,org.argouml.language.java.reveng,JavaParser.qualifiedName_return,0,3,0,0,0,1,0,1,0,1
+argo_java,org.argouml.language.java.reveng,OuterClassifierContext,33,101,6,12,6,23,8,6,3,2
 argo_java,org.argouml.language.java.reveng,ParameterDeclaration,3,18,0,0,1,7,1,3,1,3
 argo_java,org.argouml.language.java.reveng,ParseStateException,11,0,0,0,2,0,1,0,1,0
 argo_java,org.argouml.language.java.reveng,JavaParser.DFA107,236,33,44,0,65,11,27,1,2,1
@@ -39,10 +39,10 @@ argo_java,org.argouml.language.java.reveng,JavaParseException,4,0,0,0,2,0,1,0,1,
 argo_java,org.argouml.language.java.reveng,JavaLexer.DFA18,2,33,0,0,1,11,1,1,1,1
 argo_java,org.argouml.language.java.reveng,JavaParser.variableDeclaratorId_return,0,3,0,0,0,1,0,1,0,1
 argo_java,org.argouml.language.java.reveng,JavaParser.DFA139,89,33,13,0,25,11,9,1,2,1
-argo_java,org.argouml.language.java.reveng,JavaParser.DFA137,2,33,0,0,1,11,1,1,1,1
-argo_java,org.argouml.language.java.reveng,JavaParser,20434,21458,4964,1337,3796,2740,3211,318,106,114
 argo_java,org.argouml.language.java.reveng,JavaParser.DFA82,1057,64,195,3,310,22,119,2,1,2
+argo_java,org.argouml.language.java.reveng,JavaParser.DFA137,2,33,0,0,1,11,1,1,1,1
 argo_java,org.argouml.language.java.reveng,ParseState,154,191,29,7,39,48,24,17,6,17
+argo_java,org.argouml.language.java.reveng,JavaParser,20434,21458,4964,1337,3796,2740,3211,318,106,114
 argo_java,org.argouml.language.java.reveng,ClassifierContext,2,34,3,5,1,9,3,3,0,2
 argo_java,org.argouml.language.java.cognitive.critics,CrMultipleRealization,35,0,6,0,13,0,5,0,2,0
 argo_java,org.argouml.language.java.cognitive.critics,InitJavaCritics,53,0,5,0,21,0,14,0,10,0
@@ -63,8 +63,8 @@ argo_java,org.argouml.language.java.reveng.classfile,ParserUtils.TypeVariableSig
 argo_java,org.argouml.language.java.reveng.classfile,ParserUtils,26,299,5,30,4,67,7,29,2,13
 argo_java,org.argouml.language.java.reveng.classfile,OuterClassifierContext,102,0,12,0,21,0,10,0,4,0
 argo_java,org.argouml.language.java.reveng.classfile,ClassifierContext,45,0,8,0,11,0,8,0,4,0
-argo_java,org.argouml.language.java.reveng.classfile,ParserUtils.ClassTypeSignatureLexer,0,154,3,11,0,33,3,6,0,2
 argo_java,org.argouml.language.java.reveng.classfile,ParserUtils.FieldTypeSignatureLexer,13,47,1,3,1,14,1,4,0,2
+argo_java,org.argouml.language.java.reveng.classfile,ParserUtils.ClassTypeSignatureLexer,0,154,3,11,0,33,3,6,0,2
 argo_java,org.argouml.language.java.reveng.classfile,ClassfileImport,607,0,59,0,150,0,47,0,16,0
 argo_java,org.argouml.language.java.reveng.classfile,ShortAST,0,19,0,0,0,8,0,3,0,3
 argo_java,org.argouml.language.java.reveng.classfile,ParserUtils.Token,13,15,0,0,1,6,1,3,1,3
