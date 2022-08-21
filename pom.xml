@@ -8,7 +8,6 @@
     <groupId>org.argouml</groupId>
     <artifactId>parentpom</artifactId>
     <version>0.35.5-SNAPSHOT</version>
-    <relativePath>../parentpom/pom.xml</relativePath>
   </parent>
 
   <artifactId>argouml-java</artifactId>
@@ -162,4 +161,19 @@ Java support for argouml.
     <!-- Specify this or maven will add artifactId. -->
     <url>https://github.com/argouml-tigris-org/${github.site.repositoryName}</url>
   </scm>
+
+  <repositories>
+    <!-- Repo specified to find parentpom remotely. -->
+    <repository>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <id>sonatype-nexus-snapshots</id>
+      <name>Sonatype Nexus Snapshots</name>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+    </repository>
+  </repositories>
 </project>
