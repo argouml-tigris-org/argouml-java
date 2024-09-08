@@ -125,12 +125,12 @@ public class ActionRESequenceDiagram extends AbstractAction {
 <span class="nc" id="L125">                final Object receiver = Model.getFacade().getReceiver(target);</span>
                 // TODO: Do we really need to test for null here? I would
                 // expect an empty array which is safe.
-<span class="nc bnc" id="L128" title="All 2 branches missed.">                final Collection c =</span>
-                    receiver != null
+                final Collection c =
+<span class="nc bnc" id="L129" title="All 2 branches missed.">                    receiver != null</span>
 <span class="nc" id="L130">                    ? Model.getFacade().getBases(receiver)</span>
-                            : null;
-<span class="nc bnc" id="L132" title="All 2 branches missed.">                final Object cls =</span>
-<span class="nc bnc" id="L133" title="All 2 branches missed.">                    c != null &amp;&amp; !c.isEmpty() ? c.iterator().next() : null;</span>
+<span class="nc" id="L131">                            : null;</span>
+                final Object cls =
+<span class="nc bnc" id="L133" title="All 4 branches missed.">                    c != null &amp;&amp; !c.isEmpty() ? c.iterator().next() : null;</span>
 <span class="nc bnc" id="L134" title="All 4 branches missed.">                if (cls != null &amp;&amp; Model.getFacade().isAClassifier(cls)) {</span>
                     // too primitive (just gets the first method
                     // with matching name)

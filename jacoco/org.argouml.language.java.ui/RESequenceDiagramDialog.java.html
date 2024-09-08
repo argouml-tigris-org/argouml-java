@@ -177,11 +177,11 @@ public class RESequenceDiagramDialog
         // sequence diagram, i.e. to perform an action on a FigMessage!)
 <span class="nc" id="L178">        super(</span>
                 &quot;NOT FUNCTIONAL!!! &quot;
-<span class="nc bnc" id="L180" title="All 2 branches missed.">                + Translator.localize(</span>
+<span class="nc" id="L180">                + Translator.localize(</span>
                         &quot;dialog.title.reverse-engineer-sequence-diagram&quot;)
-                + (oper != null
+<span class="nc bnc" id="L182" title="All 2 branches missed.">                + (oper != null</span>
 <span class="nc" id="L183">                        ? (' ' + Model.getFacade().getName(oper) + &quot;()&quot;)</span>
-                                : &quot;&quot;),
+<span class="nc" id="L184">                                : &quot;&quot;),</span>
                 ArgoDialog.OK_CANCEL_OPTION,
                 true);
 <span class="nc" id="L187">        setResizable(false);</span>
@@ -924,8 +924,8 @@ public class RESequenceDiagramDialog
 <span class="nc" id="L924">                Collection suppliers = Model.getFacade().getSuppliers(perm);</span>
                 // TODO: Do we really need to test for null here?
                 // We should get empty collections.
-<span class="nc bnc" id="L927" title="All 2 branches missed.">                Iterator iter2 =</span>
-<span class="nc" id="L928">                    suppliers != null ? suppliers.iterator() : null;</span>
+                Iterator iter2 =
+<span class="nc bnc" id="L928" title="All 2 branches missed.">                    suppliers != null ? suppliers.iterator() : null;</span>
 <span class="nc bnc" id="L929" title="All 4 branches missed.">                while (theClassifier == null</span>
                         &amp;&amp; iter2 != null
 <span class="nc bnc" id="L931" title="All 2 branches missed.">                        &amp;&amp; iter2.hasNext()) {</span>

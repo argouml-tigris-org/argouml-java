@@ -1447,8 +1447,8 @@ import tudresden.ocl.parser.node.AConstraintBody;
         }
         // Retrieve any existing doc comment
 <span class="pc bpc" id="L1449" title="1 of 2 branches missed.">        String s = (VERBOSE_DOCS || DocumentationManager.hasDocs(me))</span>
-<span class="pc" id="L1450">            ? DocumentationManager.getDocs(me, indent)</span>
-            : null;
+<span class="nc" id="L1450">            ? DocumentationManager.getDocs(me, indent)</span>
+<span class="fc" id="L1451">            : null;</span>
 <span class="fc" id="L1452">        StringBuffer sDocComment = new StringBuffer(80);</span>
 
 <span class="pc bpc" id="L1454" title="3 of 4 branches missed.">        if (s != null &amp;&amp; s.trim().length() &gt; 0) {</span>

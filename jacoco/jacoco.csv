@@ -3,7 +3,7 @@ argo_java,org.argouml.language.java.ui,SettingsTabJava,225,0,7,0,62,0,18,0,13,0
 argo_java,org.argouml.language.java.ui,JavaSequencesMenu,11,0,0,0,3,0,1,0,1,0
 argo_java,org.argouml.language.java.ui,ActionRESequenceDiagramForOperation,54,0,2,0,19,0,5,0,4,0
 argo_java,org.argouml.language.java.ui,ActionRESequenceDiagram,195,0,34,0,47,0,21,0,4,0
-argo_java,org.argouml.language.java.ui,RESequenceDiagramDialog,1090,0,78,0,263,0,53,0,14,0
+argo_java,org.argouml.language.java.ui,RESequenceDiagramDialog,1090,0,78,0,264,0,53,0,14,0
 argo_java,org.argouml.language.java.ui,JavaTools,21,0,5,0,10,0,9,0,5,0
 argo_java,org.argouml.language.java.codesync.ui,CodeSyncJPanel,49,0,0,0,12,0,2,0,2,0
 argo_java,org.argouml.language.java.codesync.ui,CodeSyncTableModel,139,0,32,0,40,0,21,0,5,0
@@ -33,7 +33,7 @@ argo_java,org.argouml.language.java.reveng,ParseStateException,11,0,0,0,2,0,1,0,
 argo_java,org.argouml.language.java.reveng,JavaParser.DFA107,236,33,44,0,65,11,27,1,2,1
 argo_java,org.argouml.language.java.reveng,JavaParser.createdName_return,0,3,0,0,0,1,0,1,0,1
 argo_java,org.argouml.language.java.reveng,UnsupportedJavaFeatureException,15,0,0,0,2,0,1,0,1,0
-argo_java,org.argouml.language.java.reveng,Modeller,1735,2057,312,195,394,516,234,98,23,55
+argo_java,org.argouml.language.java.reveng,Modeller,1735,2057,312,195,401,516,234,98,23,55
 argo_java,org.argouml.language.java.reveng,PackageContext,54,126,17,27,17,31,15,10,1,2
 argo_java,org.argouml.language.java.reveng,JavaParseException,4,0,0,0,2,0,1,0,1,0
 argo_java,org.argouml.language.java.reveng,JavaLexer.DFA18,2,33,0,0,1,11,1,1,1,1
@@ -48,14 +48,14 @@ argo_java,org.argouml.language.java.cognitive.critics,CrMultipleRealization,35,0
 argo_java,org.argouml.language.java.cognitive.critics,InitJavaCritics,53,0,5,0,21,0,14,0,10,0
 argo_java,org.argouml.language.java.cognitive.critics,CrMultipleInheritance,60,0,8,0,22,0,8,0,4,0
 argo_java,org.argouml.language.java.cognitive.critics,CrReservedNameJava,242,0,0,0,62,0,2,0,2,0
-argo_java,org.argouml.language.java.generator,GeneratorJava,3545,361,581,42,813,94,365,16,58,10
+argo_java,org.argouml.language.java.generator,GeneratorJava,3545,361,581,42,814,94,365,16,58,10
 argo_java,org.argouml.language.java.generator,GeneratorJava.new DepthFirstAdapter() {...},103,0,16,0,23,0,11,0,3,0
 argo_java,org.argouml.language.java.codesync,CodeSyncJava,41,0,5,0,15,0,10,0,6,0
 argo_java,org.argouml.language.java.reveng.classfile,ParserUtils.ArrayTypeSignatureLexer,13,45,1,1,1,10,1,2,0,2
 argo_java,org.argouml.language.java.reveng.classfile,ByteToken,0,32,0,0,0,11,0,6,0,6
 argo_java,org.argouml.language.java.reveng.classfile,JavaParseException,4,0,0,0,2,0,1,0,1,0
 argo_java,org.argouml.language.java.reveng.classfile,ParserUtils.SimpleClassTypeSignatureLexer,13,152,4,16,1,31,4,8,0,2
-argo_java,org.argouml.language.java.reveng.classfile,SimpleByteLexer,6,29,0,2,2,7,0,3,0,2
+argo_java,org.argouml.language.java.reveng.classfile,SimpleByteLexer,6,29,0,2,2,9,0,3,0,2
 argo_java,org.argouml.language.java.reveng.classfile,UnsupportedJavaFeatureException,15,0,0,0,2,0,1,0,1,0
 argo_java,org.argouml.language.java.reveng.classfile,ParserUtils.MethodTypeSignatureLexer,51,192,1,11,9,39,1,7,0,2
 argo_java,org.argouml.language.java.reveng.classfile,ParseState,338,0,36,0,84,0,39,0,21,0

@@ -98,8 +98,8 @@ public class SimpleByteLexer implements ClassfileTokenTypes, TokenStream {
 	// System.out.println(&quot;Generating token for: &quot; + nextByte);
 
 <span class="fc bfc" id="L100" title="All 2 branches covered.">	return (nextByte == -1)</span>
-	    ? new ByteToken( Token.EOF_TYPE)
-                : new ByteToken( BYTE, (byte) nextByte);
+<span class="fc" id="L101">	    ? new ByteToken( Token.EOF_TYPE)</span>
+<span class="fc" id="L102">                : new ByteToken( BYTE, (byte) nextByte);</span>
     }
 }
 

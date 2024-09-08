@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JavaParser.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">argo_java</a> &gt; <a href="index.source.html" class="el_package">org.argouml.language.java.reveng</a> &gt; <span class="el_source">JavaParser.java</span></div><h1>JavaParser.java</h1><pre class="source lang-java linenums">// $ANTLR 3.5.2 org/argouml/language/java/reveng/Java.g 2024-09-03 09:00:21
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JavaParser.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">argo_java</a> &gt; <a href="index.source.html" class="el_package">org.argouml.language.java.reveng</a> &gt; <span class="el_source">JavaParser.java</span></div><h1>JavaParser.java</h1><pre class="source lang-java linenums">// $ANTLR 3.5.2 org/argouml/language/java/reveng/Java.g 2024-09-08 00:21:00
 
 package org.argouml.language.java.reveng;
 
@@ -3426,8 +3426,8 @@ public class JavaParser extends Parser {
 <span class="fc" id="L3426">			                setMethod(getModeller().addOperation(modifiers, tparam,</span>
 <span class="pc bpc" id="L3427" title="1 of 2 branches missed.">			                    sb.toString(), name, param, getJavadocComment(),</span>
 			                    (parserMode == MODE_IMPORT_PASS2)));
-<span class="pc bpc" id="L3429" title="1 of 2 branches missed.">			                getModeller().addBodyToOperation(getMethod(),</span>
-<span class="pc" id="L3430">			                    (level &gt; 1 ? getBody() : &quot;&quot;));</span>
+<span class="fc" id="L3429">			                getModeller().addBodyToOperation(getMethod(),</span>
+<span class="pc bpc" id="L3430" title="1 of 2 branches missed.">			                    (level &gt; 1 ? getBody() : &quot;&quot;));</span>
 <span class="fc" id="L3431">			                setMethod(null);</span>
 <span class="fc" id="L3432">			                setBody(null);</span>
 			            }
@@ -3530,8 +3530,8 @@ public class JavaParser extends Parser {
 <span class="fc" id="L3530">			                setMethod(getModeller().addOperation(modifiers, null,</span>
 <span class="pc bpc" id="L3531" title="1 of 2 branches missed.">			                    &quot;void&quot;, name, param, getJavadocComment(),</span>
 			                    (parserMode == MODE_IMPORT_PASS2)));
-<span class="pc bpc" id="L3533" title="1 of 2 branches missed.">			                getModeller().addBodyToOperation(getMethod(),</span>
-<span class="pc" id="L3534">			                    (level &gt; 1 ? getBody() : &quot;&quot;));</span>
+<span class="fc" id="L3533">			                getModeller().addBodyToOperation(getMethod(),</span>
+<span class="pc bpc" id="L3534" title="1 of 2 branches missed.">			                    (level &gt; 1 ? getBody() : &quot;&quot;));</span>
 <span class="fc" id="L3535">			                setMethod(null);</span>
 <span class="fc" id="L3536">			                setBody(null);</span>
 			            }
@@ -3848,8 +3848,8 @@ public class JavaParser extends Parser {
 <span class="pc bpc" id="L3848" title="1 of 2 branches missed.">			if (state.failed) return;</span>
 <span class="pc bpc" id="L3849" title="1 of 2 branches missed.">			if ( state.backtracking==0 ) {</span>
 <span class="pc bpc" id="L3850" title="2 of 4 branches missed.">			            if (isOutestCompStat &amp;&amp; level &gt; 0) {</span>
-<span class="pc bpc" id="L3851" title="1 of 2 branches missed.">			                getModeller().addBodyToOperation(getMethod(),</span>
-<span class="pc" id="L3852">			                    level &gt; 1 ? getBody() : &quot;&quot;);</span>
+<span class="fc" id="L3851">			                getModeller().addBodyToOperation(getMethod(),</span>
+<span class="pc bpc" id="L3852" title="1 of 2 branches missed.">			                    level &gt; 1 ? getBody() : &quot;&quot;);</span>
 <span class="fc" id="L3853">			                setMethod(null);</span>
 <span class="fc" id="L3854">			                setBody(null);</span>
 			            }
